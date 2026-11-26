@@ -23,6 +23,8 @@ use sha2::Sha256;
 
 use crate::FleetRegistry;
 use crate::FleetRegistryError;
+use crate::release_io::observe_io;
+use crate::release_io::observe_release;
 
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
@@ -255,22 +257,32 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
-        std::fs::create_dir(&staging)?;
+        observe_io("install.create_staging", std::fs::create_dir(&staging))?;
         let result = (|| {
             let bin_root = staging.join("bin");
-            std::fs::create_dir(&bin_root)?;
+            observe_io("install.create_bin", std::fs::create_dir(&bin_root))?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
-            copy_immutable_program(&source_agentd, &agentd_program)?;
+            observe_release(
+                "install.copy_agentd",
+                copy_immutable_program(&source_agentd, &agentd_program),
+            )?;
             let matrixd = source_matrixd
                 .as_ref()
                 .map(
                     |source| -> Result<ReleaseProgramMetadata, FleetRegistryError> {
                         let matrixd_program = staging.join(MATRIXD_RELEASE_PROGRAM);
-                        copy_immutable_program(source, &matrixd_program)?;
+                        observe_release(
+                            "install.copy_matrixd",
+                            copy_immutable_program(source, &matrixd_program),
+                        )?;
                         Ok(ReleaseProgramMetadata {
                             program_relative_path: PathBuf::from(MATRIXD_RELEASE_PROGRAM),
                             program_sha256: sha256_file(&matrixd_program)?,
-                            program_size_bytes: std::fs::metadata(&matrixd_program)?.len(),
+                            program_size_bytes: observe_io(
+                                "install.matrixd_metadata",
+                                std::fs::metadata(&matrixd_program),
+                            )?
+                            .len(),
                             args: matrixd_args,
                         })
                     },
@@ -282,20 +294,30 @@ impl FleetRegistry {
                 agentd: ReleaseProgramMetadata {
                     program_relative_path: PathBuf::from(AGENTD_RELEASE_PROGRAM),
                     program_sha256: sha256_file(&agentd_program)?,
-                    program_size_bytes: std::fs::metadata(&agentd_program)?.len(),
+                    program_size_bytes: observe_io(
+                        "install.agentd_metadata",
+                        std::fs::metadata(&agentd_program),
+                    )?
+                    .len(),
                     args: agentd_args,
                 },
                 matrixd,
             };
             let manifest = staging.join(RELEASE_MANIFEST_FILE);
-            write_new_json(&manifest, &metadata)?;
-            set_mode(&manifest, /*mode*/ 0o444)?;
-            set_mode(&bin_root, /*mode*/ 0o555)?;
-            sync_directory(&bin_root)?;
-            sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
-            sync_directory(self.layout().releases_root())?;
+            observe_release(
+                "install.write_manifest",
+                write_new_json(&manifest, &metadata),
+            )?;
+            observe_release("install.mode_manifest", set_mode(&manifest, /*mode*/ 0o444))?;
+            observe_release("install.mode_bin", set_mode(&bin_root, /*mode*/ 0o555))?;
+            observe_release("install.sync_bin", sync_directory(&bin_root))?;
+            observe_release("install.sync_staging", sync_directory(&staging))?;
+            observe_release("install.mode_staging", set_mode(&staging, /*mode*/ 0o555))?;
+            observe_io("install.rename", std::fs::rename(&staging, &final_root))?;
+            observe_release(
+                "install.sync_releases_root",
+                sync_directory(self.layout().releases_root()),
+            )?;
             Ok(())
         })();
         if let Err(error) = result {
@@ -303,7 +325,10 @@ impl FleetRegistry {
             let _ = std::fs::remove_dir_all(&staging);
             return Err(error);
         }
-        resolve_catalog_release(self.layout().releases_root(), &release_id)
+        observe_release(
+            "install.resolve_published",
+            resolve_catalog_release(self.layout().releases_root(), &release_id),
+        )
     }
 
     /// Allows one registered agent to use an already installed release. The
@@ -744,7 +769,7 @@ fn validate_source_program(path: &Path) -> Result<PathBuf, FleetRegistryError> {
             "release source program must be an absolute normalized path".to_string(),
         ));
     }
-    let metadata = std::fs::symlink_metadata(path)?;
+    let metadata = observe_io("source.symlink_metadata", std::fs::symlink_metadata(path))?;
     if !metadata.file_type().is_file() || metadata.file_type().is_symlink() {
         return Err(FleetRegistryError::Invalid(
             "release source program must be a non-symlink regular file".to_string(),
@@ -876,14 +901,17 @@ fn parse_release_state_generation(name: &str) -> Result<u64, FleetRegistryError>
 }
 
 fn directory_names(path: &Path) -> Result<BTreeSet<String>, FleetRegistryError> {
-    std::fs::read_dir(path)?
+    observe_io("directory.read", std::fs::read_dir(path))?
         .map(|entry| {
-            entry?.file_name().into_string().map_err(|_| {
-                FleetRegistryError::Corrupt(format!(
-                    "release entry name is not UTF-8 in {}",
-                    path.display()
-                ))
-            })
+            observe_io("directory.entry", entry)?
+                .file_name()
+                .into_string()
+                .map_err(|_| {
+                    FleetRegistryError::Corrupt(format!(
+                        "release entry name is not UTF-8 in {}",
+                        path.display()
+                    ))
+                })
         })
         .collect()
 }
@@ -892,9 +920,12 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
     let mut bytes = serde_json::to_vec(value)
         .map_err(|error| FleetRegistryError::Corrupt(format!("encode release state: {error}")))?;
     bytes.push(b'\n');
-    let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
+    let mut file = observe_io(
+        "json.create_new",
+        OpenOptions::new().write(true).create_new(true).open(path),
+    )?;
+    observe_io("json.write_all", file.write_all(&bytes))?;
+    observe_io("json.sync_all", file.sync_all())?;
     Ok(())
 }
 
@@ -902,7 +933,7 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
     path: &Path,
     max_bytes: u64,
 ) -> Result<T, FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
+    let metadata = observe_io("json.symlink_metadata", std::fs::symlink_metadata(path))?;
     if !metadata.file_type().is_file()
         || metadata.file_type().is_symlink()
         || metadata.len() > max_bytes
@@ -912,30 +943,33 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
             path.display()
         )));
     }
-    serde_json::from_slice(&std::fs::read(path)?)
+    serde_json::from_slice(&observe_io("json.read", std::fs::read(path))?)
         .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))
 }
 
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
-    let mut input = File::open(source)?;
-    let mut output = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(destination)?;
-    std::io::copy(&mut input, &mut output)?;
+    let mut input = observe_io("copy.open_source", File::open(source))?;
+    let mut output = observe_io(
+        "copy.create_destination",
+        OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(destination),
+    )?;
+    observe_io("copy.bytes", std::io::copy(&mut input, &mut output))?;
     set_mode(destination, /*mode*/ 0o555)?;
     // Flush through the writing handle retained across the mode change.
     // Windows cannot FlushFileBuffers on a separately opened read-only handle.
-    output.sync_all()?;
+    observe_io("copy.sync_writing_handle", output.sync_all())?;
     Ok(())
 }
 
 fn sha256_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let mut file = File::open(path)?;
+    let mut file = observe_io("digest.open", File::open(path))?;
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
     loop {
-        let count = file.read(&mut buffer)?;
+        let count = observe_io("digest.read", file.read(&mut buffer))?;
         if count == 0 {
             break;
         }
@@ -956,7 +990,11 @@ fn is_sha256(value: &str) -> bool {
 }
 
 fn validate_physical_directory(path: &Path, immutable: bool) -> Result<(), FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path).map_err(|error| {
+    let metadata = observe_io(
+        "directory.symlink_metadata",
+        std::fs::symlink_metadata(path),
+    )
+    .map_err(|error| {
         if error.kind() == ErrorKind::NotFound {
             FleetRegistryError::UnknownRelease(
                 path.file_name()
@@ -987,7 +1025,10 @@ fn validate_immutable_regular_file(
     path: &Path,
     executable: bool,
 ) -> Result<(), FleetRegistryError> {
-    let metadata = std::fs::symlink_metadata(path)?;
+    let metadata = observe_io(
+        "immutable_file.symlink_metadata",
+        std::fs::symlink_metadata(path),
+    )?;
     if !metadata.file_type().is_file()
         || metadata.file_type().is_symlink()
         || is_writable(&metadata)
@@ -1026,15 +1067,21 @@ fn is_executable(_metadata: &std::fs::Metadata) -> bool {
 #[cfg(unix)]
 fn set_mode(path: &Path, mode: u32) -> Result<(), FleetRegistryError> {
     use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode))?;
+    observe_io(
+        "mode.set_permissions",
+        std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode)),
+    )?;
     Ok(())
 }
 
 #[cfg(not(unix))]
 fn set_mode(path: &Path, mode: u32) -> Result<(), FleetRegistryError> {
-    let mut permissions = std::fs::metadata(path)?.permissions();
+    let mut permissions = observe_io("mode.metadata", std::fs::metadata(path))?.permissions();
     permissions.set_readonly(mode & 0o200 == 0);
-    std::fs::set_permissions(path, permissions)?;
+    observe_io(
+        "mode.set_permissions",
+        std::fs::set_permissions(path, permissions),
+    )?;
     Ok(())
 }
 
@@ -1050,7 +1097,10 @@ fn make_tree_removable(path: &Path) {
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
+    observe_io(
+        "directory.sync_all",
+        observe_io("directory.open_for_sync", File::open(path))?.sync_all(),
+    )?;
     Ok(())
 }
 
@@ -1085,20 +1135,32 @@ mod tests {
 
     impl Fixture {
         fn new() -> Result<Self, FleetRegistryError> {
-            let temp = tempfile::tempdir()?;
+            let temp = observe_io("fixture.tempdir", tempfile::tempdir())?;
             let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
                 .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;
-            let registry = FleetRegistry::initialize(root.clone())?;
-            let first = register(&registry, &root, temp.path(), FIRST_AGENT_ID, "workspace-a")?;
-            let second = register(
-                &registry,
-                &root,
-                temp.path(),
-                SECOND_AGENT_ID,
-                "workspace-b",
+            let registry = observe_release(
+                "fixture.initialize",
+                FleetRegistry::initialize(root.clone()),
+            )?;
+            let first = observe_release(
+                "fixture.register_first",
+                register(&registry, &root, temp.path(), FIRST_AGENT_ID, "workspace-a"),
+            )?;
+            let second = observe_release(
+                "fixture.register_second",
+                register(
+                    &registry,
+                    &root,
+                    temp.path(),
+                    SECOND_AGENT_ID,
+                    "workspace-b",
+                ),
             )?;
             let source = temp.path().join("hepta-agentd");
-            std::fs::write(&source, b"#!/bin/sh\nexit 0\n")?;
+            observe_io(
+                "fixture.write_source",
+                std::fs::write(&source, b"#!/bin/sh\nexit 0\n"),
+            )?;
             Ok(Self {
                 _temp: temp,
                 root,
