@@ -223,19 +223,30 @@ impl RevalidatingCandidate {
         current: VerifiedCurrentRegistryViewV1,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        self.with_verified_registry(current.receipt, current.registry, consume)
+        self.with_current_result(Ok(current), consume)
     }
 
-    fn with_verified_registry<T>(
+    /// Check the authenticated view or permanently close this cache if view
+    /// acquisition failed. Forward the acquisition result instead of falling
+    /// back to a previously verified view. Errors never invoke the consumer.
+    pub fn with_current_result<T>(
         &mut self,
-        current: RegistrySnapshotReceipt,
-        registry: ArtifactRegistry,
+        current: Result<VerifiedCurrentRegistryViewV1, PinnedCandidateLoadError>,
+        consume: impl FnOnce(&[u8]) -> T,
+    ) -> Result<T, PinnedCandidateLoadError> {
+        self.with_registry_result(current.map(|view| (view.receipt, view.registry)), consume)
+    }
+
+    fn with_registry_result<T>(
+        &mut self,
+        current: Result<(RegistrySnapshotReceipt, ArtifactRegistry), PinnedCandidateLoadError>,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
         if self.unavailable {
             return Err(PinnedCandidateLoadError::Unavailable);
         }
         self.unavailable = true;
+        let (current, registry) = current?;
         let previous = self.candidate.spec.registry_receipt;
         if current.binding != previous.binding || current.records < previous.records {
             return Err(PinnedCandidateLoadError::FrontierMismatch);
@@ -276,16 +287,10 @@ impl RevalidatingCandidate {
         if self.unavailable {
             return Err(PinnedCandidateLoadError::Unavailable);
         }
-        // Mirror a host that removes its cache before acquiring the verified
-        // current view: acquisition errors must not leave a usable backup.
-        let registry = match read_registry_snapshot(snapshot, current) {
-            Ok(registry) => registry,
-            Err(error) => {
-                self.unavailable = true;
-                return Err(error.into());
-            }
-        };
-        self.with_verified_registry(current, registry, consume)
+        let view = read_registry_snapshot(snapshot, current)
+            .map(|registry| (current, registry))
+            .map_err(PinnedCandidateLoadError::from);
+        self.with_registry_result(view, consume)
     }
 }
 
