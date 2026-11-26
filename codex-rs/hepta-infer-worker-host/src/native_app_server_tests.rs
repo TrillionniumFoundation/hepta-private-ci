@@ -407,22 +407,35 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("token-bound physical turn start");
+    let authority_entry = source
+        .find("let entered_use = match verified_use.enter(&authority_binding)")
+        .expect("final-use authority entry");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(revalidation < authority_entry);
+    assert!(authority_entry < turn_start);
+
+    let (_, send_helper) = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized send helper");
+    let (send_helper, _) = send_helper
+        .split_once("\n}")
+        .expect("complete authorized send helper");
+    assert!(send_helper.contains("_entered: EnteredUseToken"));
+    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart {"));
+    assert_eq!(source.matches("ClientRequest::TurnStart {").count(), 1);
 }
 
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
 
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -442,21 +455,37 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Both the worker control socket and authority socket must fit Unix socket paths.
+    let fixture = tempfile::Builder::new().prefix("hwkr-").tempdir()?;
+    let root = fixture.path().join("host");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let app_server_paths = codex_hepta_agentd::test_support::Arg0DispatchPaths {
+        // core_test_support registers real arg0 helper dispatch for this executable.
+        codex_self_exe: Some(std::env::current_exe()?),
+        #[cfg(target_os = "linux")]
+        codex_linux_sandbox_exe: Some(core_test_support::find_codex_linux_sandbox_exe()?),
+        ..Default::default()
+    };
+    let host = CognitiveTestHost::start_with_runtime_paths(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        app_server_paths,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
 
-    let authority_directory = tempfile::tempdir()?;
+    let authority_directory = tempfile::Builder::new().prefix("hfua-").tempdir()?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
         3,
@@ -470,7 +499,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
+    let journal = fixture.path().join("worker.journal");
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
     let accepted = driver
