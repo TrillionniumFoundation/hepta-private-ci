@@ -396,11 +396,11 @@ QUALIFICATION_SOURCE_SHA256 = {
     (
         "qualification/hcsn_adaptive/evidence/20261120-1d88/"
         "ci-followup-v1.tar.gz.part-04"
-    ): "db5a6f99b0bda8547be7e3dd96a6b7c7ae6ad2715f5b18af36bb0efdb7e4ed06",
+    ): "ed27b9fd9f1496849857967660965df961f939e6f2e58f1024213c7607c15c21",
     (
         "qualification/hcsn_adaptive/evidence/20261120-1d88/"
         "runtime-evidence-v1.tar.gz.part-19"
-    ): "92fb400c2a1dcca404838e21db387a86b3357c286c40ba4b90e036fab31edfb4",
+    ): "bc66f3864cf1c0732fb61a9e5828893713dad688fc9cc0c72bd4ade6952a5ba7",
 }
 
 
