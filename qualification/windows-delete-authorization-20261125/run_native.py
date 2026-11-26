@@ -21,6 +21,7 @@ CASES = {
     "matrix::null_dacl_is_an_explicit_limit_of_full_restriction",
     "matrix::low_integrity_does_not_protect_a_low_outside_null_dacl_object",
 }
+LIST_CASE = "list_factor::directory_list_bit_observations"
 SOURCES = [
     "codex-rs/Cargo.lock",
     "codex-rs/.config/nextest.toml",
@@ -28,13 +29,17 @@ SOURCES = [
     "codex-rs/windows-sandbox-rs/src/token_delete_matrix_support.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_open_diagnostics.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_access_diagnostics.rs",
+    "codex-rs/windows-sandbox-rs/src/token_delete_integrity_observations.rs",
+    "codex-rs/windows-sandbox-rs/src/token_delete_list_factor_tests.rs",
     "codex-rs/windows-sandbox-rs/src/token_delete_authorization_tests.rs",
     "codex-rs/windows-sandbox-rs/src/filesystem_isolation.rs",
     "qualification/windows-delete-authorization-20261125/probe/lib.rs",
+    "qualification/windows-delete-authorization-20261125/probe/list_factor.rs",
     "qualification/windows-delete-authorization-20261125/probe/Cargo.toml",
     "qualification/windows-delete-authorization-20261125/probe/Cargo.lock",
     "qualification/windows-delete-authorization-20261125/probe/nextest.toml",
     "qualification/windows-delete-authorization-20261125/run_native.py",
+    "qualification/windows-delete-authorization-20261125/LIST_FACTOR_PROTOCOL.md",
     ".github/workflows/hepta-windows-delete-authorization.yml",
 ]
 
@@ -98,6 +103,23 @@ def verify_native(log):
             "combined_controlled_write_scenarios": 1}
 
 
+def verify_list_factor(log):
+    clean = re.sub(r"\x1b\[[0-9;]*m", "", log)
+    passed = re.findall(r"^\s*PASS\s+\[[^]]+\]\s+" + re.escape(PACKAGE + "::list_factor")
+                        + r"\s+(list_factor::\S+)\s*$", clean, re.M)
+    if passed != [LIST_CASE] or not re.search(
+            r"Summary\s+\[[^]]+\] 1 tests? run: 1 passed, 0 skipped", clean):
+        raise RuntimeError("the one independent LIST diagnostic did not complete")
+    rows = re.findall(r"^\s*HEPTA_DELETE_LIST scenario=(Target|NullParent|Neither) "
+                      r"list=(false|true) (.+)$", clean, re.M)
+    expected = {(scenario, flag) for scenario in ["Target", "NullParent", "Neither"]
+                for flag in ["false", "true"]}
+    if len(rows) != 6 or {(scenario, flag) for scenario, flag, _ in rows} != expected:
+        raise RuntimeError("expected six distinct LIST-factor observations")
+    return {"test_identity": LIST_CASE, "rust_tests": 1, "observations": rows,
+            "diagnostic_complete": True, "qualifies_original_matrix": False}
+
+
 def main():
     evidence = Path(os.environ["RUNNER_TEMP"]) / "hepta-delete-evidence"
     evidence.mkdir(parents=True, exist_ok=True)
@@ -144,6 +166,11 @@ def main():
                         "--lib", "-p", PACKAGE, "--config-file", str(HERE / "probe/nextest.toml"),
                         "--test-threads", "1", "--retries", "0",
                         "--success-output", "immediate", "--failure-output", "immediate"]),
+            ("list-factor", ["just", "test", "--manifest-path", manifest, "--locked",
+                             "--test", "list_factor", "-p", PACKAGE,
+                             "--config-file", str(HERE / "probe/nextest.toml"),
+                             "--test-threads", "1", "--retries", "0",
+                             "--success-output", "immediate", "--failure-output", "immediate"]),
         ]
         for name, args in invocations:
             row = command(args, evidence, name)
@@ -152,6 +179,12 @@ def main():
         receipt["after"] = identity()
         if receipt["after"] != before:
             raise RuntimeError("source identity changed during qualification")
+        try:
+            receipt["list_factor_diagnostic"] = verify_list_factor(
+                (evidence / "list-factor.log").read_text(encoding="utf-8", errors="replace"))
+        except Exception as error:
+            failed = True
+            receipt["list_factor_error"] = f"{type(error).__name__}: {error}"
         receipt["native_counts"] = verify_native(
             (evidence / "native.log").read_text(encoding="utf-8", errors="replace"))
     except Exception as error:
