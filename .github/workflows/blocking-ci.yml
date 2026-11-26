@@ -207,7 +207,8 @@ jobs:
   required:
     timeout-minutes: 30
     name: CI required
-    if: ${{ always() }}
+    # Aggregate failed dependencies, but release the PR lease on cancellation.
+    if: ${{ !cancelled() }}
     needs:
       - scope
       - hepta-contract-gate
