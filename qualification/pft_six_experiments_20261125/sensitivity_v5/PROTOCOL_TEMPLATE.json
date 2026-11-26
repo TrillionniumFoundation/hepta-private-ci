@@ -1,0 +1,102 @@
+{
+  "activation": "Root must register one distinct execution slot and hash a separate active protocol before any model or numerical execution. This template authorizes none.",
+  "example_paths": {
+    "accepted_result": "/home/alex/pft-continuation-20261126-8a32/v4/nonsmooth_execution_01/RESULT.json",
+    "cold_result": "/home/alex/pft-continuation-20261126-8a32/v4/nonsmooth_cold_execution_01/RESULT.json",
+    "failed_result": "/home/alex/pft-continuation-20261126-8a32/v4/execution_01/sensitivity/RESULT.json",
+    "interpreter": "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+    "material_root": "/home/alex",
+    "output": "/home/alex/pft-continuation-20261126-8a32/v5/accepted_point_execution_01",
+    "profile": "/home/alex/pft-continuation-20261126-8a32/v4/nonsmooth_cold_execution_01/CANDIDATE_PROFILE.json"
+  },
+  "fixed": {
+    "budget": {
+      "candidate_exports": 0,
+      "candidate_loads": 1,
+      "cpu_seconds": 120,
+      "physical_forward_calls": 26,
+      "quadratic_solves": 0,
+      "retries": 0,
+      "scalar_output_vjp_calls": 2,
+      "training_matrix_runs": 0,
+      "training_updates": 0,
+      "wall_seconds": 120
+    },
+    "coordinate_sha256": "7950b64cfed821e58e7dd3dee08c656edaa74f80493aa24166133129e668768f",
+    "coordinates": [
+      {
+        "flat_index": 4,
+        "name": "raw_cost",
+        "scale": 1.0
+      },
+      {
+        "flat_index": 0,
+        "name": "input_drive.weight",
+        "scale": 1.0
+      },
+      {
+        "flat_index": 0,
+        "name": "input_mark.weight",
+        "scale": 1.0
+      },
+      {
+        "flat_index": 96,
+        "name": "recurrent.weight",
+        "scale": 1.0
+      },
+      {
+        "flat_index": 0,
+        "name": "readout.weight",
+        "scale": 1.0
+      },
+      {
+        "flat_index": 0,
+        "name": "readout.bias",
+        "scale": 1.0
+      }
+    ],
+    "fd": {
+      "atol": 1e-07,
+      "gap_floor_multiplier": 4,
+      "gap_shrink_factor": 0.75,
+      "h": 1e-05,
+      "half_h": 5e-06,
+      "rtol": 3e-05
+    },
+    "initial_margin_sha256": "0a497c985158f5df5b0564153450d13370bacae293ddc9d59fd204ce8697c52b",
+    "input_sha256": "012e6e7c0c52b2f639ba6cca41f3197391c7b08e8804ed6c6d92941bd0374a93",
+    "runtime": {
+      "device": "cpu",
+      "interop_threads": 1,
+      "numpy": "2.5.5",
+      "python": "3.14.4",
+      "threads": 1,
+      "torch": "2.15.0+cpu"
+    },
+    "stop": "one fixed candidate and stencil; any failure or inconclusive row ends this protocol"
+  },
+  "parent": {
+    "checkpoint_bytes": 9855,
+    "checkpoint_sha256": "87ed31e17899f4ae18cbad3ea7a9b7af05cf42662da4ffd94a1c2c83cde9ef88",
+    "constructor": "plain_linear",
+    "format": "research_candidate_v1",
+    "profile_sha256": "1ff30beb31a7033d1c9a6666dc76de9b2f9e93ac5d8467feafcef6db18dce17e",
+    "source_binding_sha256": "3146e2c56757ff7c818670aa3a9c229b26271c7336d573b1692b91ac8e7a00e9",
+    "state_sha256": "9630e1de513658155e8c0c7c6cff13a3954cf49db3534ed3051c49fa035ac66c"
+  },
+  "ready_for_execution": false,
+  "receipt_sha256": {
+    "accepted": "8fff2a2525bb5ba411532e28fee28d549c491372add6feb2b58a9399d89a446e",
+    "cold": "2e2cee24f0371ca53f148865f1f0f388ef69e4ae4dffb6fc2d8b205afb96c161",
+    "failed": "15fbd987921708767c8143185c0a98a5caeb50e9984b4a88bc629fbf81af4105"
+  },
+  "schema": "hepta.smallhcsn.accepted-point-sensitivity-protocol.v1",
+  "source_sha256": {
+    "native_profile_v4/profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f",
+    "native_profile_v4/small_hcsn_profile.py": "a1c28b0a8a05d52d6394dde21381fb791bdcff8f10909947f50afc84d13cfd5a",
+    "native_profile_v4/source_binding.py": "72f29914e87a5c35d1e33c41267da7057a739a077047513b11d8dcf48c2a42a3",
+    "sensitivity_v4/first_order.py": "eecdf0a2f6aabbdbc65b79ed44c96b5badbd406c51252d89643260a923b5a55f",
+    "sensitivity_v4/verify_first_order.py": "8506d27e0a5740901e0bdb40da17478de009d41629125d0888ba81ece01c374d",
+    "sensitivity_v5/verify_accepted_point.py": "a0c4d3e99d4634c6c41da3a33cede32771ec42400c2371e908354e87d48e83c4"
+  }
+}

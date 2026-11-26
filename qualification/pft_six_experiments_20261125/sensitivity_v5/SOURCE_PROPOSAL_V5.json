@@ -1,0 +1,57 @@
+{
+  "artifacts": [
+    {
+      "bytes": 16984,
+      "path": "verify_accepted_point.py",
+      "sha256": "a0c4d3e99d4634c6c41da3a33cede32771ec42400c2371e908354e87d48e83c4"
+    },
+    {
+      "bytes": 4053,
+      "path": "PROTOCOL_TEMPLATE.json",
+      "sha256": "23c0de6c2d453a720d217c954dd4b99403d24c25f175a63a3c4d4ac32bc0a06f"
+    },
+    {
+      "bytes": 8895,
+      "path": "README.md",
+      "sha256": "199cdca7ad3ef824d7656445312eeafdabb602bdfa1e2e7f71541234f3a4a6b3"
+    }
+  ],
+  "exact_source_budget": {
+    "candidate_exports": 0,
+    "candidate_loads": 1,
+    "cpu_seconds": 120,
+    "physical_forward_calls": 26,
+    "quadratic_solves": 0,
+    "retries": 0,
+    "scalar_output_vjp_calls": 2,
+    "training_matrix_runs": 0,
+    "training_updates": 0,
+    "wall_seconds": 120
+  },
+  "fixed_parent": {
+    "checkpoint_bytes": 9855,
+    "checkpoint_sha256": "87ed31e17899f4ae18cbad3ea7a9b7af05cf42662da4ffd94a1c2c83cde9ef88",
+    "constructor": "plain_linear",
+    "format": "research_candidate_v1",
+    "profile_sha256": "1ff30beb31a7033d1c9a6666dc76de9b2f9e93ac5d8467feafcef6db18dce17e",
+    "source_binding_sha256": "3146e2c56757ff7c818670aa3a9c229b26271c7336d573b1692b91ac8e7a00e9",
+    "state_sha256": "9630e1de513658155e8c0c7c6cff13a3954cf49db3534ed3051c49fa035ac66c"
+  },
+  "model_loads_executed": 0,
+  "model_or_project_imports_executed": false,
+  "physical_forward_calls_executed": 0,
+  "project_tests_executed": 0,
+  "protocol_active": false,
+  "reused_source_sha256": {
+    "native_profile_v4/profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f",
+    "native_profile_v4/small_hcsn_profile.py": "a1c28b0a8a05d52d6394dde21381fb791bdcff8f10909947f50afc84d13cfd5a",
+    "native_profile_v4/source_binding.py": "72f29914e87a5c35d1e33c41267da7057a739a077047513b11d8dcf48c2a42a3",
+    "sensitivity_v4/first_order.py": "eecdf0a2f6aabbdbc65b79ed44c96b5badbd406c51252d89643260a923b5a55f",
+    "sensitivity_v4/verify_first_order.py": "8506d27e0a5740901e0bdb40da17478de009d41629125d0888ba81ece01c374d"
+  },
+  "scalar_vjp_calls_executed": 0,
+  "schema": "hepta.smallhcsn.accepted-point-sensitivity-source-proposal.v1",
+  "source_ast_parsed": true,
+  "status": "SOURCE_REVIEW_ONLY_NOT_EXECUTED",
+  "v4_dependency_hashes_statically_verified": true
+}
