@@ -80,9 +80,9 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "local_native36_component_passed_full_gates_pending",
+    "qualification_status": "local_native37_component_passed_full_gates_pending",
     "remaining_work": [
-      "Complete native36 retained public/Core/UI/installed and full workflow gates. The local fresh B1/B2/B3 build, 36 bindings, seven raw suites and UTF-8 library owner passed; earlier profiles are not reusable as current qualification.",
+      "Complete native37 retained public/Core/UI/installed and full workflow gates. The local fresh B1/B2/B3 build, 37 bindings, eight raw suites and generic inline-tag/UTF-8 library owners passed; earlier profiles are not reusable as current qualification.",
       "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
       "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
       "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
@@ -100,9 +100,9 @@
     "current_report": "hia/verification.json#current_qualification",
     "report_scope": "The existing report points to immutable exact19 template history; current revision-bound CI evidence is in current_report.",
     "previous_qualification_status": "ci_success_at_483_independent_artifact_audit_pending",
-    "current_source_module_count": 36,
+    "current_source_module_count": 37,
     "current_lock_build_qualified": true,
-    "current_lock_build_scope": "Local Linux x86-64 native-selfhost build and full36 raw input admission only."
+    "current_lock_build_scope": "Local Linux x86-64 native-selfhost build and full37 raw input admission only."
   },
   "candidate_modules": [
     {
@@ -1935,6 +1935,54 @@
         "skipped": 0,
         "byte_classification_differential_inputs": 111996
       }
+    },
+    {
+      "id": "inline_hidden_tag",
+      "hia_source": "hia/inline_hidden_tag.hepta",
+      "hia_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+      "hia_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+      "hia_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+      "source_path": "codex-rs/utils/stream-parser/src/inline_hidden_tag.rs",
+      "source_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
+      "source_git_blob": "0b7501cdb958a38c0b93e44ca981c7dbd4d912ff",
+      "source_function": "InlineHiddenTagParser<T>::push_str/finish",
+      "implementation_status": "opt_in_public_library_owner_verified_locally",
+      "qualification_status": "local_inline_owner_passed_other_gates_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "library_only": true,
+      "interface": {
+        "entry": "codex_hia_inline_hidden_tag",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v9",
+        "contract": "hia/inline_hidden_tag_buffer_contract.json",
+        "transport": "Complete borrowed pending and delimiter strings; 96-byte initialized request/reply. Native ordinal folds arbitrary specs in their original order. No aggregate string or spec-count cap."
+      },
+      "behavior": {
+        "hia_owns": "Literal first-match search, earliest/longest/first-spec selection, UTF-8 proper-prefix suffix retention, open/close/stop and EOF decisions.",
+        "rust_retains": "Original Vec specs, pending String and ActiveTag fields, per-public-call containers, exact Clone/Eq/drain and panic effect order, bounded response validation and mechanical effects.",
+        "rust_search_or_suffix_fallback": false,
+        "no_new_semantic_total_limit": true,
+        "all_five_original_inline_tests_retained": true,
+        "installed_cli_reachability_claimed": false
+      },
+      "tests": [
+        "hia/tests/test_inline_hidden_tag_abi.py",
+        "codex-rs/utils/stream-parser/src/inline_hidden_tag.rs",
+        "codex-rs/utils/stream-parser/src/inline_hidden_tag_additional_tests.rs",
+        "codex-rs/utils/stream-parser/src/hia_native_inline_hidden_tag_wire_tests.rs"
+      ],
+      "validation": {
+        "source_only": false,
+        "public_library_verified_locally": true,
+        "performance_closed": false,
+        "raw_native_calls_passed": 344,
+        "literal_cases_passed": 43,
+        "native_owner_tests_passed": 85,
+        "default_owner_tests_passed": 65,
+        "skipped": 0
+      }
     }
   ],
   "capabilities": [
@@ -2169,9 +2217,10 @@
         "Streaming output line count with original Rust line semantics",
         "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order",
         "Unicode17 haystack scalar lowercase and needle Final_Sigma lowercase, greedy matching, original-scalar indices with deduplication, prefix preference and original i32 score/panic-policy behavior",
-        "Streaming UTF-8 complete/invalid/incomplete classification with original whole-call rollback, pending bytes and EOF behavior"
+        "Streaming UTF-8 complete/invalid/incomplete classification with original whole-call rollback, pending bytes and EOF behavior",
+        "Generic inline hidden tags with arbitrary nonempty Unicode delimiters, earliest/longest/first-spec ties, non-nesting, proper-prefix buffering and exact generic effects"
       ],
-      "next_implementation": "Migrate remaining generic inline-tag grammar and state while preserving arbitrary Unicode delimiters and original public calls. Complete retained owner/Core/UI/installed and performance gates on native36; the local UTF-8 library pass does not qualify the whole capability.",
+      "next_implementation": "Complete remaining assistant-text composition and other Rust-owned string/UUID/JSON/truncation boundaries while preserving public calls. Complete retained owner/Core/UI/installed and performance gates on native37; the two local public library passes do not qualify the whole capability.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
@@ -2183,7 +2232,8 @@
         "output_lines",
         "output_item_budget",
         "fuzzy_match",
-        "utf8_stream"
+        "utf8_stream",
+        "inline_hidden_tag"
       ]
     },
     {
@@ -3698,7 +3748,7 @@
     "helper": "hia/cargo_build.rs",
     "builder": "hia/build.py",
     "tests": "hia/tests/test_build_receipt.py",
-    "status": "local_native36_build_and_stream_parser_link_passed_full_gates_pending",
+    "status": "local_native37_build_and_stream_parser_link_passed_full_gates_pending",
     "accepted_build_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -3735,7 +3785,8 @@
       "citation_stream_parser",
       "proposed_plan_parser",
       "fuzzy_match",
-      "utf8_stream"
+      "utf8_stream",
+      "inline_hidden_tag"
     ],
     "actual_opt_in_link_modules": [
       "allowed_prefixes",
@@ -3745,6 +3796,7 @@
       "file_update",
       "format_env_display",
       "fuzzy_match",
+      "inline_hidden_tag",
       "markdown_location",
       "metric_tag",
       "network_domains",
@@ -3779,7 +3831,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "build_report_sha256": "bfe83b2cb03326412a16426f7d2cc29915b021af5122cd8356afe8c4bb88f14a",
+    "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
     "checks_passed": null,
     "existing_link_or_build_reports_reusable_without_regeneration": false,
     "build_report_payload_independently_read": false,
@@ -3788,13 +3840,14 @@
     "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
   },
   "current_qualification": {
-    "status": "local_utf8_owner_passed_other_gates_pending",
+    "status": "local_inline_owner_passed_other_gates_pending",
     "qualification_revision": null,
     "report": "hia/verification.json#current_qualification",
     "documentation_successor_exact_head_qualified": false,
     "current_tree_qualified": false,
     "locally_verified_public_library_modules": [
-      "utf8_stream"
+      "utf8_stream",
+      "inline_hidden_tag"
     ],
     "pending_modules": [
       "output_lines",
@@ -3804,9 +3857,9 @@
       "proposed_plan_parser",
       "fuzzy_match"
     ],
-    "new_kernel_source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
-    "new_kernel_source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
-    "new_kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63"
+    "new_kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+    "new_kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+    "new_kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1"
   },
   "source_owner_histories": {
     "17": {
@@ -4409,5 +4462,41 @@
       "new_kernel_source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661"
     },
     "qualification_transferred_to_current36": false
+  },
+  "previous_source_increment_36": {
+    "source_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
+    "source_migration_sha256": "7f1067ddfd26ef8e399d5a66618f47371958011f648562e950ac35cb99d031f2",
+    "toolchain_current_source_module_count": 36,
+    "toolchain_remaining_work": [
+      "Complete native36 retained public/Core/UI/installed and full workflow gates. The local fresh B1/B2/B3 build, 36 bindings, seven raw suites and UTF-8 library owner passed; earlier profiles are not reusable as current qualification.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "current_qualification": {
+      "status": "local_utf8_owner_passed_other_gates_pending",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "current_tree_qualified": false,
+      "locally_verified_public_library_modules": [
+        "utf8_stream"
+      ],
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser",
+        "proposed_plan_parser",
+        "fuzzy_match"
+      ],
+      "new_kernel_source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+      "new_kernel_source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
+      "new_kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63"
+    },
+    "qualification_transferred_to_current37": false
   }
 }

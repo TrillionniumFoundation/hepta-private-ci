@@ -1,6 +1,61 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: streaming UTF-8 validation
+## Current source increment: generic inline hidden tags
+
+`InlineHiddenTagParser<T>` now selects the `inline_hidden_tag` HIA owner under
+`hia-native`. HIA owns literal search, earliest-position selection, longest
+opener and first-spec tie breaks, proper-prefix suffix retention, open/close/
+stop commands and EOF routing. Arbitrary nonempty Unicode delimiters and the
+original non-nested grammar remain supported.
+
+The [buffer contract](inline_hidden_tag_buffer_contract.json) binds a 96-byte
+request/reply. Each native fold borrows the complete pending and delimiter
+strings. There is no one-MiB string limit, aggregate framing or spec-count cap.
+HIA validates capacity and state before writing; both borrowed strings and
+the output tail remain unchanged.
+
+Rust retains the original fields, spec `Vec`, pending `String`, active body,
+per-call output, standard `Debug` and exact generic `Clone`/`Eq` and drain
+order. The adapter validates the full response before mechanical effects.
+All five original generic tests and their assertions remain unchanged.
+
+The current source configures **37 modules and 34 opt-in caller kernels**:
+35 borrowed-buffer and two scalar profiles across eight build owners
+(9 + 7 + 3 + 8 + 1 + 1 + 4 + 1). The installed CLI still requires 31 symbols.
+`inline_hidden_tag`, `utf8_stream` and `uuid_find` are library-only owners;
+three retained oracle-only modules remain.
+
+Local Linux x86-64 GNU execution used the unchanged compiler revision
+`0de5657a80f96b138525ac7ee9ce11712a83a10d` and Rust 1.96.1:
+
+| Gate | Observed result |
+| --- | --- |
+| Fresh native-selfhost full-native37 build | All 37 modules and link bindings built |
+| B1 / B2 / B3 | Identical `76fe758b...9273` images |
+| Generic inline literal raw ABI | 43 cases, 344 native calls passed |
+| Seven retained raw ABI suites | UTF-8, output lines, item budget, environment display, citation, proposed plan and fuzzy match passed |
+| Public stream-parser owner, native feature | 85 passed, zero skipped |
+| Public stream-parser owner, default feature | 65 passed, zero skipped |
+| Strict Clippy, both selections | Passed with all targets and warnings denied |
+| `just fix`, both selections, and `just fmt` | Passed; Rust source hashes unchanged |
+
+New public cases exercise scalar split points, overlapping delimiters, exact
+per-call results and Debug state, EOF reuse, strings and delimiters above one
+MiB, 4097 specs, custom Clone/Eq effects and a recoverable Clone panic. Native
+decoder tests reject malformed response fields before effects. Raw cases use
+literal expected states and commands, two fill values, short/exact/extra
+capacities and whole-buffer guards. Source, build, report and corrected early
+fixture/lint failures remain bound in [verification.json](verification.json).
+
+Current raw gates select full-native37. Earlier profiles and defaults keep
+their exact module sets. Full current/historical CI, other owner/Core/UI and
+installed gates, supported platforms, search performance, default release and
+retirement remain pending. Local component success does not qualify them.
+
+## Earlier source increment: streaming UTF-8 validation
+
+The following preserves the 36-module local qualification record. Its counts
+and pending statements belong to that source; the current increment is above.
 
 `Utf8StreamParser<P>` now selects the `utf8_stream` HIA validator under
 `hia-native`. HIA decides complete, invalid or incomplete UTF-8 and the exact

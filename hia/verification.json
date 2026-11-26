@@ -6,33 +6,33 @@
   "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
   "target": "x86_64-unknown-linux-gnu",
   "build_mode": "native-selfhost",
-  "build_status": "local_native_selfhost_and_utf8_owner_passed",
+  "build_status": "local_native_selfhost_and_inline_owner_passed",
   "compiler_fixed_point": true,
   "compiler_generations": [
     {
       "name": "B1",
       "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
     },
     {
       "name": "B2",
       "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
     },
     {
       "name": "B3",
       "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
     }
   ],
-  "build_report_sha256": "bfe83b2cb03326412a16426f7d2cc29915b021af5122cd8356afe8c4bb88f14a",
-  "native_module_count": 36,
-  "current_opt_in_linked_kernel_count": 33,
+  "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+  "native_module_count": 37,
+  "current_opt_in_linked_kernel_count": 34,
   "retained_oracle_only_kernel_count": 3,
-  "borrowed_module_count": 34,
+  "borrowed_module_count": 35,
   "scalar_module_count": 2,
   "production_algorithm_group_count": null,
-  "module_count_scope": "36 configured build modules, 33 opt-in caller kernels across eight build entries (9+7+3+8+1+1+3+1), 34 borrowed-buffer and two scalar profiles. The installed CLI still requires 31 symbols; uuid_find and utf8_stream are library-only, and three modules are retained oracle-only. Counts do not establish algorithms or whole-production coverage.",
+  "module_count_scope": "37 configured build modules, 34 opt-in caller kernels across eight build entries (9+7+3+8+1+1+4+1), 35 borrowed-buffer and two scalar profiles. The installed CLI still requires 31 symbols; uuid_find, utf8_stream and inline_hidden_tag are library-only, and three modules are retained oracle-only. Counts do not establish algorithms or whole-production coverage.",
   "whole_codex_rewritten": false,
   "production_dispatch_migrated": false,
   "default_release_migrated": false,
@@ -42,25 +42,26 @@
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "opt_in_production_callers_verified": false,
-  "scope": "The exact native36 source was built locally through fresh B1/B2/B3 and all 36 module/link bindings. The UTF-8 public library owner passed all 72 native and 54 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 200-call raw gate and six retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified.",
+  "scope": "The exact native37 source was built locally through fresh B1/B2/B3 and all 37 module/link bindings. The generic inline-tag public library owner passed all 85 native and 65 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 344-call literal raw gate and seven retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified.",
   "module_roles": "hia/joint_module_roles.json",
   "current_qualification": {
-    "status": "local_utf8_owner_passed_other_gates_pending",
+    "status": "local_inline_owner_passed_other_gates_pending",
     "qualification_revision": null,
     "source_composed": true,
-    "new_source_module": "utf8_stream",
-    "kernel_source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
-    "kernel_source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
-    "kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
-    "owner_source_revision": "ede835e745fb05c5506655ed56532f77672e25d4",
-    "integration_source_revision": "820ebc07b0b76fdc39ef539bbfedf57e28fba399",
+    "new_source_module": "inline_hidden_tag",
+    "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+    "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+    "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+    "owner_source_revision": "27e6ddd7f86ebcc64e2715c57fb10aa4835dd749",
+    "public_oracle_source_revision": "7e355e2b4c323b0ad0ff88d3bbf22fb25d7df523",
+    "integration_source_revision": "38ec028a5b45bfd6c91da67b85225701988eb8c1",
     "raw_abi_harness_authored": true,
     "rust_public_oracles_authored": true,
     "raw_abi_harness_executed": true,
     "rust_public_oracles_executed": true,
     "native_build_executed": true,
     "compiler_generations_executed": true,
-    "full_native36_admission": true,
+    "full_native37_admission": true,
     "public_library_owner_verified_locally": true,
     "opt_in_production_callers_verified": false,
     "complete_current_workflow_passed": false,
@@ -71,32 +72,33 @@
     "complete_independent_artifact_custody": false,
     "documentation_successor_exact_head_qualified": false,
     "retirement_authorized": false,
-    "configured_raw_literal_cases": 25,
-    "executed_raw_native_calls": 200,
-    "original_utf8_public_methods_preserved": 6,
-    "added_public_methods_both_features": 4,
-    "added_native_methods": 5,
-    "byte_classification_differential_inputs": 111996,
-    "native_owner_tests_passed": 72,
-    "default_owner_tests_passed": 54,
+    "configured_raw_literal_cases": 43,
+    "executed_raw_native_calls": 344,
+    "original_inline_public_methods_preserved": 5,
+    "added_public_methods_both_features": 11,
+    "added_native_decoder_methods": 2,
+    "native_owner_tests_passed": 85,
+    "default_owner_tests_passed": 65,
     "owner_tests_skipped": 0,
     "strict_clippy_both_features_passed": true,
     "just_fix_both_features_and_just_fmt_passed": true,
     "maintenance_left_rust_sources_unchanged": true,
-    "aggregate_input_size_cap_introduced": false,
+    "aggregate_input_or_spec_count_cap_introduced": false,
     "large_default_and_native_public_execution": true,
+    "original_generic_clone_eq_effect_and_container_semantics_preserved": true,
     "installed_cli_reachability_claimed": false,
+    "search_performance_qualified": false,
     "network_owner_workflow_baselines": [
       "original",
-      "native36"
+      "native37"
     ],
     "mandatory_owner_baselines": [
       "original",
       "native16",
-      "native36"
+      "native37"
     ],
     "mandatory_predecessor16_gate_executed": false,
-    "scope": "The exact native36 source was built locally through fresh B1/B2/B3 and all 36 module/link bindings. The UTF-8 public library owner passed all 72 native and 54 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 200-call raw gate and six retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified."
+    "scope": "The exact native37 source was built locally through fresh B1/B2/B3 and all 37 module/link bindings. The generic inline-tag public library owner passed all 85 native and 65 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 344-call literal raw gate and seven retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified."
   },
   "source_owner_histories": {
     "17": {
@@ -453,15 +455,15 @@
     "retirement_authorized": false
   },
   "pending_gates_context": {
-    "scope": "Historical pending arrays and previous_source_increment snapshots retain their own contexts. Current36 pending work is in current_pending_gates; local execution is limited by current_qualification.",
+    "scope": "Historical pending arrays and previous_source_increment snapshots retain their own contexts. Current37 pending work is in current_pending_gates; local execution is limited by current_qualification.",
     "historical_qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
     "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
   },
   "current_pending_gates": [
-    "Run the complete native36 and separately checked-out exact74d1 historical CI jobs within their unchanged 60-minute budgets; local component passes do not qualify complete workflows.",
-    "Complete every retained original/default/native owner and selected Core/UI consumer gate, including all fuzzy-match owner and five focused UI groups and the installed31-symbol CLI gate. The two library-only symbols remain outside installed reachability claims.",
+    "Run the complete native37 and separately checked-out exact74d1 historical CI jobs within their unchanged 60-minute budgets; local component passes do not qualify complete workflows.",
+    "Complete every retained original/default/native owner and selected Core/UI consumer gate, including all fuzzy-match owner and five focused UI groups and the installed31-symbol CLI gate. The three library-only symbols remain outside installed reachability claims.",
     "Complete the separate mandatory original/native16/current network owner gate; the current two-baseline workflow cannot replace it.",
-    "Preserve exact source, lock, build/helper and artifact bindings for any later change. The fresh native36 report is bound to the recorded local inputs and is not transferable to a changed lock or kernel.",
+    "Preserve exact source, lock, build/helper and artifact bindings for any later change. The fresh native37 report is bound to the recorded local inputs and is not transferable to a changed lock or kernel.",
     "Independently receive and verify complete exact-source artifact/report payloads. Required platforms, workspace/product behavior, performance, default release and retirement remain separately unqualified."
   ],
   "previous_source_increment": {
@@ -944,95 +946,361 @@
     "host": "ai395",
     "directory": "/home/qq/codex-hia-work/codex-utf8-owner-20261126-d0d2",
     "build_report": {
-      "path": "native36-v1/build.json",
-      "sha256": "bfe83b2cb03326412a16426f7d2cc29915b021af5122cd8356afe8c4bb88f14a"
+      "path": "native37-v1/build.json",
+      "sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+      "bytes": 300017
     },
     "raw_reports": [
       {
-        "name": "utf8",
-        "path": "utf8-raw-v1.json",
-        "sha256": "1da215446dc4e966e6d4550b6ae309522654ef9e30e0bca859d6b471decb9c23",
+        "name": "inline_hidden_tag",
+        "path": "inline-raw37-inline_hidden_tag-v1.json",
+        "sha256": "31acd4b817c66bced5ad0b35c77757660f673bb5fee005d580bb196a208034b5",
+        "bytes": 97741,
         "passed": true,
-        "native_calls": 200,
-        "literal_cases": 25,
-        "full36": true
+        "full37": true
+      },
+      {
+        "name": "utf8_stream",
+        "path": "inline-raw37-utf8_stream-v1.json",
+        "sha256": "e477094c225d3e4004eba9585d8102a0034579758ea0c8dfc1950ea1fa75345a",
+        "bytes": 80555,
+        "passed": true,
+        "full37": true
       },
       {
         "name": "output_lines",
-        "path": "output_lines-raw-v1.json",
-        "sha256": "7df5b79d042055bf2416325599fcb431cba03608656a6fe491896163a1280d8f",
+        "path": "inline-raw37-output_lines-v1.json",
+        "sha256": "029cd26bc6d5612f12c3cd67d7610854c167cb2896a071df75d3dbdeea7fbb5c",
+        "bytes": 347416,
         "passed": true,
-        "native_calls": null,
-        "literal_cases": null,
-        "full36": true
+        "full37": true
       },
       {
         "name": "output_item_budget",
-        "path": "output_item_budget-raw-v1.json",
-        "sha256": "5ff8d65bfc8b10f0090af4d27523530333683d81f946da7e3033e67b4f13589d",
+        "path": "inline-raw37-output_item_budget-v1.json",
+        "sha256": "3ad7c9d932f24e4ecd83b60725819c75bd08ca3cab66bc8b9b831072abba4d90",
+        "bytes": 203940,
         "passed": true,
-        "native_calls": null,
-        "literal_cases": null,
-        "full36": true
+        "full37": true
       },
       {
         "name": "format_env_display",
-        "path": "format_env_display-raw-v1.json",
-        "sha256": "00f6f675dc923957fb8353297f7a5a59921279f43be56f2b682c52f7046dd794",
+        "path": "inline-raw37-format_env_display-v1.json",
+        "sha256": "dd37d46b9aaa2776928e69d6494e1afd0ce42f2400a45effe3e1eb3b0ed439d0",
+        "bytes": 353971,
         "passed": true,
-        "native_calls": null,
-        "literal_cases": null,
-        "full36": true
+        "full37": true
       },
       {
         "name": "citation_stream_parser",
-        "path": "citation_stream_parser-raw-v1.json",
-        "sha256": "8f4c5543dd539fa8447badbce6453485364454dcf9911fc3fbdbd23314bef979",
+        "path": "inline-raw37-citation_stream_parser-v1.json",
+        "sha256": "4aed8c9629fb6508548dca668a4134397572ccd778e5be79c4bec5b61ea8eb27",
+        "bytes": 776153,
         "passed": true,
-        "native_calls": null,
-        "literal_cases": null,
-        "full36": true
+        "full37": true
       },
       {
         "name": "proposed_plan_parser",
-        "path": "proposed_plan_parser-raw-v1.json",
-        "sha256": "d6930ac72d4eabada0a3ab515298812daf6ee4929490479c90b413240b87c712",
+        "path": "inline-raw37-proposed_plan_parser-v1.json",
+        "sha256": "bdbd34c3b9be3235b0e4b46b24464a4d310b1388e9eb766a1d837175e0b57b67",
+        "bytes": 746076,
         "passed": true,
-        "native_calls": null,
-        "literal_cases": null,
-        "full36": true
+        "full37": true
       },
       {
         "name": "fuzzy_match",
-        "path": "fuzzy_match-raw-v1.json",
-        "sha256": "38367aebfa0c5898aed0b73b0241ace58ae4958c5ab78ac31e7714fd82a79af2",
+        "path": "inline-raw37-fuzzy_match-v1.json",
+        "sha256": "c91e5dd3ab18151625b3af32b7686dc1642178c4fd5349d2028cf2cca44bb656",
+        "bytes": 297869,
         "passed": true,
-        "native_calls": null,
-        "literal_cases": null,
-        "full36": true
+        "full37": true
       }
     ],
-    "owner_results": {
-      "path": "owner-results-v2.json",
-      "sha256": "a21608abb285e4bbe3514781bb3bd19915410b9b8221ca8ca923f0d7636524c4"
+    "owner_and_raw_results": {
+      "path": "inline-validation-results-v2.json",
+      "sha256": "bb8b5fc1781b0cab5e418c4e9cfdbd00ea2bc3ecef7692093bbd596e98daf894",
+      "bytes": 4493
     },
-    "strict_clippy_results": {
-      "path": "clippy-results-v1.json",
-      "sha256": "75cb7fd44fdd9f28c6416ab36bf594c8195183fd3698320e6189fa2746a88963"
+    "final_native_owner_and_strict_clippy_results": {
+      "path": "inline-native-quality-v3.json",
+      "sha256": "a694ab862424eacc27baec29dc41c1a52119aaa8fc1a1b3c794ce779d37c5a6b",
+      "bytes": 645
     },
-    "maintenance_results": "maintenance-results-v1.json",
-    "native_test_log": "stream-parser-native-v2.log",
-    "default_test_log": "stream-parser-default-v2.log",
+    "default_strict_clippy_results": {
+      "path": "inline-clippy-results-v1.json",
+      "sha256": "13cffc3ddfb0a2bf3b06c7e275c2a5d8141b0099760e4c60345f64aef1564e49",
+      "bytes": 650,
+      "scope": "Only the default entry passed here; native v1 failed and was corrected in v3."
+    },
+    "maintenance_results": {
+      "path": "inline-maintenance-results-v1.json",
+      "sha256": "42c3a1fb2fcf2f65ed3d56eead20bb1cddf53b6e116dd817916b9bb18f3e9d3c",
+      "bytes": 4274
+    },
+    "native_test_log": {
+      "path": "inline-owner-native-v3.log",
+      "sha256": "ab28eef647bfe2598f2541a1ae69ea543c34d49b11350852c1092103c11acf5e",
+      "bytes": 12884
+    },
+    "default_test_log": {
+      "path": "inline-owner-default-v2.log",
+      "sha256": "76e6a24076da0e40297fef1a87c774e9bf41c08417d4cfdaf03ff74f23953833",
+      "bytes": 9835
+    },
+    "execution_checkout_base_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
+    "execution_worktree_had_uncommitted_source_changes": true,
+    "verified_source_content_commit": "38ec028a5b45bfd6c91da67b85225701988eb8c1",
+    "commits_created_after_execution_preserve_verified_source_bytes": true,
+    "initial_failures_retained": [
+      {
+        "reports": [
+          "inline-owner-results-v1.json",
+          "inline-owner-native-v1.log",
+          "inline-owner-default-v1.log"
+        ],
+        "reason": "One new fixture incorrectly treated tail as fully visible. Both original and native open a new a-delimited tag in tail. The expected visible text became 0t and a new EOF assertion checks extracted il. No parser behavior changed."
+      },
+      {
+        "reports": [
+          "inline-clippy-results-v1.json",
+          "inline-clippy-native-v1.log"
+        ],
+        "reason": "Three new expect() calls violated the existing lint. Explicit error/panic branches replaced them; the complete native owner suite and strict Clippy then passed."
+      }
+    ],
     "sources_and_artifacts_are_not_repository_files": true
   },
-  "local_gitdata_publication": {
-    "tested_local_head": "a628c53db88690a58ddcb140aab91345f856b534",
-    "source_and_test_bytes_unchanged": true,
-    "published_source_commit_mapping": {
-      "e5c4f69f86d8bb2ab315447b6c9ac9ce663d3fb9": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
-      "6c4f77077357ed73b37e7c4f84446a204b472606": "ede835e745fb05c5506655ed56532f77672e25d4",
-      "ce7b6ff162e6eed468915c1fb2f23cf7d0f899c0": "820ebc07b0b76fdc39ef539bbfedf57e28fba399"
+  "previous_source_increment_36": {
+    "source_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
+    "source_verification_sha256": "cbe484b53d0586df7c3033f97050d19a076909f6fcf60d2d0e735c99cda3e505",
+    "build_status": "local_native_selfhost_and_utf8_owner_passed",
+    "compiler_fixed_point": true,
+    "compiler_generations": [
+      {
+        "name": "B1",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+      },
+      {
+        "name": "B2",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+      },
+      {
+        "name": "B3",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+      }
+    ],
+    "build_report_sha256": "bfe83b2cb03326412a16426f7d2cc29915b021af5122cd8356afe8c4bb88f14a",
+    "native_module_count": 36,
+    "current_opt_in_linked_kernel_count": 33,
+    "retained_oracle_only_kernel_count": 3,
+    "borrowed_module_count": 34,
+    "scalar_module_count": 2,
+    "module_count_scope": "36 configured build modules, 33 opt-in caller kernels across eight build entries (9+7+3+8+1+1+3+1), 34 borrowed-buffer and two scalar profiles. The installed CLI still requires 31 symbols; uuid_find and utf8_stream are library-only, and three modules are retained oracle-only. Counts do not establish algorithms or whole-production coverage.",
+    "scope": "The exact native36 source was built locally through fresh B1/B2/B3 and all 36 module/link bindings. The UTF-8 public library owner passed all 72 native and 54 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 200-call raw gate and six retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified.",
+    "current_qualification": {
+      "status": "local_utf8_owner_passed_other_gates_pending",
+      "qualification_revision": null,
+      "source_composed": true,
+      "new_source_module": "utf8_stream",
+      "kernel_source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+      "kernel_source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
+      "kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+      "owner_source_revision": "ede835e745fb05c5506655ed56532f77672e25d4",
+      "integration_source_revision": "820ebc07b0b76fdc39ef539bbfedf57e28fba399",
+      "raw_abi_harness_authored": true,
+      "rust_public_oracles_authored": true,
+      "raw_abi_harness_executed": true,
+      "rust_public_oracles_executed": true,
+      "native_build_executed": true,
+      "compiler_generations_executed": true,
+      "full_native36_admission": true,
+      "public_library_owner_verified_locally": true,
+      "opt_in_production_callers_verified": false,
+      "complete_current_workflow_passed": false,
+      "historical_exact17_job_passed_this_run": false,
+      "joint_job_runtime_cost_verified": false,
+      "per_job_budget_minutes": 60,
+      "new_native_artifacts_created": true,
+      "complete_independent_artifact_custody": false,
+      "documentation_successor_exact_head_qualified": false,
+      "retirement_authorized": false,
+      "configured_raw_literal_cases": 25,
+      "executed_raw_native_calls": 200,
+      "original_utf8_public_methods_preserved": 6,
+      "added_public_methods_both_features": 4,
+      "added_native_methods": 5,
+      "byte_classification_differential_inputs": 111996,
+      "native_owner_tests_passed": 72,
+      "default_owner_tests_passed": 54,
+      "owner_tests_skipped": 0,
+      "strict_clippy_both_features_passed": true,
+      "just_fix_both_features_and_just_fmt_passed": true,
+      "maintenance_left_rust_sources_unchanged": true,
+      "aggregate_input_size_cap_introduced": false,
+      "large_default_and_native_public_execution": true,
+      "installed_cli_reachability_claimed": false,
+      "network_owner_workflow_baselines": [
+        "original",
+        "native36"
+      ],
+      "mandatory_owner_baselines": [
+        "original",
+        "native16",
+        "native36"
+      ],
+      "mandatory_predecessor16_gate_executed": false,
+      "scope": "The exact native36 source was built locally through fresh B1/B2/B3 and all 36 module/link bindings. The UTF-8 public library owner passed all 72 native and 54 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 200-call raw gate and six retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified."
     },
-    "scope": "The connected Git transport creates new commit identities. Kernel, public owner, ABI tests, build lock and CI bytes match the locally tested commits. Only these revision references and this publication record differ in the evidence metadata. Existing report hashes retain their exact local evidence identities; no whole-product or exact-final-head qualification is inferred."
+    "current_pending_gates": [
+      "Run the complete native36 and separately checked-out exact74d1 historical CI jobs within their unchanged 60-minute budgets; local component passes do not qualify complete workflows.",
+      "Complete every retained original/default/native owner and selected Core/UI consumer gate, including all fuzzy-match owner and five focused UI groups and the installed31-symbol CLI gate. The two library-only symbols remain outside installed reachability claims.",
+      "Complete the separate mandatory original/native16/current network owner gate; the current two-baseline workflow cannot replace it.",
+      "Preserve exact source, lock, build/helper and artifact bindings for any later change. The fresh native36 report is bound to the recorded local inputs and is not transferable to a changed lock or kernel.",
+      "Independently receive and verify complete exact-source artifact/report payloads. Required platforms, workspace/product behavior, performance, default release and retirement remain separately unqualified."
+    ],
+    "pending_gates_context": {
+      "scope": "Historical pending arrays and previous_source_increment snapshots retain their own contexts. Current36 pending work is in current_pending_gates; local execution is limited by current_qualification.",
+      "historical_qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+      "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
+    },
+    "local_component_evidence": {
+      "host": "ai395",
+      "directory": "/home/qq/codex-hia-work/codex-utf8-owner-20261126-d0d2",
+      "build_report": {
+        "path": "native36-v1/build.json",
+        "sha256": "bfe83b2cb03326412a16426f7d2cc29915b021af5122cd8356afe8c4bb88f14a"
+      },
+      "raw_reports": [
+        {
+          "name": "utf8",
+          "path": "utf8-raw-v1.json",
+          "sha256": "1da215446dc4e966e6d4550b6ae309522654ef9e30e0bca859d6b471decb9c23",
+          "passed": true,
+          "native_calls": 200,
+          "literal_cases": 25,
+          "full36": true
+        },
+        {
+          "name": "output_lines",
+          "path": "output_lines-raw-v1.json",
+          "sha256": "7df5b79d042055bf2416325599fcb431cba03608656a6fe491896163a1280d8f",
+          "passed": true,
+          "native_calls": null,
+          "literal_cases": null,
+          "full36": true
+        },
+        {
+          "name": "output_item_budget",
+          "path": "output_item_budget-raw-v1.json",
+          "sha256": "5ff8d65bfc8b10f0090af4d27523530333683d81f946da7e3033e67b4f13589d",
+          "passed": true,
+          "native_calls": null,
+          "literal_cases": null,
+          "full36": true
+        },
+        {
+          "name": "format_env_display",
+          "path": "format_env_display-raw-v1.json",
+          "sha256": "00f6f675dc923957fb8353297f7a5a59921279f43be56f2b682c52f7046dd794",
+          "passed": true,
+          "native_calls": null,
+          "literal_cases": null,
+          "full36": true
+        },
+        {
+          "name": "citation_stream_parser",
+          "path": "citation_stream_parser-raw-v1.json",
+          "sha256": "8f4c5543dd539fa8447badbce6453485364454dcf9911fc3fbdbd23314bef979",
+          "passed": true,
+          "native_calls": null,
+          "literal_cases": null,
+          "full36": true
+        },
+        {
+          "name": "proposed_plan_parser",
+          "path": "proposed_plan_parser-raw-v1.json",
+          "sha256": "d6930ac72d4eabada0a3ab515298812daf6ee4929490479c90b413240b87c712",
+          "passed": true,
+          "native_calls": null,
+          "literal_cases": null,
+          "full36": true
+        },
+        {
+          "name": "fuzzy_match",
+          "path": "fuzzy_match-raw-v1.json",
+          "sha256": "38367aebfa0c5898aed0b73b0241ace58ae4958c5ab78ac31e7714fd82a79af2",
+          "passed": true,
+          "native_calls": null,
+          "literal_cases": null,
+          "full36": true
+        }
+      ],
+      "owner_results": {
+        "path": "owner-results-v2.json",
+        "sha256": "a21608abb285e4bbe3514781bb3bd19915410b9b8221ca8ca923f0d7636524c4"
+      },
+      "strict_clippy_results": {
+        "path": "clippy-results-v1.json",
+        "sha256": "75cb7fd44fdd9f28c6416ab36bf594c8195183fd3698320e6189fa2746a88963"
+      },
+      "maintenance_results": "maintenance-results-v1.json",
+      "native_test_log": "stream-parser-native-v2.log",
+      "default_test_log": "stream-parser-default-v2.log",
+      "sources_and_artifacts_are_not_repository_files": true
+    },
+    "local_gitdata_publication": {
+      "tested_local_head": "a628c53db88690a58ddcb140aab91345f856b534",
+      "source_and_test_bytes_unchanged": true,
+      "published_source_commit_mapping": {
+        "e5c4f69f86d8bb2ab315447b6c9ac9ce663d3fb9": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+        "6c4f77077357ed73b37e7c4f84446a204b472606": "ede835e745fb05c5506655ed56532f77672e25d4",
+        "ce7b6ff162e6eed468915c1fb2f23cf7d0f899c0": "820ebc07b0b76fdc39ef539bbfedf57e28fba399"
+      },
+      "scope": "The connected Git transport creates new commit identities. Kernel, public owner, ABI tests, build lock and CI bytes match the locally tested commits. Only these revision references and this publication record differ in the evidence metadata. Existing report hashes retain their exact local evidence identities; no whole-product or exact-final-head qualification is inferred."
+    },
+    "qualification_transferred_to_current37": false
+  },
+  "local_gitdata_publication": {
+    "base_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
+    "local_reviewed_history_head": "0e917ed43bdf241bd11cce7d9dcf97f4961cab4c",
+    "local_verified_source_tree": "12ceb185f33f94aad67c015e110653060ec4e71e",
+    "published_verified_source_tree": "12ceb185f33f94aad67c015e110653060ec4e71e",
+    "source_and_tests_byte_identical": true,
+    "metadata_revision_refs_only_updated": true,
+    "first_four_trees_identical": true,
+    "commit_mapping": [
+      {
+        "local_commit": "5061abbdc48e1fd4d3c9ecbf7f97e86720b8b6e4",
+        "published_commit": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+        "tree": "ab3be02c74ba3cdbba5959ba7feebc4c0c76e013",
+        "changed_files": 3,
+        "tree_identical": true
+      },
+      {
+        "local_commit": "9d87fb2bc57ed86b60bb27bc8bc218338f487dc0",
+        "published_commit": "27e6ddd7f86ebcc64e2715c57fb10aa4835dd749",
+        "tree": "ad3778a6da8178ebc19ba6f89a03e2483f41b659",
+        "changed_files": 5,
+        "tree_identical": true
+      },
+      {
+        "local_commit": "94c2acc8cd4d923930f4847099a4c5f367a25467",
+        "published_commit": "7e355e2b4c323b0ad0ff88d3bbf22fb25d7df523",
+        "tree": "72b4c98440c8fa7ec6bce955ea98a9eba8f839c2",
+        "changed_files": 2,
+        "tree_identical": true
+      },
+      {
+        "local_commit": "2d6864e80dda2ff3e8ba9a262ee2ec61d2062d9b",
+        "published_commit": "38ec028a5b45bfd6c91da67b85225701988eb8c1",
+        "tree": "12ceb185f33f94aad67c015e110653060ec4e71e",
+        "changed_files": 12,
+        "tree_identical": true
+      }
+    ],
+    "scope": "GitData publication preserves all verified implementation, test, build-profile and workflow file bytes. Commit identifiers differ because the API creates commits with the connected author and current timestamps. Original local execution receipts and their SHA256 values are retained; this is not a complete workflow, installed or whole-product qualification."
   }
 }
