@@ -1,5 +1,15 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 R20 原始归档与源码身份复算、审计导入修补；CTRL / Group 真阻塞分离
+
+- #6799 当前 head 92d6a4aa86bbee288012f06d7529c5e99b17535d，较61a32d54 ahead17/behind0；其余六跟踪PR head未变，七个均未合并草案。新 head 首屏100条 PR workflow 初读2 success / 14 skipped / 83 queued / 1 pending，非全分页或终局。
+- [R20 原失败归档15075788316](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45725442988/artifacts/15075788316) 已在独立 Mac 下载原 ZIP，SHA256=20e456f7f6a655afee7cf44882c0937457a7cc84abfbff5fcc9e21922c3c2d77，与API登记相符，733成员；HEAD.txt=61a32d54afbb57af1dfeb52e7f8c703fc2599d63。原 COMPLETE 80/80、170.111912 child CPU seconds；独立从精确Git文件字节重算原PLAN七个 source SHA256 7/7全同，并核验全部80个报告、计划、checkpoint及leaves档案哈希与原回执，未重训。
+- 原audit先 import model 再 import run；model.py将 asymmetric_2d 插入 sys.path 首位，Mac 原生 PathFinder 复算确认实际搜索顺序选中 R18 run.py（SHA256 95e4e23fb0be0d89d3ba84f3ac89a30ccc848f4e459e3be5f300304a3fef6bff）而非冻结R20 run.py（3383eb1b1f65b45853421be1d61f3f4c40121a99fc6bc9f39f9461364ff34e9a，与原PLAN相符）。故源身份误报的导入路径根因已定位。可逆单文件修补 [d821c82a](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/d821c82a11c45881a494522b8ea1e3a70fc38d87) 仅 audit/verify.py +7/-1，先导入 R20 run，再逐一校验四个 R20 模块及原 parent problem 实际 __file__；原七冻结文件、哈希判据、计算公式、训练和6个原 tamper tests 未修改。Mac 原生 compile 通过，候选 SHA256 fd5959a5d38bade2e533651f78a27c9e1c9a43dbd4b8c815eb8ad8270f6c1f76，Git blob 9fbecaea61862f1919d4beffd3242c416a127915，提交已回读。未开PR、不重复派发80-case训练。原归档已在Mac隔离目录 /tmp/hcsn-r20-audit-yM466o；实际完整只读数值复算进程已启动（job 1a215ae1d46-ffbe-430c），初读还在安装独立 Python 3.13.12，尚无动态结果；原数学门仍HOLD，后续须读该进程真实终局、原6负控制，不把路径解析/编译当数值通过。
+- CTRL 原脚本不只是 ancestry 守卫，还要求 BASE→HEAD 变化只属于7项提案文件白名单且3份原依赖输入 blob 精确相同。最新综合源码远端 compare ahead13233/behind0，首300文件299项在白名单外；3份输入全部漂移（Cargo.toml bb0b17886ed261d3181209ed07912beba839d38f vs d9f1bb1db407de3c2f1650edc4da5009ba3adaf1；Cargo.lock ca64f2720b29e5e9780296fd8ea307016b94565a vs 46b1be5a5534631bf3151fbf1b3b1884451a8df9；matrix Cargo.toml.orig d713c61c1647ca5ddc14d4116758eb9d98b115cf vs ed8456d7a2013e879d52c2a119738d0ea3df2fe7）。因此不能仅改 fetch-depth 宣称综合候选能通过。历史提案 [978d5c4e](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/978d5c4e67bb8dcc173e4b635622723864c23579) 相对原BASE ahead5/behind0，仅5份白名单文件；其原协议的独立执行才具备来源条件，仍需真资格，不放宽源守卫。
+- Group [原 run38738835065](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38738835065) API身份：head=d16fb15ef9d15a83dffa0886438d3e9432f97b66，原branch/name/event/status全匹配，唯一上述六元条件差异是 conclusion=failure（预期 success）；mechanism-cpu job116434970499 原472行日志，7 errors，含 max_depth KeyError；pinned-granite-four-arm job116593244283 实际 skipped。不是归档下载故障，不能重试下游或改联合身份守卫获得真物理资格。
+- Shared Encoder 原requirements.txt 明确 torch>=2.0、pytest>=8；两缺失模块分别8个及24个pytest参数展开测试，须实际确认完整 pytest 采集与原unittest测试名单覆盖、CPU依赖版本，不能仅装pytest而仍用unittest发现。未修改该门或重复 Laya intake。
+- 本轮全仓 HOLD；Boundary 三已通过专项不重复派发，冻结条件、500ms、安全权限不变，不合并红门。
+
 ## 2026-11-26 原生终局读回（最新作业记录至 00:43 UTC）：Boundary Continuum / Factorial 两个完整原生门闭合
 
 - #6799 精确 head 61a32d54afbb57af1dfeb52e7f8c703fc2599d63，base 732e934ba496d90fbe042b8d41d479ef901643e5；#7016/#7021/#7032/#7068/#7070/#7074 原 head 均保持，七个均 open draft、merged=false。#6799 首屏100个 PR workflow 全终态71 success / 14 failure / 15 skipped；仅首屏，不作为全仓终局。
