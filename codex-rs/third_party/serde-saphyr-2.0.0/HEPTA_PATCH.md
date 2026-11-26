@@ -9,6 +9,9 @@ whitespace edits checked to preserve CommonMark output. The archive above
 retains the exact original bytes, including all fenced example whitespace.
 Four Rust doc-comment hard breaks use backslash notation rather than trailing
 spaces; their original lines in the same archive render identically.
+Five test sources encode YAML line-ending spaces as explicit Rust escapes.
+Each compiled fixture emits exactly the original bytes; the published crate
+above remains the source for the unmodified test files.
 
 The added `hepta-legacy-scalars` feature is disabled by default. The first-party
 `codex-utils-yaml` dependency and this candidate's Bazel library explicitly enable

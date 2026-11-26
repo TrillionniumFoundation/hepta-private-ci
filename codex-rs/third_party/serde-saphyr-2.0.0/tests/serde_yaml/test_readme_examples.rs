@@ -47,9 +47,11 @@ struct Config {
 }
 
 fn parse() -> anyhow::Result<Vec<Config>> {
-    let yaml_input = r#"
-# Configure the application    
-name: "My Application"
+    let yaml_input = concat!(
+        r#"
+# Configure the application"#,
+        "\x20\x20\x20\x20\n",
+        r#"name: "My Application"
 enabled: true
 retries: 5
 ---
@@ -57,7 +59,8 @@ retries: 5
 name: "My Debugger"
 enabled: false
 retries: 4
-"#;
+"#,
+    );
 
     let configs = serde_saphyr::from_str_multiple(yaml_input)?;
     Ok(configs) // Ok on successful parsing or would be error on failure
