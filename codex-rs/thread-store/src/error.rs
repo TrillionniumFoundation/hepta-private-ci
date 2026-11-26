@@ -46,6 +46,13 @@ pub enum ThreadStoreError {
         operation: &'static str,
     },
 
+    /// A bounded recovery read cannot return complete history within its contract.
+    #[error("bounded history read unavailable: {reason}")]
+    HistoryReadUnavailable {
+        /// Stable machine-readable refusal reason.
+        reason: &'static str,
+    },
+
     /// Catch-all for implementation failures that do not fit a more specific category.
     #[error("thread-store internal error: {message}")]
     Internal {

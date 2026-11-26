@@ -24,6 +24,10 @@ use crate::common::exec_server::TestCodexHelperPaths;
 use crate::common::exec_server::exec_server;
 use crate::common::exec_server::test_codex_helper_paths;
 
+#[cfg(windows)]
+#[path = "windows_helpers.rs"]
+mod windows_helpers;
+
 pub(crate) struct FileSystemContext {
     pub(crate) file_system: Arc<dyn ExecutorFileSystem>,
     _helper_paths: Option<TestCodexHelperPaths>,
@@ -48,6 +52,8 @@ impl fmt::Display for FileSystemImplementation {
 pub(crate) async fn create_file_system_context(
     implementation: FileSystemImplementation,
 ) -> Result<FileSystemContext> {
+    #[cfg(windows)]
+    windows_helpers::stage(&std::env::current_exe()?)?;
     match implementation {
         FileSystemImplementation::Local => {
             let helper_paths = test_codex_helper_paths()?;
