@@ -1,0 +1,38 @@
+{
+  "admitted_by": "root",
+  "endpoint_absolute_tolerance": 1e-09,
+  "external_process_budget": {
+    "cpu_quota_percent": 100,
+    "host": "pocket4",
+    "memory_max_bytes": 2147483648,
+    "nice": 10,
+    "timeout_seconds": 75
+  },
+  "feature_absolute_tolerance": 1e-12,
+  "independent_source_review_sha256": "9e6b6071b21823d67b78cc8a855e9da4cf14bb28d914f3177c10b55a712eccce",
+  "old_scopes": "Original E1-E6 16/16 and all completed V5/V6 scopes unchanged; no replay, identity promotion or threshold retuning",
+  "probe_source_sha256": "75bb88ae08d141bf7429d082011bb7c03eceefd5fe6c7f932a10740870d87ab3",
+  "protocol_sha256": "9b651b49619fc1a6a47367130a616e4a16643baf5853f02e6c2ee21f852ce85d",
+  "recorded_at_utc": "2026-11-26T14:00:31.189443+00:00",
+  "registered_budget": {
+    "AD_calls": 0,
+    "candidate_exports": 0,
+    "candidate_forward_attempts": 1,
+    "fresh_initial_states": 1,
+    "model_load_attempts": 1,
+    "new_parameter_inverse_solves": 0,
+    "old_gate_replays": 0,
+    "optimizer_updates": 0,
+    "parameter_edit_applications": 1,
+    "parent_forward_calls": 0,
+    "retries": 0,
+    "wall_seconds": 55
+  },
+  "relative_tolerance": 0,
+  "runtime_metadata_only_attempt": "1a218245859-ffbe-47c9 launch_unknown; not used as a passing gate; original loader must verify actual runtime",
+  "schema": "hepta.frozen-readout.physical-probe-root-admission.v1",
+  "scope": "v7-frozen-readout-two-archived-parent-observations-01",
+  "source_preflight_sha256": "c73e00874d4dba6e9617301af8f58cee4e5bff943951e1d3b9aa788e776e3a09",
+  "status": "ROOT_ADMITTED",
+  "terminal_rule": "Exactly one distinct physical scope; claim, failed/incomplete call or unknown transport never grants another attempt."
+}
