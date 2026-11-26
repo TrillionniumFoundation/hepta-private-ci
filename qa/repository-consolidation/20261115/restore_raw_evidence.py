@@ -75,7 +75,9 @@ HCSN_PATCH_CUSTODY_INDEX = "qa/repository-consolidation/20261125/hcsn-patch-cust
 HCSN_PUBLICATION_LOG_CUSTODY_INDEX = "qa/repository-consolidation/20261125/hcsn-publication-log-custody/raw-evidence-storage.json"
 ARCHIVED_HISTORY_CONSOLE_RETENTION_INDEX = "qa/repository-consolidation/20261125/archived-console-retention/raw-evidence-storage.json"
 ARCHIVED_NATIVE_CONSOLE_RETENTION_INDEX = "qa/repository-consolidation/20261125/archived-native-console-retention/raw-evidence-storage.json"
+INACTIVE_QUALIFICATION_OUTPUT_CUSTODY_INDEX = "qa/repository-consolidation/20261126/inactive-qualification-output-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    INACTIVE_QUALIFICATION_OUTPUT_CUSTODY_INDEX: "f01b8ce53b391a9507305d2d167b6e5f34de724fdf50bf51ef47c67cefb0241b",
     ARCHIVED_NATIVE_CONSOLE_RETENTION_INDEX: "7510da38801df159ee2b22639d8cd5e5a009cb194a39025c6631b7d5f315a6fc",
     ARCHIVED_HISTORY_CONSOLE_RETENTION_INDEX: "79405ea853d6f4c6f3752054ba2237331c3571666585b2a6072da6bb5667c408",
     HCSN_PUBLICATION_LOG_CUSTODY_INDEX: "2ebc09eba24548dab744aaa809040ced23cbb95c910b3857a148ab1906418dbd",
