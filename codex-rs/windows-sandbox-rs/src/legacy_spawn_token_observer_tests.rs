@@ -143,7 +143,7 @@ impl Observation {
             "launch_input": launch, "actual_child_primary": child, "comparison": comparison});
         let encoded = serde_json::to_vec(&record);
         let bytes = match &encoded {
-            Ok(bytes) if PREFIX.len() + bytes.len() + 1 <= LOG_BYTES => bytes.as_slice(),
+            Ok(bytes) if PREFIX.len() + bytes.len() < LOG_BYTES => bytes.as_slice(),
             _ => br#"{"status":"unknown","reason":"serialization_or_log_bound"}"#,
         };
         let mut stderr = std::io::stderr().lock();
