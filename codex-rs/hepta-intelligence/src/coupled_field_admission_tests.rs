@@ -1,19 +1,26 @@
 use super::*;
-use codex_hepta_intelligence_eval::{
-    CrossFoldPartitionV1, CrossFoldPlanV1, EvaluationClaimScopeV1, EvaluationDirectionV1,
-    EvaluationIntervalV1, FinalHoldoutRegistry, MetricContractV1, MetricGateV1, MetricRoleV2,
-    freeze_cross_fold_plan_v2,
-};
-use codex_hepta_learning_ledger::{
-    AuthenticatedPrincipalV1, LearningEvidenceTrustV1, TrustedLearningSignerV1,
-};
+use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
+use codex_hepta_intelligence_eval::CrossFoldPlanV1;
+use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
+use codex_hepta_intelligence_eval::EvaluationDirectionV1;
+use codex_hepta_intelligence_eval::EvaluationIntervalV1;
+use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
+use codex_hepta_intelligence_eval::MetricContractV1;
+use codex_hepta_intelligence_eval::MetricGateV1;
+use codex_hepta_intelligence_eval::MetricRoleV2;
+use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_plasticity::LayerNormDenominatorV2;
+use codex_hepta_plasticity::ParameterMutationRuleV1;
+use codex_hepta_plasticity::ParameterMutationSurfaceV1;
+use codex_hepta_plasticity::ProposalWindowV2;
+use codex_hepta_plasticity::build_parameter_mutation_policy_v1;
 use codex_hepta_plasticity::coupled_field_v1::*;
-use codex_hepta_plasticity::{
-    LayerNormDenominatorV2, ParameterMutationRuleV1, ParameterMutationSurfaceV1, ProposalWindowV2,
-    build_parameter_mutation_policy_v1,
-};
 use codex_hepta_types::FixedQ32;
-use ed25519_dalek::{Signer, SigningKey};
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn sid(s: impl Into<String>) -> StableId {
     StableId::new(s).unwrap()

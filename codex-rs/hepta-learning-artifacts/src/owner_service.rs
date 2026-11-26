@@ -882,7 +882,8 @@ mod tests {
     // interrupted publications through the named public service after death.
     #[test]
     fn named_service_reconciles_process_death_between_effect_and_checkpoint() {
-        use std::process::{Command, Stdio};
+        use std::process::Command;
+        use std::process::Stdio;
         use std::time::Duration;
         let executable = std::env::current_exe().unwrap();
         let key = SigningKey::from_bytes(&[7u8; 32]); // existing host worker fixture
@@ -1033,10 +1034,10 @@ mod tests {
     #[test]
     #[ignore = "requires hash-pinned PFT archive; run explicitly"]
     fn pft_archived_family_public_owner_lifecycle() {
-        use crate::{
-            ParameterFamilyGuardV1, PinnedCandidateLoadError, PinnedCandidateSpec,
-            load_pinned_candidate,
-        };
+        use crate::ParameterFamilyGuardV1;
+        use crate::PinnedCandidateLoadError;
+        use crate::PinnedCandidateSpec;
+        use crate::load_pinned_candidate;
         use std::fs::File;
         use std::io::Read;
         let data = PathBuf::from(std::env::var("PFT_R35_DATA").unwrap());

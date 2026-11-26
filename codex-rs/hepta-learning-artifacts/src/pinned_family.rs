@@ -2,7 +2,8 @@
 //! The host must own the initial pins, expected IDs and trust identity.
 //! This guard is not a selection or installation authority.
 use super::*;
-use crate::{ArtifactKind, LearningArtifactOwnerHost};
+use crate::ArtifactKind;
+use crate::LearningArtifactOwnerHost;
 use codex_hepta_types::StableId;
 
 #[derive(Debug)]
@@ -142,10 +143,13 @@ impl ParameterFamilyGuardV1 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        ArtifactEvent, ArtifactRegistry, ArtifactState, CreateOnlyArtifactFile, StateChange,
-        write_candidate_payload, write_registry_snapshot,
-    };
+    use crate::ArtifactEvent;
+    use crate::ArtifactRegistry;
+    use crate::ArtifactState;
+    use crate::CreateOnlyArtifactFile;
+    use crate::StateChange;
+    use crate::write_candidate_payload;
+    use crate::write_registry_snapshot;
     use codex_hepta_types::Generation;
     use std::fs::File;
     fn id(s: &str) -> StableId {
@@ -404,12 +408,15 @@ mod tests {
     }
     #[test]
     fn actual_signed_registry_view_and_missing_owner_fail_closed() {
-        use crate::{
-            ArtifactOwnerTrustV1, ArtifactOwnerVerifierV1, RegistryHeadRequirementV1,
-            RegistryHeadWitnessV1, SignedArtifactWriterLeaseV1, SignedCurrentArtifactHeadV1,
-            TrustedArtifactSignerV1,
-        };
-        use ed25519_dalek::{Signer, SigningKey};
+        use crate::ArtifactOwnerTrustV1;
+        use crate::ArtifactOwnerVerifierV1;
+        use crate::RegistryHeadRequirementV1;
+        use crate::RegistryHeadWitnessV1;
+        use crate::SignedArtifactWriterLeaseV1;
+        use crate::SignedCurrentArtifactHeadV1;
+        use crate::TrustedArtifactSignerV1;
+        use ed25519_dalek::Signer;
+        use ed25519_dalek::SigningKey;
         let (dir, r, mut g) = setup();
         // Isolated test authority, never a production credential.
         let key = SigningKey::from_bytes(&[41u8; 32]);
