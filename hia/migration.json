@@ -80,9 +80,9 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "local_native37_component_passed_full_gates_pending",
+    "qualification_status": "source_only_inline_followup_current_tree_pending",
     "remaining_work": [
-      "Complete native37 retained public/Core/UI/installed and full workflow gates. The local fresh B1/B2/B3 build, 37 bindings, eight raw suites and generic inline-tag/UTF-8 library owners passed; earlier profiles are not reusable as current qualification.",
+      "Fresh exact-source B1/B2/B3, all 37 bindings, all retained raw gates including 63 planned inline literal cases (504 calls), native/default owners, Core/UI/installed and full workflow gates. Prior local native37 passes are historical.",
       "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
       "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
       "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
@@ -90,7 +90,7 @@
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
-    "native_compiler_generations_reproduced": true,
+    "native_compiler_generations_reproduced": false,
     "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. At revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, run 43805537036 completed the current29 job (104 API steps) and separately checked-out exact74d1 historical17 job (54 API steps), within their unchanged 60-minute budgets. Original logs report a fresh 29-module B1/B2/B3 build, both scalar profiles, current/default selected owners, public/raw/installed gates and final strict/maintenance success. The nine nextest groups overlap and are not a full-workspace count. The two artifact ZIPs remain metadata-only; detailed report and binary payloads have not received independent complete custody. The documentation successor, all15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and retirement remain unqualified.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
@@ -101,8 +101,8 @@
     "report_scope": "The existing report points to immutable exact19 template history; current revision-bound CI evidence is in current_report.",
     "previous_qualification_status": "ci_success_at_483_independent_artifact_audit_pending",
     "current_source_module_count": 37,
-    "current_lock_build_qualified": true,
-    "current_lock_build_scope": "Local Linux x86-64 native-selfhost build and full37 raw input admission only."
+    "current_lock_build_qualified": false,
+    "current_lock_build_scope": "Configured 37-module lock unchanged; fresh build and raw input admission pending for changed kernel."
   },
   "candidate_modules": [
     {
@@ -1898,8 +1898,8 @@
       "source_revision": "bbb534d8be9098c041d5f3dd1ca1214fbcc2fd8a",
       "source_git_blob": "f9cd31eec62351b30f619d832424a9edc4b8b021",
       "source_function": "Utf8StreamParser<P>::push_bytes/finish/into_inner",
-      "implementation_status": "opt_in_public_library_owner_verified_locally",
-      "qualification_status": "local_utf8_owner_passed_other_gates_pending",
+      "implementation_status": "source_integrated_opt_in_public_library_pending_current_tree",
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "current_role": "current_opt_in_production",
@@ -1926,28 +1926,29 @@
         "codex-rs/utils/stream-parser/src/hia_native_utf8_stream_tests.rs"
       ],
       "validation": {
-        "source_only": false,
-        "public_library_verified_locally": true,
+        "source_only": true,
+        "public_library_verified_locally": false,
         "performance_closed": false,
-        "raw_native_calls_passed": 200,
-        "native_owner_tests_passed": 72,
-        "default_owner_tests_passed": 54,
-        "skipped": 0,
-        "byte_classification_differential_inputs": 111996
+        "raw_native_calls_passed": null,
+        "native_owner_tests_passed": null,
+        "default_owner_tests_passed": null,
+        "skipped": null,
+        "previous_validation_source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+        "previous_validation_transferred": false
       }
     },
     {
       "id": "inline_hidden_tag",
       "hia_source": "hia/inline_hidden_tag.hepta",
-      "hia_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
-      "hia_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
-      "hia_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+      "hia_source_revision": "82b35fed31d860f647d7ac01226877ab13ec4515",
+      "hia_source_git_blob": "87709ec840ad203eb21aecfd23688c51021d9612",
+      "hia_source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead",
       "source_path": "codex-rs/utils/stream-parser/src/inline_hidden_tag.rs",
       "source_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
       "source_git_blob": "0b7501cdb958a38c0b93e44ca981c7dbd4d912ff",
       "source_function": "InlineHiddenTagParser<T>::push_str/finish",
-      "implementation_status": "opt_in_public_library_owner_verified_locally",
-      "qualification_status": "local_inline_owner_passed_other_gates_pending",
+      "implementation_status": "source_integrated_opt_in_public_library_pending_current_tree",
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "current_role": "current_opt_in_production",
@@ -1974,14 +1975,18 @@
         "codex-rs/utils/stream-parser/src/hia_native_inline_hidden_tag_wire_tests.rs"
       ],
       "validation": {
-        "source_only": false,
-        "public_library_verified_locally": true,
+        "source_only": true,
+        "public_library_verified_locally": false,
         "performance_closed": false,
-        "raw_native_calls_passed": 344,
-        "literal_cases_passed": 43,
-        "native_owner_tests_passed": 85,
-        "default_owner_tests_passed": 65,
-        "skipped": 0
+        "raw_native_calls_passed": null,
+        "native_owner_tests_passed": null,
+        "default_owner_tests_passed": null,
+        "skipped": null,
+        "previous_validation_source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+        "previous_validation_transferred": false,
+        "literal_cases_planned": 63,
+        "native_calls_planned": 504,
+        "literal_cases_passed": null
       }
     }
   ],
@@ -3748,7 +3753,7 @@
     "helper": "hia/cargo_build.rs",
     "builder": "hia/build.py",
     "tests": "hia/tests/test_build_receipt.py",
-    "status": "local_native37_build_and_stream_parser_link_passed_full_gates_pending",
+    "status": "source_only_inline_followup_current_tree_pending",
     "accepted_build_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -3831,35 +3836,34 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+    "build_report_sha256": null,
     "checks_passed": null,
     "existing_link_or_build_reports_reusable_without_regeneration": false,
     "build_report_payload_independently_read": false,
-    "current_report": "hia/verification.json#local_component_evidence",
+    "current_report": "hia/verification.json#current_qualification",
     "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
     "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
   },
   "current_qualification": {
-    "status": "local_inline_owner_passed_other_gates_pending",
+    "status": "source_only_inline_followup_current_tree_pending",
     "qualification_revision": null,
     "report": "hia/verification.json#current_qualification",
     "documentation_successor_exact_head_qualified": false,
     "current_tree_qualified": false,
-    "locally_verified_public_library_modules": [
-      "utf8_stream",
-      "inline_hidden_tag"
-    ],
+    "locally_verified_public_library_modules": [],
     "pending_modules": [
       "output_lines",
       "output_item_budget",
       "format_env_display",
       "citation_stream_parser",
       "proposed_plan_parser",
-      "fuzzy_match"
+      "fuzzy_match",
+      "utf8_stream",
+      "inline_hidden_tag"
     ],
-    "new_kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
-    "new_kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
-    "new_kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1"
+    "new_kernel_source_revision": "82b35fed31d860f647d7ac01226877ab13ec4515",
+    "new_kernel_source_git_blob": "87709ec840ad203eb21aecfd23688c51021d9612",
+    "new_kernel_source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead"
   },
   "source_owner_histories": {
     "17": {
@@ -4498,5 +4502,19 @@
       "new_kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63"
     },
     "qualification_transferred_to_current37": false
+  },
+  "previous_inline_450f_source_record": {
+    "source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+    "metadata_git_blobs": {
+      "hia/migration.json": "62e63f30c667a7a293a5bed5c21761fb0438c8ed",
+      "hia/verification.json": "41ac81e9cd957f61ce760736ea90bf68913bd00e",
+      "hia/joint_module_roles.json": "d38c3087e4157688da29e9ed33d97d048bbf5e71",
+      "hia/README.md": "4bc4ccce2dc93d2702553863c0b5acbd08e83fb4"
+    },
+    "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+    "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+    "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+    "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+    "qualification_transferred_to_current": false
   }
 }

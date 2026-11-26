@@ -6,26 +6,10 @@
   "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
   "target": "x86_64-unknown-linux-gnu",
   "build_mode": "native-selfhost",
-  "build_status": "local_native_selfhost_and_inline_owner_passed",
-  "compiler_fixed_point": true,
-  "compiler_generations": [
-    {
-      "name": "B1",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
-    },
-    {
-      "name": "B2",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
-    },
-    {
-      "name": "B3",
-      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
-      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
-    }
-  ],
-  "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+  "build_status": "source_only_inline_followup_current_tree_pending",
+  "compiler_fixed_point": false,
+  "compiler_generations": [],
+  "build_report_sha256": null,
   "native_module_count": 37,
   "current_opt_in_linked_kernel_count": 34,
   "retained_oracle_only_kernel_count": 3,
@@ -42,50 +26,50 @@
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "opt_in_production_callers_verified": false,
-  "scope": "The exact native37 source was built locally through fresh B1/B2/B3 and all 37 module/link bindings. The generic inline-tag public library owner passed all 85 native and 65 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 344-call literal raw gate and seven retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified.",
+  "scope": "Source-only follow-up at 82b35fed31d860f647d7ac01226877ab13ec4515. Prior 450f native37 local component results are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source.",
   "module_roles": "hia/joint_module_roles.json",
   "current_qualification": {
-    "status": "local_inline_owner_passed_other_gates_pending",
+    "status": "source_only_inline_followup_current_tree_pending",
     "qualification_revision": null,
     "source_composed": true,
     "new_source_module": "inline_hidden_tag",
-    "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
-    "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
-    "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+    "kernel_source_revision": "82b35fed31d860f647d7ac01226877ab13ec4515",
+    "kernel_source_git_blob": "87709ec840ad203eb21aecfd23688c51021d9612",
+    "kernel_source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead",
     "owner_source_revision": "27e6ddd7f86ebcc64e2715c57fb10aa4835dd749",
     "public_oracle_source_revision": "7e355e2b4c323b0ad0ff88d3bbf22fb25d7df523",
     "integration_source_revision": "38ec028a5b45bfd6c91da67b85225701988eb8c1",
     "raw_abi_harness_authored": true,
     "rust_public_oracles_authored": true,
-    "raw_abi_harness_executed": true,
-    "rust_public_oracles_executed": true,
-    "native_build_executed": true,
-    "compiler_generations_executed": true,
-    "full_native37_admission": true,
-    "public_library_owner_verified_locally": true,
+    "raw_abi_harness_executed": false,
+    "rust_public_oracles_executed": false,
+    "native_build_executed": false,
+    "compiler_generations_executed": false,
+    "full_native37_admission": false,
+    "public_library_owner_verified_locally": false,
     "opt_in_production_callers_verified": false,
     "complete_current_workflow_passed": false,
     "historical_exact17_job_passed_this_run": false,
     "joint_job_runtime_cost_verified": false,
     "per_job_budget_minutes": 60,
-    "new_native_artifacts_created": true,
+    "new_native_artifacts_created": false,
     "complete_independent_artifact_custody": false,
     "documentation_successor_exact_head_qualified": false,
     "retirement_authorized": false,
-    "configured_raw_literal_cases": 43,
-    "executed_raw_native_calls": 344,
+    "configured_raw_literal_cases": 63,
+    "executed_raw_native_calls": 0,
     "original_inline_public_methods_preserved": 5,
     "added_public_methods_both_features": 11,
     "added_native_decoder_methods": 2,
-    "native_owner_tests_passed": 85,
-    "default_owner_tests_passed": 65,
-    "owner_tests_skipped": 0,
-    "strict_clippy_both_features_passed": true,
-    "just_fix_both_features_and_just_fmt_passed": true,
-    "maintenance_left_rust_sources_unchanged": true,
+    "native_owner_tests_passed": null,
+    "default_owner_tests_passed": null,
+    "owner_tests_skipped": null,
+    "strict_clippy_both_features_passed": false,
+    "just_fix_both_features_and_just_fmt_passed": false,
+    "maintenance_left_rust_sources_unchanged": null,
     "aggregate_input_or_spec_count_cap_introduced": false,
-    "large_default_and_native_public_execution": true,
-    "original_generic_clone_eq_effect_and_container_semantics_preserved": true,
+    "large_default_and_native_public_execution": false,
+    "original_generic_clone_eq_effect_and_container_semantics_preserved": null,
     "installed_cli_reachability_claimed": false,
     "search_performance_qualified": false,
     "network_owner_workflow_baselines": [
@@ -98,7 +82,8 @@
       "native37"
     ],
     "mandatory_predecessor16_gate_executed": false,
-    "scope": "The exact native37 source was built locally through fresh B1/B2/B3 and all 37 module/link bindings. The generic inline-tag public library owner passed all 85 native and 65 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 344-call literal raw gate and seven retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified."
+    "scope": "Source-only follow-up at 82b35fed31d860f647d7ac01226877ab13ec4515. Prior 450f native37 local component results are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source.",
+    "planned_raw_native_calls": 504
   },
   "source_owner_histories": {
     "17": {
@@ -460,6 +445,7 @@
     "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
   },
   "current_pending_gates": [
+    "Qualify the new inline source, with all original 43 literal cases and 20 added cases; 504 native calls planned, none executed for this follow-up.",
     "Run the complete native37 and separately checked-out exact74d1 historical CI jobs within their unchanged 60-minute budgets; local component passes do not qualify complete workflows.",
     "Complete every retained original/default/native owner and selected Core/UI consumer gate, including all fuzzy-match owner and five focused UI groups and the installed31-symbol CLI gate. The three library-only symbols remain outside installed reachability claims.",
     "Complete the separate mandatory original/native16/current network owner gate; the current two-baseline workflow cannot replace it.",
@@ -1302,5 +1288,93 @@
       }
     ],
     "scope": "GitData publication preserves all verified implementation, test, build-profile and workflow file bytes. Commit identifiers differ because the API creates commits with the connected author and current timestamps. Original local execution receipts and their SHA256 values are retained; this is not a complete workflow, installed or whole-product qualification."
+  },
+  "previous_inline_450f_source_record": {
+    "source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+    "metadata_git_blobs": {
+      "hia/migration.json": "62e63f30c667a7a293a5bed5c21761fb0438c8ed",
+      "hia/verification.json": "41ac81e9cd957f61ce760736ea90bf68913bd00e",
+      "hia/joint_module_roles.json": "d38c3087e4157688da29e9ed33d97d048bbf5e71",
+      "hia/README.md": "4bc4ccce2dc93d2702553863c0b5acbd08e83fb4"
+    },
+    "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+    "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+    "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+    "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+    "qualification_transferred_to_current": false,
+    "local_component_evidence_scope": "The retained local_component_evidence and local_gitdata_publication records describe previous exact source only.",
+    "compiler_generations": [
+      {
+        "name": "B1",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
+      },
+      {
+        "name": "B2",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
+      },
+      {
+        "name": "B3",
+        "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+        "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native37-v1/bootstrap."
+      }
+    ],
+    "current_qualification": {
+      "status": "local_inline_owner_passed_other_gates_pending",
+      "qualification_revision": null,
+      "source_composed": true,
+      "new_source_module": "inline_hidden_tag",
+      "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+      "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+      "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+      "owner_source_revision": "27e6ddd7f86ebcc64e2715c57fb10aa4835dd749",
+      "public_oracle_source_revision": "7e355e2b4c323b0ad0ff88d3bbf22fb25d7df523",
+      "integration_source_revision": "38ec028a5b45bfd6c91da67b85225701988eb8c1",
+      "raw_abi_harness_authored": true,
+      "rust_public_oracles_authored": true,
+      "raw_abi_harness_executed": true,
+      "rust_public_oracles_executed": true,
+      "native_build_executed": true,
+      "compiler_generations_executed": true,
+      "full_native37_admission": true,
+      "public_library_owner_verified_locally": true,
+      "opt_in_production_callers_verified": false,
+      "complete_current_workflow_passed": false,
+      "historical_exact17_job_passed_this_run": false,
+      "joint_job_runtime_cost_verified": false,
+      "per_job_budget_minutes": 60,
+      "new_native_artifacts_created": true,
+      "complete_independent_artifact_custody": false,
+      "documentation_successor_exact_head_qualified": false,
+      "retirement_authorized": false,
+      "configured_raw_literal_cases": 43,
+      "executed_raw_native_calls": 344,
+      "original_inline_public_methods_preserved": 5,
+      "added_public_methods_both_features": 11,
+      "added_native_decoder_methods": 2,
+      "native_owner_tests_passed": 85,
+      "default_owner_tests_passed": 65,
+      "owner_tests_skipped": 0,
+      "strict_clippy_both_features_passed": true,
+      "just_fix_both_features_and_just_fmt_passed": true,
+      "maintenance_left_rust_sources_unchanged": true,
+      "aggregate_input_or_spec_count_cap_introduced": false,
+      "large_default_and_native_public_execution": true,
+      "original_generic_clone_eq_effect_and_container_semantics_preserved": true,
+      "installed_cli_reachability_claimed": false,
+      "search_performance_qualified": false,
+      "network_owner_workflow_baselines": [
+        "original",
+        "native37"
+      ],
+      "mandatory_owner_baselines": [
+        "original",
+        "native16",
+        "native37"
+      ],
+      "mandatory_predecessor16_gate_executed": false,
+      "scope": "The exact native37 source was built locally through fresh B1/B2/B3 and all 37 module/link bindings. The generic inline-tag public library owner passed all 85 native and 65 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 344-call literal raw gate and seven retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified."
+    }
   }
 }

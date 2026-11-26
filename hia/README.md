@@ -1,6 +1,27 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: generic inline hidden tags
+## Current source follow-up: inline UTF-8 boundaries and word equality
+
+Source commit `82b35fed31d860f647d7ac01226877ab13ec4515` changes only the inline HIA kernel,
+its ABI contract and literal raw harness. Fold and Resolve validate the
+stored suffix cut and any stored opener start/end as UTF-8 scalar boundaries
+after the existing geometric checks. Equality compares complete guarded
+eight-byte words and the unchanged byte tail; ordering and caller effects
+are unchanged. The 96-byte frame, lock, compiler pin and Rust source remain
+unchanged. This does not assert speedup.
+
+All 43 original literal cases remain; 20 additional cases are configured
+(63 cases, 504 planned calls over the existing capacity/fill matrix).
+No fresh build, native execution or runtime qualification has been completed
+for this source follow-up. The 37 configured modules, 34 opt-in caller
+kernels and three retained oracle-only kernels are unchanged. Production
+dispatch, whole product, platform, performance and retirement remain open.
+
+## Prior source increment: generic inline hidden tags
+
+The following local component results and source descriptions belong to
+the previous exact revision `450f22e370ce8db88a53ca6bbbae55262cbdab6e`, not to the new follow-up.
+The original metadata and all evidence remain accessible at that revision.
 
 `InlineHiddenTagParser<T>` now selects the `inline_hidden_tag` HIA owner under
 `hia-native`. HIA owns literal search, earliest-position selection, longest

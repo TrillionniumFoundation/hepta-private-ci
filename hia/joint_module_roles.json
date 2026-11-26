@@ -556,9 +556,9 @@
       "production_entry": "Public Utf8StreamParser<P> byte validation through hia-native; original generic inner parser and container effects remain in Rust.",
       "library_only": true,
       "installed_cli_reachability_claimed": false,
-      "runtime_qualified_on_joint_tree": true,
-      "qualification_status": "local_public_library_owner_passed_full_product_and_platforms_pending",
-      "qualification_report": "hia/verification.json#local_component_evidence"
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
+      "qualification_report": "hia/verification.json#current_qualification"
     },
     {
       "module": "inline_hidden_tag",
@@ -567,18 +567,18 @@
       "replacement": null,
       "entry_profile": "borrowed-buffers-u32-v1",
       "hia_source": "hia/inline_hidden_tag.hepta",
-      "source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
-      "source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
-      "source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+      "source_revision": "82b35fed31d860f647d7ac01226877ab13ec4515",
+      "source_git_blob": "87709ec840ad203eb21aecfd23688c51021d9612",
+      "source_sha256": "8cc0ffc82a283c46d154ce3a2a20fcb0e11bd7358a84e39ede67914fbad51ead",
       "production_link_sites": [
         "codex-rs/utils/stream-parser/build.rs"
       ],
       "production_entry": "Public InlineHiddenTagParser<T> generic delimiter decisions through hia-native; original generic fields, containers and effect order remain in Rust.",
       "library_only": true,
       "installed_cli_reachability_claimed": false,
-      "runtime_qualified_on_joint_tree": true,
-      "qualification_status": "local_public_library_owner_passed_full_product_and_platforms_pending",
-      "qualification_report": "hia/verification.json#local_component_evidence"
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
+      "qualification_report": "hia/verification.json#current_qualification"
     }
   ],
   "superseded_shared_symbol_protocols": [
@@ -643,8 +643,8 @@
     }
   },
   "count_is_not_a_production_coverage_claim": true,
-  "current_build_or_runtime_executed": true,
-  "current_build_module_count": 37,
+  "current_build_or_runtime_executed": false,
+  "current_build_module_count": null,
   "modules_added_after_audited_union": [
     "output_lines",
     "output_item_budget",
@@ -655,5 +655,19 @@
     "utf8_stream",
     "inline_hidden_tag"
   ],
-  "current_build_or_runtime_scope": "Local native37 build, eight raw suites and stream-parser owner only; whole workflow and product qualification remain pending."
+  "current_build_or_runtime_scope": "Source-only follow-up at 82b35fed31d860f647d7ac01226877ab13ec4515. Prior 450f native37 local component results are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source. The configured module inventory remains 37.",
+  "previous_inline_450f_source_record": {
+    "source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+    "metadata_git_blobs": {
+      "hia/migration.json": "62e63f30c667a7a293a5bed5c21761fb0438c8ed",
+      "hia/verification.json": "41ac81e9cd957f61ce760736ea90bf68913bd00e",
+      "hia/joint_module_roles.json": "d38c3087e4157688da29e9ed33d97d048bbf5e71",
+      "hia/README.md": "4bc4ccce2dc93d2702553863c0b5acbd08e83fb4"
+    },
+    "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+    "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+    "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+    "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+    "qualification_transferred_to_current": false
+  }
 }
