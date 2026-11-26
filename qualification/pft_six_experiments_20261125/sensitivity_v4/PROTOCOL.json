@@ -1,0 +1,122 @@
+{
+  "budget": {
+    "data_or_seed_search": false,
+    "finite_difference_perturbation_forwards": 24,
+    "interop_threads": 1,
+    "intraop_threads": 1,
+    "maximum_cpu_seconds": 120,
+    "maximum_wall_seconds": 120,
+    "optimization_updates": 0,
+    "physical_forward_calls": 26,
+    "quadratic_solves": 5,
+    "runs": 1,
+    "scalar_output_vjp_calls": 2
+  },
+  "coordinates": [
+    {
+      "flat_index": 4,
+      "name": "raw_cost",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "input_drive.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "input_mark.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 96,
+      "name": "recurrent.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "readout.weight",
+      "scale": 1.0
+    },
+    {
+      "flat_index": 0,
+      "name": "readout.bias",
+      "scale": 1.0
+    }
+  ],
+  "engineering_step": {
+    "observation_weights": [
+      1.0,
+      1.0
+    ],
+    "ridge": 0.001,
+    "target_rule": "base_output + [0.0001,-0.0001]; synthetic construction check only"
+  },
+  "failure_policy": "Save the failed or inconclusive result; do not widen tolerances, change coordinates, refit, clip the proposed step, or reuse opened data to claim a new success.",
+  "fd": {
+    "atol": 1e-07,
+    "gap_shrink_ratio": 0.75,
+    "h": 1e-05,
+    "half_h": 5e-06,
+    "one_sided_gap_floor_factor": 4,
+    "rtol": 3e-05
+  },
+  "fresh_state_objective": "Rebuild model.initial_state inside every full four-tick forward; no incoming state or truncated state sensitivity.",
+  "max_step_norm": 1.0,
+  "parent_capsule_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+  "parent_checkpoint_bytes": 9605,
+  "parent_checkpoint_observed_path": "/home/alex/pft-hcsn-p2p-v2-20261125-root/evaluation_v1/adopted_n8_s271901.pt",
+  "parent_checkpoint_sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+  "parent_format": "actual_p2p_v2_full",
+  "parent_profile_sha256": "4a8feafa490224f0ad14d318835f51d1147b8b6b93c7a56e9f9eb3ddc3d43d77",
+  "physical_model": {
+    "backend": "dense",
+    "boundary_mode": "qvi",
+    "feature_bank": "value_risk",
+    "fixture_source": "verify_first_order.fixture; exact file hash is frozen before execution",
+    "initial_margin": [
+      0.59,
+      0.73
+    ],
+    "input_channels": 6,
+    "message_mode": "full",
+    "neurons": 8,
+    "output": "final class-1 minus class-0 logit",
+    "precision": "float64",
+    "ticks_per_trajectory": 4,
+    "trajectory_count": 2
+  },
+  "ready_for_execution": true,
+  "registration_owner": "root",
+  "schema": "hepta.smallhcsn.sensitivity-engineering.v1",
+  "scope": {
+    "candidate_adopted": false,
+    "candidate_exported_by_this_script": false,
+    "historical_180_or_168_matrix_rerun": false,
+    "natural_task_benefit": false,
+    "old_training_or_test_data_read": false,
+    "real_A_to_B_transfer": false,
+    "real_user_authorization": false,
+    "second_order_autograd": false,
+    "shared_model_weights_not_per_sample_controls": true,
+    "source_and_tests_executed_by_author": false
+  },
+  "source_sha256": {
+    "first_order.py": "eecdf0a2f6aabbdbc65b79ed44c96b5badbd406c51252d89643260a923b5a55f",
+    "profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f",
+    "small_hcsn_profile.py": "a1c28b0a8a05d52d6394dde21381fb791bdcff8f10909947f50afc84d13cfd5a",
+    "source_binding.py": "72f29914e87a5c35d1e33c41267da7057a739a077047513b11d8dcf48c2a42a3",
+    "verify_first_order.py": "8506d27e0a5740901e0bdb40da17478de009d41629125d0888ba81ece01c374d"
+  },
+  "success_criteria": [
+    "Pinned profile loads the exact original full SmallHCSN parent and source/runtime identity.",
+    "Fixed h and h/2 central derivatives agree at the declared tolerance.",
+    "One-sided gaps are at most 4*(atol+rtol*max(abs(VJP),abs(FD))), or shrink by at least the fixed 0.75 ratio when h halves.",
+    "Each first-order VJP column agrees with the h/2 controlled finite difference; unresolved nonsmooth stencils fail this scope.",
+    "Independent known two-dimensional quadratic solve agrees within 1e-12 absolute and relative tolerance.",
+    "Zero rank remains zero under ridge; ridge-selected uniqueness is not reported as data identification.",
+    "Two real outputs cannot identify all six shared parameter coordinates; report actual rank and nullity.",
+    "Candidate construction respects the prespecified radius, changes only registered parameter elements, and preserves all other tensors and accumulated gradients.",
+    "Original model tensor fingerprint is identical before and after all probes."
+  ]
+}
