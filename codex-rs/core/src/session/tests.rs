@@ -10030,7 +10030,8 @@ async fn record_context_updates_emits_environment_item_for_time_changes() {
         .into_iter()
         .find(|text| text.contains("<environment_context>"))
         .expect("environment update item should be emitted");
-    let current_date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let current_date =
+        codex_utils_time::Timestamp::now().format_local(codex_utils_time::LocalFormat::Date);
     assert!(environment_update.contains(&format!("<current_date>{current_date}</current_date>")));
     assert!(environment_update.contains("<timezone>Europe/Berlin</timezone>"));
 }

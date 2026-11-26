@@ -1,5 +1,3 @@
-use chrono::DateTime;
-use chrono::Utc;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
@@ -49,7 +47,7 @@ pub struct AuthDotJson {
     pub tokens: Option<TokenData>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub last_refresh: Option<DateTime<Utc>>,
+    pub last_refresh: Option<codex_utils_time::Timestamp>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub agent_identity: Option<AgentIdentityStorage>,

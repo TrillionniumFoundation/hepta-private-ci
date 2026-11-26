@@ -1,0 +1,40 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+filegroup(
+    name = "package-files",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+# Preserve upstream's compiler-channel detection instead of assuming stable.
+cargo_build_script(
+    name = "starlark-build-script",
+    srcs = ["build.rs"],
+    edition = "2024",
+    version = "0.14.2",
+    deps = all_crate_deps(build = True),
+)
+
+# The workspace requests default-features = false and no Starlark features.
+# Upstream dev tests remain outside the production nonmember dependency graph.
+rust_library(
+    name = "starlark",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = [":package-files"],
+    crate_features = [],
+    crate_name = "starlark",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    proc_macro_deps = all_crate_deps(proc_macro = True),
+    version = "0.14.2",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps() + [":starlark-build-script"],
+)
