@@ -69,6 +69,7 @@ use codex_thread_store::ThreadStoreResult;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::LegacyAppPathString;
 use codex_utils_path_uri::PathUri;
+use futures::future::BoxFuture;
 use rmcp::model::ReadResourceRequestParams;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -318,6 +319,12 @@ impl CodexThread {
                 })
                 .await;
         }
+    }
+
+    /// Waits for the currently registered start and terminalization owners.
+    /// A caller must still use ordinary atomic turn admission after this wait.
+    pub fn pending_admission_fence_completion(&self) -> Option<BoxFuture<'static, ()>> {
+        self.session.pending_admission_fence_completion()
     }
 
     pub async fn emit_thread_idle_lifecycle_if_idle(&self, cause: ThreadIdleCause) {
