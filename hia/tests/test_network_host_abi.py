@@ -33,6 +33,7 @@ FULL_MODULE_PROFILES = {
     'full-native34': [*MODULES, 'output_lines', 'output_item_budget', 'format_env_display', 'citation_stream_parser', 'proposed_plan_parser'],
     'full-native35': [*MODULES, 'output_lines', 'output_item_budget', 'format_env_display', 'citation_stream_parser', 'proposed_plan_parser', 'fuzzy_match'],
     'full-native36': [*MODULES, 'output_lines', 'output_item_budget', 'format_env_display', 'citation_stream_parser', 'proposed_plan_parser', 'fuzzy_match', 'utf8_stream'],
+    'full-native37': [*MODULES, 'output_lines', 'output_item_budget', 'format_env_display', 'citation_stream_parser', 'proposed_plan_parser', 'fuzzy_match', 'utf8_stream', 'inline_hidden_tag'],
 }
 
 
@@ -243,6 +244,7 @@ def native_inputs(library, source, profile, report):
             'full34_manifest_verified': profile == 'full-native34',
             'full35_manifest_verified': profile == 'full-native35',
             'full36_manifest_verified': profile == 'full-native36',
+            'full37_manifest_verified': profile == 'full-native37',
             'scope': f'Existing native-selfhost report, all {len(modules)} module artifacts and three fixed-point image identities; no compilation performed by this raw gate.'}
     else:
         raise RuntimeError('unknown native build profile')
@@ -391,7 +393,7 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native29', 'full-native30', 'full-native31', 'full-native32', 'full-native33', 'full-native34', 'full-native35', 'full-native36', 'local-incremental'],
+    parser.add_argument('--build-profile', choices=['full-native29', 'full-native30', 'full-native31', 'full-native32', 'full-native33', 'full-native34', 'full-native35', 'full-native36', 'full-native37', 'local-incremental'],
                         default='full-native29', help='Default requires all twenty-nine modules; local incremental evidence must be selected explicitly.')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
