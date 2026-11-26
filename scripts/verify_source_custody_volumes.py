@@ -63,6 +63,13 @@ LF_NOTICE_PROJECTIONS = {
 }
 
 
+# The terminal blank line remains intact in the authenticated original volume.
+APACHE_NOTICE_EOF_PROJECTION = (
+    "library-recovery/rrsnn-v2-source-20261103/licenses/rrsnn_v2/hepta/"
+    "upstream_snapshot/codex-rs/vendor/pretty_assertions-1.4.1/LICENSE-APACHE"
+)
+
+
 def original_path(value):
     """Validate a data member name; parentheses occur in original duplicate names."""
     require(
@@ -310,6 +317,8 @@ def verify_collection(repository, directory):
                 if row["path"] in LF_NOTICE_PROJECTIONS
                 else original
             )
+            if row["path"] == APACHE_NOTICE_EOF_PROJECTION and expected.endswith(b"\n\n"):
+                expected = expected[:-1]
             require(
                 current in (original, expected),
                 "visible original control or notice differs from archived original",
