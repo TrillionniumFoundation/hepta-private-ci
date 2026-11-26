@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use crate::config::ManagedFeatures;
 use crate::context::ContextualUserFragment;
 use crate::context::ImageResizeNotice;
@@ -297,7 +299,19 @@ fn prepare_image(
             Some(ImageDetail::Low) => return Err(ImagePreparationError::UnsupportedLowDetail),
         },
     };
-    let image = load_data_url_for_prompt(image_url, PromptImageMode::ResizeWithLimits(limits))?;
+    let load_started = Instant::now();
+    tracing::trace!(phase = "image_load_begin", "conversation image phase");
+    let image = load_data_url_for_prompt(image_url, PromptImageMode::ResizeWithLimits(limits));
+    tracing::trace!(
+        phase = if image.is_ok() {
+            "image_load_ready"
+        } else {
+            "image_load_error"
+        },
+        elapsed_ms = load_started.elapsed().as_secs_f64() * 1_000.0,
+        "conversation image phase"
+    );
+    let image = image?;
     metadata.push(ImagePreparationMetadata {
         message_role: origin.message_role.map(str::to_string),
         item_id: origin.item_id.map(str::to_string),
