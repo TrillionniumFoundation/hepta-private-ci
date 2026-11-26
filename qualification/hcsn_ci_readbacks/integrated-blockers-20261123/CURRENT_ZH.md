@@ -1,5 +1,12 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 18:24 UTC 后：First-cycle 历史只读算术核验闭合
+
+- 原 [first-cycle run45866335986/job140069992233](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45866335986/job/140069992233) 在 e8164d09 的原冻结摘要断言失败，退出1，保留原红门。本轮复用已经逐字核验的 Dense 历史源及四份 RAW.npz，复制到 ROG 独立目录；从精确 1d5c953d545d9c46009f480b852ebad40fb490fc 获取 First-cycle 六个文件，12批传输全部实际退出0，各完整文件 Git blob 匹配。历史 model.py 仍为98335129精确原对象，未覆盖当前产品源。
+- ROG 原只读 verifier 和独立有理数误差复算作业 1a21919f277-ffbe-49b9 实际 succeeded/exit0、stderr0、stdout3264B、output_complete/durable/terminal_publication_confirmed=true。Python3.14.4/NumPy2.3.5。全部20个冻结/证据摘要（10源码、8输入、2输出）重新匹配，四个NPZ CRC通过；原4历史运行、24查询行、192 quantity error rows，独立精确有理数核验192绝对误差、156有效相对误差、36空相对误差及168有符号线性记录，12个已保留120位参考案例，最大绝对误差6.234506418936797e-7。原 verifier 同时通过身份残差断言；独立计算不重新生成解析参考，未把历史数值冒充新增实验。原状态 HOLD_NO_GO，new_analytic_reference_calls/new_model_calls/new_spatial_or_dde_runs 均0。**仅闭合历史只读验证及算术保全，当前产品冻结源门与原连续精度、科学采用仍HOLD。**
+- #6799 当前观察 head 1d5c953d545d9c46009f480b852ebad40fb490fc、base732e934、draft未合并。首屏100条80 queued/13 skipped/1 pending/4 in_progress/2 success；前一 e816 首屏55 success/27 failure/14 skipped/3 cancelled/1 in_progress，非全分页终局。#7016/#7021/#7032仍未合并草案；未将历史局部通过转移至集成候选。
+- [原始回执及独立核验](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/308316fb620aee919bc4be470e0edba2326adfae/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/firstcycle-retained-exact-historical-20261126-1824Z.json) 已提交并全文回读一致。全仓 HOLD，未修改冻结摘要、原科学判据、500ms、安全权限，未合并红门；不重复派发已闭合历史验证。
+
 ## 2026-11-26 17:32 UTC 后：Dense retained 历史源闭包与只读独立复算通过
 
 - 继 Split 离散验证之后，独立隔离恢复 Dense retained 的8份冻结源：原 model.py 从历史精确 98335129e0ed61dcf07aef7ab59d8941f14643ab 取得，其余源和证据从 e8164d092ebba4f2320489bf5cbedee47fd73e3b 取得。ROG 三批传输 1a218e97553-ffbe-4966、1a218e9d4ba-ffbe-4967、1a218ea22b3-ffbe-4968 均实际 exit0、stderr0，全部20文件 Git blob SHA1相符，8/8冻结SHA256相符。四个 RAW.npz 共424558B，原摘要和ZIP CRC全部相符。
