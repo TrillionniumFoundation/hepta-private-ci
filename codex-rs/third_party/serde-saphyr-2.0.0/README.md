@@ -1009,15 +1009,15 @@ error: line 3 column 23: invalid here, validation error: length is lower than 2 
 2 |         firstString: &A "x"
 3 |         secondString: *A
   |                       ^ invalid here, validation error: length is lower than 2 for `secondString`
-4 |  
+4 |
   |
   | This value comes indirectly from the anchor at line 2 column 25:
   |
-1 | 
+1 |
 2 |         firstString: &A "x"
   |                         ^ defined here
 3 |         secondString: *A
-4 |  
+4 |
 ```
 
 The integration of garde is feature-gated and disabled by default. Use `serde-saphyr = { version = "2", features = ["garde"] }` (or `features = ["validator"]`) in `Cargo.toml` to enable it.
