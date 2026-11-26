@@ -55,7 +55,7 @@ impl ChatWidget {
                 continue;
             }
             let base_name = if preset.id == "auto" && windows_degraded_sandbox_enabled {
-                format!("{ASK_FOR_APPROVAL_LABEL} (non-admin sandbox)")
+                format!("{ASK_FOR_APPROVAL_LABEL} (sandbox unavailable)")
             } else if preset.id == "auto" {
                 ASK_FOR_APPROVAL_LABEL.to_string()
             } else {
@@ -148,7 +148,7 @@ impl ChatWidget {
 
         let footer_note = show_elevate_sandbox_hint.then(|| {
             vec![
-                "The non-admin sandbox protects your files and prevents network access under most circumstances. However, it carries greater risk if prompt injected. To upgrade to the default sandbox, run ".dim(),
+                "The non-admin sandbox is unavailable. Default sandbox setup requires Administrator permissions and your approval. If your organization permits it, run ".dim(),
                 "/setup-default-sandbox".cyan(),
                 ".".dim(),
             ]
