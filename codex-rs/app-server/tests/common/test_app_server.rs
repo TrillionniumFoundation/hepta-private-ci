@@ -128,6 +128,9 @@ use codex_exec_server::CODEX_EXEC_SERVER_NOISE_CHATGPT_ACCOUNT_ID_ENV_VAR;
 use codex_exec_server::CODEX_EXEC_SERVER_NOISE_ENVIRONMENT_ID_ENV_VAR;
 use codex_exec_server::CODEX_EXEC_SERVER_NOISE_REGISTRY_URL_ENV_VAR;
 use codex_exec_server::CODEX_EXEC_SERVER_URL_ENV_VAR;
+use codex_login::CODEX_ACCESS_TOKEN_ENV_VAR;
+use codex_login::CODEX_API_KEY_ENV_VAR;
+use codex_login::OPENAI_API_KEY_ENV_VAR;
 use codex_login::default_client::CODEX_INTERNAL_ORIGINATOR_OVERRIDE_ENV_VAR;
 use core_test_support::is_remote_test_environment;
 use core_test_support::test_codex::TestEnv;
@@ -259,6 +262,15 @@ impl TestAppServer {
             codex_home.join("managed_config.toml"),
         );
         cmd.env_remove(CODEX_INTERNAL_ORIGINATOR_OVERRIDE_ENV_VAR);
+        // Only test-supplied credentials may reach this child. A fresh CODEX_HOME
+        // does not prevent the login manager from reading host credentials.
+        for key in [
+            CODEX_ACCESS_TOKEN_ENV_VAR,
+            CODEX_API_KEY_ENV_VAR,
+            OPENAI_API_KEY_ENV_VAR,
+        ] {
+            cmd.env_remove(key);
+        }
         cmd.args(args);
 
         for (k, v) in env_overrides {
