@@ -1,0 +1,216 @@
+{
+  "activated": true,
+  "activation_blockers": [],
+  "actual_head": null,
+  "actual_tree": null,
+  "branch": "fix/hepta-sqlx-failed-origin-continuation-20261126-7c9e",
+  "budget": {
+    "checkout_seconds": 37,
+    "generation_seconds": 756,
+    "outside_generation_reserve_seconds": 288,
+    "tool_preparation_seconds": 86,
+    "whole_job_seconds": 1044
+  },
+  "maximum_successor_attempts": 1,
+  "native_12_plus_3_activated": false,
+  "native_12_plus_3_budget": null,
+  "official_fixture_cargo": {
+    "actual_binary_sha256": null,
+    "actual_version": null,
+    "archive_sha256": "3cbb26995579e976ea84ca27cab9240aa88e5a108ba210a16a9597227a2c48f2",
+    "archive_url": "https://static.rust-lang.org/dist/2026-11-13/cargo-nightly-x86_64-unknown-linux-gnu.tar.xz",
+    "date": "2026-11-13",
+    "expected_cli_release": "1.102.0-nightly",
+    "original_compiler": "rustc 1.96.0 via verified absolute RUSTC; main cache fetch keeps original Cargo 1.96.0",
+    "source_commit": "ede6cefea9731cb595942338824c2f9a610b8189"
+  },
+  "origin": {
+    "artifact_id": 15090732762,
+    "attempt": 1,
+    "earlier_generation_seconds": 50.812052642,
+    "earlier_queue_seconds": 4120,
+    "earlier_whole_job_seconds": 98,
+    "generation_seconds": 29.736983829,
+    "job_id": 139689520927,
+    "queue_seconds": 5155,
+    "run_id": 45754403302,
+    "status": "failure",
+    "whole_job_seconds": 71
+  },
+  "parent": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+  "parent_tree": "a720083f7bd3d1df4222908bd5aa946c9eb43dce",
+  "previous_generation_failure": {
+    "actual_job_seconds": 49,
+    "artifact_expected_bytes": 31135987,
+    "artifact_expected_sha256": "bf7e1b5f6eb503a592eae47f97dfa567543765107eebc03a98751ee018acb61a",
+    "artifact_id": 15125616797,
+    "attempt": 1,
+    "begin_is_nested_in_tools": true,
+    "budget_source_review_sha256": "1302c13eda46f9b745e3e32bda875170662ea75cd5c10770acabd78f7b2e5dc0",
+    "checkout_monotonic_seconds": null,
+    "checkout_outer_log_seconds": 12.7880902,
+    "checkout_tool_whole_scopes_overlap": true,
+    "conservative_checkout_subcap_debit_seconds": 13,
+    "conservative_generation_debit_seconds": 13,
+    "conservative_outside_generation_debit_seconds": 37,
+    "conservative_tool_subcap_debit_seconds": 17,
+    "conservative_whole_debit_seconds": 50,
+    "error": "KeyError: 'source'",
+    "full_artifact_readback_complete": false,
+    "generation_outer_log_seconds": 12.738743,
+    "generation_seconds_used": 12.680279858999995,
+    "job_id": 139964106960,
+    "original_log_sha256": "5e8856ff3a2bbc5bbb811bcdc2f2c4a156823c470b9604013095a39e4c788825",
+    "phase": "generation",
+    "queue_seconds": 224,
+    "retained_partial_bytes": 5832704,
+    "retained_partial_sha256": "b27a56d493f9d5f28f940d08eed667422e67035110fc761840a0e2a5095f9183",
+    "run_id": 45835772428,
+    "separate_readback_seconds": 30.004822541959584,
+    "source_head": "728ed40ed81923cbcab1aeb20e172487caeb783f",
+    "source_tree": "8b8b20f0e8c569d179a685e60931933ec6dee022",
+    "status": "failure",
+    "through_upload_seconds": 45.005383963,
+    "tool_preparation_outer_log_seconds": 16.3861854,
+    "tool_preparation_seconds": 16.345878244
+  },
+  "previous_preparation_failure": {
+    "actual_job_seconds": 34,
+    "artifact_id": 15096814343,
+    "attempt": 1,
+    "conservative_checkout_subcap_debit_seconds": 10,
+    "conservative_tool_subcap_debit_seconds": 17,
+    "conservative_whole_debit_seconds": 35,
+    "generation_seconds_used": 0,
+    "job_id": 139758457986,
+    "official_version_stdout_sha256": "f6bf372223c4f6d50cbe5b1d0aaf8892e353bfd913b36ad0b19e425551692222",
+    "phase": "prepare",
+    "queue_seconds": 2028,
+    "review_sha256": "27b0a8e4628e3aed2185de86705b221477ec4fbb19a0e95c22eb7bd87dfd0cd3",
+    "run_id": 45775618828,
+    "source_before_tool_seconds": 9.005554398000001,
+    "source_head": "36958e341975e7f4e01aa9ffe1d06900af521701",
+    "source_tree": "f5640a491aedd057ad979e12aa8eec67c67be89d",
+    "status": "failure",
+    "through_upload_seconds": 30.539630265999996,
+    "tool_preparation_seconds": 16.940018717
+  },
+  "publication_paths": [
+    ".github/workflows/hepta-sqlx-unused-patch-successor-v1.yml",
+    "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py",
+    "qualification/sqlx_unused_patch_successor_admission_v1.json",
+    "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py",
+    "scripts/hepta_sqlx_unused_patch_successor_inputs_v1.json",
+    "scripts/hepta_sqlx_unused_patch_successor_phases_v1.py",
+    "scripts/run_sqlx_unused_patch_successor_v1.py"
+  ],
+  "reviewed_sources": [
+    {
+      "bytes": 6458,
+      "git_blob": "65a4f89b000db9092f3641ede2eb32dbc8fa8dc4",
+      "mode": "100644",
+      "path": ".github/workflows/hepta-sqlx-unused-patch-successor-v1.yml",
+      "sha256": "833a0352cfef49a064ef8d54467a4b3d3d45e7bbb94c0e5917c678513527c6a8"
+    },
+    {
+      "bytes": 22519,
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "mode": "100644",
+      "path": "AGENTS.md",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "bytes": 5144,
+      "git_blob": "7b1afc40bf4935ca98f92a7d36d03a56f78596d4",
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py",
+      "sha256": "0bdf441b2890c0961178577bed78b49b0ac07e27b3fccc394e8736eff2ccfa9e"
+    },
+    {
+      "bytes": 16175,
+      "git_blob": "ffca64eddb634c7c08075f4ecbe96cc314578e7b",
+      "mode": "100644",
+      "path": "qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
+      "sha256": "cf3e3d8c41332737d013699ded3c334411a9dfdcea02d222e75cf87b696d9e1f"
+    },
+    {
+      "bytes": 17824,
+      "git_blob": "0bacf779215c18d439efa292902c300650894f72",
+      "mode": "100644",
+      "path": "qualification/sqlx_unused_patch_successor_admission_v1.json",
+      "sha256": "bb4d496ee6a827b9974720d3866c5009627818a189aa7f2be2ecd64fb065bb57"
+    },
+    {
+      "bytes": 17064,
+      "git_blob": "491caed67eda5d820473d05717aaaa03b1828609",
+      "mode": "100644",
+      "path": "scripts/hepta_ci_exec.py",
+      "sha256": "ccabe2e8066c01a612a378d42cd7580ab183870b59921442a0d208b5ac528cba"
+    },
+    {
+      "bytes": 12233,
+      "git_blob": "237ff1a88b6adc2c5ce0eae0d9b6a359e7d48950",
+      "mode": "100644",
+      "path": "scripts/hepta_sqlx_temporal_fixture_continuation_contract_v1.py",
+      "sha256": "e236e6bb5d871c7716b26d40e7c0f53096a9c7b16f7566606c0c8b01325b79a4"
+    },
+    {
+      "bytes": 15645,
+      "git_blob": "d189ef9f980a5d7641821b9b8a8fcdbb909af9ae",
+      "mode": "100644",
+      "path": "scripts/hepta_sqlx_temporal_lock_contract_v1.py",
+      "sha256": "b65a3e60a2efc8d2716aad48e97fb70768d920f9df9e8f3e582461a4b35c9043"
+    },
+    {
+      "bytes": 6450,
+      "git_blob": "38bcfe4e6a0b93c792b7f44915e6a350b7b7ffaf",
+      "mode": "100644",
+      "path": "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py",
+      "sha256": "5fbfd2dabff269f657a2cba00c0cd948e9c98a48776f87d5d138157e97da7ac5"
+    },
+    {
+      "bytes": 17766,
+      "git_blob": "835e8e46f76854b8b1ee1ff18cde20802ca3216b",
+      "mode": "100644",
+      "path": "scripts/hepta_sqlx_unused_patch_successor_phases_v1.py",
+      "sha256": "bc1b2cdf2745209ee0c5b37b923c7e00d3640601697d5271f26934bb9b0d6b46"
+    },
+    {
+      "bytes": 51480,
+      "git_blob": "dd2415007a34be01e8206dcc726d6379450ee111",
+      "mode": "100644",
+      "path": "scripts/run_chrono_hooks_cli_lock_scope_v1.py",
+      "sha256": "9f7611b839ebe6518260e40cae81344169e7037a8551b1be00a2f20f28513ac2"
+    },
+    {
+      "bytes": 37629,
+      "git_blob": "00788c9ce173babbded419f038f04a0de8d86307",
+      "mode": "100644",
+      "path": "scripts/run_sqlx_temporal_fixture_continuation_v1.py",
+      "sha256": "b51c438aeba9b490ab0e13cc9a9fb0d82957d269ba8d169d5f5c824dd366047d"
+    },
+    {
+      "bytes": 55682,
+      "git_blob": "10c3ee5b5cb68f1ee0598600ff433260104e3f05",
+      "mode": "100644",
+      "path": "scripts/run_sqlx_temporal_lock_scope_v1.py",
+      "sha256": "bda2c49e04f2277f0c39cab922d901ba9018281c32e7bae7d1f874aa2721ea6a"
+    },
+    {
+      "bytes": 23567,
+      "git_blob": "956650adfdc12b91cf73ca480ef91d06adf28630",
+      "mode": "100644",
+      "path": "scripts/run_sqlx_unused_patch_successor_v1.py",
+      "sha256": "b276f0f94f178eddccba352180bbccd4f1e144e1bc3af7d7ac2ec57cf5f49ae7"
+    }
+  ],
+  "runtime_required_observations": [
+    "Verify exact official Cargo archive SHA256, actual binary and version, and original Rust 1.96 compiler inside this sole admitted attempt",
+    "Retain immutable original failed lock and require only the permutation of its ten complete unused patch records",
+    "Require original full unlocked and locked graph equality and untouched lock bytes for strict locked checks",
+    "Run only the previously unstarted compatibility continuation; retain all actual costs and failures",
+    "Bind the genuine historical failed complete receipt and separate genuine prepare-finish source identity from the same immutable original archive; preserve the complete failure status and all four raw input pins",
+    "Preserve both later failed attempts and nested conservative phase debits; incomplete #7140 artifact readback stays explicitly open"
+  ],
+  "schema": "hepta.sqlx-unused-patch-successor-inputs.v1"
+}
