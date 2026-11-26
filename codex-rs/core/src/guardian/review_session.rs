@@ -1321,6 +1321,21 @@ async fn wait_for_guardian_review(
                             analytics_result.time_to_first_token_ms = turn_complete
                                 .time_to_first_token_ms
                                 .and_then(|ms| u64::try_from(ms).ok());
+                            // TurnComplete precedes the finish owner's persistence and idle
+                            // barriers. Observe that exact owner before snapshotting or reusing
+                            // this session, so a follow-up reminder is not dropped by its fence.
+                            if let Some(completion) = review_session
+                                .session
+                                .pending_normal_turn_finish_completion(expected_turn_id)
+                                && let Err(outcome) = run_before_review_deadline(
+                                    deadline,
+                                    external_cancel,
+                                    completion,
+                                )
+                                .await
+                            {
+                                return (outcome, false, false);
+                            }
                             if turn_complete.last_agent_message.is_none()
                                 && let Some(error) = last_error
                             {
@@ -2322,6 +2337,47 @@ mod tests {
     #[tokio::test]
     async fn wait_for_guardian_review_ignores_prior_turn_completion() {
         let (review_session, tx_event, _rx_sub) = test_review_session().await;
+        let current_finish = crate::state::StartTransitionCompletion::new();
+        let prior_finish = crate::state::StartTransitionCompletion::new();
+        let current_abort = crate::state::StartTransitionCompletion::new();
+        let current_identity = Arc::new(());
+        {
+            let mut pending = review_session
+                .session
+                .pending_task_terminalization_completions
+                .lock()
+                .expect("terminalization registry");
+            for (turn_id, kind, identity, completion) in [
+                (
+                    "prior-turn",
+                    crate::state::TaskTerminalizationKind::Finish,
+                    Arc::new(()),
+                    Arc::clone(&prior_finish),
+                ),
+                (
+                    "current-turn",
+                    crate::state::TaskTerminalizationKind::Abort,
+                    Arc::new(()),
+                    Arc::clone(&current_abort),
+                ),
+                (
+                    "current-turn",
+                    crate::state::TaskTerminalizationKind::Finish,
+                    Arc::clone(&current_identity),
+                    Arc::clone(&current_finish),
+                ),
+            ] {
+                pending.push((
+                    identity,
+                    completion,
+                    kind,
+                    None,
+                    None,
+                    None,
+                    turn_id.to_string(),
+                ));
+            }
+        }
         tx_event
             .send(turn_complete_event("prior-turn", Some("stale"), Some(9)))
             .await
@@ -2332,14 +2388,33 @@ mod tests {
             .expect("queue current turn completion");
 
         let mut analytics_result = GuardianReviewAnalyticsResult::without_session();
-        let (outcome, keep_review_session, capture_token_usage) = wait_for_guardian_review(
-            &review_session,
-            "current-turn",
-            tokio::time::Instant::now() + Duration::from_secs(1),
-            /*external_cancel*/ None,
-            &mut analytics_result,
-        )
-        .await;
+        let (outcome, keep_review_session, capture_token_usage) = {
+            let review = wait_for_guardian_review(
+                &review_session,
+                "current-turn",
+                tokio::time::Instant::now() + Duration::from_secs(1),
+                /*external_cancel*/ None,
+                &mut analytics_result,
+            );
+            tokio::pin!(review);
+            let first_poll = std::future::poll_fn(|context| {
+                std::task::Poll::Ready(review.as_mut().poll(context))
+            })
+            .await;
+            assert!(
+                first_poll.is_pending(),
+                "TurnComplete must not pass an unfinished matching finish owner"
+            );
+            assert!(review_session.io.rx_event.is_empty());
+            review_session
+                .session
+                .pending_task_terminalization_completions
+                .lock()
+                .expect("terminalization registry")
+                .retain(|(identity, ..)| !Arc::ptr_eq(identity, &current_identity));
+            current_finish.complete();
+            review.await
+        };
 
         let GuardianReviewSessionOutcome::Completed(Ok(last_agent_message)) = outcome else {
             panic!("expected current turn completion");
@@ -2348,6 +2423,15 @@ mod tests {
         assert_eq!(analytics_result.time_to_first_token_ms, Some(42));
         assert!(keep_review_session);
         assert!(capture_token_usage);
+        assert!(!prior_finish.is_complete());
+        assert!(!current_abort.is_complete());
+        let mut pending = review_session
+            .session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("terminalization registry");
+        assert_eq!(pending.len(), 2);
+        pending.clear();
     }
 
     #[tokio::test]
@@ -2533,6 +2617,69 @@ mod tests {
         assert!(matches!(outcome, GuardianReviewSessionOutcome::Aborted));
         assert!(keep_review_session);
         assert!(!capture_token_usage);
+
+        // A completed turn whose finish owner is still pending must also honor
+        // cancellation, without interrupting or retiring that owner ourselves.
+        let (review_session, tx_event, rx_sub) = test_review_session().await;
+        let completion = crate::state::StartTransitionCompletion::new();
+        review_session
+            .session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("terminalization registry")
+            .push((
+                Arc::new(()),
+                Arc::clone(&completion),
+                crate::state::TaskTerminalizationKind::Finish,
+                None,
+                None,
+                None,
+                "completed-turn".to_string(),
+            ));
+        tx_event
+            .send(turn_complete_event(
+                "completed-turn",
+                Some("fresh"),
+                Some(42),
+            ))
+            .await
+            .expect("queue completed turn");
+        let external_cancel = CancellationToken::new();
+        let mut analytics_result = GuardianReviewAnalyticsResult::without_session();
+        let (outcome, keep_review_session, capture_token_usage) = {
+            let review = wait_for_guardian_review(
+                &review_session,
+                "completed-turn",
+                tokio::time::Instant::now() + Duration::from_secs(1),
+                Some(&external_cancel),
+                &mut analytics_result,
+            );
+            tokio::pin!(review);
+            let first_poll = std::future::poll_fn(|context| {
+                std::task::Poll::Ready(review.as_mut().poll(context))
+            })
+            .await;
+            assert!(first_poll.is_pending());
+            assert!(review_session.io.rx_event.is_empty());
+            external_cancel.cancel();
+            review.await
+        };
+        assert!(matches!(outcome, GuardianReviewSessionOutcome::Aborted));
+        assert!(!keep_review_session);
+        assert!(!capture_token_usage);
+        assert_eq!(analytics_result.time_to_first_token_ms, Some(42));
+        assert!(!completion.is_complete());
+        assert!(matches!(
+            rx_sub.try_recv(),
+            Err(async_channel::TryRecvError::Empty)
+        ));
+        let mut pending = review_session
+            .session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("terminalization registry");
+        assert_eq!(pending.len(), 1);
+        pending.clear();
     }
 
     #[tokio::test]
