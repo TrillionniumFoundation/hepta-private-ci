@@ -42,6 +42,7 @@ use super::secret_like;
 use crate::extension::HeptaMemoryThreadState;
 use crate::framing::digest_many;
 use crate::framing::path_identity_bytes;
+use crate::framing::registered_workspace_path;
 use crate::framing::workspace_digest;
 
 #[path = "combined_digest_table.rs"]
@@ -235,9 +236,11 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        let workspace = registered_workspace_path(input.cwd)?;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path())
+                != path_identity_bytes(workspace.as_path())
         {
             return None;
         }
@@ -252,7 +255,7 @@ impl FederatedCognitiveExtension {
         }
         let now = now_unix_seconds()?;
         let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(&workspace));
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -282,7 +285,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            workspace.as_path(),
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -389,10 +392,9 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if primary_environments.next().is_some() {
                 return Vec::new();
             }
-            let workspace = primary.cwd.to_path_buf();
-            if !workspace.is_absolute() {
+            let Some(workspace) = registered_workspace_path(&primary.cwd.to_path_buf()) else {
                 return Vec::new();
-            }
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();
@@ -1258,18 +1260,11 @@ mod tests {
         let canonical_workspace = workspace.canonicalize().expect("canonical workspace");
         let workspace_uri =
             PathUri::from_host_native_path(&canonical_workspace).expect("workspace uri");
-        // Grant and physical send use the same native path carried by the turn URI.
+        // Fleet signs the exact registered path; the consumer receives a turn URI.
         let workspace = workspace_uri.to_path_buf();
-        assert!(
-            workspace.is_absolute() && workspace.is_dir(),
-            "provider workspace must identify an absolute directory"
-        );
-        assert!(
-            workspace
-                .canonicalize()
-                .expect("round-trip canonical workspace")
-                == canonical_workspace,
-            "provider workspace URI must preserve the canonical path"
+        assert_eq!(
+            crate::framing::registered_workspace_path(&workspace),
+            Some(canonical_workspace.clone()),
         );
         let capability = owner
             .grant_federated_recall(
@@ -1278,7 +1273,7 @@ mod tests {
                     consumer_agent_id: consumer_id.clone(),
                     scope: FederationGrantScope::new(
                         CognitiveScope::AgentPrivate,
-                        workspace_digest(&workspace),
+                        workspace_digest(&canonical_workspace),
                     ),
                     effective_at_unix_seconds: now - 1,
                     expires_at_unix_seconds: now + 3_600,
