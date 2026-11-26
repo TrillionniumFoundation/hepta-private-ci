@@ -52,7 +52,7 @@ fn existing_main_is_not_rewritten_by_initial_creation() {
     fs::write(&path, b"existing crash evidence").expect("existing file");
     fs::set_permissions(&path, fs::Permissions::from_mode(0o640))
         .expect("mark existing permission");
-    create_private_initial_database(&path).expect("leave existing source unchanged");
+    assert!(create_private_initial_database(&path).is_err());
     assert_eq!(
         fs::read(&path).expect("existing bytes").as_slice(),
         b"existing crash evidence"

@@ -99,6 +99,9 @@ fn private_initialization_never_replaces_existing_database() {
     let directory = tempfile::tempdir().expect("private SQLite directory");
     let path = directory.path().join(COGNITIVE_DB_FILENAME);
     fs::write(&path, b"retained-existing-bytes").expect("existing data");
+    use std::os::unix::fs::PermissionsExt;
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600))
+        .expect("prepare valid existing database");
     let before = fs::metadata(&path).expect("original metadata");
     create_private_initial_database(&path).expect("preserve existing database");
     let after = fs::metadata(&path).expect("retained metadata");
