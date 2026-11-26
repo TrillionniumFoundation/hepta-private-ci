@@ -1,8 +1,8 @@
 # HPCA — heterogeneous plasticity and credit-assignment qualification
 
-**Status:** QUALIFICATION_ONLY / HOLD_NO_GO  
-**Scope:** deterministic, standard-library Python reference; zero model, network, file-owner or deployment authority.  
-**Location:** qualification/hpca-neuroscience-20261110  
+**Status:** QUALIFICATION_ONLY / HOLD_NO_GO\
+**Scope:** deterministic, standard-library Python reference; zero model, network, file-owner or deployment authority.\
+**Location:** qualification/hpca-neuroscience-20261110\
 **Existing owners:** neuron.runtime eligibility/checkpoint, learning.plasticity next-snapshot proposals, learning.ledger source/outcome provenance, independent evaluator and Agentd orchestration.
 
 ## Research question

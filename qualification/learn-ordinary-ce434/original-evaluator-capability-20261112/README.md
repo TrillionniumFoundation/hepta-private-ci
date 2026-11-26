@@ -1,8 +1,8 @@
 # 原始 Evaluator 能力与普通入口装配审计
 
-固定源码：`48844493c046fdd79734ddd2c1866314023a15cb`  
-Root tree：`360375952ff4fa51e817f2c773e5a5bc2a842a27`  
-Agentd src tree：`cbef415e03b9b32ed4f959f1c93399c4b5893471`  
+固定源码：`48844493c046fdd79734ddd2c1866314023a15cb`\
+Root tree：`360375952ff4fa51e817f2c773e5a5bc2a842a27`\
+Agentd src tree：`cbef415e03b9b32ed4f959f1c93399c4b5893471`\
 审计日期：2026-11-12 UTC
 
 ## 结论与实际验证范围

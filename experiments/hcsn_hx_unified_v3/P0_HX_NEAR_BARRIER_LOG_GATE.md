@@ -1,6 +1,6 @@
 # P0 HX near-barrier log-ratio numerical admission gate
 
-**DRAFT / research only / DENY_ALL**  
+**DRAFT / research only / DENY_ALL**\
 `all_blockers_closed=false`; `production_activation_allowed=false`.
 
 ## Immutable context and narrow scope

@@ -1,6 +1,6 @@
 # E20 — 原始预训练 Reader 输出量化：分类一致性、Brier 扰动上界与完整成本边界
 
-**2026-10-15 / RESEARCH ONLY / DRAFT / DENY_ALL**  
+**2026-10-15 / RESEARCH ONLY / DRAFT / DENY_ALL**\
 Parent: E19 #2230 exact source `9ea2f28762389b3a839eb128d7b1b413cf00982b`.
 
 This report records executed **original pretrained-output** evidence from
