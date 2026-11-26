@@ -99,7 +99,9 @@ ARCHIVED_PAIRED_OWNER_LOGS_INDEX = "qa/repository-consolidation/20261126/archive
 HCSN_SPLIT_REPLAY_INDEX = "qa/repository-consolidation/20261126/hcsn-split-replay/raw-evidence-storage.json"
 HCSN_NATIVE_READBACK_INDEX = "qa/repository-consolidation/20261126/hcsn-native-readback-storage.json"
 FINITE_NOTES_NATIVE_LAUNCHER_INDEX = "qa/repository-consolidation/20261126/finite-notes-native-launcher-storage.json"
+VERIFIED_REPORTS_INDEX = "qa/repository-consolidation/20261126/verified-reports-storage.json"
 INDEX_SHA256 = {
+    VERIFIED_REPORTS_INDEX: "dab53d7a440850d210cd1ea8b4bd06d3335ead6bda37ea735a27086956fcf1a1",
     FINITE_NOTES_NATIVE_LAUNCHER_INDEX: "126f299feb14f46c9d22c57476652688740752adf92ad4b375bf66974f6ffe23",
     HCSN_NATIVE_READBACK_INDEX: "ea18725861c54e448ae74aacce27aa8902065c38b8de0c09f90336149d600375",
     HCSN_SPLIT_REPLAY_INDEX: "f9be5d3969f4f798bc1b35e9366d1f522642f6cb6759538ffc8f44c41f52a90d",
