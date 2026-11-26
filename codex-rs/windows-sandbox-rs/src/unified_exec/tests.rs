@@ -681,12 +681,13 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
 }
 
 #[test]
-fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
+fn legacy_workspace_write_delete_is_limited_to_writable_roots() -> anyhow::Result<()> {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
         // Keep writable roots out of USERPROFILE exclusions such as AppData.
         let test_root = TempDir::new_in(sandbox_cwd()).expect("create legacy delete test root");
+        legacy_delete_observer::fixture_acl::prepare(&test_root)?;
         let codex_home = sandbox_home("legacy-delete-writable-roots");
         let workspace = test_root.path().join("workspace");
         let temp_root = test_root.path().join("temp");
@@ -817,7 +818,8 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             "stdout={stdout:?} stderr={stderr:?} stdout_bytes={stdout_bytes} stdout_retained={stdout_retained} stderr_bytes={stderr_bytes} stderr_retained={stderr_retained}\n{}",
             sandbox_log(codex_home.path())
         );
-    });
+        Ok(())
+    })
 }
 
 #[test]

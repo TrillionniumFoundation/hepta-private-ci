@@ -1,4 +1,8 @@
-//! Read-only fixture observations; no token or ACL mutation and no new test.
+//! Read-only descriptor observations and bounded legacy child-output capture.
+
+// This separate setup module only changes the newly created, empty fixture root.
+#[path = "legacy_delete_fixture_acl_tests.rs"]
+pub(super) mod fixture_acl;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -247,6 +251,10 @@ fn snapshot(path: &Path, identities: Option<&Identities>) -> Result<(Value, Vec<
         .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
         .open(path)?;
+    snapshot_handle(&file, identities)
+}
+
+fn snapshot_handle(file: &File, identities: Option<&Identities>) -> Result<(Value, Vec<u8>)> {
     let attributes = file.metadata()?.file_attributes();
     let (mut owner, mut group, mut dacl, mut raw) = (
         std::ptr::null_mut(),
@@ -330,7 +338,6 @@ fn snapshot(path: &Path, identities: Option<&Identities>) -> Result<(Value, Vec<
         "identity_reference":"parent_process_only_not_child_token"});
     let original = bytes.to_vec();
     drop(descriptor);
-    drop(file);
     Ok((result, original))
 }
 
