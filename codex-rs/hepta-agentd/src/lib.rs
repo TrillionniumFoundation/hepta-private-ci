@@ -13,6 +13,7 @@ mod automation;
 mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
+pub mod cell_split_owner;
 mod client;
 mod cognitive_context;
 mod cognitive_ranker;
