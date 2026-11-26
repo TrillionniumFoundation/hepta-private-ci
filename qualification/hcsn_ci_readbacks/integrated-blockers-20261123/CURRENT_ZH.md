@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 23:56 UTC 后：N256 precision policy 三处精确冻结字节修补与原生对照
+
+- 原 [job140198737217](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45904766020/job/140198737217) normal/-O各5/5、compile success，原严格 gate 在 README.md 首个漂移退出1；merge checkout f3dc18b19ccdd01fdf55c56db7be67ab73bcb4de。独立从精确 f9d56c67 取得10项原冻结/父源，ECMAScript SHA256（abc标准向量校验）逐一计算得7/10；不是只修README，而是 README.md、__init__.py、test_precision_policy.py 各缺末尾一个LF（1566→1567、80→81、3399→3400），其余7项原摘要完全相符、SOURCE_FREEZE原映射与原 verifier 一致。
+- ROG 独立临时隔离作业 1a21a4c3134-ffbe-4c30 实际 exit0、stdout4917B、stderr0、output_complete/durable/terminal_publication_confirmed=true，12原Git blob SHA1匹配；原 verifier 未补前退出1同一拒绝，补三字节后原 verifier exit0/ PASS_CURRENTSTATE_N256_UNIFORMIZATION_PRECISION_POLICY，10/10原 SHA256 匹配。源码前后逐文件字节对照仅三项末尾LF；原 freeze、数值执行禁止、provider未准入均不改，新增模型/provider/优化器调用0。不重复原已通过 fixture。
+- 三文件修补实际提交到独立 branch repair/hcsn-n256-precision-frozen-lf-20261126，终件 [36e49da6](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/36e49da6f83a20bae931976b06fd6a6f2d91446c)，与 f9d56c67 比较 ahead3/behind0、恰3文件各+1/-0，三文件全文回读等于原文加一LF。仅签独立本地原冻结验证门；主集成不抢写，官方当前整仓资格仍 HOLD。
+- #6799 实际最新观察 b8ed02a3f31c08e685040e09d9b23a1354d77b0d draft未合并，返回首屏93条（72 queued/13 pending/7 skipped/1 in_progress），非全分页；该精确 head 三文件身份：README.md original drift 65b58273039ef698b9c5e3a1a3ec0a3edf829f28；__init__.py original drift 5a9e2a2ab4f1290e5ce802b688df1688593349c3；test_precision_policy.py original drift 0fa943f0b77b9b590d8de42a40924ecc7d064bfc。上一 4d98afb7 首屏终态68 success/16 failure/14 skipped/2 cancelled；#7016/#7021/#7032 仍为未合并草案。未跨版本转移资格。
+- [原生完整回执与不可变修补对照](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/6bfed73fb9b4bfad07725614f6a68e86ab577b95/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/n256-precision-policy-exact-lf-20261126-2356Z.json) 已全文回读一致。全仓 HOLD；Common 消耗台账、N256 动态和资源、Windows生产隔离、Agentd strict、Q24与连续极限原门仍开，未改冻结摘要、安全权限、500ms或合并红门。
+
 ## 2026-11-26 22:38 UTC 后：Common 29 文件隔离历史视图原生闭合（数值资格仍 HOLD）
 
 - ROG 原生作业 `1a21a045cb1-ffbe-4b1c` 实际 succeeded/exit0，stdout6672B、stderr0B、output_complete/durable/terminal_publication_confirmed=true。复用此前已核验的 c440d2ba Split 缓存，从 GitHub 精确原对象比对 COMMON_MANIFEST.json（blob864f0d4438e0fabd476dab7424d47595dc79e017，SHA256 850d341309b75c14ea035d9d3a841d8d3f539bbc6d50db95fcc07a6bc1f7fbcf），逐文件重哈希29/29、172837B；复制至全新隔离目录后，以原 qualify_common 同样的两目录 glob 和两显式文件重新读取摘要，实测字典与原冻结清单完全相同（29/29、0额外、0缺失），目录总30文件含原manifest。原缓存未改，当前产品17个后继文件及产品源码均未改。**仅闭合历史执行视图的原源码集合与字节身份**，没有导入模型，45测试和120次更新均未重跑；原实验消耗台账尚未确认，不把此结果当作完整 Common 科学或集成通过。
