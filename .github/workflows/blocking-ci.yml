@@ -134,6 +134,15 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Reserve hosted runner disk for native reverse-consumer compilation
+        env:
+          RUNNER_ENVIRONMENT: ${{ runner.environment }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_ci_runner_disk
+          python3 scripts/hepta_ci_runner_disk.py --apply --min-free-gib 20
+          df -h "$GITHUB_WORKSPACE"
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
