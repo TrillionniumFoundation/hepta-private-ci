@@ -312,6 +312,27 @@ class SourceVolumeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "single-link"):
             self.verify()
 
+    def test_registered_notice_projection_keeps_original_bytes_and_rejects_drift(self):
+        notice = "README.md"
+        path = self.group + "/" + notice
+        original = b"Original notice.\r\nSecond line.\r\n"
+        self.document["member_bytes"] += len(original) - len(self.payloads[notice])
+        self.document["volumes"][0]["member_bytes"] = len(original)
+        self.document["members"][0].update(volumes.identity(original))
+        self.replace_volume(0, tar=self.tar([(notice, original, tarfile.REGTYPE, {})]))
+        visible = self.directory / notice
+        visible.write_bytes(original)
+        self.assertEqual(self.verify()[path], original)
+
+        visible.write_bytes(original.replace(b"\r\n", b"\n"))
+        with self.assertRaisesRegex(ValueError, "visible original control"):
+            self.verify()
+        with mock.patch.object(volumes, "LF_NOTICE_PROJECTIONS", {path}):
+            self.assertEqual(self.verify()[path], original)
+            visible.write_bytes(b"Changed wording.\nSecond line.\n")
+            with self.assertRaisesRegex(ValueError, "visible original control"):
+                self.verify()
+
     def test_original_path_resolution_preserves_duplicate_name_and_rejects_missing(
         self,
     ):

@@ -50,6 +50,19 @@ REGISTRATIONS = {
 }
 
 
+# The extracted notices remain readable; the registered volumes preserve their original CRLF bytes.
+LF_NOTICE_PROJECTIONS = {
+    (
+        "library-recovery/rrsnn-v2-source-20261103/licenses/rrsnn_v2/hepta/"
+        "rust_bridge/vendor/generic-array-0.14.7/LICENSE"
+    ),
+    (
+        "library-recovery/rrsnn-v2-source-20261103/licenses/rrsnn_v2/hepta/"
+        "upstream_snapshot/codex-rs/vendor/generic-array-0.14.7/LICENSE"
+    ),
+}
+
+
 def original_path(value):
     """Validate a data member name; parentheses occur in original duplicate names."""
     require(
@@ -291,8 +304,14 @@ def verify_collection(repository, directory):
     for row in manifest["members"]:
         if row["surface"] == "retained_original":
             current = read_regular(repository, row["path"], row["bytes"])
+            original = verified[row["member"]]
+            expected = (
+                original.replace(b"\r\n", b"\n")
+                if row["path"] in LF_NOTICE_PROJECTIONS
+                else original
+            )
             require(
-                current == verified[row["member"]],
+                current in (original, expected),
                 "visible original control or notice differs from archived original",
             )
     return {directory + "/" + name: data for name, data in verified.items()}

@@ -2,7 +2,7 @@
 
 The historical sources and their original controls are preserved as data in 6 bounded source-custody volumes. SOURCE_VOLUMES.json maps all 1379 original repository files (20213896 bytes) to their unchanged member paths, Git modes, Git blob IDs and SHA256 hashes at commit c2130629037b342e6e48154867b65acc8fc82434.
 
-The maintained reader verifies the registered manifest, every compressed and expanded volume, every original member, and the visible original manifests and notices. It never extracts, imports or executes historical sources. From the repository root:
+The maintained reader verifies the registered manifest, every compressed and expanded volume, every original member, and the visible original manifests and notices. The two generic-array notices use LF for reading; the same notices are available in their exact historical CRLF form from the verified volumes. It never extracts, imports or executes historical sources. From the repository root:
 
 ```sh
 python3 -B scripts/verify_source_custody_volumes.py library-recovery/rrsnn-v2-source-20261103
