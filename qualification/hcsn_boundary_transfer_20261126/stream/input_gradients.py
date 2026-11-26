@@ -43,7 +43,8 @@ def evaluate(model, sequence, delivered_boundary):
         if not torch.isfinite(jacobian).all():
             raise ValueError("Non-finite sender derivative")
         ranks.update(torch.linalg.matrix_rank(jacobian).tolist())
-        norms.append(torch.linalg.matrix_norm(jacobian, ord="fro"))
+        # The default matrix norm is the Frobenius norm.
+        norms.append(torch.linalg.matrix_norm(jacobian))
 
         inputs = batch.detach().requires_grad_()
         final_logits = model(inputs)[-1]
