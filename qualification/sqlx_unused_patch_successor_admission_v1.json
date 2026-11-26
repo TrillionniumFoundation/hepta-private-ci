@@ -1,0 +1,207 @@
+{
+  "accepted": true,
+  "branch": "fix/hepta-sqlx-cargo-release-continuation-20261126-7c9e",
+  "budget": {
+    "checkout_seconds": 50,
+    "generation_seconds": 769,
+    "outside_generation_reserve_seconds": 325,
+    "tool_preparation_seconds": 103,
+    "whole_job_seconds": 1094
+  },
+  "control_source_equivalence": {
+    "accepted": true,
+    "current_source_pins": {
+      "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py": "0bdf441b2890c0961178577bed78b49b0ac07e27b3fccc394e8736eff2ccfa9e",
+      "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py": "4ea1fe893ad77370ff7f94031bb0d47990df7b987e32d4de9a7db7e0e5f867b8"
+    },
+    "method": "exact-six-constant-reversal",
+    "original_receipt_sha256": "91fc929d027539ff2c823c509dfeb72ea3a454d0dc6bc825eb389ddc26e69703",
+    "original_source_pins": {
+      "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py": "0bdf441b2890c0961178577bed78b49b0ac07e27b3fccc394e8736eff2ccfa9e",
+      "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py": "7d79e98ae60f6259b04d42f3911d2b0c7fee2ec46fe71a79635f0cc5cb9f9a54"
+    },
+    "reviewer": "root",
+    "root_review_sha256": "6773eb83877ad285b4dfd1a34b4f90839cf26943af2b8693a539fedafa9454fe",
+    "source_review_status": "ROOT_COMPLETE_BYTE_LITERAL_REVERSAL_ACCEPTED_WITH_ORIGINAL_RECEIPT_PRESERVED",
+    "tests_reexecuted": false
+  },
+  "execution_authorization": true,
+  "maximum_successor_attempts": 1,
+  "native_12_plus_3_activated": false,
+  "new_data_controls": {
+    "accepted": true,
+    "elapsed_seconds": 0.03251545783132315,
+    "exact_names": [
+      "test_added_package_rejected",
+      "test_changed_graph_dependency_kind_rejected",
+      "test_changed_graph_feature_rejected",
+      "test_changed_graph_target_rejected",
+      "test_changed_unused_source_rejected",
+      "test_changed_unused_version_rejected",
+      "test_changed_used_checksum_rejected",
+      "test_changed_used_edge_rejected",
+      "test_dropped_duplicate_rejected",
+      "test_identical_full_graph_accepted",
+      "test_identical_lock_is_not_a_successor",
+      "test_order_only_permutation_preserves_duplicate"
+    ],
+    "execution_count": 1,
+    "independent_scope_cap_seconds": 5,
+    "original_receipt_sha256": "91fc929d027539ff2c823c509dfeb72ea3a454d0dc6bc825eb389ddc26e69703",
+    "source_pins": {
+      "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py": "0bdf441b2890c0961178577bed78b49b0ac07e27b3fccc394e8736eff2ccfa9e",
+      "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py": "7d79e98ae60f6259b04d42f3911d2b0c7fee2ec46fe71a79635f0cc5cb9f9a54"
+    }
+  },
+  "old_E1_E6_budget_used": 0,
+  "origin": {
+    "artifact_id": 15090732762,
+    "attempt": 1,
+    "earlier_generation_seconds": 50.812052642,
+    "earlier_queue_seconds": 4120,
+    "earlier_whole_job_seconds": 98,
+    "generation_seconds": 29.736983829,
+    "job_id": 139689520927,
+    "queue_seconds": 5155,
+    "run_id": 45754403302,
+    "status": "failure",
+    "whole_job_seconds": 71
+  },
+  "origin_review_sha256": "1f1304c3150826fef03e96b1c712c0e8c8e75dcc4a8892041ef0887569e7bd84",
+  "original_7128_root_review": {
+    "format_result": {
+      "bytes": 25018,
+      "formatter": "ruff 0.15.13",
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-stage-a-sqlx-eleven-python-format-root-v1/RESULT.json",
+      "sha256": "32ae40c20ed8a9bd4a34ae8448aab028f6eb915556031fe0e8bce33a498c7a43",
+      "source_imports": 0
+    },
+    "official_cargo_payload_verified": false,
+    "official_cargo_verification_required_in_attempt": true,
+    "old_failure_reclassified": false,
+    "scope": "All seven original candidate sources, full coordinator/contract/phases/workflow and V2 failed-lock-retention correction independently reviewed by root; twelve new controls accepted from original terminal execution.",
+    "size_guidance": {
+      "exceeded": true,
+      "preformat_total_added_lines": 987,
+      "reason": "Keep the complete immutable-source admission, original failure retention and single remaining-budget successor attempt in one reviewable transaction. The data contract, orchestration and admission were reviewed separately. The exact formatted total is retained in PLAN_BUILD_RESULT; no claim of compliance with the 800-line guidance.",
+      "repository_guidance_lines": 800
+    },
+    "stage_outcomes": "Source and data-contract acceptance only. Real successor generation, strict locked graphs and compatibility continuation remain unexecuted.",
+    "staged_review": [
+      {
+        "added_lines": 224,
+        "paths": [
+          "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py",
+          "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py"
+        ],
+        "stage": "Pure data contract and twelve meaningful controls"
+      },
+      {
+        "added_lines": 537,
+        "paths": [
+          "scripts/run_sqlx_unused_patch_successor_v1.py",
+          "scripts/hepta_sqlx_unused_patch_successor_phases_v1.py",
+          ".github/workflows/hepta-sqlx-unused-patch-successor-v1.yml"
+        ],
+        "stage": "Scope reuse, original retention and five command orchestration"
+      },
+      {
+        "added_lines": 226,
+        "paths": [
+          "qualification/sqlx_unused_patch_successor_admission_v1.json",
+          "scripts/hepta_sqlx_unused_patch_successor_inputs_v1.json"
+        ],
+        "stage": "Inactive input and independent Root admission records"
+      }
+    ],
+    "structural_and_control_result": {
+      "AST_equal": 11,
+      "AST_pairs": 11,
+      "bytes": 23208,
+      "child_seconds": 0.03251545783132315,
+      "exit_code": 0,
+      "job": "1a216bcc79d-ffbe-44c2",
+      "new_control_count": 12,
+      "output_complete": true,
+      "output_durable": true,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-eleven-ast-sqlx-twelve-controls-root-v1/RESULT.json",
+      "sha256": "91fc929d027539ff2c823c509dfeb72ea3a454d0dc6bc825eb389ddc26e69703",
+      "stderr_eof": true,
+      "stdout_eof": true,
+      "terminal_publication_confirmed": true,
+      "whole_seconds": 0.06814041710458696
+    }
+  },
+  "parent": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+  "parent_tree": "a720083f7bd3d1df4222908bd5aa946c9eb43dce",
+  "preserve_original_failure": true,
+  "previous_preparation_failure": {
+    "actual_job_seconds": 34,
+    "artifact_id": 15096814343,
+    "attempt": 1,
+    "conservative_checkout_subcap_debit_seconds": 10,
+    "conservative_tool_subcap_debit_seconds": 17,
+    "conservative_whole_debit_seconds": 35,
+    "generation_seconds_used": 0,
+    "job_id": 139758457986,
+    "official_version_stdout_sha256": "f6bf372223c4f6d50cbe5b1d0aaf8892e353bfd913b36ad0b19e425551692222",
+    "phase": "prepare",
+    "queue_seconds": 2028,
+    "review_sha256": "27b0a8e4628e3aed2185de86705b221477ec4fbb19a0e95c22eb7bd87dfd0cd3",
+    "run_id": 45775618828,
+    "source_before_tool_seconds": 9.005554398000001,
+    "source_head": "36958e341975e7f4e01aa9ffe1d06900af521701",
+    "source_tree": "f5640a491aedd057ad979e12aa8eec67c67be89d",
+    "status": "failure",
+    "through_upload_seconds": 30.539630265999996,
+    "tool_preparation_seconds": 16.940018717
+  },
+  "publication_paths": [
+    ".github/workflows/hepta-sqlx-unused-patch-successor-v1.yml",
+    "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py",
+    "qualification/sqlx_unused_patch_successor_admission_v1.json",
+    "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py",
+    "scripts/hepta_sqlx_unused_patch_successor_inputs_v1.json",
+    "scripts/hepta_sqlx_unused_patch_successor_phases_v1.py",
+    "scripts/run_sqlx_unused_patch_successor_v1.py"
+  ],
+  "replay_completed_stages": false,
+  "reviewer": "root",
+  "root_review": {
+    "budget_accounting": "Preserve failed #7128 34s job and actual30.539630265999996 through-upload. Conservative35 whole debit; checkout10/tool17 are nested within it. Generation769 remains wholly unstarted.",
+    "literal_equivalence": {
+      "bytes": 3902,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_CONTINUATION_ROOT_LITERAL_EQUIVALENCE_V1.json",
+      "sha256": "6773eb83877ad285b4dfd1a34b4f90839cf26943af2b8693a539fedafa9454fe"
+    },
+    "minimal_semantic_fix_capsule": {
+      "bytes": 16850,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7128_SQLX_CLI_RELEASE_MINIMAL_SOURCE_ONLY_V1.json",
+      "sha256": "19f8211c2e169125caffa227780cbb4cfcd79fc98a0b26eeb3ebe63c331e5f27"
+    },
+    "new_format_result": {
+      "bytes": 17383,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-sqlx-windows-six-new-python-format-root-v1/RESULT.json",
+      "scope": "Only the three new SQLx Python source rows in this six-file preparation; no old twelve-control execution is claimed.",
+      "sha256": "41718f15aea4337f841e7187fab37345c8d58177c1facbf7d26936df252e3940",
+      "whole_seconds_after_final_io": 0.10468799993395805
+    },
+    "new_source_execution_authorized": true,
+    "no_claims": [
+      "strict locked successor graph success",
+      "compatibility fixture success",
+      "native12+3",
+      "full CI",
+      "scientific/adoption/FinalUse"
+    ],
+    "original_control_execution_reclassified": false,
+    "original_failure_review": {
+      "bytes": 47701,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7128_SQLX_ORIGINAL_FAILURE_INDEPENDENT_REVIEW_V2.json",
+      "sha256": "27b0a8e4628e3aed2185de86705b221477ec4fbb19a0e95c22eb7bd87dfd0cd3"
+    },
+    "required_final_bindings": [],
+    "status": "SOURCE_REVIEWED_AND_REMAINING_SCOPE_ADMITTED"
+  },
+  "schema": "root-sqlx-unused-patch-successor-admission-v1"
+}
