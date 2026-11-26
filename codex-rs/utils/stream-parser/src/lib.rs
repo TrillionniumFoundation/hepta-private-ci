@@ -4,6 +4,8 @@ mod citation;
 mod hia_native_citation_stream_parser;
 #[cfg(feature = "hia-native")]
 mod hia_native_citation_stream_parser_wire;
+#[cfg(feature = "hia-native")]
+mod hia_native_utf8_stream;
 mod inline_hidden_tag;
 mod proposed_plan;
 mod stream_text;
