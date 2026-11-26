@@ -1,0 +1,199 @@
+{
+  "archive_sha256": "8cf1d68f5c8924ff415d9efcb134921b302b268a24c2f03c365c1cf7c706e182",
+  "design": "Post-hoc. Mixed precision model, CPU PyTorch reverse mode through original forward. Derivatives are with respect to standardized post-clipping inputs. Batch members evolve independently.",
+  "num_windows": 224,
+  "rank_definition": "PyTorch matrix_rank of double-cast 16x5 native gradients, using its default numerical threshold.",
+  "results": {
+    "fixed_centered-1601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "0": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_sha256": "d462527b88454b950e21cb46e82fa18e0be291db6ff06da677c285b163dc53f0"
+    },
+    "fixed_centered-2601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "0": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_sha256": "d996bc051422e687bd78d4cf2f00567bf69c940ee8affa003694b39bc7dca9ac"
+    },
+    "fixed_centered-601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "0": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "weight_sha256": "b42d9579a9995d1fca7d1a40ffd04674c65ae10adc5c3ed893789a670f100a10"
+    },
+    "qvi_centered-1601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        0.03335927054286003,
+        0.12619604170322418,
+        0.3395336866378784
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "5": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.02993101167621445,
+        0.08448500199747022,
+        0.125281971829039
+      ],
+      "weight_sha256": "49b4eb29516e17255391a987d0adc7fd4b5b65d38b477f4ec5ab1add9f0d9725"
+    },
+    "qvi_centered-2601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        0.03170536831021309,
+        0.11646243184804916,
+        0.34815916419029236
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "5": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.025849806151017434,
+        0.0795395221420975,
+        0.1178671912094225
+      ],
+      "weight_sha256": "61d0e99152b0bb4cb70cd78cf2bed9d9ee75680cd02dcba70271b6a611e57179"
+    },
+    "qvi_centered-601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        0.03132724389433861,
+        0.1409221813082695,
+        0.3550359010696411
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "5": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.026653283922187937,
+        0.07981655823151407,
+        0.11661953393342725
+      ],
+      "weight_sha256": "8521e431e5e985a2e8bc48010d40046950256da6dd0a89f5d42236555728a754"
+    },
+    "qvi_raw-1601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        6.304863291006768e-06,
+        1.1966945749009028e-05,
+        2.381698868703097e-05
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "5": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.03460483598754755,
+        0.0721365347998072,
+        0.08624076704006128
+      ],
+      "weight_sha256": "1f4783b57cd5d79fc1e791a2eb2a9635616a64d30c1d95427ff103c0655cf237"
+    },
+    "qvi_raw-2601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        8.517150490661152e-06,
+        1.684261496848194e-05,
+        2.6754827558761463e-05
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "5": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.04328509325278502,
+        0.06566637443149217,
+        0.08240822769429373
+      ],
+      "weight_sha256": "d996bc051422e687bd78d4cf2f00567bf69c940ee8affa003694b39bc7dca9ac"
+    },
+    "qvi_raw-601": {
+      "final_logit_margin_first_frame_gradient_norm_min_median_max": [
+        9.325076462118886e-06,
+        0.00027639053587336093,
+        0.0003851471992675215
+      ],
+      "final_logit_margin_last_frame_gradient_norm_min_median_max": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "first_sender_matrix_rank": {
+        "5": 224
+      },
+      "sender_frobenius_min_median_max": [
+        0.02043555167804814,
+        0.08234250663078486,
+        0.10238896603818924
+      ],
+      "weight_sha256": "8fa455f0e1184ded0072812bd6fbe7a4b07d2f8f78328de78c2954a02e5a2948"
+    }
+  },
+  "sequence_length": 8,
+  "torch_version": "2.13.0+rocm10.0.0"
+}

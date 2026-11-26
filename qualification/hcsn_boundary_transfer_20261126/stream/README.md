@@ -37,3 +37,19 @@
 在本目录执行 `python verify.py`。只依赖 Python 标准库，以封存文件校验每个原始权重、逐窗概率、完整流程退出码、适格检查点、指标和源版本。原始两个协议的汇总 JSON 与 CSV 必须与重新生成的文件逐字节一致。第三种的汇总为 `wallplus_summary.json`。`sender_intervention.json` 保留逐窗干预概率及权重指纹。
 
 在授权可访问仓库的环境中，将上游模型固定到前述提交并加入 `PYTHONPATH`，在作者固定数据的目录上依次执行 `python launch.py --help`、`python wall.py --help`、`python wallplus.py --help` 所示的独立输出目录命令。`protocol.md`、`wall_protocol.md` 和 `wallplus_protocol.md` 是各自冻结的协议；训练运行所用源码与预先登记的 SHA-256 均进入归档。Data credit: Luis Candanedo and Véronique Feldheim, *Accurate occupancy detection of an office room from light, temperature, humidity and CO2 measurements using statistical learning models*, Energy and Buildings 112 (2016), 28–39. UCI dataset DOI 10.24432/C5X01N, CC BY 4.0.
+
+## 冻结模型的输入导数
+
+本次事后核查复用固定 128 步协议按开发集选出的权重，以及已封存的 224 个测试窗口。每次取一个真实窗口的首帧，沿原 PyTorch 前向路径对输入反向传播，计算 16 个发送者输出的边界对五个已标准化、已截断的传感坐标的雅可比。第六个时钟坐标保持固定。三个原始 QVI 和三个中心化 QVI 配置的 1,344 个矩阵全部为秩 5，三个固定边界对照的 672 个矩阵全部为秩 0。九个臂与种子组合中有八种不同的权重文件字节，配置与权重共同确定被测函数。三个中心化模型的首帧发送者雅可比 Frobenius 范数中位数为 0.0795–0.0845，原始模型为 0.0657–0.0823。
+
+再让每个窗口的八帧都经过原模型，从末帧两类 logit 之差反传。相对于首帧五个坐标的梯度范数，中位数在三个中心化模型中为 0.116–0.141，在三个原始模型中为 0.0000120–0.000276。当分子和分母来自同种子但分别训练的模型时，这些差异包含优化所得权重的影响。对末帧当期输入测得的梯度全部为零，符合发送端到接收端使用上一帧消息、读出只连接收端的约束。固定边界对照的首、末帧读出梯度均为零。该测量描述冻结模型的局部敏感度，性能结果和样本来源仍按前述登记的实验报告。
+
+在仓库根目录运行以下命令。数据目录需要包含原加载器按 SHA-256 核验的三个传感器原文件，权重使用本目录已经归档的 `equal_updates_selected_weights.zip`。
+
+```sh
+python -m qualification.hcsn_boundary_transfer_20261126.stream.input_gradients \
+  --data /path/to/occupancy-data \
+  --weights qualification/hcsn_boundary_transfer_20261126/stream/equal_updates_selected_weights.zip
+```
+
+`input_gradients.json` 保存逐臂秩、梯度范数的最小值、中位数、最大值及权重摘要。CPU 上使用 PyTorch 2.13.0+rocm10.0.0，两次独立进程复算所得 JSON 的 SHA-256 均为 `be72454e16298e3863f000a31a8452ec4af048a8f63b24f63a51ae8e17484b9b`。
