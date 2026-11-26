@@ -70,7 +70,7 @@ install:
     #!powershell.exe -File
     $pwsh = Get-Command pwsh.exe -ErrorAction SilentlyContinue
     if (-not $pwsh) {
-        winget install --exact --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
+        winget install --exact --id Microsoft.PowerShell --source winget --accept-source-agreements --accept-source-agreements
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
     rustup show active-toolchain
@@ -156,7 +156,7 @@ bazel-lock-check:
 
 [windows]
 bazel-lock-check:
-    bazel mod deps --lockfile_mode=error; if ($LASTEXITCODE -ne 0) { Write-Error "MODULE.bazel.lock is out of date. Run 'just bazel-lock-update' and commit the updated lockfile."; exit 1 }
+    bazel mod deps --lockfile_mode=error; $code = $LASTEXITCODE; if ($code -ne 0) { [Console]::Error.WriteLine("Bazel could not verify MODULE.bazel.lock (exit $code); see its diagnostics above."); [Console]::Error.WriteLine("Only if Bazel reports lockfile drift, run 'just bazel-lock-update' and commit the updated lockfile."); exit $code }
 
 bazel-test:
     bazel test --test_tag_filters=-argument-comment-lint //... --keep_going
@@ -176,7 +176,7 @@ build-for-release:
 
 # Run the MCP server
 mcp-server-run *args:
-    cargo run -p codex-mcp-server -- {args}
+    cargo run --bin codex-mcp-server -- {args}
 
 # Regenerate the json schema for config.toml from the current config types.
 write-config-schema:
