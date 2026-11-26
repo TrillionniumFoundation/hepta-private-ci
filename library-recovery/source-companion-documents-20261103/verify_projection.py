@@ -3,6 +3,7 @@
 
 import json
 from pathlib import Path
+import runpy
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
@@ -21,6 +22,8 @@ if sys.flags.optimize:
     raise SystemExit("optimized Python is refused")
 
 root = Path(__file__).resolve().parent
+repository = root.parents[1]
+restore = repository / "qa/repository-consolidation/20261115/restore_raw_evidence.py"
 original_manifest = read_regular(root, "SOURCE_MANIFEST.json", MAX_CONTROL)
 require(
     identity(original_manifest)["oid"] == "db63cae4f1609c02bd95cd9971304b697787a1b1",
@@ -31,7 +34,13 @@ seen = set()
 for row in manifest["candidates"] + manifest["notices"]:
     path = root / row["relative_path"]
     require(path.resolve().is_relative_to(root), "projection path escaped root")
-    raw = read_regular(root, row["relative_path"], MAX_TAR)
+    try:
+        raw = read_regular(root, row["relative_path"], MAX_TAR)
+    except FileNotFoundError:
+        read_verified = runpy.run_path(str(restore))["read_verified"]
+        raw = read_verified(
+            repository, path.relative_to(repository).as_posix(), row["bytes"], row["sha256"]
+        )
     actual = identity(raw)
     require(actual["bytes"] == row["bytes"], row["relative_path"] + ": size")
     require(actual["sha256"] == row["sha256"], row["relative_path"] + ": SHA256")

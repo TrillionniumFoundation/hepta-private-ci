@@ -93,7 +93,9 @@ ARCHIVED_SEALED_RUN_RECORDS_INDEX = "qa/repository-consolidation/20261126/archiv
 ARCHIVED_AGE_APACHE_LICENSE_INDEX = "qa/repository-consolidation/20261126/archived-age-apache-license/raw-evidence-storage.json"
 SYNTECT_METADATA_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/syntect-metadata/raw-evidence-storage.json"
 BM25_FORMAT_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/bm25-format-originals/raw-evidence-storage.json"
+COMPANION_DOCUMENT_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/companion-document-originals/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    COMPANION_DOCUMENT_ORIGINALS_INDEX: "29504ec13ca2d589170b5d723d36e9f786127408d38f3a31b3b02f0bfce41680",
     BM25_FORMAT_ORIGINALS_INDEX: "b2f7521d9e5332224bc20c777d92a4719357d88dceec64a0d029136df12ff900",
     SYNTECT_METADATA_ORIGINALS_INDEX: "5f3ae1405d41f753ba9f9fa899c049be21cea18452d4951539f26376efc43bed",
     ARCHIVED_AGE_APACHE_LICENSE_INDEX: "8f5382b798ea187bec27da72889d91cfc98457645dc6ea9b294ccd8639063943",
