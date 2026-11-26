@@ -84,7 +84,9 @@ ARCHIVED_VALIDATION_READBACKS_INDEX = "qa/repository-consolidation/20261126/arch
 ARCHIVED_DEPENDENCY_DIAGNOSTICS_INDEX = "qa/repository-consolidation/20261126/archived-dependency-diagnostics/raw-evidence-storage.json"
 ARCHIVED_CONTEXT_COMPILER_QUALIFICATION_INDEX = "qa/repository-consolidation/20261126/archived-context-compiler-qualification/raw-evidence-storage.json"
 ARCHIVED_ARTIFACT_WITHDRAWAL_INDEX = "qa/repository-consolidation/20261126/archived-artifact-withdrawal-qualification/raw-evidence-storage.json"
+ARCHIVED_SEALED_PR_READBACKS_INDEX = "qa/repository-consolidation/20261126/archived-sealed-pr-readbacks/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    ARCHIVED_SEALED_PR_READBACKS_INDEX: "5b43687d38cc0c2cfba0efa64fc328917664d82a789e46578375d31506d796ba",
     ARCHIVED_ARTIFACT_WITHDRAWAL_INDEX: "514e823146d9ed75a561307168654929814a410701d086a07428061cc0fa52fe",
     ARCHIVED_CONTEXT_COMPILER_QUALIFICATION_INDEX: "baa4b8980f650eb5840f3a499fcb846706217818877c98a80d369c4890f4e9bb",
     ARCHIVED_DEPENDENCY_DIAGNOSTICS_INDEX: "6db8aa6375c4955da92c69b166b10dc975cac283cb499a6cd8435ea38407f131",
