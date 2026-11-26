@@ -13,6 +13,8 @@ from pathlib import Path
 from typing import Any
 
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
+from replacement_parameter_identity import validate_identity_receipt
+from replacement_arctic_unpadded_mask import METHOD as ARCTIC_MASK_METHOD, SCOPE as ARCTIC_MASK_SCOPE
 from replacement_physical import TRAIN_RATE, TRAIN_SEED, TRAIN_STEPS, TEMPERATURES
 
 KEYS = frozenset(("schema", "candidate", "checkpoint", "loaded_parameter_count",
@@ -222,6 +224,37 @@ def audit_arm(name: str, result: Any, spec: dict) -> list[str]:
             errors.append(f"{name}: inconsistent tokenizer rewrite or original-weight identity")
     elif compat is not None:
         errors.append(f"{name}: non-Laya Encoder must not claim Laya tokenizer compatibility")
+    # The pinned GTE remote-code nonpersistent RoPE buffers can be invalid
+    # after meta loading. An Arctic arm must disclose the bounded, CPU-only
+    # reconstruction rather than present unverified logits as physical evidence.
+    rope = perf.get("arctic_rope_compat") if isinstance(perf, dict) else None
+    if name == "arctic_305m":
+        expected_keys = {"method", "original_position_buffer_valid",
+                         "original_rope_cache_valid", "max_position_embeddings",
+                         "rope_dim", "rope_theta", "production_qualified", "loaded_parameter_identity", "attention_mask_compat"}
+        if (not isinstance(rope, dict) or set(rope) != expected_keys
+                or type(rope["method"]) is not str
+                or rope["method"] != "pinned_gte_runtime_buffers_v1"
+                or type(rope["original_position_buffer_valid"]) is not bool
+                or type(rope["original_rope_cache_valid"]) is not bool
+                or any(type(rope[key]) is not int for key in
+                       ("max_position_embeddings", "rope_dim", "rope_theta"))
+                or rope["max_position_embeddings"] != 8192
+                or rope["rope_dim"] != 64 or rope["rope_theta"] != 160000
+                or rope["production_qualified"] is not False
+                or not validate_identity_receipt(rope["loaded_parameter_identity"])
+                or not isinstance(rope["attention_mask_compat"], dict)
+                or set(rope["attention_mask_compat"]) != {
+                    "method", "scope", "transformers_version", "production_qualified"}
+                or any(type(rope["attention_mask_compat"][key]) is not str for key in
+                       ("method", "scope", "transformers_version"))
+                or rope["attention_mask_compat"]["method"] != ARCTIC_MASK_METHOD
+                or rope["attention_mask_compat"]["scope"] != ARCTIC_MASK_SCOPE
+                or rope["attention_mask_compat"]["transformers_version"] != "5.20.2"
+                or rope["attention_mask_compat"]["production_qualified"] is not False):
+            errors.append(f"{name}: missing or unqualified pinned Arctic RoPE receipt")
+    elif rope is not None:
+        errors.append(f"{name}: unrelated model must not claim Arctic RoPE reconstruction")
     scale = perf.get("physical_private_head_scale") if isinstance(perf, dict) else None
     if kind == "encoder_plus_new_task_head":
         errors.extend(f"{name}: {error}" for error in validate_private_head_scale(scale))

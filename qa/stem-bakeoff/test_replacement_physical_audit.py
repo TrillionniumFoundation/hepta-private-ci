@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import unittest
 
+from test_replacement_parameter_identity import receipt
 from replacement_gate import EXPECTED, SPLITS, score_rows
 from replacement_physical_audit import assess, audit_arm
 
@@ -60,6 +61,16 @@ def fake(name):
                    original_weight_sha256=spec["weight_sha256"],
                    no_original_snapshot_mutation_observed=True)
               if name.startswith("laya_") else None)
+    arctic_rope = (dict(method="pinned_gte_runtime_buffers_v1",
+                       original_position_buffer_valid=False,
+                       original_rope_cache_valid=False,
+                       max_position_embeddings=8192, rope_dim=64, rope_theta=160000,
+                       production_qualified=False, loaded_parameter_identity=receipt(),
+                       attention_mask_compat=dict(
+                           method="arctic_single_unpadded_gte_mask_v1",
+                           scope="single_row_unpadded_cpu_float32_shadow_only",
+                           transformers_version="5.20.2", production_qualified=False))
+                   if name == "arctic_305m" else None)
     return dict(schema="hepta.neuron.replacement-physical-shadow.v1",
                 candidate=name, checkpoint=dict(
                     repository=spec["repository"], revision=spec["revision"],
@@ -75,6 +86,7 @@ def fake(name):
                     load_ms=200., forward_latency_p50_ms=1.,
                     raw_forward_throughput_per_second=1.0,
                     laya_tokenizer_compat=compat,
+                    arctic_rope_compat=arctic_rope,
                     physical_private_head_scale=(None if name.startswith("laya_")
                                                  else fake_scale())),
                 limits=dict(historical_2014_dataset=True, target_device_qualified=False,
@@ -95,6 +107,67 @@ class PhysicalAuditTests(unittest.TestCase):
         self.assertFalse(report["production_activation_allowed"])
         self.assertFalse(report["all_six_production_blockers_closed"])
         self.assertEqual(report["authority"], "DENY_ALL")
+
+    def test_arctic_rope_integrity_receipt_fail_closed(self):
+        case = fake("arctic_305m")
+        self.assertEqual(audit_arm("arctic_305m", case,
+                                  REGISTRY["models"]["arctic_305m"]), [])
+        del case["performance"]["arctic_rope_compat"]
+        self.assertTrue(any("Arctic RoPE" in x for x in
+                            audit_arm("arctic_305m", case,
+                                      REGISTRY["models"]["arctic_305m"])))
+        case = fake("arctic_305m")
+        case["performance"]["arctic_rope_compat"]["production_qualified"] = True
+        self.assertTrue(any("Arctic RoPE" in x for x in
+                            audit_arm("arctic_305m", case,
+                                      REGISTRY["models"]["arctic_305m"])))
+        case = fake("arctic_305m")
+        case["performance"]["arctic_rope_compat"]["attention_mask_compat"]["production_qualified"] = True
+        self.assertTrue(any("Arctic RoPE" in x for x in
+                            audit_arm("arctic_305m", case,
+                                      REGISTRY["models"]["arctic_305m"])))
+        case = fake("harrier_270m")
+        case["performance"]["arctic_rope_compat"] = dict(method="forged")
+        self.assertTrue(any("unrelated model" in x for x in
+                            audit_arm("harrier_270m", case,
+                                      REGISTRY["models"]["harrier_270m"])))
+
+    def test_arctic_mask_receipt_strict_schema(self):
+        good = fake("arctic_305m")
+        original = good["performance"]["arctic_rope_compat"]["attention_mask_compat"]
+        variants = []
+        for value in (0, 0.0, None, True, "false"):
+            variants.append(dict(original, production_qualified=value))
+        for key in ("method", "scope", "transformers_version"):
+            for value in (None, 0, False, [], {}):
+                variants.append(dict(original, **{key: value}))
+        for key in original:
+            row = dict(original)
+            del row[key]
+            variants.append(row)
+        variants.extend((dict(original, extra=False), None, [], False))
+        for variant in variants:
+            with self.subTest(receipt=variant):
+                case = copy.deepcopy(good)
+                case["performance"]["arctic_rope_compat"]["attention_mask_compat"] = variant
+                self.assertTrue(any("Arctic RoPE" in error for error in
+                                    audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
+        self.assertEqual(audit_arm("arctic_305m", good, REGISTRY["models"]["arctic_305m"]), [])
+
+    def test_arctic_rope_receipt_strict_scalar_types(self):
+        good = fake("arctic_305m")
+        for key, values in (
+                ("max_position_embeddings", (8192.0, True)),
+                ("rope_dim", (64.0, True)), ("rope_theta", (160000.0, True)),
+                ("original_position_buffer_valid", (0, 0.0, 1, 1.0)),
+                ("original_rope_cache_valid", (0, 0.0, 1, 1.0)),
+                ("production_qualified", (0, 0.0)), ("method", (None, False))):
+            for value in values:
+                with self.subTest(key=key, value=value):
+                    case = copy.deepcopy(good)
+                    case["performance"]["arctic_rope_compat"][key] = value
+                    self.assertTrue(any("Arctic RoPE" in error for error in
+                                        audit_arm("arctic_305m", case, REGISTRY["models"]["arctic_305m"])))
 
     def test_metric_forgery_rejected(self):
         cases = samples()

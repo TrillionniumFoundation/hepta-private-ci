@@ -19,6 +19,9 @@ import time
 
 from prepare_news_cohorts import load_cohorts, sha
 from replacement_gate import EXPECTED, SPLITS, score_rows, validate_registry
+from replacement_arctic_unpadded_mask import install_arctic_unpadded_mask
+from replacement_parameter_identity import (parameter_identity, METHOD, SCOPE,
+                                            CHUNK_BYTES, MAX_PARAMETER_BYTES)
 from replacement_laya_view import load_laya_cpu_isolated
 from replacement_head_scale import measure_trained_head_fanout
 
@@ -117,6 +120,82 @@ def configure_arctic_cpu(config) -> dict:
     return flags
 
 
+def restore_arctic_nonpersistent_buffers(encoder) -> dict:
+    """Recompute pinned GTE runtime-only RoPE buffers on the CPU research host.
+
+    Invalid nonpersistent buffers are consistent with a loading issue; the
+    exact root cause is not established by this reconstruction. No publisher file or model parameter is patched.
+    """
+    import torch
+
+    cfg = encoder.config
+    if (type(encoder).__name__ != "GteModel"
+            or type(cfg.max_position_embeddings) is not int or cfg.max_position_embeddings != 8192
+            or type(cfg.hidden_size) is not int or cfg.hidden_size != 768
+            or type(cfg.num_attention_heads) is not int or cfg.num_attention_heads != 12
+            or type(cfg.rope_theta) not in (int, float) or cfg.rope_theta != 160000
+            or cfg.rope_scaling is not None or cfg.position_embedding_type != "rope"
+            or cfg.use_memory_efficient_attention is not False
+            or cfg.unpad_inputs is not False):
+        raise ValueError("unexpected pinned Arctic RoPE/CPU config")
+    embedding = encoder.embeddings
+    rotary = embedding.rotary_emb
+    if (type(embedding).__name__ != "GteEmbeddings"
+            or type(rotary).__name__ != "RotaryEmbedding"
+            or rotary.dim != 64 or rotary.base != 160000
+            or rotary.max_position_embeddings != 8192
+            or "position_ids" not in embedding._non_persistent_buffers_set
+            or not {"inv_freq", "cos_cached", "sin_cached"} <= rotary._non_persistent_buffers_set):
+        raise ValueError("unexpected pinned Arctic embedding module or RoPE buffers")
+    if any(p.device.type != "cpu" for p in encoder.parameters()):
+        raise ValueError("Arctic shadow buffer reconstruction is CPU-only")
+    hash_cpu, hash_wall = time.process_time_ns(), time.perf_counter_ns()
+    before = parameter_identity(encoder)
+    hash_cpu = time.process_time_ns() - hash_cpu
+    hash_wall = time.perf_counter_ns() - hash_wall
+    before_keys = tuple(sorted(encoder.state_dict()))
+    with torch.no_grad():
+        positions = torch.arange(8192, dtype=torch.long)
+        inv_freq = 1.0 / (160000.0 ** (torch.arange(0, 64, 2, dtype=torch.float32) / 64))
+        freqs = torch.einsum("i,j->ij", positions.float(), inv_freq)
+        angles = torch.cat((freqs, freqs), dim=-1)
+        cos_values, sin_values = angles.cos(), angles.sin()
+        original_positions_valid = torch.equal(embedding.position_ids, positions)
+        original_rope_cache_valid = (
+            rotary.cos_cached.shape == cos_values.shape
+            and rotary.sin_cached.shape == sin_values.shape
+            and torch.equal(rotary.cos_cached, cos_values)
+            and torch.equal(rotary.sin_cached, sin_values))
+        embedding.register_buffer("position_ids", positions, persistent=False)
+        rotary.register_buffer("inv_freq", inv_freq, persistent=False)
+        rotary.register_buffer("cos_cached", cos_values, persistent=False)
+        rotary.register_buffer("sin_cached", sin_values, persistent=False)
+        rotary.max_seq_len_cached = 8192
+        if (not torch.equal(embedding.position_ids, positions)
+                or not torch.isfinite(rotary.cos_cached).all()
+                or not torch.isfinite(rotary.sin_cached).all()
+                or not torch.allclose(rotary.cos_cached.square() + rotary.sin_cached.square(),
+                                      torch.ones_like(rotary.cos_cached), rtol=0, atol=2e-6)
+                or before_keys != tuple(sorted(encoder.state_dict()))):
+            raise ValueError("Arctic nonpersistent RoPE reconstruction failed")
+    started_cpu, started_wall = time.process_time_ns(), time.perf_counter_ns()
+    after = parameter_identity(encoder)
+    hash_cpu += time.process_time_ns() - started_cpu
+    hash_wall += time.perf_counter_ns() - started_wall
+    if before != after:
+        raise ValueError("loaded parameter identity changed during RoPE reconstruction")
+    return {"method": "pinned_gte_runtime_buffers_v1",
+            "loaded_parameter_identity": {"method": METHOD, "scope": SCOPE,
+                "before": before, "after": after,
+                "bytes_hashed": before["parameter_bytes"] + after["parameter_bytes"],
+                "hash_cpu_ns": hash_cpu, "hash_wall_ns": hash_wall,
+                "chunk_bytes": CHUNK_BYTES, "byte_cap": MAX_PARAMETER_BYTES},
+            "original_position_buffer_valid": bool(original_positions_valid),
+            "original_rope_cache_valid": bool(original_rope_cache_valid),
+            "max_position_embeddings": 8192, "rope_dim": 64, "rope_theta": 160000,
+            "production_qualified": False}
+
+
 def tensor_digest(module) -> str:
     import torch
     d = hashlib.sha256()
@@ -125,6 +204,14 @@ def tensor_digest(module) -> str:
         d.update(json.dumps([key, list(t.shape), str(t.dtype)], separators=(",", ":")).encode())
         d.update(memoryview(t.view(torch.uint8).numpy()))
     return d.hexdigest()
+
+
+def finalize_task_head(head):
+    """Clear optimizer gradients before frozen inference without changing weights."""
+    head.zero_grad(set_to_none=True)
+    head.eval()
+    head.requires_grad_(False)
+    return head
 
 
 def train_task_head(train_features, train_labels, calib_features, calib_labels):
@@ -143,9 +230,7 @@ def train_task_head(train_features, train_labels, calib_features, calib_labels):
             raise ValueError("nonfinite real Head training loss")
         loss.backward()
         opt.step()
-    head.eval()
-    for param in head.parameters():
-        param.requires_grad_(False)
+    finalize_task_head(head)
     with torch.no_grad():
         logits = head(calib_features)
         losses = [float(F.cross_entropy(logits / temp, calib_labels)) for temp in TEMPERATURES]
@@ -190,6 +275,7 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
     before_rss = _rss_bytes()
     training = None
     arctic_cpu_flags = None
+    arctic_rope_compat = None
     laya_tokenizer_compat = None
     head_scale_cpu = None
     counters = [0]
@@ -248,6 +334,9 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
             raise ValueError("pinned Arctic CPU model re-enabled unsupported attention profile")
         if loading_info.get("missing_keys") or loading_info.get("mismatched_keys"):
             raise ValueError("real frozen Encoder has missing or mismatched checkpoint tensors")
+        if name == "arctic_305m":
+            arctic_rope_compat = restore_arctic_nonpersistent_buffers(encoder)
+            arctic_rope_compat["attention_mask_compat"] = install_arctic_unpadded_mask(encoder)
         encoder.requires_grad_(False).eval()
         handle = encoder.register_forward_hook(lambda *_: counters.__setitem__(0, counters[0] + 1))
         load_ms = (time.perf_counter() - loaded_at) * 1000
@@ -261,6 +350,12 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
                                            return_tensors="pt")
                         if not 0 < inputs["input_ids"].shape[1] <= 192:
                             raise ValueError("invalid bounded tokenizer output")
+                        if name == "arctic_305m":
+                            if "position_ids" in inputs:
+                                raise ValueError("unexpected Arctic tokenizer position override")
+                            inputs["position_ids"] = torch.arange(
+                                inputs["input_ids"].shape[1], dtype=torch.long,
+                                device=inputs["input_ids"].device).unsqueeze(0)
                         start = time.perf_counter()
                         result = encoder(**inputs)
                         latency.append((time.perf_counter() - start) * 1000)
@@ -314,6 +409,7 @@ def run(name: str, registry: dict, snapshot: Path, cohorts_dir: Path, archive: P
               "scores": scored, "head_training": training,
               "performance": {"device": "cpu", "host": platform.platform(),
                               "runtime": torch.__version__, "arctic_cpu_override": arctic_cpu_flags,
+                              "arctic_rope_compat": arctic_rope_compat,
                               "laya_tokenizer_compat": laya_tokenizer_compat,
                               "physical_private_head_scale": head_scale_cpu,
                               "rss_after_bytes": _rss_bytes(),

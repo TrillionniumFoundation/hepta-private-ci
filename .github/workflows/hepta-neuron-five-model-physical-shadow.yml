@@ -56,6 +56,8 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/contracts"
           "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: \
             --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$RUNNER_TEMP/contracts/bin/python" -m pip install --only-binary=:all: \
+            'numpy==2.2.6'
           "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
             -s qa/stem-bakeoff -p 'test_replacement_physical.py' -v
           "$RUNNER_TEMP/contracts/bin/python" -m unittest discover \
