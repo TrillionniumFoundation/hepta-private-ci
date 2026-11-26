@@ -299,6 +299,7 @@ fn recovery_rehydrates_only_an_indeterminate_non_redispatchable_run() {
         context_digest: digest('7'),
         compilation_receipt_digest: digest('8'),
         cancel_reason: Some("process_restart".to_string()),
+        dispatch_digest: None,
     };
     let recovered = coordinator
         .recover_indeterminate(recovery.clone())
@@ -512,4 +513,147 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
         Err(AgentRunError::InvalidRunStart("objective disposition"))
     );
     assert_eq!(coordinator.run("run.abstain"), None);
+}
+
+#[test]
+fn exact_dispatch_is_a_single_winner_irrevocable_effect_entry_fence() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("start");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+
+    let fresh = coordinator
+        .mark_dispatched_exact(300, "run.1", 2, &digest('a'))
+        .expect("fresh exact effect-entry fence");
+    assert_eq!(fresh.phase, RunPhase::Dispatched);
+    assert_eq!(fresh.dispatch_digest, Some(digest('a')));
+    assert!(!fresh.idempotent, "only this receipt is a send permit");
+
+    let reconciled = coordinator
+        .mark_dispatched_exact(301, "run.1", 2, &digest('a'))
+        .expect("same fence reconciliation");
+    assert!(
+        reconciled.idempotent,
+        "reconciliation is never a send permit"
+    );
+    assert_eq!(
+        coordinator.mark_dispatched_exact(301, "run.1", 2, &digest('b')),
+        Err(AgentRunError::Conflict)
+    );
+
+    let before = coordinator.run("run.1");
+    assert_eq!(
+        coordinator.abort_before_effect("run.1", 2, &digest('a'), "late abort"),
+        Err(AgentRunError::InvalidTransition),
+        "the server fence must make abort-after-send impossible"
+    );
+    assert_eq!(coordinator.run("run.1"), before);
+    assert_eq!(coordinator.active_run_count(), 1);
+}
+
+#[test]
+fn exact_abort_is_available_only_before_effect_entry_and_is_idempotent() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("start");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+
+    let aborted = coordinator
+        .abort_before_effect("run.1", 2, &digest('c'), "final-use denied")
+        .expect("abort context-attached predecessor");
+    assert_eq!(aborted.phase, RunPhase::Cancelled);
+    assert_eq!(aborted.dispatch_digest, Some(digest('c')));
+    assert_eq!(coordinator.active_run_count(), 0);
+
+    let repeated = coordinator
+        .abort_before_effect("run.1", 2, &digest('c'), "final-use denied")
+        .expect("repeat exact abort");
+    assert!(repeated.idempotent);
+    assert_eq!(
+        coordinator.abort_before_effect("run.1", 2, &digest('d'), "final-use denied"),
+        Err(AgentRunError::Conflict)
+    );
+    assert_eq!(
+        coordinator.abort_before_effect("run.1", 2, &digest('c'), "different reason"),
+        Err(AgentRunError::Conflict)
+    );
+}
+
+#[test]
+fn duplicate_owner_stress_never_accepts_two_dispatch_digests() {
+    for winner in ['a', 'b'] {
+        let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+        coordinator.start_run(100, snapshot()).expect("start");
+        coordinator
+            .attach_context(200, 1, attachment())
+            .expect("attach");
+        let selected = digest(winner);
+        coordinator
+            .mark_dispatched_exact(300, "run.1", 2, &selected)
+            .expect("winner");
+        for candidate in ['a', 'b', 'c', 'd'] {
+            let result = coordinator.mark_dispatched_exact(301, "run.1", 2, &digest(candidate));
+            if candidate == winner {
+                assert!(result.expect("same digest").idempotent);
+            } else {
+                assert_eq!(result, Err(AgentRunError::Conflict));
+            }
+        }
+    }
+}
+
+#[test]
+fn exact_abort_retry_rejects_revision_digest_or_reason_drift() {
+    let mut owner = AgentRunCoordinator::compose_runtime(composition()).unwrap();
+    owner.start_run(100, snapshot()).unwrap();
+    owner.attach_context(200, 1, attachment()).unwrap();
+    let original = owner
+        .abort_before_effect("run.1", 2, &digest('a'), "pre-effect fence denied")
+        .unwrap();
+    assert!(
+        owner
+            .abort_before_effect("run.1", 2, &digest('a'), "pre-effect fence denied")
+            .unwrap()
+            .idempotent
+    );
+    assert!(
+        owner
+            .abort_before_effect("run.1", 1, &digest('a'), "pre-effect fence denied")
+            .is_err()
+    );
+    assert!(
+        owner
+            .abort_before_effect("run.1", 2, &digest('b'), "pre-effect fence denied")
+            .is_err()
+    );
+    assert!(
+        owner
+            .abort_before_effect("run.1", 2, &digest('a'), "different reason")
+            .is_err()
+    );
+    assert_eq!(owner.run("run.1"), Some(original));
+    assert_eq!(owner.active_run_count(), 0);
+}
+
+#[test]
+fn normal_cancel_is_not_reusable_as_a_pre_effect_abort() {
+    let mut owner = AgentRunCoordinator::compose_runtime(composition()).unwrap();
+    owner.start_run(100, snapshot()).unwrap();
+    owner.attach_context(200, 1, attachment()).unwrap();
+    owner
+        .mark_dispatched_exact(300, "run.1", 2, &digest('a'))
+        .unwrap();
+    owner.cancel_run(400, "run.1", 3, "cancel").unwrap();
+    owner
+        .observe_terminal("run.1", 4, RunPhase::Cancelled, true)
+        .unwrap();
+    let before = owner.run("run.1");
+    assert!(
+        owner
+            .abort_before_effect("run.1", 2, &digest('a'), "cancel")
+            .is_err()
+    );
+    assert_eq!(owner.run("run.1"), before);
 }

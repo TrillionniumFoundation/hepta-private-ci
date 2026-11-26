@@ -59,7 +59,7 @@ pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_ID: &str = "run.lifecycle";
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR: u16 = 1;
-pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 1;
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 2;
 pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
 pub const AGENTD_OVERLOAD_RETRY_AFTER_MS: u64 = 50;
 pub const AGENTD_CONTROL_OVERLOAD_FRAME: &[u8] =
@@ -183,6 +183,8 @@ pub struct AgentRunReceipt {
     pub context_digest: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compilation_receipt_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dispatch_digest: Option<String>,
     pub authority_epoch: u64,
     pub generation: u64,
     pub fence_digest: String,
@@ -501,6 +503,46 @@ impl AgentdRequest {
         }
     }
 
+    pub fn run_mark_dispatched_exact(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_digest: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunMarkDispatchedExact {
+                run_id,
+                expected_revision,
+                dispatch_digest,
+            },
+        }
+    }
+
+    pub fn run_abort_before_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        pre_dispatch_revision: u64,
+        dispatch_digest: String,
+        reason: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                pre_dispatch_revision,
+                dispatch_digest,
+                reason,
+            },
+        }
+    }
+
     pub fn run_cancel(
         request_id: u64,
         spawn_generation: u64,
@@ -620,6 +662,17 @@ pub enum AgentdMethod {
     RunMarkDispatched {
         run_id: String,
         expected_revision: u64,
+    },
+    RunMarkDispatchedExact {
+        run_id: String,
+        expected_revision: u64,
+        dispatch_digest: String,
+    },
+    RunAbortBeforeEffect {
+        run_id: String,
+        pre_dispatch_revision: u64,
+        dispatch_digest: String,
+        reason: String,
     },
     RunCancel {
         run_id: String,

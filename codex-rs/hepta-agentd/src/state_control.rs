@@ -483,6 +483,35 @@ impl AgentdState {
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
+            crate::AgentdMethod::RunMarkDispatchedExact {
+                run_id,
+                expected_revision,
+                dispatch_digest,
+            } => {
+                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .mark_dispatched_exact(now_ms()?, &run_id, expected_revision, &dispatch_digest)
+                    .map_err(run_error)?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                pre_dispatch_revision,
+                dispatch_digest,
+                reason,
+            } => {
+                require_run_reconciliation_ready(lifecycle, fenced)?;
+                let receipt = self
+                    .runs
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .abort_before_effect(&run_id, pre_dispatch_revision, &dispatch_digest, &reason)
+                    .map_err(run_error)?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
             crate::AgentdMethod::RunCancel {
                 run_id,
                 expected_revision,
@@ -1338,6 +1367,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         phase: wire_run_phase(value.phase),
         context_digest: value.context_digest,
         compilation_receipt_digest: value.compilation_receipt_digest,
+        dispatch_digest: value.dispatch_digest,
         authority_epoch: value.authority_epoch,
         generation: value.generation,
         fence_digest: value.fence_digest,
