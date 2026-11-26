@@ -10,7 +10,7 @@ The projection has **zero trainable parameters** but is lossy. Both projection w
 
 ## Data custody and admitted inputs
 
-`matched_head.validate_bank` requires a complete ordered source-first panel, a versioned frozen feature-bank schema, exact candidate repo+full revision, per-source/per-input SHA, complete fit/cal/test case IDs, fixed float32 widths, true declared original physical forward/source-byte audit (still self-report until independent issuer verification), no raw text or target labels and no production authority. It rejects unknown fields, duplicate/reordered/oversized/nonfinite features, source leakage and unmatched model identity. 
+`matched_head.validate_bank` requires a complete ordered source-first panel, a versioned frozen feature-bank schema, exact candidate repo+full revision, per-source/per-input SHA, complete fit/cal/test case IDs, fixed float32 widths, true declared original physical forward/source-byte audit (still self-report until independent issuer verification), no raw text or target labels and no production authority. It rejects unknown fields, duplicate/reordered/oversized/nonfinite features, source leakage and unmatched model identity.
 
 `matched_head.validate_fit` admits only **original FIT** labels. Neither CAL nor TEST labels may appear in training inputs. All Heads train using identical train rows and Head budget, each with its own fixed source-blind feature projection. The code returns private actual initial/trained parameter tensors and **raw uncalibrated CAL/TEST logits**, without using their labels. Do not upload tensors, raw features, per-case logits or hidden labels in GitHub workflow artifacts.
 
