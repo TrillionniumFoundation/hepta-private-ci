@@ -105,7 +105,9 @@ HISTORICAL_INVENTORY_DOCUMENTS_INDEX = (
     "qa/repository-consolidation/20261126/historical-inventory-documents/raw-evidence-storage.json"
 )
 C2_ORIGINAL_STATUS_INDEX = "qa/repository-consolidation/20261126/c2-original-status/raw-evidence-storage.json"
+HISTORICAL_UPSTREAM_TEST_RECIPES_INDEX = "qa/repository-consolidation/20261126/upstream-test-recipe-custody/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    HISTORICAL_UPSTREAM_TEST_RECIPES_INDEX: "6be8378b48363ca551fe0e9437d5df336d52fa76d87b861c9b04f1f2e65865e5",
     C2_ORIGINAL_STATUS_INDEX: "3830a7eedfde9596e53c213d4a9b35068d5e388b87573622eca9d8115289253e",
     HISTORICAL_INVENTORY_DOCUMENTS_INDEX: "12a0a89718be4e89d2820cc213d7334efd497267397204ff8704ab43a9059948",
     TERMINAL_REVIEW_INDEX: "b5847c3675ceec9a0d33754022837a628b2a47b2f446a10fcc7d9489afb13359",
