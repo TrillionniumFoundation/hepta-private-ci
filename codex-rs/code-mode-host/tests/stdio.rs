@@ -31,6 +31,8 @@ use tokio_util::sync::CancellationToken;
 
 #[path = "support/recording_delegate.rs"]
 mod recording_delegate;
+#[path = "support/stdio_observer.rs"]
+mod stdio_observer;
 
 use recording_delegate::RecordingDelegate;
 use recording_delegate::cell_id;
@@ -219,6 +221,7 @@ async fn next_callback_event(
 
 #[tokio::test]
 async fn session_execution_limits_are_isolated_on_a_shared_process_host() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let provider: Arc<dyn CodeModeSessionProvider> =
         Arc::new(ProcessOwnedCodeModeSessionProvider::with_host_program(
             codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary"),
@@ -287,6 +290,7 @@ async fn session_execution_limits_are_isolated_on_a_shared_process_host() {
 
 #[tokio::test]
 async fn remote_session_persists_values_forwards_delegates_and_controls_cells() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let provider = ProcessOwnedCodeModeSessionProvider::with_host_program(
         codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary"),
     );
@@ -389,6 +393,7 @@ text(result.value);
 
 #[tokio::test]
 async fn dropping_long_wait_releases_observer_before_next_wait() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let provider = ProcessOwnedCodeModeSessionProvider::with_host_program(
         codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary"),
     );
@@ -447,6 +452,7 @@ async fn dropping_long_wait_releases_observer_before_next_wait() {
 
 #[tokio::test]
 async fn unawaited_slow_tool_is_cancelled_after_parallel_tools_complete() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let provider = ProcessOwnedCodeModeSessionProvider::with_host_program(
         codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary"),
     );
@@ -559,6 +565,7 @@ return;
 
 #[tokio::test]
 async fn oversized_execute_request_does_not_close_the_shared_host() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let provider = ProcessOwnedCodeModeSessionProvider::with_host_program(
         codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary"),
     );
@@ -591,6 +598,7 @@ async fn oversized_execute_request_does_not_close_the_shared_host() {
 
 #[tokio::test]
 async fn oversized_delegate_payloads_fail_only_the_tool_call() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let provider = ProcessOwnedCodeModeSessionProvider::with_host_program(
         codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary"),
     );
@@ -666,6 +674,7 @@ try {
 
 #[tokio::test]
 async fn oversized_initial_response_does_not_close_the_shared_host() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let provider = ProcessOwnedCodeModeSessionProvider::with_host_program(
         codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary"),
     );
@@ -704,6 +713,7 @@ async fn oversized_initial_response_does_not_close_the_shared_host() {
 #[cfg(unix)]
 #[tokio::test]
 async fn child_process_loss_cleans_up_and_rebuilds_the_shared_host() {
+    let _stderr_observation = stdio_observer::observe_process_stderr();
     let host_program =
         codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").expect("host binary");
     let proxy_dir = tempfile::tempdir().expect("create host proxy directory");
