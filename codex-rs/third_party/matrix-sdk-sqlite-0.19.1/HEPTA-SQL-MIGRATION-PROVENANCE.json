@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.vendor.sql-whitespace.v1",
+  "original_commit": "bb8f73324463d1e8d931a643b71a28800fe40290",
+  "changes": [
+    {
+      "path": "migrations/event_cache_store/015_event_ids_are_encoded.sql",
+      "before": {
+        "bytes": 578,
+        "git_blob": "a306f67ebbed9d3e705f0d360a443b9c86845a0c",
+        "sha256": "01e155a5ea2b0d92476a70e2af54cf0bbe8e2759c1e38e5d99515bcfd043b97b"
+      },
+      "after": {
+        "bytes": 575,
+        "git_blob": "d642472b82831c54b3e8530d8de71438a51121c0",
+        "sha256": "b34baf53eff37c7ba36046c2f108cd8c4200fab3a53c3592a7c8d6536c9108b1"
+      }
+    },
+    {
+      "path": "migrations/state_store/014_global_profiles.sql",
+      "before": {
+        "bytes": 119,
+        "git_blob": "a419509d0224b7259added475a75d2bef46b53d0",
+        "sha256": "d5fd961e7649988b58defd288dc8e05bfec56caa167803bfff347eefefd2b6ae"
+      },
+      "after": {
+        "bytes": 118,
+        "git_blob": "724fce531c3f53fb3f201792e0182410c4e0b616",
+        "sha256": "b020b5ed008a66ef9cf4572a151e1d4170b6dcab4dd8d28390e168f6e2548669"
+      }
+    }
+  ],
+  "scope": "Only SQL line-comment tails and final blank lines; Rust code and locks unchanged.",
+  "verification": "SQLite emitted identical statement bytecode and observed identical data and schema for both migration paths."
+}

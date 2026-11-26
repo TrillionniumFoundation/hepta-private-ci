@@ -4,8 +4,6 @@ use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
 use app_test_support::to_response;
 use app_test_support::write_chatgpt_auth;
-use chrono::Duration;
-use chrono::Utc;
 use codex_app_server_protocol::Account;
 use codex_app_server_protocol::AuthMode;
 use codex_app_server_protocol::GetAccountParams;
@@ -23,6 +21,7 @@ use codex_protocol::account::PlanType as AccountPlanType;
 use pretty_assertions::assert_eq;
 use std::path::Path;
 use tempfile::TempDir;
+use time::Duration;
 use tokio::time::timeout;
 use wiremock::Mock;
 use wiremock::MockServer;
@@ -407,7 +406,7 @@ async fn get_auth_status_omits_token_after_proactive_refresh_failure() -> Result
             .account_id("acct_123")
             .email("user@example.com")
             .plan_type("pro")
-            .last_refresh(Some(Utc::now() - Duration::days(9))),
+            .last_refresh(Some(codex_utils_time::Timestamp::now() - Duration::days(9))),
         AuthCredentialsStoreMode::File,
     )?;
 
@@ -470,7 +469,7 @@ async fn get_auth_status_returns_token_after_proactive_refresh_recovery() -> Res
             .account_id("acct_123")
             .email("user@example.com")
             .plan_type("pro")
-            .last_refresh(Some(Utc::now() - Duration::days(9))),
+            .last_refresh(Some(codex_utils_time::Timestamp::now() - Duration::days(9))),
         AuthCredentialsStoreMode::File,
     )?;
 
@@ -525,7 +524,7 @@ async fn get_auth_status_returns_token_after_proactive_refresh_recovery() -> Res
             .account_id("acct_123")
             .email("user@example.com")
             .plan_type("pro")
-            .last_refresh(Some(Utc::now())),
+            .last_refresh(Some(codex_utils_time::Timestamp::now())),
         AuthCredentialsStoreMode::File,
     )?;
 

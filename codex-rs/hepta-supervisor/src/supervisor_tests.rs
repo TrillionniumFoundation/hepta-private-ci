@@ -741,6 +741,10 @@ fn flapping_running_agent_stops_after_restart_budget_is_exhausted() -> Result<()
     assert!(!stopped.active);
     assert!(!stopped.restart_pending);
     assert_eq!(stopped.restart_attempt, 3);
+    assert!(stopped.events.iter().any(|event| matches!(
+        &event.kind,
+        SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+    )));
     assert_eq!(control.spawn_count(&fleet.first), 4);
 
     assert_eq!(
