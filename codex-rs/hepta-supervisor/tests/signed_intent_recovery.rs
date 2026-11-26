@@ -12,6 +12,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
+use codex_hepta_supervisor::AgentCommand;
 use codex_hepta_supervisor::H7H89ProductionTransition;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
@@ -27,6 +28,7 @@ use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::read_signed_intent;
 use codex_hepta_supervisor::write_signed_intent_recovery_directive;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -153,30 +155,176 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (first, report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert!(report.faults.is_empty());
+    assert!(first.production_recovery_required(&fleet.agent_id)?);
+    drop(first);
 
     let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
-        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    let (mut recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
     assert!(report.faults.is_empty());
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .expect("terminal intent");
     assert_eq!(terminal.status, SignedIntentStatus::Aborted);
     assert_eq!(terminal.target_release, "target-release");
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert!(matches!(
+        recovered.start(
+            &fleet.agent_id,
+            AgentCommand::new(std::env::temp_dir().join("unused-agentd"), Vec::new())?,
+            Instant::now(),
+        ),
+        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
+            if agent_id == fleet.agent_id
+    ));
+    // Replaying the retained directive cannot revive or reinterpret the grant.
+    drop(recovered);
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert!(report.faults.is_empty());
+    assert!(recovered.any_production_recovery_required());
+    assert_eq!(
+        read_signed_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+        Some(terminal),
+    );
+    Ok(())
+}
+
+fn unresolved_intent(
+    fleet: &TestFleet,
+    status: SignedIntentStatus,
+) -> Result<SignedSupervisorIntent, SupervisorError> {
+    SignedSupervisorIntent::new(
+        Sha256Digest::for_bytes(b"grant"),
+        fleet.agent_id.to_string(),
+        H7H89ProductionTransition::Upgrade,
+        "source-release",
+        "target-release",
+        /*expected_control_revision*/ 4,
+        /*expected_lifecycle_generation*/ 1,
+        /*authority_epoch*/ 9,
+        status,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))
+}
+
+#[test]
+fn abort_before_restart_accepts_exact_prepared_and_queued_digest() -> Result<(), SupervisorError> {
+    for status in [SignedIntentStatus::Prepared, SignedIntentStatus::Queued] {
+        let fleet = fleet()?;
+        let record = fleet
+            .registry
+            .load()?
+            .agent(&fleet.agent_id)
+            .cloned()
+            .unwrap();
+        let intent = unresolved_intent(&fleet, status)?;
+        write_intent_raw(record.layout.run_root(), &intent)?;
+        let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let (recovered, _) =
+            Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+        assert!(recovered.any_production_recovery_required());
+        assert_eq!(
+            read_signed_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                .unwrap()
+                .status,
+            SignedIntentStatus::Aborted,
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn stale_or_tampered_abort_does_not_resolve_intent() -> Result<(), SupervisorError> {
+    for tamper in [false, true] {
+        let fleet = fleet()?;
+        let record = fleet
+            .registry
+            .load()?
+            .agent(&fleet.agent_id)
+            .cloned()
+            .unwrap();
+        let intent = unresolved_intent(&fleet, SignedIntentStatus::RecoveryRequired)?;
+        write_intent_raw(record.layout.run_root(), &intent)?;
+        let mut directive =
+            SignedIntentRecoveryDirective::abort(Sha256Digest::for_bytes(b"other intent"))
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        if tamper {
+            directive.intent_sha256 = intent.intent_sha256.clone();
+        }
+        std::fs::write(
+            record
+                .layout
+                .run_root()
+                .join(codex_hepta_supervisor::SIGNED_INTENT_RECOVERY_FILE),
+            serde_json::to_vec(&directive).unwrap(),
+        )?;
+        assert!(
+            Supervisor::recover(
+                fleet.registry.clone(),
+                NoProcessDriver,
+                config(),
+                Instant::now(),
+            )
+            .is_err()
+        );
+        assert_eq!(
+            read_signed_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+            Some(intent),
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn late_abort_cannot_overwrite_committed_or_rolled_back_intent() -> Result<(), SupervisorError> {
+    for status in [
+        SignedIntentStatus::Committed,
+        SignedIntentStatus::RolledBack,
+    ] {
+        let fleet = fleet()?;
+        let record = fleet
+            .registry
+            .load()?
+            .agent(&fleet.agent_id)
+            .cloned()
+            .unwrap();
+        let earlier = unresolved_intent(&fleet, SignedIntentStatus::RecoveryRequired)?;
+        let terminal = unresolved_intent(&fleet, status)?;
+        write_intent_raw(record.layout.run_root(), &terminal)?;
+        let directive = SignedIntentRecoveryDirective::abort(earlier.intent_sha256)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let (recovered, _) =
+            Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+        assert!(!recovered.any_production_recovery_required());
+        assert_eq!(
+            read_signed_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?,
+            Some(terminal),
+        );
+    }
     Ok(())
 }

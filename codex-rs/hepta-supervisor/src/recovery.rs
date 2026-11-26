@@ -105,6 +105,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot
+            .signed_intent
+            .as_ref()
+            .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery)
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
@@ -206,7 +215,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
-            self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
         };
         validate_lease(
@@ -215,6 +223,27 @@ impl<D: ProcessDriver> Supervisor<D> {
             record.lifecycle.generation,
             record.lifecycle.lifecycle,
         )?;
+        // Disposition of an Unknown effect retires its already-observed
+        // lifecycle generations. A late lease cannot revive that worker even
+        // after the disposition itself or a later grant has been recovered.
+        let retired = crate::signed_intent::read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .is_some_and(|intent| {
+                intent.unknown_effects.iter().any(|unknown| {
+                    lease.spawn_generation <= unknown.decision.expected_lifecycle_generation
+                })
+            });
+        // Validate timing before adoption yields ownership of a live handle.
+        let recovery_deadline = if retired {
+            now
+        } else {
+            match record.lifecycle.lifecycle {
+                AgentLifecycle::Starting => deadline(now, self.config.health_timeout)?,
+                AgentLifecycle::Draining => deadline(now, self.config.drain_timeout)?,
+                AgentLifecycle::Failed => deadline(now, self.config.stop_grace)?,
+                AgentLifecycle::Running | AgentLifecycle::Stopped => now,
+            }
+        };
         let spec = AdoptSpec {
             agent_id: agent_id.clone(),
             registry_generation: record.lifecycle.generation,
@@ -231,7 +260,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| driver_error(agent_id, error))?
         {
             Adoption::Adopted(mut process) => {
-                if lease.release_id.as_str() != "unversioned" {
+                if !retired && lease.release_id.as_str() != "unversioned" {
                     let needs_resolution = slot
                         .active_release
                         .as_ref()
@@ -284,27 +313,40 @@ impl<D: ProcessDriver> Supervisor<D> {
                         slot.active_release = Some(leased);
                     }
                 }
-                let phase = match record.lifecycle.lifecycle {
-                    AgentLifecycle::Starting => RuntimePhase::AwaitingHealth {
-                        deadline: deadline(now, self.config.health_timeout)?,
-                    },
-                    AgentLifecycle::Running => RuntimePhase::Running,
-                    AgentLifecycle::Draining => RuntimePhase::Draining {
-                        deadline: deadline(now, self.config.drain_timeout)?,
-                    },
-                    AgentLifecycle::Failed => {
-                        process
-                            .request_stop()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        RuntimePhase::Stopping {
-                            deadline: deadline(now, self.config.stop_grace)?,
-                        }
-                    }
-                    AgentLifecycle::Stopped => {
-                        process
-                            .kill()
-                            .map_err(|error| driver_error(agent_id, error))?;
+                let mut cleanup_error = if retired { process.kill().err() } else { None };
+                let phase = if retired {
+                    if cleanup_error.is_some() {
+                        RuntimePhase::Stopping { deadline: now }
+                    } else {
                         RuntimePhase::Killing
+                    }
+                } else {
+                    match record.lifecycle.lifecycle {
+                        AgentLifecycle::Starting => RuntimePhase::AwaitingHealth {
+                            deadline: recovery_deadline,
+                        },
+                        AgentLifecycle::Running => RuntimePhase::Running,
+                        AgentLifecycle::Draining => RuntimePhase::Draining {
+                            deadline: recovery_deadline,
+                        },
+                        AgentLifecycle::Failed => {
+                            cleanup_error = process.request_stop().err();
+                            RuntimePhase::Stopping {
+                                deadline: if cleanup_error.is_some() {
+                                    now
+                                } else {
+                                    recovery_deadline
+                                },
+                            }
+                        }
+                        AgentLifecycle::Stopped => {
+                            cleanup_error = process.kill().err();
+                            if cleanup_error.is_some() {
+                                RuntimePhase::Stopping { deadline: now }
+                            } else {
+                                RuntimePhase::Killing
+                            }
+                        }
                     }
                 };
                 slot.runtime = Some(AgentRuntime {
@@ -315,13 +357,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                     generation: record.lifecycle.generation,
                     phase,
                     healthy: false,
-                    fenced: false,
+                    fenced: retired || cleanup_error.is_some(),
                 });
                 slot.event(
                     record.lifecycle.generation,
                     SupervisorEventKind::OrphanAdopted,
                 );
-                if record.lifecycle.lifecycle == AgentLifecycle::Running {
+                if let Some(error) = cleanup_error {
+                    // Adoption proved a real live child. Retain its fenced
+                    // handle even when termination failed, so ticks can retry.
+                    return Err(driver_error(agent_id, error));
+                }
+                if !retired && record.lifecycle.lifecycle == AgentLifecycle::Running {
                     // A daemon can die after committing the Running lifecycle but before
                     // appending the matching release-state revision. The lease and exact
                     // agentd handshake prove the live release; close that crash window now.
@@ -343,7 +390,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
-                remove_lease(record.layout.run_root(), &lease)?;
+                // A rejected identity is not proof of process absence. Keep
+                // the lease so ordinary start and Unknown disposal stay fenced.
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,
@@ -357,7 +405,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
             }
         }
-        self.recover_matrix_companion(agent_id, slot, record, now)?;
         Ok(())
     }
 }
