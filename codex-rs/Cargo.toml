@@ -490,7 +490,11 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = "0.9"
+# Maintained, pure-Rust serde_yaml compatibility surface: keep existing source
+# call-sites while removing archived serde_yaml -> unsafe-libyaml. Version is
+# pinned until typed YAML fixtures and cross-platform tests prove parity.
+# RUSTSEC-2024-0449 must not be silenced with a cargo-deny advisory ignore.
+serde_yaml = { package = "noyalib-serde-yaml", version = "=0.0.51" }
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
