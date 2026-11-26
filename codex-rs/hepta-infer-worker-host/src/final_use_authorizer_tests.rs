@@ -38,6 +38,7 @@ fn config(root: &Path, socket: PathBuf, verifying_key: [u8; 32]) -> FinalUseAuth
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
+        issuer_process_identity: None,
     }
 }
 
@@ -211,6 +212,101 @@ fn connected_issuer_peer_uid_must_match_configured_owner() {
         .checked_add(1)
         .unwrap_or_else(|| owner.saturating_sub(1));
     assert!(validate_issuer_peer_uid(other, owner).is_err());
+}
+
+#[cfg(target_os = "linux")]
+fn current_process_identity() -> Result<IssuerProcessIdentityConfig> {
+    let snapshot = capture_issuer_process_identity(std::process::id())?;
+    Ok(IssuerProcessIdentityConfig {
+        executable_sha256: snapshot.executable_sha256,
+        cgroup_sha256: snapshot.cgroup_sha256,
+        boot_id_sha256: snapshot.boot_id_sha256,
+    })
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn linux_issuer_process_identity_rejects_same_uid_substitution() -> Result<()> {
+    let expected = current_process_identity()?;
+    let guard = validate_connected_issuer_process(Some(std::process::id()), Some(&expected))?
+        .ok_or("expected a process identity guard")?;
+    guard.revalidate()?;
+
+    let mut wrong_executable = expected.clone();
+    wrong_executable.executable_sha256 = "1".repeat(64);
+    assert!(
+        validate_connected_issuer_process(
+            Some(std::process::id()),
+            Some(&wrong_executable),
+        )
+        .is_err()
+    );
+
+    let mut wrong_cgroup = expected.clone();
+    wrong_cgroup.cgroup_sha256 = "2".repeat(64);
+    assert!(
+        validate_connected_issuer_process(Some(std::process::id()), Some(&wrong_cgroup)).is_err()
+    );
+
+    let mut wrong_boot = expected;
+    wrong_boot.boot_id_sha256 = "3".repeat(64);
+    assert!(
+        validate_connected_issuer_process(Some(std::process::id()), Some(&wrong_boot)).is_err()
+    );
+    assert!(validate_connected_issuer_process(None, Some(&wrong_boot)).is_err());
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn linux_connected_peer_is_bound_before_and_after_grant_exchange() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let (listener, socket) = listener(directory.path(), "process-bound.sock").await?;
+    let signer = SigningKey::from_bytes(&[45; 32]);
+    let mut authorizer_config = config(
+        directory.path(),
+        socket,
+        signer.verifying_key().to_bytes(),
+    );
+    authorizer_config.issuer_process_identity = Some(current_process_identity()?);
+    let authorizer = UnixFinalUseAuthorizer::from_config(authorizer_config)?;
+    let server_signer = signer.clone();
+    let server = tokio::spawn(async move {
+        serve_once(
+            &listener,
+            Some(&server_signer),
+            revocations(1, &[]),
+            11,
+            None,
+        )
+        .await
+    });
+
+    let expected = binding(41);
+    let token = authorizer.claim(expected.clone()).await?;
+    if !token.enter(&expected)?.matches(&expected) {
+        return Err("process-bound token lost its exact binding".into());
+    }
+    server.await??;
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn linux_production_open_requires_process_identity() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let signer = SigningKey::from_bytes(&[46; 32]);
+    let config_path = directory.path().join("authority.json");
+    let value = config(
+        directory.path(),
+        directory.path().join("unused.sock"),
+        signer.verifying_key().to_bytes(),
+    );
+    std::fs::write(&config_path, serde_json::to_vec(&value)?)?;
+    std::fs::set_permissions(&config_path, std::fs::Permissions::from_mode(0o600))?;
+    assert!(UnixFinalUseAuthorizer::open(&config_path).is_err());
+    Ok(())
 }
 
 /// Bounded test issuer over the production Unix protocol. Only this separate
