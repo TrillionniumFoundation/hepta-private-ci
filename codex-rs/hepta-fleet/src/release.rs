@@ -313,7 +313,13 @@ impl FleetRegistry {
             observe_release("install.sync_bin", sync_directory(&bin_root))?;
             observe_release("install.sync_staging", sync_directory(&staging))?;
             observe_release("install.mode_staging", set_mode(&staging, /*mode*/ 0o555))?;
-            observe_io("install.rename", std::fs::rename(&staging, &final_root))?;
+            let rename_result =
+                observe_io("install.rename", std::fs::rename(&staging, &final_root));
+            #[cfg(all(test, target_os = "macos"))]
+            if let Err(error) = &rename_result {
+                let _ = crate::release_io::observe_failed_rename(&staging, &final_root, error);
+            }
+            rename_result?;
             observe_release(
                 "install.sync_releases_root",
                 sync_directory(self.layout().releases_root()),
