@@ -51,6 +51,7 @@ pub enum ZConversionError {
     SingularTransform,
     Q24Overflow,
     QuantizationError,
+    InvalidReceipt,
 }
 
 impl fmt::Display for ZConversionError {
@@ -61,17 +62,95 @@ impl fmt::Display for ZConversionError {
 
 impl StdError for ZConversionError {}
 
+/// Validated Z conversion evidence. Fields are crate-private so external
+/// callers cannot fabricate a receipt with a struct literal; consumers use the
+/// read-only accessors and `validate` before final use.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ZQ24ConversionReceiptV1 {
     /// Utility x driver sensitivity in canonical original-increment coordinates.
-    pub original_z: Vec<Vec<f64>>,
+    pub(crate) original_z: Vec<Vec<f64>>,
     /// Same coefficients encoded as signed Q24 nearest/ties-to-even raw integers.
-    pub q24_raw: Vec<Vec<i64>>,
-    pub maximum_absolute_quantization_error: f64,
-    pub profile_digest: Digest32,
-    pub source_digest: Digest32,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    pub(crate) q24_raw: Vec<Vec<i64>>,
+    pub(crate) maximum_absolute_quantization_error: f64,
+    pub(crate) profile_digest: Digest32,
+    pub(crate) source_digest: Digest32,
+    pub(crate) receipt_digest: Digest32,
+    pub(crate) authority: AuthorityPosture,
+}
+
+impl ZQ24ConversionReceiptV1 {
+    #[must_use]
+    pub fn original_z(&self) -> &[Vec<f64>] {
+        &self.original_z
+    }
+
+    #[must_use]
+    pub fn q24_raw(&self) -> &[Vec<i64>] {
+        &self.q24_raw
+    }
+
+    #[must_use]
+    pub fn maximum_absolute_quantization_error(&self) -> f64 {
+        self.maximum_absolute_quantization_error
+    }
+
+    #[must_use]
+    pub const fn profile_digest(&self) -> Digest32 {
+        self.profile_digest
+    }
+
+    #[must_use]
+    pub const fn source_digest(&self) -> Digest32 {
+        self.source_digest
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
+    pub fn validate(
+        &self,
+        profile: &AdmittedZConversionProfileV1,
+    ) -> Result<(), ZConversionError> {
+        if self.profile_digest != profile.digest
+            || self.profile_digest.is_zero()
+            || self.source_digest.is_zero()
+            || self.receipt_digest.is_zero()
+            || self.authority != AuthorityPosture::DENY_ALL
+            || self.original_z.len() != profile.specification.utility_dimension
+            || self.q24_raw.len() != self.original_z.len()
+            || !self.maximum_absolute_quantization_error.is_finite()
+            || self.maximum_absolute_quantization_error < 0.0
+            || self.maximum_absolute_quantization_error > Q24_HALF_ULP + f64::EPSILON
+        {
+            return Err(ZConversionError::InvalidReceipt);
+        }
+        for (original, encoded) in self.original_z.iter().zip(&self.q24_raw) {
+            if original.len() != profile.specification.driver_dimension
+                || encoded.len() != original.len()
+            {
+                return Err(ZConversionError::InvalidReceipt);
+            }
+            for (value, raw) in original.iter().zip(encoded) {
+                validate_coefficient(*value, profile.specification.maximum_absolute_z)?;
+                let recovered = *raw as f64 / Q24_SCALE;
+                let error = (*value - recovered).abs();
+                if !error.is_finite()
+                    || error > Q24_HALF_ULP + f64::EPSILON * value.abs().max(1.0)
+                    || error > self.maximum_absolute_quantization_error + f64::EPSILON
+                {
+                    return Err(ZConversionError::InvalidReceipt);
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 /// Admits the coordinate/quantization convention only. Artifact provenance,
@@ -126,9 +205,9 @@ pub fn admit_z_conversion_profile(
         ZCoordinateConventionV1::OriginalIncrement => 0,
         ZCoordinateConventionV1::WhitenedIncrement => 1,
     });
-    bytes.extend_from_slice(&specification.maximum_absolute_z.to_bits().to_be_bytes());
+    bytes.extend_from_slice(&canonical_f64_bits(specification.maximum_absolute_z).to_be_bytes());
     for value in specification.whitening_lower.iter().flatten() {
-        bytes.extend_from_slice(&value.to_bits().to_be_bytes());
+        bytes.extend_from_slice(&canonical_f64_bits(*value).to_be_bytes());
     }
 
     Ok(AdmittedZConversionProfileV1 {
@@ -200,17 +279,19 @@ pub fn convert_z_to_original_q24(
     bytes.extend_from_slice(profile.digest.as_array());
     bytes.extend_from_slice(source_digest.as_array());
     for value in source_z.iter().flatten() {
-        bytes.extend_from_slice(&value.to_bits().to_be_bytes());
+        bytes.extend_from_slice(&canonical_f64_bits(*value).to_be_bytes());
     }
     for value in original_z.iter().flatten() {
-        bytes.extend_from_slice(&value.to_bits().to_be_bytes());
+        bytes.extend_from_slice(&canonical_f64_bits(*value).to_be_bytes());
     }
     for raw in q24_raw.iter().flatten() {
         bytes.extend_from_slice(&raw.to_be_bytes());
     }
-    bytes.extend_from_slice(&maximum_absolute_quantization_error.to_bits().to_be_bytes());
+    bytes.extend_from_slice(
+        &canonical_f64_bits(maximum_absolute_quantization_error).to_be_bytes(),
+    );
 
-    Ok(ZQ24ConversionReceiptV1 {
+    let receipt = ZQ24ConversionReceiptV1 {
         original_z,
         q24_raw,
         maximum_absolute_quantization_error,
@@ -218,7 +299,9 @@ pub fn convert_z_to_original_q24(
         source_digest,
         receipt_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
-    })
+    };
+    receipt.validate(profile)?;
+    Ok(receipt)
 }
 
 fn solve_row_against_lower(row: &[f64], lower: &[Vec<f64>]) -> Result<Vec<f64>, ZConversionError> {
@@ -246,6 +329,14 @@ fn validate_coefficient(value: f64, maximum_absolute_z: f64) -> Result<(), ZConv
         return Err(ZConversionError::CoefficientBound);
     }
     Ok(())
+}
+
+fn canonical_f64_bits(value: f64) -> u64 {
+    if value == 0.0 {
+        0.0_f64.to_bits()
+    } else {
+        value.to_bits()
+    }
 }
 
 fn round_ties_even(value: f64) -> f64 {

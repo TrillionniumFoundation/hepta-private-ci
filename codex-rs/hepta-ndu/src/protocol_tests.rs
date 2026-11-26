@@ -64,11 +64,12 @@ fn local_step_requires_complete_context_before_protocol_publication() {
         receipts.first().expect("first solver receipt"),
     ));
 
-    assert_eq!(bound.subject_id, context.subject_id);
-    assert_eq!(bound.objective_digest, context.objective_digest);
-    assert_eq!(bound.generation, context.generation);
-    assert!(!bound.receipt_digest.is_zero());
-    assert!(!bound.authority.grants_any());
+    assert_eq!(bound.subject_id(), &context.subject_id);
+    assert_eq!(bound.objective_digest(), context.objective_digest);
+    assert_eq!(bound.generation(), context.generation);
+    assert!(!bound.receipt_digest().is_zero());
+    assert!(!bound.authority().grants_any());
+    must(bound.validate());
 }
 
 #[test]
