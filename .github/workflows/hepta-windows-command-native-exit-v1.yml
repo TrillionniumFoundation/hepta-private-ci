@@ -1,0 +1,87 @@
+name: Windows command exit native10 (bounded first attempt)
+
+on:
+  pull_request:
+    types: [opened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-command-native10-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+env:
+  RUSTUP_TOOLCHAIN: 1.96.0
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: core.autocrlf
+  GIT_CONFIG_VALUE_0: "false"
+
+jobs:
+  command-exit-native10:
+    if: >-
+      true &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-windows-source-stat-continuation-20261126-7c9e' &&
+      github.run_attempt == 1
+    runs-on: windows-2025
+    timeout-minutes: 25
+    steps:
+      - name: Start the one remaining continuation job clock
+        shell: pwsh
+        run: |
+          $started = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds() / 1000.0
+          "NATIVE10_JOB_STARTED_UNIX=$started" >> $env:GITHUB_ENV
+      - name: Checkout the immutable source and its real parent
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Record source preparation and start tool preparation
+        shell: pwsh
+        run: |
+          $now = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds() / 1000.0
+          $elapsed = $now - [double]$env:NATIVE10_JOB_STARTED_UNIX
+          "NATIVE10_CHECKOUT_SECONDS=$elapsed" >> $env:GITHUB_ENV
+          "NATIVE10_TOOLS_STARTED_UNIX=$now" >> $env:GITHUB_ENV
+          if ($elapsed -gt 39) { throw "source preparation exceeded its remaining 39-second allowance" }
+      - name: Install the pinned compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        timeout-minutes: 1
+        with:
+          toolchain: 1.96.0
+          targets: x86_64-pc-windows-msvc
+      - name: Install the pinned repository runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 1
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run the admitted native10 owner once
+        shell: pwsh
+        run: |
+          $now = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds() / 1000.0
+          $env:NATIVE10_TOOLS_SETUP_SECONDS = $now - [double]$env:NATIVE10_TOOLS_STARTED_UNIX
+          python -B .github/scripts/hepta_windows_command_native_exit_v1.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve originals from every reached stage
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-command-native10-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-windows-command-native10/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Close the remaining clock after evidence upload
+        if: always()
+        shell: pwsh
+        run: |
+          $elapsed = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds() / 1000.0 - [double]$env:NATIVE10_JOB_STARTED_UNIX
+          Write-Output "NATIVE10_WHOLE_SECONDS_INCLUDING_UPLOAD=$elapsed"
+          if ($elapsed -gt 1451) { throw "whole continuation exceeded its remaining 1451 seconds" }
