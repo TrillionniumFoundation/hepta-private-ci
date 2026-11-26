@@ -2,12 +2,12 @@
 
 ## Supported Versions
 
-Only the latest released version (and, when a prerelease is newer than the latest stable release, that prerelease to a 
+Only the latest released version (and, when a prerelease is newer than the latest stable release, that prerelease to a
 limited extent) are supported.
 
 ## Reporting a Vulnerability
 
-To report a vulnerability in a release or prerelease on crates.io, please go to 
+To report a vulnerability in a release or prerelease on crates.io, please go to
 https://github.com/zip-rs/zip2/security/advisories/new. We'll attempt to:
 
 * Close the report within 7 days without publishing it if:
@@ -19,13 +19,13 @@ https://github.com/zip-rs/zip2/security/advisories/new. We'll attempt to:
 * Accept the report as a draft within 7 days if none of those are the case.
 * Provide progress reports at least every 7 days to the original reporter.
 * Aim to provide a fix within 30 days of the initial report. If a complete fix is not feasible in that timeframe (for
-  example, due to complexity or external dependencies), we will communicate this to the reporter, share any available 
+  example, due to complexity or external dependencies), we will communicate this to the reporter, share any available
   mitigations or workarounds, and adjust the expected timeline accordingly.
 
 ## Disclosure
 
-A vulnerability that affects a published version will only be publicly disclosed once a version without the vulnerability has 
-been published, which is not a prerelease unless all affected published versions were also prereleases. Once that's done, 
+A vulnerability that affects a published version will only be publicly disclosed once a version without the vulnerability has
+been published, which is not a prerelease unless all affected published versions were also prereleases. Once that's done,
 the delay before full public disclosure will be determined as follows:
 
 * If the proof-of-concept is very simple, or an exploit is already in the wild (whether or not it specifically targets `zip`),
@@ -40,7 +40,7 @@ the delay before full public disclosure will be determined as follows:
 
 ## Backporting
 
-Backports of security fixes to older major versions are strictly best-effort; all users should update to the latest 
+Backports of security fixes to older major versions are strictly best-effort; all users should update to the latest
 version as soon as possible.
 
 ## No yanked versions
@@ -48,5 +48,5 @@ version as soon as possible.
 Previous versions of this policy called for yanking affected versions from crates.io. However, this proved to be too
 disruptive in the case of https://github.com/zip-rs/zip2/security/advisories/GHSA-vv5m-jxxh-4627 and
 https://github.com/zip-rs/zip2/security/advisories/GHSA-4v9h-p7m9-rh26 because those vulnerabilities affected a wide range
-of versions, and is not recommended by https://doc.rust-lang.org/cargo/commands/cargo-yank.html. Thus, versions will no 
+of versions, and is not recommended by https://doc.rust-lang.org/cargo/commands/cargo-yank.html. Thus, versions will no
 longer be yanked based on security vulnerabilities.
