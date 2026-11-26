@@ -20,7 +20,8 @@
     "reconcile_recovery": "dpty-6a282b93c0524fd4cb6ac66565ce38f3111f28977c6073ee859cf945a31db041",
     "inspect_recovery": "dpty-3de0e62706a9a08b451f8b89c6a360e11307c86fc5e171e5cd4ec1b9ca165c9a",
     "resume_confirmed_effect": "dpty-0fe475d7029b2f4cf51222ad5c7e8b35163d793531a612ffb0ff5be4a9544cc8",
-    "inspect_after_bind": "dpty-c34fcb8761efe098603269ba30f0817383fa8caeb378ed251c30badcf9a2c1fa"
+    "inspect_after_bind": "dpty-c34fcb8761efe098603269ba30f0817383fa8caeb378ed251c30badcf9a2c1fa",
+    "collect_original": "dpty-165359ab9c5fbbab2d08129a98a10719b8a7866df36b55a37eaa8228e6362ada"
   },
   "provider_request_key": "hc-417db2852aa7fb3a03512d90cd348736017524ed",
   "last_router_state": "RECONCILIATION_REQUIRED",
@@ -70,5 +71,11 @@
       "shape": "STANDARD"
     },
     "same_original_provider_request": true
+  },
+  "original_collect": {
+    "ok": false,
+    "error_code": "FIXED_RUNTIME_NOT_FOUND",
+    "remote_artifacts": [],
+    "release_confirmed": false
   }
 }

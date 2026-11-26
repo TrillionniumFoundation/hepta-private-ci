@@ -1,0 +1,27 @@
+{
+  "analysis": "post-confirmation, no refitting, first original occurrence per exact MFCC-line payload",
+  "dedup_accuracy": {
+    "flat-107": 0.8983908045977012,
+    "flat-211": 0.8983908045977012,
+    "flat-431": 0.8983908045977012,
+    "gru_bp-107": 0.903448275862069,
+    "gru_bp-211": 0.9158620689655173,
+    "gru_bp-431": 0.9154022988505747,
+    "gru_frozen-107": 0.9006896551724138,
+    "gru_frozen-211": 0.9085057471264368,
+    "gru_frozen-431": 0.912183908045977,
+    "hcsn_bp-107": 0.8473563218390805,
+    "hcsn_bp-211": 0.8128735632183908,
+    "hcsn_bp-431": 0.8496551724137931,
+    "hcsn_frozen-107": 0.8505747126436781,
+    "hcsn_frozen-211": 0.824367816091954,
+    "hcsn_frozen-431": 0.8570114942528736
+  },
+  "original": 2200,
+  "strongest_conventional_minus_frozen_N32": {
+    "107": 0.05287356321839087,
+    "211": 0.09149425287356328,
+    "431": 0.058390804597701074
+  },
+  "unique": 2175
+}
