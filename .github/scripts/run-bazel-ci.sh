@@ -131,13 +131,21 @@ print_bazel_test_log_tails() {
     "${bazel_info_args[@]}" \
     bazel-testlogs 2>/dev/null || echo bazel-testlogs)"
 
+  local tail_targets
+  tail_targets="$(
+    grep -E '^(FAIL: //|ERROR: .* Testing //)' "$console_log" \
+      | sed -E 's#^FAIL: (//[^ ]+).*#\1#; s#^ERROR: .* Testing (//[^ ]+) failed:.*#\1#' \
+      | sort -u || true
+  )"
   local failed_targets=()
   while IFS= read -r target; do
     failed_targets+=("$target")
   done < <(
-    grep -E '^(FAIL: //|ERROR: .* Testing //)' "$console_log" \
-      | sed -E 's#^FAIL: (//[^ ]+).*#\1#; s#^ERROR: .* Testing (//[^ ]+) failed:.*#\1#' \
-      | sort -u
+    {
+      printf '%s\n' "$tail_targets"
+      grep -E '^(FLAKY|TIMEOUT): //' "$console_log" \
+        | sed -E 's#^(FLAKY|TIMEOUT): (//[^ ]+).*#\2#' || true
+    } | sed '/^$/d' | sort -u
   )
 
   if [[ ${#failed_targets[@]} -eq 0 ]]; then
@@ -146,6 +154,10 @@ print_bazel_test_log_tails() {
   fi
 
   for target in "${failed_targets[@]}"; do
+    local tail_target=0
+    if grep -Fqx "$target" <<< "$tail_targets"; then
+      tail_target=1
+    fi
     local rel_path="${target#//}"
     rel_path="${rel_path/://}"
     local test_log="${testlogs_dir}/${rel_path}/test.log"
@@ -176,16 +188,35 @@ print_bazel_test_log_tails() {
         fi
       done < <(
         {
-          if [[ "$mode" != archive-only ]]; then
+          if [[ "$mode" != archive-only && $tail_target -eq 1 ]]; then
             printf '%s\n' "$test_log"
           fi
-          grep -F "FAIL: ${target} " "$console_log" \
-            | sed -nE 's#.* \(see (.*[\\/](test|attempt_[0-9]+)\.log)\).*#\1#p' || true
+          awk -v target="$target" '
+            {
+              sub(/\r$/, "")
+              if (($1 == "FAIL:" || $1 == "FLAKY:" || $1 == "TIMEOUT:") && $2 == target) {
+                in_summary = $0 ~ /\(Summary\)[[:space:]]*$/
+                if ($0 ~ / \(see .*[\\/](test|attempt_[0-9]+)\.log\)[[:space:]]*$/) {
+                  sub(/^.* \(see /, "")
+                  sub(/\)[[:space:]]*$/, "")
+                  print
+                }
+                next
+              }
+              if (in_summary && /^[[:space:]]+/ && /[\\/](test|attempt_[0-9]+)\.log[[:space:]]*$/) {
+                sub(/^[[:space:]]+/, "")
+                sub(/[[:space:]]+$/, "")
+                print
+                next
+              }
+              in_summary = 0
+            }
+          ' "$console_log"
         } | sed 's#\\#/#g' | sort -u
       )
     fi
 
-    if [[ "$mode" == archive-only ]]; then
+    if [[ "$mode" == archive-only || $tail_target -eq 0 ]]; then
       continue
     fi
     echo "::group::Bazel test log tail for ${target}"
@@ -486,7 +517,7 @@ fi
 # A successful Bazel invocation can still have failed retry attempts. Preserve
 # only their reported logs; leave the existing console tails and exit code alone.
 if [[ $print_failed_bazel_test_logs -eq 1 && -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]] \
-  && grep -q '^FAIL: //' "$bazel_console_log"; then
+  && grep -Eq '^(FAIL|FLAKY|TIMEOUT): //' "$bazel_console_log"; then
   if ! print_bazel_test_log_tails "$bazel_console_log" archive-only; then
     echo "::warning::Could not preserve failed Bazel attempts after a successful invocation" >&2
   fi

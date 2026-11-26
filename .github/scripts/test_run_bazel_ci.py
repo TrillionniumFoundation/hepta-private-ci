@@ -46,6 +46,9 @@ elif command == 'query':
     if os.environ.get('BAZEL_PROBE_QUERY_FAIL') == '1':
         print('recorded query failure after partial output', file=sys.stderr)
         sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_CONSOLE_FILE'):
+    sys.stdout.buffer.write(Path(os.environ['BAZEL_PROBE_CONSOLE_FILE']).read_bytes())
+    sys.exit(int(os.environ.get('BAZEL_PROBE_CONSOLE_EXIT', '0')))
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -588,6 +591,115 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(len(calls), 1)
         self.assertFalse(archive.exists())
+
+    def test_flaky_summary_collects_all_shards_on_failed_or_successful_jobs(
+        self,
+    ) -> None:
+        # Match the observed inline shard-5 failure followed by three summary paths.
+        (self.testlogs / "fake" / "target" / "test.log").unlink()
+        paths = [
+            self.root / f"shard ({shard})" / "test_attempts" / "attempt_1.log"
+            for shard in (5, 8, 4)
+        ]
+        for index, path in enumerate(paths):
+            path.parent.mkdir(parents=True)
+            path.write_bytes(f"complete shard failure {index}\r\n".encode())
+        decoy = self.root / "unrelated" / "test.log"
+        decoy.parent.mkdir()
+        decoy.write_bytes(b"unrelated output is not a reported failure\r\n")
+        for runner_os, status in (("macOS", 37), ("Windows", 0)):
+            with self.subTest(runner_os=runner_os, status=status):
+                self.log.unlink(missing_ok=True)
+                archive = self.root / f"summary archive {runner_os}"
+                spelling = [
+                    str(path).replace("/", "\\")
+                    if runner_os == "Windows"
+                    else str(path)
+                    for path in paths
+                ]
+                lines = []
+                if status:
+                    lines.append(f"FAIL: //fake:target (see {spelling[0]})")
+                lines.extend(
+                    [
+                        "FLAKY: //fake:target (Summary)",
+                        *(f"      {path}" for path in spelling),
+                        f"      {spelling[0]}",
+                        "INFO: End of summary",
+                        f"      {decoy}",
+                    ]
+                )
+                console = self.root / "reported summary.txt"
+                newline = "\r\n" if runner_os == "Windows" else "\n"
+                console.write_bytes((newline.join(lines) + newline).encode())
+                self.env.update(
+                    RUNNER_OS=runner_os,
+                    BAZEL_PROBE_CONSOLE_FILE=str(console),
+                    BAZEL_PROBE_CONSOLE_EXIT=str(status),
+                    CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(archive),
+                )
+                result, calls = self.run_wrapper(
+                    "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+                )
+                self.assertEqual(
+                    result.returncode, status, result.stdout + result.stderr
+                )
+                self.assertEqual(len(calls), 2, "archiving must not rerun a test")
+                logs = list(archive.glob("failed-test-logs-*/fake/target/*/*.log"))
+                self.assertEqual(len(logs), 3)
+                self.assertEqual(
+                    {
+                        (path.parent / "source-path.txt")
+                        .read_text()
+                        .strip(): path.read_bytes()
+                        for path in logs
+                    },
+                    {str(path).replace("\\", "/"): path.read_bytes() for path in paths},
+                )
+                self.assertEqual(
+                    result.stdout.count("Bazel test log tail"), int(bool(status))
+                )
+
+    def test_timeout_summary_archives_only_reported_paths_and_keeps_failure(
+        self,
+    ) -> None:
+        archive = self.root / "timeout archive"
+        attempt = self.root / "timed out shard" / "test_attempts" / "attempt_1.log"
+        final = self.root / "timed out shard" / "test.log"
+        attempt.parent.mkdir(parents=True)
+        attempt.write_bytes(b"partial test output before timeout\r\n")
+        final.write_bytes(b"final timeout log\r\n")
+        console = self.root / "timeout summary.txt"
+        console.write_text(
+            "TIMEOUT: //fake:target (Summary)\n"
+            f"      {attempt}\n"
+            f"      {final}\n"
+            "//fake:target TIMEOUT\n",
+            encoding="utf-8",
+        )
+        self.env.update(
+            BAZEL_PROBE_CONSOLE_FILE=str(console),
+            BAZEL_PROBE_CONSOLE_EXIT="37",
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(archive),
+        )
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2)
+        self.assertNotIn("Bazel test log tail", result.stdout)
+        logs = list(archive.glob("failed-test-logs-*/fake/target/*/*.log"))
+        self.assertEqual(len(logs), 2)
+        self.assertEqual(
+            {
+                (path.parent / "source-path.txt").read_text().strip(): path.read_bytes()
+                for path in logs
+            },
+            {
+                str(path).replace("\\", "/"): path.read_bytes()
+                for path in (attempt, final)
+            },
+        )
 
     def test_successful_flaky_status_survives_artifact_copy_failure(self) -> None:
         blocked = self.root / "blocked artifact directory"
