@@ -1,7 +1,7 @@
 use super::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
+use super::UnifiedExecProcessManager;
 use super::process::NoopSpawnLifecycle;
 use super::process::UnifiedExecProcess;
-use super::process_manager::UnifiedExecProcessManager;
 use codex_sandboxing::SandboxType;
 use pretty_assertions::assert_eq;
 use tokio::sync::broadcast;
