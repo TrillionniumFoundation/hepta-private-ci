@@ -1,5 +1,11 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 00:24 UTC 后：Boundary Audit 原生全门实际闭合（限 61a32d54）
+
+- #6799 head 仍为 61a32d54afbb57af1dfeb52e7f8c703fc2599d63，base 732e934ba496d90fbe042b8d41d479ef901643e5，open draft。[原 Boundary Audit run45725440381 / job139594019341](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45725440381/job/139594019341) 已于 2026-11-26 00:24 UTC 成功结束。原始日志 820 行（含尾空行）明确 checkout 61a32d54a、Python 3.12.3、40 tests / 0.881s / OK；原固定基址 a83b2ecda37b0e18b05e7fedcaee0a63037c464f 的 just fmt、git diff --exit-code、git diff --cached --exit-code、无 untracked 状态四个命令所在第10步 success。原作业全部14个 API 可见步骤 success。独立从原失败 job139568696579（2715行，40 tests / 1.433s）及新日志抽取完整测试名，均40个不同名字、顺序逐项一致、missing=0/extra=0。上一轮两份 Ruff 修复后的该专项全门实际闭合，未修改测试判据；仅适用于该精确源和专项，不扩大为全仓或科学采用资格。
+- [Boundary mechanism run45725441192](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45725441192)：continuum 的独立 oracle 与 DP 对比步骤已成功，原 clean/terminal/artifact 尚在途；factorial queued。不重复派发，暂不签收两个工作流终局。
+- N256 [runtime discovery](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45725440523) 和 [execution freeze](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45725440477) 原作业均 success，仅 source-only 五控制/优化模式及协议检查；原 discovery 并未执行、完整动态物理实验仍 HOLD。新头 PR 工作流首屏另一次读回为25 success / 15 skipped / 14 in_progress / 46 queued（仅首屏，晚到终局以上述单作业为准）。历史 e3ab strict 111→110 仍退出101，已登记，未重复计入。没有修改冻结哈希、500ms、安全权限，未合并红门，未重复跑已完成实验。全仓 HOLD。
+
 ## 2026-11-25 23:57 UTC 后：Boundary 三个原生红门的共同格式根因已进入集成源码
 
 - #6799 精确新 head 61a32d54afbb57af1dfeb52e7f8c703fc2599d63，相对 87a64bb21a1eb34ca23edebd0a81e655a83e29bc ahead 8 / behind 0，compare 25 文件，base 仍 732e934。另五个原跟踪 PR #7016/#7021/#7032/#7068/#7070 head 未变，均 open draft。87a64bb2 首屏100条工作流已全终态 77 success / 19 failure / 4 skipped；新头首屏100条为92 queued / 8 skipped；非全分页，不签收全仓。
