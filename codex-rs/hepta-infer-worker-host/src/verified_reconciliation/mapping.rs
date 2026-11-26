@@ -1,3 +1,6 @@
+/// Map already-verified and already-persisted provider evidence to the current
+/// native settlement type.  Plaintext output is deliberately empty; consumers
+/// recover the output digest and retention reference from the signed evidence.
 pub fn native_output_from_verified_settlement(
     verified: &VerifiedSettlementReceiptV1,
     persisted: &PersistedSettlementEvidence,
