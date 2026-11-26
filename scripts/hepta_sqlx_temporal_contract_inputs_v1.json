@@ -1,0 +1,371 @@
+{
+  "accepted_consumer_targets_sha256": null,
+  "accepted_generation": {
+    "acceptance_sha256": null,
+    "generation_run_id": null,
+    "generation_source": null,
+    "original_artifact_sha256": null
+  },
+  "accepted_locks": {
+    "MODULE.bazel.lock": null,
+    "codex-rs/Cargo.lock": null,
+    "qualification/sqlx_temporal_default_v1/Cargo.lock": null,
+    "qualification/sqlx_temporal_explicit_chrono_v1/Cargo.lock": null
+  },
+  "accepted_source": {
+    "parent_head": null,
+    "parent_tree": null
+  },
+  "activated": false,
+  "activation_blockers": [
+    "Four actual SQLx locks and both fixture graphs require original generation and independent Root acceptance.",
+    "The native candidate's actual accepted generated-lock parent and original generation/artifact must be rebound.",
+    "Its actual full consumer target roster, exact native source and separate numeric native budget remain unaccepted."
+  ],
+  "budget": null,
+  "chrono_removed": false,
+  "compile_capability_cases": [
+    "default_scalar_positive",
+    "default_chrono_E0277",
+    "explicit_chrono_positive"
+  ],
+  "consumer_packages": [
+    "codex-cli",
+    "codex-hepta-agentd",
+    "codex-hepta-authbus",
+    "codex-hepta-automation",
+    "codex-hepta-evidence",
+    "codex-hepta-matrix-store",
+    "codex-hepta-memory",
+    "codex-hepta-operations",
+    "codex-hepta-runtime",
+    "codex-hepta-shadow-qualification",
+    "codex-state",
+    "codex-thread-store"
+  ],
+  "expected_fixture_graph_sha256": {
+    "compatibility": null,
+    "default": null
+  },
+  "native_cases": [
+    [
+      "codex-state",
+      "runtime::threads::tests::thread_updated_at_uses_unique_epoch_millis_and_reads_legacy_seconds"
+    ],
+    [
+      "codex-state",
+      "sqlite::pool_tests::refused_commit_keeps_reused_pool_readable_without_reopening_write_gate"
+    ],
+    [
+      "codex-hepta-operations",
+      "destination_dedupe::tests::domain_write_and_dedupe_receipt_commit_atomically"
+    ],
+    [
+      "codex-hepta-operations",
+      "destination_dedupe::tests::rollback_removes_domain_write_and_dedupe_together"
+    ],
+    [
+      "codex-hepta-operations",
+      "destination_dedupe::tests::semantic_identity_drift_conflicts"
+    ],
+    [
+      "codex-hepta-operations",
+      "durable_store::tests::prepare_is_atomic_and_survives_reopen"
+    ],
+    [
+      "codex-hepta-operations",
+      "durable_store::tests::migration_checksum_tamper_fails_reopen"
+    ],
+    [
+      "codex-hepta-operations",
+      "durable_store::tests::future_migration_lineage_blocks_old_binary_reopen"
+    ],
+    [
+      "codex-hepta-operations::destination_recovery_binding",
+      "valid_width_but_semantically_corrupt_receipts_fail_after_reopen"
+    ],
+    [
+      "codex-thread-store",
+      "local::thread_history_materialization::tests::event_timestamps_allow_invalid_rollout_timestamps"
+    ],
+    [
+      "codex-state",
+      "sqlx_temporal_contract_tests::scalar_sqlite_values_keep_types_nulls_and_reopen"
+    ],
+    [
+      "codex-state",
+      "sqlx_temporal_contract_tests::legacy_integer_rows_keep_original_conversion_and_refusal"
+    ]
+  ],
+  "new_native_count": 2,
+  "nextest_version": "0.9.103",
+  "original_native_count": 10,
+  "qualification": false,
+  "recovery_source_baseline": {
+    "head": "2fd85fd8276a14b3166a4175009c84fb4f36cd73",
+    "parent": "1ff974dfa99f1f5e406f9033f2a633bc09d02ff7",
+    "reader": "chrono-native-publication-v1/GIT_READER.json",
+    "tree": "d1952cd358bebcbf65c2d8c80c91e7c69ec52908"
+  },
+  "schema": "hepta-sqlx-temporal-contract-inputs-v1",
+  "scope_notes": [
+    "An exact failed negative compiler command remains failed in its immutable original record.",
+    "Explicit Chrono opt-in retains Chrono and uses a separate workspace, lock, metadata graph and Cargo target directory.",
+    "Both independent fixture manifests forward all accepted root patch tables, with only local paths re-anchored.",
+    "Root must approve a new scope; the 3600-second source ceiling is not an admitted or consumed budget.",
+    "Existing E1-E6, original consent, material access, production routes and settlement are not authorized or changed.",
+    "Native twelve consists of the ten retained actual controls and two new source-only controls; neither compile targets nor collector count as tests.",
+    "The actual cargo +1.96.0 nextest --version observation must equal 0.9.103; its cost is included in the admitted metadata/shared budget. RUSTUP_TOOLCHAIN=1.96.0 binds just/run-nextest cargo and is restored; native just test explicitly receives the same ARM target.",
+    "These forty-eight pins were rebound to the present source candidate as source data only. No prior native48 result or new synthetic-control result grants SQLx 12+3 qualification."
+  ],
+  "source_baseline": {
+    "head": "7283cddbb2a3af8c728e9b696de3458acb649b92",
+    "parent": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+    "reader": "ROOT_ACTUAL_PUBLISHED_READBACK_7112.json",
+    "tree": "112bd47a9d7bb5616db2ca918abfa5a388f34241"
+  },
+  "source_pins": {
+    "AGENTS.md": {
+      "bytes": 22519,
+      "git_blob_sha1": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 6617,
+      "git_blob_sha1": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 23110,
+      "git_blob_sha1": "ed963f9f36eda9f5f634ea7f3ebdf6091a73915d",
+      "sha256": "9c055a48d9833d2e2baebbec88cb8dc30a5f666beba7bdaf104290625a667986"
+    },
+    "codex-rs/cli/Cargo.toml": {
+      "bytes": 4421,
+      "git_blob_sha1": "b3830c63dc5bf58160b92e6a9242b8fa771a5c59",
+      "sha256": "e672b2fee4b9b42942a1165f3d8d4cf09e3a5623672cad94624d38e2b2cef6df"
+    },
+    "codex-rs/hepta-agentd/Cargo.toml": {
+      "bytes": 4985,
+      "git_blob_sha1": "f06bccfb6b0f9e808116f8ea7d330b246847b7f2",
+      "sha256": "19a462663f883d3df15e806d861f35b6a147436edc977496da831330581bd84b"
+    },
+    "codex-rs/hepta-authbus/Cargo.toml": {
+      "bytes": 724,
+      "git_blob_sha1": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba",
+      "sha256": "e9519193bdc938523023a66cd9776d78f1be7a13d493e3c1204765a1adc2a8a5"
+    },
+    "codex-rs/hepta-automation/Cargo.toml": {
+      "bytes": 1324,
+      "git_blob_sha1": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b",
+      "sha256": "e8e39e69d52921298a29ed75a12ae46790298fae8d031625c502258f0b12c78d"
+    },
+    "codex-rs/hepta-evidence/Cargo.toml": {
+      "bytes": 786,
+      "git_blob_sha1": "7d5a851797a8c8fdc9c14382418158f9c9789dad",
+      "sha256": "bf06b9f286e93bb5d61122d43ff3cb27314584e04a1d08c18c90663e2b1fa3e0"
+    },
+    "codex-rs/hepta-matrix-store/Cargo.toml": {
+      "bytes": 799,
+      "git_blob_sha1": "211f8fb711d2c91d1421da930c067c28b61315b0",
+      "sha256": "57e80cddbfcc1612225c97d13fb804609f54337e916886050674f95319c13261"
+    },
+    "codex-rs/hepta-memory/Cargo.toml": {
+      "bytes": 1587,
+      "git_blob_sha1": "d7c49d539977550a28c9d20f5ac5aa718a9ed0ae",
+      "sha256": "614b0409fd09e39e6bb3d11c488b9fe2fc1ccd18fa29d059b40143a0dcfc2b34"
+    },
+    "codex-rs/hepta-operations/Cargo.toml": {
+      "bytes": 616,
+      "git_blob_sha1": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739",
+      "sha256": "140c5b0d1b003dcb08d58d9ae2fe5069975b178ae79603f70ea2027f8b444533"
+    },
+    "codex-rs/hepta-operations/src/destination_dedupe.rs": {
+      "bytes": 12020,
+      "git_blob_sha1": "96ccaa23824ad352b19aada375e0a3d326983b32",
+      "sha256": "bbbacef3d9a341d6800df327a8c93355c26e9daf4cf788b626ff1b76d025d53c"
+    },
+    "codex-rs/hepta-operations/src/destination_dedupe_tests.rs": {
+      "bytes": 4146,
+      "git_blob_sha1": "26ae0de39fa2525c11f514a4e30cd65125df0fdd",
+      "sha256": "d0697e57a6dc6f0651219e980495b8246a377d27e99273a492f3f7c81f64641e"
+    },
+    "codex-rs/hepta-operations/src/durable_store.rs": {
+      "bytes": 58162,
+      "git_blob_sha1": "bfeb52c568bd6c4625e96259df067906a0d2a7ad",
+      "sha256": "59cdd5b272a86dd39ee29756a1e6a55cfc55b3a50d76a07564713934f2ceebae"
+    },
+    "codex-rs/hepta-operations/src/durable_store_tests.rs": {
+      "bytes": 23545,
+      "git_blob_sha1": "15e8bede29ec60b5062b2ee31dd0637e90eda0e0",
+      "sha256": "08bdd13a1394106b93a8c243b8a3ad4e9fc8288dfe620e925931320ef508a7be"
+    },
+    "codex-rs/hepta-operations/src/lib.rs": {
+      "bytes": 3239,
+      "git_blob_sha1": "357d6e2e0d295bd099c089c45b288d606d5e4c5c",
+      "sha256": "3d2370cbcc8156f6d6b714e48c9c0b57ba80736ca57765ef8f80e57efd3439c7"
+    },
+    "codex-rs/hepta-operations/tests/destination_recovery_binding.rs": {
+      "bytes": 14123,
+      "git_blob_sha1": "5f2cc76f67d4194bb344cb94e6e4b944c66a5004",
+      "sha256": "3d93741282202bf9540a3f9ce2fcdce68f5e3527953051cb9c13b4450f65e290"
+    },
+    "codex-rs/hepta-runtime/Cargo.toml": {
+      "bytes": 1108,
+      "git_blob_sha1": "83f681ba2fc42402c78aa8ef33889b2b7191bf33",
+      "sha256": "959da171fccbe0748e859753310c19e2c49aa683f8d623f036e503f6e06b5fec"
+    },
+    "codex-rs/hepta-shadow-qualification/Cargo.toml": {
+      "bytes": 1505,
+      "git_blob_sha1": "61ac318b90df93fb2e5f04d5ee0ce8a32cfd2cf2",
+      "sha256": "7d8e6e50f9941bb20d1c830ecf40daba45dad62e2645962b854dcd8d1a39a003"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "git_blob_sha1": "917d2492264a35bc9c0feaef41878d8825870866",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    "codex-rs/state/Cargo.toml": {
+      "bytes": 1356,
+      "git_blob_sha1": "c76a7b02dd54613127b1a35e23f72e24b1990679",
+      "sha256": "fd29109edf57b7a025380deb8aae9e90fb1a053826b7ee0972f987588508aed0"
+    },
+    "codex-rs/state/SQLX_TEMPORAL_MIGRATION.md": {
+      "bytes": 5115,
+      "git_blob_sha1": "531abde89b81f78030f608dab6a21fa5da3a34bb",
+      "sha256": "ffd3d6733c3c38bfb8d027592f35fdf42923713afb5a031fc79372c3aaf078a8"
+    },
+    "codex-rs/state/src/lib.rs": {
+      "bytes": 6050,
+      "git_blob_sha1": "f6594cb342fe4082be41c34a56510c06e397abe5",
+      "sha256": "000bfcf601242a770566c68e34e4b7bced95d4ab92012df1bea8b1a79a64ee19"
+    },
+    "codex-rs/state/src/model/mod.rs": {
+      "bytes": 2332,
+      "git_blob_sha1": "5f23d22bc68b71c819dfeab3b766c4d98585de88",
+      "sha256": "68fd35fdf2525dd581e9214e54af63e0f89dc51797843a464bbadf1744515cde"
+    },
+    "codex-rs/state/src/model/thread_metadata.rs": {
+      "bytes": 29593,
+      "git_blob_sha1": "c032ff118f435649c18460bc7cc0921d8456f249",
+      "sha256": "dda4cff3a12a7631502ecc59da8cc46a3bf15f3bbbd937dc8a1f22812cec61f1"
+    },
+    "codex-rs/state/src/runtime.rs": {
+      "bytes": 24056,
+      "git_blob_sha1": "10b3f4534e426645f12e3737c0056a0dde5e85ea",
+      "sha256": "a66df99290fd941f33789cd33c15e6ba1e95405a4afda38e649b9ca8c3032881"
+    },
+    "codex-rs/state/src/runtime/test_support.rs": {
+      "bytes": 2580,
+      "git_blob_sha1": "a89d00c2c250279fce9f22ecbf69b1aa08c2e1a2",
+      "sha256": "c031eb6e7d5726fc33fb009e5ae49468454fc16fdcb5e679f04f6710f9d8bb75"
+    },
+    "codex-rs/state/src/runtime/threads.rs": {
+      "bytes": 127441,
+      "git_blob_sha1": "2073693255ca6b17a031a2c1166418949cd6a0f4",
+      "sha256": "4981e73e509ed394472ba7c559c458b42311419fda44b03381ed1b562c803766"
+    },
+    "codex-rs/state/src/sqlite.rs": {
+      "bytes": 17180,
+      "git_blob_sha1": "ec847b1c29b46ce74e7043fab8bac1c00eb8dbda",
+      "sha256": "0a36229790d23fa47a676fd40cada5d9cee396c5215168d30fe4babbbad0464e"
+    },
+    "codex-rs/state/src/sqlite_pool_tests.rs": {
+      "bytes": 2569,
+      "git_blob_sha1": "f1904828bdc7f80b5b69856c1b4be0507d0232c4",
+      "sha256": "705bde4d182dbdc43f529b1e3f0500caabd62aa6e8714cd995a8ee1f60a47465"
+    },
+    "codex-rs/state/src/sqlite_read_barrier.rs": {
+      "bytes": 2967,
+      "git_blob_sha1": "f24ba3f724b7eb36125918e494f139b75f57b887",
+      "sha256": "1caa4e1e4333332fcc61ee8b2adb521331fe81e698257c18c10280d3892c7f6d"
+    },
+    "codex-rs/state/src/sqlx_temporal_contract_tests.rs": {
+      "bytes": 7520,
+      "git_blob_sha1": "d5bc3cf7ed0d96acd0d08ddc56601e7fea916674",
+      "sha256": "8461b98b7d0809b17dab7a3e22b5e79b3d9c20264e70f09896e2ab42d1b67163"
+    },
+    "codex-rs/thread-store/Cargo.toml": {
+      "bytes": 1308,
+      "git_blob_sha1": "f79e8d6c81eb4eac00149b45121fa052cdecef64",
+      "sha256": "f4e3449613ba53cf5828c3150d1f89f2f6f33a2ef057e6f327f6b1695b1f5c66"
+    },
+    "codex-rs/thread-store/src/lib.rs": {
+      "bytes": 3970,
+      "git_blob_sha1": "9fb1540e765121b3cbe66ba0a3c8fb9862ca7649",
+      "sha256": "61fc8c0e492e4a94dda7a6486c6826202b9fb7d729e7857242202b350b1fe781"
+    },
+    "codex-rs/thread-store/src/local/mod.rs": {
+      "bytes": 73885,
+      "git_blob_sha1": "1cf1c9e7378d49b69c772ac35fbfa2f23d97c275",
+      "sha256": "0e48d9fe025d419e3395da5920f906e5cb5f7b646600f2bf2e2812453844f331"
+    },
+    "codex-rs/thread-store/src/local/thread_history_materialization.rs": {
+      "bytes": 10890,
+      "git_blob_sha1": "e110ecc2f4ce1b29bcf53b6e18344b9df660ca4e",
+      "sha256": "4904377c3fe8459985839848c1dbeb5601429b10acc4f6cda0eacf5d6722d586"
+    },
+    "codex-rs/thread-store/src/local/thread_history_materialization_tests.rs": {
+      "bytes": 80375,
+      "git_blob_sha1": "a9516226a218ad9e3e711ca8ec34f6c1130e75c0",
+      "sha256": "c96105e9ba81cdf39eaef05acb2dc431a0124d807c18705464ba11de2d41bd91"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "git_blob_sha1": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "qualification/sqlx_temporal_default_v1/Cargo.toml": {
+      "bytes": 2892,
+      "git_blob_sha1": "24717920a79dac77ca169dfda0e5a2bfa7d58427",
+      "sha256": "7905d4ff7d3c9747c7fb91de7376e86951d66f77fbd43515277651d2bec23914"
+    },
+    "qualification/sqlx_temporal_default_v1/chrono_default_refusal.rs": {
+      "bytes": 156,
+      "git_blob_sha1": "66f46eab1518e5d42a8f32b1021ff55fb51798c6",
+      "sha256": "510b133fcc387ad958c75dbe266b4c98c10bd9aa903319343f8ee18c5aa5754d"
+    },
+    "qualification/sqlx_temporal_default_v1/scalar_public.rs": {
+      "bytes": 1677,
+      "git_blob_sha1": "18a0b6137734ce28a731d7690a50e1861b528090",
+      "sha256": "bf583bd813823883b75a9016b1a6523bae96ed23154a803abdd38d45d44acc0e"
+    },
+    "qualification/sqlx_temporal_explicit_chrono_v1/Cargo.toml": {
+      "bytes": 2825,
+      "git_blob_sha1": "e3d6d33add6564e590ec0d14c72a234160f78a41",
+      "sha256": "f4983b02afd54085d27ff7b60c60d69778c0e53e58621c479e707b600d723ae4"
+    },
+    "qualification/sqlx_temporal_explicit_chrono_v1/chrono_explicit.rs": {
+      "bytes": 278,
+      "git_blob_sha1": "6968c306c8ff75923433792dce8181daa8b84633",
+      "sha256": "2f4fb676ad92d6587337fbe5a66f01118f2ab22b98a8b8408aebee64da93687b"
+    },
+    "scripts/hepta_ci_exec.py": {
+      "bytes": 17064,
+      "git_blob_sha1": "491caed67eda5d820473d05717aaaa03b1828609",
+      "sha256": "ccabe2e8066c01a612a378d42cd7580ab183870b59921442a0d208b5ac528cba"
+    },
+    "scripts/hepta_ci_junit.py": {
+      "bytes": 6613,
+      "git_blob_sha1": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+      "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "git_blob_sha1": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "git_blob_sha1": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    "scripts/run_sqlx_temporal_contract_v1.py": {
+      "bytes": 39974,
+      "git_blob_sha1": "da58cb07f02f2af4902d5135ed200ab2d1d818e5",
+      "sha256": "19ceaaebbce0e08131c6d6b08c9660a94d6647482757777b39d6711ccf1a02a7"
+    }
+  },
+  "target": "aarch64-unknown-linux-gnu",
+  "toolchain": "1.96.0"
+}

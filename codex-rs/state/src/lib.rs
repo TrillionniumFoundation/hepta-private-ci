@@ -3,6 +3,19 @@
 //! This crate is intentionally small and focused: it extracts rollout metadata
 //! from JSONL rollouts and mirrors it into a local SQLite database. Backfill
 //! orchestration and rollout scanning live in `codex-core`.
+//!
+//! # SQLx temporal codec compatibility
+//!
+//! Public Chrono model values remain part of this crate's model API. Existing
+//! database owners convert those values to their declared scalar units before
+//! binding, and reconstruct model values after decoding scalar rows.
+//!
+//! This workspace does not request SQLx's optional Chrono codecs on behalf of
+//! raw-pool callers. A downstream caller that needs those codecs must explicitly
+//! request the upstream SQLx `chrono` feature; that application retains its
+//! Chrono dependency. This changes implicit codec capability, even though the
+//! public pool and transaction types are unchanged. It does not change recovery
+//! refusals, connection policies, commit guards, schemas, or stored time units.
 
 const _: () = assert!(
     libsqlite3_sys::SQLITE_VERSION_NUMBER >= 3_051_003,
@@ -20,6 +33,10 @@ mod sqlite;
 mod sqlite_read_barrier;
 mod sqlite_recovery;
 mod telemetry;
+
+#[cfg(test)]
+#[path = "sqlx_temporal_contract_tests.rs"]
+mod sqlx_temporal_contract_tests;
 
 pub use model::CreatedProject;
 pub use model::LogEntry;

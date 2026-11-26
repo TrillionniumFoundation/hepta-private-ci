@@ -1,0 +1,110 @@
+{
+  "accepted": true,
+  "baseline": {
+    "graph_evidence": {
+      "all_package_targets_sha256": "59eb2fc3a2e574b8e2c2499495b816daadbbcf9b8f288330e0d04e44c1ecda61",
+      "declared_target_count": 6033,
+      "full_resolve_graph_sha256": "3ccdbcdc6b52d81984d86482e7d087ded1998fc84785624729bc4e9623f41fde",
+      "member_count": 193,
+      "native_or_runtime_qualification_transferred": false,
+      "origin_head": "40d15b4bbba331f28e45889ff00846517b08375a",
+      "package_count": 1525,
+      "readback": {
+        "bytes": 156173,
+        "path": "7110-original-generation-0020/data/dependency-graph-readback.json",
+        "sha256": "810b06e77f166f7aa3183347a5577e47bff4c2bad7f2d28d3bc9c3ac1aa0fcfe"
+      }
+    },
+    "head": "7283cddbb2a3af8c728e9b696de3458acb649b92",
+    "locks": {
+      "MODULE.bazel.lock": {
+        "bytes": 1792663,
+        "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 421800,
+        "sha256": "d30163218a74e0d8246e709a82c2547fa3306515728b4b9784d0df4034b6c312"
+      }
+    },
+    "original_generation": {
+      "artifact_id": 15071736247,
+      "artifact_sha256": "74bd32416cf5160cab64cf278f147ec3612275bb8029dcbebad71167c3256fac",
+      "head": "40d15b4bbba331f28e45889ff00846517b08375a",
+      "run_attempt": 1,
+      "run_id": 45718835160,
+      "terminal_status": "success"
+    },
+    "original_root_lock_acceptance": {
+      "bytes": 6511,
+      "path": "ROOT_7110_GENERATED_LOCK_ACCEPTANCE.json",
+      "sha256": "952cdc4dd2e63ad2277123f5be0738cb2075b00f6cf834a1f13d6d847587e384"
+    },
+    "root_graph_sha256": "3ccdbcdc6b52d81984d86482e7d087ded1998fc84785624729bc4e9623f41fde",
+    "source_lineage": [
+      {
+        "changed_paths": [
+          ".github/workflows/blob-size-policy.yml",
+          ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
+          "codex-rs/Cargo.lock",
+          "codex-rs/rmcp-client/src/auth_status.rs",
+          "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json",
+          "scripts/run_chrono_hooks_cli_native_controls_v2.py"
+        ],
+        "full_source_entries": 16089,
+        "head": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+        "native_execution_result_read": false,
+        "native_success_required": false,
+        "parent_tree": "dd412d87f99be786de5fc2cf4e155243fa0d5c71",
+        "postimage_mapping": {
+          "bytes": 5331760,
+          "path": "native48-six-source-final-v1/POSTIMAGE_MAPPING.json",
+          "sha256": "a4e2d5b4a803256d5661b9ec8af4d55f5cd24b8de384a244ac01f053612a0030"
+        },
+        "publication_proof": {
+          "bytes": 3068,
+          "path": "ROOT_ACTUAL_PUBLISHED_READBACK_7111.json",
+          "sha256": "086e6520b45c9c520cfb01054553e77fb0ecd6c3ad876ed6181ebe091720ad8a"
+        },
+        "sole_parent": "40d15b4bbba331f28e45889ff00846517b08375a",
+        "tree": "040d42dd05eb6d62c4837dd8668d0b78c7e1f0f4"
+      },
+      {
+        "changed_paths": [
+          ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
+          "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json",
+          "scripts/run_chrono_hooks_cli_native_controls_v2.py"
+        ],
+        "full_source_entries": 16089,
+        "head": "7283cddbb2a3af8c728e9b696de3458acb649b92",
+        "native_execution_result_read": false,
+        "native_success_required": false,
+        "parent_tree": "040d42dd05eb6d62c4837dd8668d0b78c7e1f0f4",
+        "postimage_mapping": {
+          "bytes": 5331760,
+          "path": "native48-version-format-final-v1/POSTIMAGE_MAPPING.json",
+          "sha256": "e1f5305f77a43fd841c26e51db05e885dd4dd7d92c099e634664e91e67a90969"
+        },
+        "publication_proof": {
+          "bytes": 2889,
+          "path": "ROOT_ACTUAL_PUBLISHED_READBACK_7112.json",
+          "sha256": "6861d6bb441b259fe17b7ac2daf7203b4b3c798ea0cb22735ca8bca8e8a1e03b"
+        },
+        "sole_parent": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+        "tree": "112bd47a9d7bb5616db2ca918abfa5a388f34241"
+      }
+    ],
+    "tree": "112bd47a9d7bb5616db2ca918abfa5a388f34241"
+  },
+  "budget": {
+    "checkout_seconds": 120,
+    "generation_seconds": 900,
+    "tool_preparation_seconds": 180,
+    "whole_job_seconds": 1320
+  },
+  "native48_success_is_not_required": true,
+  "old_E1_E6_budget_used": 0,
+  "qualification": false,
+  "reviewer": "root",
+  "schema": "hepta-sqlx-temporal-baseline-acceptance-v1",
+  "status": "BASELINE_LOCK_PROVENANCE_ACCEPTED_FOR_ONE_NEW_GENERATION_ONLY"
+}
