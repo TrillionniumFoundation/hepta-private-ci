@@ -8,7 +8,7 @@ Examples of security-relevant issues (**also in dependencies**) include:
 - data integrity/validation bypass (e.g., parsing/serialization producing incorrect results in a way that can be exploited)
 - denial-of-service when processing untrusted input (panic or hang)
 
-If a vulnerability is confirmed, we will release a patched version and may yank affected versions on crates.io to reduce accidental adoption. Note that yanking does not 
+If a vulnerability is confirmed, we will release a patched version and may yank affected versions on crates.io to reduce accidental adoption. Note that yanking does not
 remove already-downloaded artifacts and does not update existing Cargo.lock files, so upgrading to the fixed release is still required.
 
 For non-security bugs and general reliability issues that do not have a security impact, please open a GitHub issue.
