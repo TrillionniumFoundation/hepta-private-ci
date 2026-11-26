@@ -121,6 +121,8 @@ class GitGraphTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # Finish Git maintenance before the fixture removes its repository.
+        self.git("config", "maintenance.autoDetach", "false")
         # These tests create many short-lived repositories; Git's opportunistic
         # background maintenance can race TemporaryDirectory.cleanup() after
         # a successful synchronous command and leave files inside .git.
@@ -230,6 +232,8 @@ class DocumentInputTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # Finish Git maintenance before the fixture removes its repository.
+        self.git("config", "maintenance.autoDetach", "false")
         # These tests create many short-lived repositories; Git's opportunistic
         # background maintenance can race TemporaryDirectory.cleanup() after
         # a successful synchronous command and leave files inside .git.

@@ -31,7 +31,8 @@ jobs:
   owner-candidate:
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'codex/production-hos2-delivery-20261020'
+      (github.event.pull_request.head.ref == 'codex/production-hos2-delivery-20261020' ||
+       github.event.pull_request.head.ref == 'agents/20261021/hos2-proof-insert-guard')
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     env:
@@ -117,6 +118,11 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
           cache-scope: production-hos2-proposal
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
 
       - name: Install the repository-selected compiler and components
         id: rust
@@ -254,7 +260,13 @@ jobs:
           inputs = paths(["git", "diff", "--name-only", "--no-renames", "-z", base, "HEAD"])
           selected = sorted(set(inputs + changed + untracked))
           allowed_roots = ("codex-rs/hepta-memory/", "codex-rs/hepta-agentd/")
-          allowed_files = {"codex-rs/Cargo.lock", "MODULE.bazel.lock", ".github/workflows/hepta-production-hos2-proposal.yml"}
+          allowed_files = {
+              "codex-rs/Cargo.lock",
+              "MODULE.bazel.lock",
+              ".github/workflows/hepta-production-hos2-proposal.yml",
+              "scripts/tests/test_hepta_ci_dependencies.py",
+              "scripts/tests/test_hepta_ci_scope.py",
+          }
           unexpected = [name for name in selected if name not in allowed_files and not name.startswith(allowed_roots)]
           files = []
           for name in selected:

@@ -1,3 +1,7 @@
+use std::path::Component;
+use std::path::MAIN_SEPARATOR_STR;
+use std::path::PathBuf;
+
 use codex_utils_path_uri::PathUri;
 
 use super::registered_workspace_path;
@@ -23,13 +27,21 @@ fn unregistered_path_shapes_do_not_produce_a_workspace_identity() -> std::io::Re
     let canonical = root.path().canonicalize()?;
     let file = canonical.join("ordinary-file");
     std::fs::write(&file, b"not a workspace")?;
+    // PathBuf::push normalizes parent components on Windows verbatim paths.
+    // Keep the raw spelling so the fixture supplies an actual ParentDir.
+    let mut parent = canonical.as_os_str().to_os_string();
+    parent.push(MAIN_SEPARATOR_STR);
+    parent.push("..");
+    let parent = PathBuf::from(parent);
+    assert_eq!(parent.components().next_back(), Some(Component::ParentDir));
+
     for path in [
-        std::path::PathBuf::from("relative-workspace"),
+        PathBuf::from("relative-workspace"),
         canonical.join("missing"),
-        canonical.join(".."),
+        parent,
         file,
     ] {
-        assert_eq!(registered_workspace_path(&path), None);
+        assert_eq!(registered_workspace_path(&path), None, "{path:?}");
     }
     Ok(())
 }

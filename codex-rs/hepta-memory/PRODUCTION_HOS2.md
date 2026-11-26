@@ -37,7 +37,11 @@ it is not used as an operation-order dependency.
 Migration `0016_operation_pre_boundary_rejections.sql` adds the immutable proof
 table and an expression index over the original outbox's boot, space and
 hexadecimal sequence fields. Original migrations 0001 through 0015 are not
-rewritten. The compiled schema oracle includes all four new schema objects.
+rewritten. Migration `0020_pre_boundary_rejection_insert_guard.sql` adds a
+trigger that rejects proof identity collisions before SQLite can replace an
+existing proof. Earlier migration bytes, existing proof rows and foreign-key
+edges do not change. The compiled schema oracle binds the guard definition,
+and the owner fixture verifies an existing witness survives the upgrade.
 This does not create an automatic production upgrade bypass: the original
 exact-cut recovery entry refuses a store whose schema/migration lineage differs
 from its authenticated current cut. Existing deployments must use their

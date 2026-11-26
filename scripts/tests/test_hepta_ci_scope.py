@@ -304,6 +304,8 @@ class ScopeTests(unittest.TestCase):
                 )
 
             git("init", "-q")
+            # Finish Git maintenance before the fixture removes its repository.
+            git("config", "maintenance.autoDetach", "false")
             git("config", "user.name", "Scope Test")
             git("config", "user.email", "scope@localhost")
             old = root / "codex-rs/hepta-infer-core/src/old.rs"
