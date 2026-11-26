@@ -440,6 +440,29 @@ run_bazel_with_startup_args \
 bazel_status=${PIPESTATUS[0]}
 set -e
 
+# Only one bounded retry for an *infrastructure* Bazel JVM/socket exit on
+# macOS Intel. No action or test failures may have occurred. Always rerun
+# the identical complete target set; never convert a failing test to success.
+# Keep the first attempt's log so CI can audit the server crash explicitly.
+if [[ "${RUNNER_OS:-}" == "macOS" ]] \
+  && [[ "$(uname -m)" == "x86_64" ]] \
+  && [[ "$bazel_status" -eq 37 ]] \
+  && grep -Fq "Server terminated abruptly" "$bazel_console_log" \
+  && grep -Fq "Socket closed" "$bazel_console_log" \
+  && ! grep -Eq '(FAIL:|ERROR:)' "$bazel_console_log"; then
+  echo "::warning::Bazel server socket died without failed tests/actions; retrying the identical full target set once."
+  echo "Bazel local server transport retry 1/1 (previous status $bazel_status)" >> "$bazel_console_log"
+  set +e
+  run_bazel_with_startup_args \
+    --noexperimental_remote_repo_contents_cache \
+    "${bazel_run_args[@]}" \
+    -- \
+    "${bazel_targets[@]}" \
+    2>&1 | tee -a "$bazel_console_log"
+  bazel_status=${PIPESTATUS[0]}
+  set -e
+fi
+
 if [[ ${bazel_status:-0} -ne 0 ]]; then
   if [[ $print_failed_bazel_action_summary -eq 1 ]]; then
     print_bazel_action_failure_summary "$bazel_console_log"
