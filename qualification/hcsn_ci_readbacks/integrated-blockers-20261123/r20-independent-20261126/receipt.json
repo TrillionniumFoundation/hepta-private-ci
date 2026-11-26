@@ -1,0 +1,104 @@
+{
+  "signed": {
+    "frontier_rows": 2043,
+    "duplicate_ids": {
+      "5027": 2
+    },
+    "split": 2985,
+    "pruned": 943,
+    "partition_nodes": 5971,
+    "global_lower": 1.0687705744117002,
+    "candidate_upper": 1.0787644825619909,
+    "gap": 0.00999390815029062,
+    "seconds": 4.558978507999996
+  },
+  "control": {
+    "frontier_rows": 3416,
+    "duplicate_ids": {
+      "8305": 2
+    },
+    "split": 4890,
+    "pruned": 1475,
+    "partition_nodes": 9781,
+    "global_lower": 1.1313784400173525,
+    "candidate_upper": 1.1413778727048751,
+    "gap": 0.009999432687522505,
+    "seconds": 6.925830683000015
+  },
+  "individual": [
+    {
+      "arm": "control",
+      "method": "ad-trust-exact",
+      "pass": 4,
+      "total": 8,
+      "max_gap": 0.04180467080825111
+    },
+    {
+      "arm": "control",
+      "method": "adam",
+      "pass": 0,
+      "total": 8,
+      "max_gap": 0.8362378053677341
+    },
+    {
+      "arm": "control",
+      "method": "bfgs",
+      "pass": 3,
+      "total": 8,
+      "max_gap": 0.0418046708082522
+    },
+    {
+      "arm": "control",
+      "method": "lbfgs",
+      "pass": 4,
+      "total": 8,
+      "max_gap": 0.04180467080826351
+    },
+    {
+      "arm": "control",
+      "method": "trust-exact",
+      "pass": 4,
+      "total": 8,
+      "max_gap": 0.0418046708082651
+    },
+    {
+      "arm": "signed",
+      "method": "ad-trust-exact",
+      "pass": 5,
+      "total": 8,
+      "max_gap": 0.0432049001418907
+    },
+    {
+      "arm": "signed",
+      "method": "adam",
+      "pass": 1,
+      "total": 8,
+      "max_gap": 0.8097971028088146
+    },
+    {
+      "arm": "signed",
+      "method": "bfgs",
+      "pass": 3,
+      "total": 8,
+      "max_gap": 0.13653551029732156
+    },
+    {
+      "arm": "signed",
+      "method": "lbfgs",
+      "pass": 4,
+      "total": 8,
+      "max_gap": 0.13653551029732203
+    },
+    {
+      "arm": "signed",
+      "method": "trust-exact",
+      "pass": 5,
+      "total": 8,
+      "max_gap": 0.0432049001418907
+    }
+  ],
+  "checkpoint_rows_observed": 2505,
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "numpy": "2.3.5",
+  "scope": "independent rational global interval and 80 endpoint gap arithmetic only; no original verifier, optimizer, model/AD checkpoint replay or tamper tests"
+}
