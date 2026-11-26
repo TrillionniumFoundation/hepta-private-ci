@@ -33,6 +33,9 @@ def receipt(mode: str, arm: str = "v3", cells: int = 64, frontier: str | None = 
         "artifact_provenance_verified": False,
         "arm": arm,
         "execution_mode": mode,
+        "single_selected_config_resident": True,
+        "simultaneous_legacy_and_prepared_config_resident": False,
+        "model_config_setup_micros": 120 if mode == "legacy" else 180,
         "cells": cells,
         "width": 32,
         "trace_sha256": TRACE,
@@ -54,6 +57,9 @@ class PreparedPairedSmokeTests(unittest.TestCase):
         self.assertTrue(result["exact_checkpoint_frontier_parity"])
         self.assertEqual(result["legacy_to_prepared_p99_ratio"], "1.222222")
         self.assertGreater(result["prepared_peak_rss_bytes"], 0)
+        self.assertTrue(result["separate_mode_config_residency"])
+        self.assertEqual(result["legacy_model_config_setup_micros"], 120)
+        self.assertEqual(result["prepared_model_config_setup_micros"], 180)
         self.assertEqual(result["raw_mode_receipts"]["legacy"], matched["legacy"])
         self.assertEqual(result["raw_mode_receipts"]["prepared"], matched["prepared"])
         self.assertEqual(
@@ -91,6 +97,9 @@ class PreparedPairedSmokeTests(unittest.TestCase):
             ("arm", "ssm"), ("cells", 256), ("trace_sha256", sha(b"tampered")),
             ("process_peak_rss_bytes", None), ("p99_tick_nanos", 0),
             ("p95_tick_nanos", 100_000), ("width", 100),
+            ("single_selected_config_resident", False),
+            ("simultaneous_legacy_and_prepared_config_resident", True),
+            ("model_config_setup_micros", -1),
         ):
             records = {mode: receipt(mode) for mode in pair.MODES}
             records["prepared"][name] = changed
@@ -141,6 +150,16 @@ class PreparedPairedSmokeTests(unittest.TestCase):
             self.assertTrue(all(set(row["raw_mode_receipts"]) == set(pair.MODES)
                                 for row in output["pairs"]))
             self.assertEqual(sum(len(row["raw_mode_receipts"]) for row in output["pairs"]), 40)
+            with patch.object(pair, "sha256_binary",
+                              side_effect=[sha(b"first"), sha(b"changed")]):
+                with patch.object(pair.subprocess, "run", side_effect=fake_run):
+                    with self.assertRaisesRegex(ValueError, "executable changed"):
+                        pair.run(binary, trace)
+            with patch.object(pair, "read_trace",
+                              side_effect=[(digest, 8), (sha(b"tampered"), 8)]):
+                with patch.object(pair.subprocess, "run", side_effect=fake_run):
+                    with self.assertRaisesRegex(ValueError, "trace changed"):
+                        pair.run(binary, trace)
             self.assertTrue(all(row["exact_checkpoint_frontier_parity"] for row in output["pairs"]))
             self.assertFalse(output["target_host_certified"])
             self.assertFalse(output["production_qualification"])
