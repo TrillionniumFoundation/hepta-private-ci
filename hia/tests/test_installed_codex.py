@@ -59,7 +59,7 @@ NATIVE_SYMBOLS = (
 )
 
 
-LIBRARY_ONLY_NATIVE_SYMBOLS = ("codex_hia_uuid_find",)
+LIBRARY_ONLY_NATIVE_SYMBOLS = ("codex_hia_uuid_find", "codex_hia_utf8_stream")
 RETAINED_ORACLE_ONLY_SYMBOLS = ("codex_hia_utf8_boundaries", "codex_hia_uuid_matches", "codex_hia_template_parser")
 
 
@@ -70,6 +70,7 @@ def verify(args: argparse.Namespace, report: dict) -> None:
         "retained_oracle_only_symbols": list(RETAINED_ORACLE_ONLY_SYMBOLS),
         "required_absent_from_reference": list(NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS + RETAINED_ORACLE_ONLY_SYMBOLS),
         "library_positive_gate": "hia/tests/test_native_uuid_find_caller.py",
+        "utf8_library_positive_gate": "codex-utils-stream-parser native public and ABI tests",
     }
     binary = args.binary.resolve(strict=True)
     reference = args.reference_binary.resolve(strict=True)

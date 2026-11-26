@@ -304,9 +304,13 @@ def verify(args, report):
     directory = args.library_dir.resolve(strict=True)
     native_inputs(directory / 'network_host.so', ROOT / 'hia/network_host.hepta',
                   args.build_profile, report)
-    require(report['native_build']['full35_manifest_verified'] is True
-            and report['native_build']['module_count'] == 35,
-            'fuzzy ABI requires the complete selected native35 module build')
+    manifest_flag, module_count = {
+        'full-native35': ('full35_manifest_verified', 35),
+        'full-native36': ('full36_manifest_verified', 36),
+    }[args.build_profile]
+    require(report['native_build'][manifest_flag] is True
+            and report['native_build']['module_count'] == module_count,
+            'fuzzy ABI requires the complete selected native module build')
     bind(Path(__file__), report)
     contract = json.loads(bind(ROOT / 'hia/fuzzy_match_buffer_contract.json',
                                report, CONTRACT_SHA))
@@ -364,7 +368,7 @@ def verify(args, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
-    parser.add_argument('--build-profile', choices=['full-native35'], default='full-native35')
+    parser.add_argument('--build-profile', choices=['full-native35', 'full-native36'], default='full-native35')
     parser.add_argument('--report', type=Path, required=True)
     args = parser.parse_args()
     report = {
