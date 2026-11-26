@@ -2,9 +2,10 @@
 
 ## Scope fixed before implementation
 
-Base: `45f6619775f9ccbef031a0c2940912394d5559bf`. This is one independent
-diagnostic test with four fresh, owned directory fixtures and exactly eight
-open attempts. It does not alter the four original tests, their eighteen
+Base: `a0d114900ec8ada5e452747ee483a29efa37b988`. This extends its actual
+eight-open diagnostic with one fixed additional request per existing scenario.
+It remains one independent test with four fresh, owned directory fixtures and
+exactly twelve open attempts. It does not alter the four original tests, their eighteen
 deletion cells, the six LIST observations, any production execution guard,
 or the original twenty-minute job and zero-retry settings. The original
 matrix remains unqualified when any original assertion fails.
@@ -29,14 +30,14 @@ identity ACE in this synthetic fixture, not a new identity or authority.
 | Neither | WD: FA | WD: FA |
 
 Parent policy is installed before target creation. The existing same-handle
-setter verifies the entire DACL bytes. No ACL is changed between the paired
+setter verifies the entire DACL bytes. No ACL is changed between the three
 opens. Every original-identity descriptor/attribute observer closes its
 filesystem handle before impersonation; no parent handle supplies authority
 to either open. The existing RAII token restoration and ERROR_NO_TOKEN
 confirmation remain in force. Cleanup occurs only after observations and
 restoration, using the original identity on these owned fixtures.
 
-## Exactly two calls per fixture
+## Exactly three calls per fixture
 
 1. CreateFileW: explicit DesiredAccess is DELETE only; OPEN_EXISTING;
    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
@@ -48,6 +49,18 @@ restoration, using the original identity on these owned fixtures.
    attributes contain only OBJ_CASE_INSENSITIVE (not a parent capability).
    No FILE_DIRECTORY_FILE, FILE_NON_DIRECTORY_FILE, synchronous-I/O option,
    DELETE_ON_CLOSE, new privilege or extra requested access is supplied.
+3. NtCreateFile with DesiredAccess exactly `0x00110080`: DELETE | SYNCHRONIZE |
+   FILE_READ_ATTRIBUTES. This is the actual GrantedAccess recorded by the
+   successful NULL-target Win32 control in the a0d run (artifact 15085191685).
+   Every other argument and lifetime rule is identical to call 2. It adds no
+   synchronous-I/O option, ACL permission, token privilege or parent handle.
+   This call is identified as `NTObservedGrant` in the output.
+
+The third call tests whether this one observed superset is sufficient to
+reproduce Win32 refusal on the same objects. It does not enumerate individual
+bits, establish that either bit is necessary, or trace Win32's internal
+requested-access value. Target and NULL-parent remain outcome observations.
+The two original calls and all four fixture policies remain in place.
 
 Only an existing absolute local drive fixture path is accepted; relative,
 UNC, device, dot/parent, embedded-NUL and excessive-length inputs fail.
@@ -73,15 +86,15 @@ fail as unknown/incomplete. A raw negative status never establishes ownership
 of an unspecified output handle. Only STATUS_SUCCESS qualifies as native
 success in this fixed diagnostic.
 
-The NULL-target pair is the required successful control; each success must
-contain DELETE in GrantedAccess. Neither is the required access-denied
+All three NULL-target calls are required successful controls; each success
+must contain its full requested mask in GrantedAccess. Neither is the required access-denied
 control. Target and NULL-parent results are observations, not assertions
 that a previously failing positive now works. Unexpected status, invalid
 handle, query failure or close failure makes the diagnostic incomplete.
 
 ## Observation integrity and accounting
 
-Within a pair, use one token.run scope. Compare token identity, semantic
+Within each triple, use one token.run scope. Compare token identity, semantic
 token privilege entries, integrity level and mandatory policy before/after;
 do not compare structure padding or volatile allocation/accounting fields.
 Capture complete self-relative OWNER/GROUP/DACL/LABEL descriptor bytes on
@@ -94,7 +107,8 @@ attributes and label. This diagnostic never invokes a deletion API.
 Use a separate `native_open` integration target, without filtering the
 original library or LIST target. The controller retains every command's
 real exit status, runs the independent observation after original failures,
-and validates exactly one diagnostic test, eight distinct observations,
+and validates exactly one diagnostic test, twelve distinct observations with
+the exact API/mask mapping above,
 four invariants and no skips/retries. Original verifiers and assertions stay
 unchanged; diagnostic completion cannot override an original failed gate.
 
@@ -104,9 +118,10 @@ Use the existing pinned windows-sys 0.52.0 official generated declarations
 for NtCreateFile, OBJECT_ATTRIBUTES, IO_STATUS_BLOCK, NtQueryObject and
 PUBLIC_OBJECT_BASIC_INFORMATION. The five explicit added feature gates are
 Wdk_Foundation, Wdk_Storage_FileSystem, Win32_System_IO, Win32_System_Kernel
-and Win32_System_WindowsProgramming. This is a manifest
-change, not an unchanged pin: record dependency identities and run the
-repository's actual Bazel lock-update/check requirements. No hand-copied
+and Win32_System_WindowsProgramming. These were added by the already executed
+a0d source stage; this fixed-mask extension changes no manifest, feature or
+lock identity. The original dependency metadata and actual Bazel lock-update/check
+receipts remain part of that stage. No hand-copied
 struct layout substitutes for the dependency gate.
 
 Primary contracts, checked before implementation:
@@ -127,10 +142,14 @@ the Full-token directory positive failures remain separate facts.
 
 ## Candidate qualification boundary
 
-Source preparation and dependency metadata do not execute these Windows
-APIs. The original 45f result remains two passing and two failing matrix
+Source preparation does not execute these Windows APIs. The actual a0d
+result retained two passing and two failing original matrix
 tests with fifteen completed deletion cells. Its separate LIST diagnostic
 completed all six observations; the added LIST bit did not resolve either
-directory positive failure. The new eight-open result is pending until its
-own exact-source Windows run. A successful diagnostic will mean observation
+directory positive failure. Its eight-open observer completed successfully:
+the Target and NULL-parent native DELETE opens succeeded while their Win32
+opens returned access denied; the Win32 NULL-target grant was `0x00110080`
+and all successful native grants were `0x00010000`. The third call in each
+scenario remains unexecuted until this extension's own exact-source Windows
+run. A successful diagnostic will mean observation
 completion and its stated controls only, not that the original gate passed.

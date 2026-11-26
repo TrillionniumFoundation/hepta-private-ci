@@ -135,24 +135,27 @@ def verify_native_open(log):
             r"Summary\s+\[[^]]+\] 1 tests? run: 1 passed, 0 skipped", clean):
         raise RuntimeError("the independent native-open diagnostic did not complete")
     rows = re.findall(r"^\s*HEPTA_NATIVE_OPEN scenario=(Target|NullParent|NullTarget|Neither) "
-                      r"api=(Win32|NT) requested=0x00010000 opened=(true|false) (.+)$", clean, re.M)
+                      r"api=(Win32|NT|NTObservedGrant) requested=0x([0-9a-f]{8}) "
+                      r"opened=(true|false) (.+)$", clean, re.M)
     scenarios = {"Target", "NullParent", "NullTarget", "Neither"}
-    expected = {(scenario, api) for scenario in scenarios for api in ["Win32", "NT"]}
+    masks = {"Win32": "00010000", "NT": "00010000", "NTObservedGrant": "00110080"}
+    expected = {(scenario, api, mask) for scenario in scenarios for api, mask in masks.items()}
     raw_rows = re.findall(r"^\s*HEPTA_NATIVE_OPEN .+$", clean, re.M)
-    if len(raw_rows) != 8 or len(rows) != 8 or {
-            (scenario, api) for scenario, api, _, _ in rows} != expected:
-        raise RuntimeError("expected exactly eight distinct open observations")
-    for scenario, api, opened, details in rows:
+    if len(raw_rows) != 12 or len(rows) != 12 or {
+            (scenario, api, mask) for scenario, api, mask, _, _ in rows} != expected:
+        raise RuntimeError("expected exactly twelve distinct open observations with fixed masks")
+    for scenario, api, mask, opened, details in rows:
         if opened == "true":
             grant = re.search(r"\bgranted=Some\((\d+)\)", details)
             required = ["completion=success", "win32_error=none", "query_ntstatus=0x00000000",
                         "query_mapped_win32=0", "closed=true", "close_error=None"]
-            required.append("ntstatus=Some(0)" if api == "NT" else "ntstatus=None")
-            if not grant or int(grant.group(1)) & 0x10000 == 0 or any(
+            required.append("ntstatus=None" if api == "Win32" else "ntstatus=Some(0)")
+            requested = int(mask, 16)
+            if not grant or int(grant.group(1)) & requested != requested or any(
                     field not in details.split() for field in required):
                 raise RuntimeError("successful open lacks verified grant/query/close evidence")
         else:
-            status = "ntstatus=0xc0000022" if api == "NT" else "ntstatus=not_applicable"
+            status = "ntstatus=not_applicable" if api == "Win32" else "ntstatus=0xc0000022"
             required = [status, "win32_error=5", "granted=unknown", "closed=not_opened"]
             if any(field not in details.split() for field in required):
                 raise RuntimeError("failed open is not the fixed access-denied observation")

@@ -31,16 +31,23 @@ use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OVERLAPPED;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
+use windows_sys::Win32::Storage::FileSystem::SYNCHRONIZE;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK_0;
 use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
 use windows_sys::Win32::System::WindowsProgramming::PUBLIC_OBJECT_BASIC_INFORMATION;
 
 const SHARING: u32 = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+
+pub(super) enum NativeRequest {
+    DeleteOnly,
+    ObservedWin32Grant,
+}
 
 #[derive(Debug)]
 pub(super) struct Observation {
@@ -78,10 +85,17 @@ pub(super) fn win32(path: &Path, scenario: &str) -> Result<Observation> {
     }
     ensure!(raw != 0, "successful Win32 open returned a null handle");
     let handle = unsafe { OwnedHandle::from_raw_handle(raw as _) };
-    finish_open(handle, scenario, "Win32", /*ntstatus*/ None)
+    finish_open(handle, scenario, "Win32", DELETE, /*ntstatus*/ None)
 }
 
-pub(super) fn native(path: &Path, scenario: &str) -> Result<Observation> {
+pub(super) fn native(path: &Path, scenario: &str, request: NativeRequest) -> Result<Observation> {
+    let (requested, api) = match request {
+        NativeRequest::DeleteOnly => (DELETE, "NT"),
+        NativeRequest::ObservedWin32Grant => (
+            DELETE | SYNCHRONIZE | FILE_READ_ATTRIBUTES,
+            "NTObservedGrant",
+        ),
+    };
     let dos = local_drive_name(path)?;
     let mut name: Vec<u16> = r"\??\".encode_utf16().chain(dos).collect();
     let unicode = UNICODE_STRING {
@@ -107,7 +121,7 @@ pub(super) fn native(path: &Path, scenario: &str) -> Result<Observation> {
     let status = unsafe {
         NtCreateFile(
             &mut raw,
-            DELETE,
+            requested,
             &attributes,
             &mut io,
             std::ptr::null(),
@@ -125,7 +139,7 @@ pub(super) fn native(path: &Path, scenario: &str) -> Result<Observation> {
         // Process termination releases its handles; no completion is inferred.
         let _ = writeln!(
             std::io::stderr(),
-            "HEPTA_NATIVE_OPEN scenario={scenario} api=NT requested=0x{DELETE:08x} opened=unknown ntstatus=0x{:08x} win32_error={} granted=unknown closed=process_teardown protocol_error=pending",
+            "HEPTA_NATIVE_OPEN scenario={scenario} api={api} requested=0x{requested:08x} opened=unknown ntstatus=0x{:08x} win32_error={} granted=unknown closed=process_teardown protocol_error=pending",
             status as u32,
             unsafe { RtlNtStatusToDosError(status) }
         );
@@ -136,7 +150,7 @@ pub(super) fn native(path: &Path, scenario: &str) -> Result<Observation> {
     let handle = (status >= 0 && raw != 0 && raw != INVALID_HANDLE_VALUE)
         .then(|| unsafe { OwnedHandle::from_raw_handle(raw as _) });
     eprintln!(
-        "HEPTA_NATIVE_STATUS scenario={scenario} ntstatus=0x{:08x} mapped_win32={} io_status=0x{:08x} io_information={} root_handle=null options=0x{:08x}",
+        "HEPTA_NATIVE_STATUS scenario={scenario} ntstatus=0x{:08x} mapped_win32={} io_status=0x{:08x} io_information={} root_handle=null options=0x{:08x} api={api} requested=0x{requested:08x}",
         status as u32,
         unsafe { RtlNtStatusToDosError(status) },
         unsafe { io.Anonymous.Status } as u32,
@@ -146,7 +160,7 @@ pub(super) fn native(path: &Path, scenario: &str) -> Result<Observation> {
     if status < 0 {
         let error = unsafe { RtlNtStatusToDosError(status) };
         eprintln!(
-            "HEPTA_NATIVE_OPEN scenario={scenario} api=NT requested=0x{DELETE:08x} opened=false ntstatus=0x{:08x} win32_error={error} granted=unknown closed=not_opened",
+            "HEPTA_NATIVE_OPEN scenario={scenario} api={api} requested=0x{requested:08x} opened=false ntstatus=0x{:08x} win32_error={error} granted=unknown closed=not_opened",
             status as u32
         );
         ensure!(
@@ -160,7 +174,7 @@ pub(super) fn native(path: &Path, scenario: &str) -> Result<Observation> {
         });
     }
     let handle = handle.context("nonnegative NT open returned an invalid handle")?;
-    let observation = finish_open(handle, scenario, "NT", Some(status))?;
+    let observation = finish_open(handle, scenario, api, requested, Some(status))?;
     ensure!(
         status == STATUS_SUCCESS,
         "nonzero informational NT status is incomplete: 0x{:08x}",
@@ -173,6 +187,7 @@ fn finish_open(
     handle: OwnedHandle,
     scenario: &str,
     api: &str,
+    requested: u32,
     ntstatus: Option<i32>,
 ) -> Result<Observation> {
     let mut info = PUBLIC_OBJECT_BASIC_INFORMATION {
@@ -209,7 +224,7 @@ fn finish_open(
         "unknown"
     };
     eprintln!(
-        "HEPTA_NATIVE_OPEN scenario={scenario} api={api} requested=0x{DELETE:08x} opened=true completion={completion} ntstatus={ntstatus:?} win32_error={win32_error} query_ntstatus=0x{:08x} query_mapped_win32={} query_bytes={returned} granted={granted:?} closed={closed} close_error={close_error:?}",
+        "HEPTA_NATIVE_OPEN scenario={scenario} api={api} requested=0x{requested:08x} opened=true completion={completion} ntstatus={ntstatus:?} win32_error={win32_error} query_ntstatus=0x{:08x} query_mapped_win32={} query_bytes={returned} granted={granted:?} closed={closed} close_error={close_error:?}",
         query_status as u32,
         unsafe { RtlNtStatusToDosError(query_status) },
     );
@@ -220,8 +235,8 @@ fn finish_open(
         query_status as u32
     );
     ensure!(
-        info.GrantedAccess & DELETE != 0,
-        "opened handle lacks requested DELETE"
+        info.GrantedAccess & requested == requested,
+        "opened handle lacks the complete requested mask"
     );
     Ok(Observation {
         opened: true,
