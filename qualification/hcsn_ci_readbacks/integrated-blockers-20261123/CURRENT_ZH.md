@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-25 23:57 UTC 后：Boundary 三个原生红门的共同格式根因已进入集成源码
+
+- #6799 精确新 head 61a32d54afbb57af1dfeb52e7f8c703fc2599d63，相对 87a64bb21a1eb34ca23edebd0a81e655a83e29bc ahead 8 / behind 0，compare 25 文件，base 仍 732e934。另五个原跟踪 PR #7016/#7021/#7032/#7068/#7070 head 未变，均 open draft。87a64bb2 首屏100条工作流已全终态 77 success / 19 failure / 4 skipped；新头首屏100条为92 queued / 8 skipped；非全分页，不签收全仓。
+- [Boundary audit job139568696579](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45717936652/job/139568696579) 原 40 tests 全过，最终 formatter clean 门失败。另 [continuum job139568690585](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45717934066/job/139568690585) 7 tests 通过，独立 DP、80位参考与 continuum fixture 实际通过；[factorial job139568691577](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45717934066/job/139568691577) 10 tests 通过，原 pilot 12/12 arms、288 actual optimizer updates、291.582018917s，numerical_qualification=false/product_adoption=false。45717934066 的 continuum/factorial 终局均 clean=failure、completed=false、scientific_admission=HOLD_NO_GO，不能把内部 experiment success 代替原终局。
+- 三份原生失败日志（2715、3079、2951行，含尾空行）同一两份 formatter diff：.github/scripts/cargo_deny_diagnostic.py 9fc6b870e→300d60826，.github/scripts/test_cargo_deny_diagnostic.py b531b1bcd→3870c7beb。直接读取新旧精确 GitHub 文件对象，独立逐 hunk 重放：第一文件14 hunks 原上下文及新文件全文精确一致；第二文件3 hunks，日志有8处 GitHub 掩码（4旧/4新），对可见上下文和掩码形状比较无差异，不能称掩码内字节由日志独立证明。两新完整 blob 300d6082650e04767d1e29c2526a7e2d79a00282、3870c7bebf412397ade393f0e4287ede096feff9 均匹配三份原 formatter 目标前缀，已进入 61a32d54。不另写同一修补。新 audit run45725440381、boundary mechanism run45725441192 已排队，不重复派发；完整 clean 仍待原生。
+- 原实验工件 API：continuum 15070424435 / 21715 B / sha256:54a0a2b4dec00b489e81bd854e0c7d67031fc70972a5da2d25bddb759788b775；factorial 15071397262 / 19219159 B / sha256:9ba67e5c99738843ce4a98e9087bf3318c7892b991a285cc4614db99537066a2。均未过期，绑定87a64bb2；本轮仅读取登记摘要，未下载重算 ZIP，不把 pilot 或已有科学结果当新任务采用资格。
+- [Split mesh job139568682189](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45717931712/job/139568682189) 原327行，dedicated manifest source mismatch，实际四控制未执行。五模型 shadow run45717934448 三 Laya 绿、Arctic/Harrier/physical-contracts/cross-arm 红；Windows NDU storage run45717931938 observe 绿、ACL/AppContainer/CMD 红。仅核对作业阶段，不把既有阻塞重复派发。全仓 HOLD，无红门合并、冻结哈希/500ms/安全权限修改或重复运行。
+
 ## 2026-11-25 23:09 UTC 后：Windows 原冻结目录源码找回，CPU 真实恢复终局与 N256 原生契约
 
 - #6799 精确 head 87a64bb21a1eb34ca23edebd0a81e655a83e29bc 相对48071ded ahead9/behind0，base仍732e934；七个跟踪 PR 均 open draft。该 head PR workflow 首屏100条47 success/8 failure/28 in_progress/6 queued/11 skipped，非全分页；boundary audit run45717936652/job139568696579 在途，不重派。原独立 Windows recovery probe 格式修补的目标 blob ea4e9985379468122a2c865257726e9c28099573 已进入集成头；原整工作区 clean 门尚未终局。
