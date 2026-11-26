@@ -1,0 +1,35 @@
+{
+  "current_Hepta_hypotheses": "UNVERIFIED",
+  "document_sha256": "add3c826c1677be7422247b288e3eafb0d0ebf9a0950c2f827ed6a06fdcb4823",
+  "limits": [
+    "No current Hepta global inverse or smoothness certification",
+    "No priority claim or new general FBSDE theorem",
+    "No independent-user or cost/structure advantage inferred"
+  ],
+  "new_model_calls": 0,
+  "new_numerical_solves": 0,
+  "original_experiment_budgets_modified": false,
+  "primary_sources_checked_by_root": [
+    "https://www.i2m.univ-amu.fr/perso/etienne.pardoux/_media/papeng1.pdf",
+    "https://arxiv.org/pdf/1110.4658",
+    "https://epubs.siam.org/doi/10.1137/S0363012996313549"
+  ],
+  "reviewed_propositions": [
+    "local bi-Lipschitz bound on declared observation-map image",
+    "explicit coupled FBSDE existence and uniqueness for 1-kappa*T>0",
+    "affine mean-observation rank and Gaussian finite-sample covariance",
+    "same-input quadratic equation aggregation equivalence"
+  ],
+  "reviewer": "root",
+  "schema": "hepta.pft.conditional-inverse-root-review.v1",
+  "status": "ACCEPTED_CONDITIONAL_PROOFS",
+  "symbolic_checks": [
+    "segment integral remainder bound",
+    "D derivative kappa and P derivative minus P squared",
+    "X0=x, YT=kappa*XT, martingale conditional expectation uniqueness",
+    "integral_0^T D(s)^(-2)ds=T/(1-kappa*T), including kappa0",
+    "two-parameter example H=I, mu=2a, coordinate variance1/(2n)",
+    "positive definite G iff ker(A_stacked) intersection ker(Lambda) is zero"
+  ],
+  "unconditional_endpoint_recovery": "REFUTED_PRESERVED"
+}

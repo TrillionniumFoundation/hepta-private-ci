@@ -1,0 +1,73 @@
+{
+  "schema": "pft.conditional_inverse.proof_review_request.v1",
+  "status": "PROPOSED_FOR_ROOT_REVIEW",
+  "execution": {
+    "model_imports": 0,
+    "model_forwards": 0,
+    "vjp_calls": 0,
+    "numerical_solves": 0,
+    "training_updates": 0,
+    "new_peer_rounds": 0,
+    "formatters": 0,
+    "scope": "symbolic proof, primary-source reading, retained-source byte and text inspection"
+  },
+  "propositions": [
+    {
+      "id": "local_inverse_bound",
+      "hypotheses": "F is C1 on a convex ball; J_star has full column rank; derivative variation epsilon is below its smallest singular value s",
+      "conclusion": "(s-epsilon)||a-a_prime|| <= ||F(a)-F(a_prime)||, giving uniqueness and Lipschitz stability on the image",
+      "proof": "Integral of the derivative along the segment, singular-value bound, triangle inequality",
+      "exclusions": "No existence for every noisy ambient observation; no general least-squares uniqueness; no necessity of full derivative rank"
+    },
+    {
+      "id": "explicit_coupled_fbsde",
+      "hypotheses": "Known deterministic phi in L2, T>0, x/kappa/sigma known, 1-kappa*T>0, fixed Brownian filtration",
+      "conclusion": "The displayed X,Y,Z are the unique S2/S2/H2 solution of dX=(Y+phi^T*a)dt+sigma*dW, dY=Z*dW, Y_T=kappa*X_T",
+      "proof": "Explicit product-rule construction; conditional martingale identity determines Y from X; linear SDE uniqueness determines X and martingale representation fixes Z",
+      "exclusions": "No arbitrary nonlinear generator theorem; no assertion that current HCSN is this FBSDE"
+    },
+    {
+      "id": "affine_endpoint_identifiability",
+      "hypotheses": "Exact endpoint means under the explicit family; H rows are time integrals of known phi_j",
+      "conclusion": "Global parameter uniqueness iff rank(H)=p; finite noisy endpoints instead give statistical identification when covariance is known and positive definite",
+      "proof": "Left inverse or a nonzero null vector; exact Gaussian noise law and direct estimator covariance calculation",
+      "exclusions": "Backward terminal relation is redundant with X_T; Z is parameter independent here; varying x alone repeats the same design row"
+    },
+    {
+      "id": "decentralized_quadratic_equivalence",
+      "hypotheses": "Common coordinates/objective/contribution set, compatible weights, regularizer counted once, G positive definite, exact arithmetic or separately fixed numerical protocol",
+      "conclusion": "Each peer's solve of summed G_i and h_i gives the same centralized quadratic minimizer",
+      "proof": "Expand the quadratic and prove the positive-definite Hessian condition through the kernel intersection",
+      "exclusions": "No privacy, fault tolerance, liveness, independent users, nonlinear benefit, or learned-representation alignment inferred"
+    }
+  ],
+  "application_status": "HEPTA_HYPOTHESES_UNVERIFIED",
+  "universal_endpoint_unique_recovery": "REFUTED_PRESERVED",
+  "source_identity": {
+    "path": "discovery/retention_v6/original_model.py",
+    "bytes": 20658,
+    "sha256": "aabc7a29ebfdaed592ebd4a16d7e4db927a6a88cb7247d4b334fd7299eab8576",
+    "raw_cost_abs_cause": "NOT_ASSERTED: cost uses tanh; clipping/deposition/remap are separate nonsmooth operations"
+  },
+  "sources": [
+    {
+      "id": "S1",
+      "url": "https://www.i2m.univ-amu.fr/perso/etienne.pardoux/_media/papeng1.pdf",
+      "verified": "Theorem 3.1 and assumptions (3.2), printed page 58, visually inspected",
+      "retrieval_ref": "turn937927123view2",
+      "screenshot_ref": "turn132068800view2"
+    },
+    {
+      "id": "S2",
+      "url": "https://arxiv.org/pdf/1110.4658",
+      "verified": "Assumption 2.1, scalar dimension scope, Definition 2.2, Theorems 2.3 and 6.1",
+      "retrieval_refs": ["turn118040625view1", "turn937927123view0", "turn937927123view1"]
+    },
+    {
+      "id": "S3",
+      "url": "https://epubs.siam.org/doi/10.1137/S0363012996313549",
+      "verified": "Publisher abstract and bibliographic metadata only; full theorem not imported",
+      "retrieval_ref": "turn407514976view2"
+    }
+  ]
+}
