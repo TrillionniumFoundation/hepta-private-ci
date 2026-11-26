@@ -1,5 +1,20 @@
 # Hepta 研究与集成核验
 
+<!-- root0198a7-ci-followup-20261126 -->
+## 2026-11-26：三条专项 CI 与四份原始 ZIP 保全闭合，整仓与科学采用继续 HOLD
+
+- [CPU run45786572069](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786572069)在47b6fd0b实际success：adapter 18+6+6=30次方法执行；真实恢复6组完整checkpoint continuity、本轮26次optimizer calls，omit-Adam与发布前crash负控均通过；新增完整训练重放0。实际Py3.12.3/Torch2.8.0+cpu/NumPy2.3.5/mpmath1.3.0；whole_wall474.582060267秒。
+- CPU原artifact15102894027已独立完整取回27939824B，SHA c95c36dd66d56e708c96bbbb7f28acbb431db8b7fc2925e580817f6d884c60dc；664个普通文件全部CRC/SHA通过，26份JSON回执全部解析成功。原SUMMARY SHA996b81717c35fdec5329d3d61a931395dec01272abf7254953b38d99572929f3，与原job日志6/26/两负控一致；6行full_state_equal均true。
+- 首次120秒下载超时、3095512B残片和02分段失败均保留。03复用20完整分段及4个失败范围的3241723B相容前缀，只补952581B/6个子范围，最终总SHA及全部输入前后字节一致；新model/optimizer/checkpoint反序列化均0。保全通过不等于重新执行数值比较。
+- [Differentiable run45786572001](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786572001)同47b6两lane及science gate均success；每lane385个unittest方法、2074份文件检查。source/event原ZIP15101457428/15101207857已分别完整核验，各101成员；原outcome均PASSED_DECLARED_FIXTURES。组件36次LBFGS外层step仍只按组件计数，不代替全workflow或closure总数。
+- [N256 metadata run45786899259](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786899259)在32153753唯一原job success；1child、1宿主观察+5负控=6validator，model/optimizer/training/dynamic/expm/N256-input均0。原ZIP15100974608为28989B/SHA881930596a525c4fa5e6f073f1dfeaed02cf8bebb56c8f10478d0425f2505b36，18成员全部CRC/SHA通过。runtime_admitted/resource_admitted/all_closed均false。
+- 旧b3a925d4的Rust format原job139813600029现于09:48:51UTC success（原merge576435fd），关闭此前该精确执行的格式回执缺口。最新观察#6799为4ffa56f6，原run45794035631/Windows shard3 job139821215079已真实失败：四Cell CommitUncertain与四Queue hook等待/拒绝超时，原merge3f6bcb32与head同tree3f29023c；完整596428B日志已保留。不能将旧b3a的格式成功升级为当前整仓通过；诊断候选单独推进。
+- 原25项账本及65件原档提交0253557735f4507b9124714597bafd5d2714f06c、51bed原失败/recovery skipped、9706220a先前观察全部保留；本次只补后继终局。CPU scientific_admission仍HOLD_NO_GO，lifetime/original_native_calls仍UNKNOWN。N256数值、任意时变自由边界、全网免BP、等质量完整训练加速及独立多模态采用未因局部CI成功取得资格。
+- E1–E6训练16/16已耗尽、E6compile剩余额度保持；已成功CPU短诊断、N256 metadata、旧Torch/Harrier/Arctic/Laya/完整训练不重派。严格构建、Windows生产隔离、CTRL/Group真实来源和原500ms门保持。
+
+- [本轮原生CI后继与源码身份原始证据](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b6a46dc6573b6911007455b60a60b3b117ad1996/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/root0198a7-ci-followup-20261126/SUMMARY_ZH.md)；本次仅追加，后方全部历史正文原字节保留。
+
+
 ## 2026-11-26 09:52 UTC 后：CPU 原生短恢复与 N256 metadata 原门正式终局（全仓 HOLD）
 
 - 精确 47b6fd0b821a443af91c30056fae9fc17582b610 的 [CPU run45786572069](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786572069) 两个原 job 均 completed/success。adapter 139794716761 原18 archive/relocation + pointer normal 6 / -O 6 全通过（30次测试执行），正负例保留。real-recovery 139804694341 的13个步骤全成功，原 log 623行；真实 checkout 原 artifact 917e488、Python3.12.3、Torch2.8.0+cpu、NumPy2.3.5。原 summary：complete_checkpoint_continuities=6，crash_before_publication_rejected=true，omit_adam_control_detected=true，current_attempt_verified_optimizer_calls=26，whole_wall_seconds=474.582060267，new_independent_complete_training_replays=0，lifetime_total_optimizer_calls=UNKNOWN，scientific_admission=HOLD_NO_GO。原短恢复及pointer托管局部门闭合；不将26调用冒充完整训练重放或清除历史52调用/UNKNOWN。原 [ZIP15102894027](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45786572069/artifacts/15102894027) 27939824B、登记 SHA256 c95c36dd66d56e708c96bbbb7f28acbb431db8b7fc2925e580817f6d884c60dc；Mac独立下载90秒超时，实际仅2423768B，完整ZIP独立复算仍待。未重跑模型。
