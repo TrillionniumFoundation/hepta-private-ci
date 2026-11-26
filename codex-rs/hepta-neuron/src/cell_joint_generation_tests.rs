@@ -12,6 +12,7 @@ use super::*;
 use crate::CellEvolutionBindingV2;
 use crate::CellGenerationScopeV2;
 use crate::CellRuntimeSnapshotV2;
+use crate::JointGenerationInputV1;
 use crate::cell_joint_protocol::JointGenerationActionV1;
 use crate::cell_joint_protocol::JointGenerationCommandV1;
 use crate::cell_joint_protocol::JointGenerationModalityV1;
@@ -24,6 +25,8 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 #[path = "cell_joint_observed_process_tests.rs"]
 mod observed_process;
+#[path = "cell_joint_resident_tests.rs"]
+mod resident_tests;
 
 #[test]
 fn invalid_clock_at_native_entry_does_not_create_a_terminal_proposal() -> TestResult {

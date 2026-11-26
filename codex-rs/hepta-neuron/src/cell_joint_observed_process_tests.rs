@@ -71,3 +71,25 @@ fn shortened_observed_request_budget_is_rejected_before_launch() -> TestResult {
     );
     Ok(())
 }
+
+#[test]
+fn invalid_observed_clock_never_becomes_terminal_for_either_transport() -> TestResult {
+    for resident in [false, true] {
+        let mut harness = observed_harness(/*now_micros*/ 0)?;
+        if resident {
+            super::resident_tests::resident(&mut harness)?;
+            harness.manifest.profile =
+                JointGenerationProcessWorkerV1::RESIDENT_OBSERVED_PROFILE.into();
+            harness.request.predecessor.manifest_digest = harness.manifest.digest()?;
+        }
+        assert_eq!(
+            harness.worker.execute(
+                &harness.manifest,
+                &harness.request,
+                &AtomicBool::new(false)
+            ),
+            Err(CellGenerationErrorV2::Unavailable)
+        );
+    }
+    Ok(())
+}

@@ -288,7 +288,23 @@ async fn compute(
 
 #[tokio::test]
 async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result() -> Result<()> {
+    reopen_original_result(/*resident*/ false).await
+}
+
+#[tokio::test]
+async fn actual_resident_joint_reopens_the_original_descriptor_owner_without_dispatch() -> Result<()> {
+    reopen_original_result(/*resident*/ true).await
+}
+
+async fn reopen_original_result(resident: bool) -> Result<()> {
     let mut f = Fixture::new()?;
+    if resident {
+        let mut config: CellGenerationConfigV2 =
+            serde_json::from_value(f.descriptor["config"].clone())?;
+        config.manifest.profile = JointGenerationProcessWorkerV1::RESIDENT_PROFILE.into();
+        config.initial.manifest_digest = config.manifest.digest()?;
+        f.descriptor["config"] = serde_json::to_value(config)?;
+    }
     let config: CellGenerationConfigV2 = serde_json::from_value(f.descriptor["config"].clone())?;
     let public_digest = f.descriptor["public"]["digest"]
         .as_str()
