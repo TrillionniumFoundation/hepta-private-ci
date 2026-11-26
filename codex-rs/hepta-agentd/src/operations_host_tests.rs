@@ -42,7 +42,7 @@ struct SigningGrantProvider {
 impl AutomationGrantProvider for SigningGrantProvider {
     fn signed_grant(
         &self,
-        intent: &codex_hepta_operations::OperationIntentV1,
+        intent: &codex_hepta_operations::DurableOperationIntentV1,
     ) -> Result<SignedFinalUseGrant, AgentdOperationsError> {
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
