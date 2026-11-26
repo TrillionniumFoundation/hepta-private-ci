@@ -19,3 +19,4 @@ This stage does **not** certify Decimal transcendental evaluation or final
 binary64 output rounding.  It is not an independent N256 provider, does not
 run the 18,225,028-record denominator, and does not change any historical RED,
 UNKNOWN, finite-domain failure, C2 `0/6`, HPCA NoUpdate, or global HOLD result.
+
