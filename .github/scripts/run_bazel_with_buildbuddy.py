@@ -235,6 +235,19 @@ def bazel_args_with_remote_config(
         raise ValueError("expected a Bazel command")
 
     config = remote_config(args, env)
+    if (
+        config in {GENERIC_REMOTE_CONFIG, OPENAI_REMOTE_CONFIG}
+        and env.get("RUNNER_OS") == "Windows"
+        and option_contains_value(
+            args[: args.index("--")] if "--" in args else args,
+            "--platforms",
+            "//:windows_x86_64_msvc",
+        )
+    ):
+        # Cache/BES credentials do not make native Windows actions remote.
+        # Reuse the same ABI-scoped compiler selection as a keyless MSVC build.
+        args = bazel_args_without_remote_execution(args, env)
+
     if config is None:
         configured_args = bazel_args_without_remote_execution(args, env)
     else:
