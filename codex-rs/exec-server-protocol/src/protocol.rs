@@ -778,13 +778,20 @@ pub struct HttpRequestParams {
 }
 
 /// A mandatory address capability on a separate method that older executors
-/// reject. The origin must come from the original configured resource, never
-/// from discovery metadata or the current request/redirect URL.
+/// reject. The resource origin stays fixed. Additional OAuth origins must come
+/// from explicit owner configuration, never metadata or a request/redirect URL.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct HttpRequestRestrictedParams {
     pub request: HttpRequestParams,
     pub configured_resource_origin: String,
+    /// Additional immutable origins explicitly granted by the resource owner.
+    /// Omitted when empty; older executors reject non-empty grants as unknown fields.
+    #[serde(
+        default,
+        skip_serializing_if = "codex_protocol::OAuthAuthorizationOrigins::is_empty"
+    )]
+    pub authorization_origins: codex_protocol::OAuthAuthorizationOrigins,
 }
 
 /// HTTP response envelope returned from an executor `http/request` call.
@@ -1377,3 +1384,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "oauth_authorization_origins_tests.rs"]
+mod oauth_authorization_origins_tests;

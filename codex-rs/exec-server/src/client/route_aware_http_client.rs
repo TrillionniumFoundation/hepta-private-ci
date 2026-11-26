@@ -146,8 +146,11 @@ impl HttpClient for RouteAwareHttpClient {
     ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
         async move {
             let policy =
-                HttpAddressPolicy::from_configured_resource(&params.configured_resource_origin)
-                    .map_err(|error| ExecServerError::HttpRequest(error.to_string()))?;
+                HttpAddressPolicy::from_configured_resource_with_oauth_authorization_origins(
+                    &params.configured_resource_origin,
+                    &params.authorization_origins,
+                )
+                .map_err(|error| ExecServerError::HttpRequest(error.to_string()))?;
             let runner = self.restricted_runner(params.request.redirect_policy, policy);
             let (response, pending_stream) = runner
                 .run(HttpRequestParams {

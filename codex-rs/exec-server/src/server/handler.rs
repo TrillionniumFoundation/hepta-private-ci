@@ -94,7 +94,10 @@ pub(crate) struct ExecServerHandler {
 
 enum RequestedHttpAddressPolicy {
     Unrestricted,
-    ConfiguredResource(String),
+    ConfiguredResource {
+        origin: String,
+        authorization_origins: codex_protocol::OAuthAuthorizationOrigins,
+    },
 }
 
 impl ExecServerHandler {
@@ -285,7 +288,10 @@ impl ExecServerHandler {
         self.http_request_with_address_policy(
             request_id,
             params.request,
-            RequestedHttpAddressPolicy::ConfiguredResource(params.configured_resource_origin),
+            RequestedHttpAddressPolicy::ConfiguredResource {
+                origin: params.configured_resource_origin,
+                authorization_origins: params.authorization_origins,
+            },
         )
     }
 
@@ -298,9 +304,15 @@ impl ExecServerHandler {
         let admission = self.require_initialized_for("http").and_then(|_| {
             let policy = match requested_policy {
                 RequestedHttpAddressPolicy::Unrestricted => None,
-                RequestedHttpAddressPolicy::ConfiguredResource(origin) => Some(
-                    HttpAddressPolicy::from_configured_resource(&origin)
-                        .map_err(|error| invalid_params(error.to_string()))?,
+                RequestedHttpAddressPolicy::ConfiguredResource {
+                    origin,
+                    authorization_origins,
+                } => Some(
+                    HttpAddressPolicy::from_configured_resource_with_oauth_authorization_origins(
+                        &origin,
+                        &authorization_origins,
+                    )
+                    .map_err(|error| invalid_params(error.to_string()))?,
                 ),
             };
             let scope = params

@@ -118,6 +118,7 @@ async fn restricted_docs_attribution_preserves_original_resource_capability() {
         let mut params = HttpRequestRestrictedParams {
             request: request(url),
             configured_resource_origin: original_origin.to_string(),
+            authorization_origins: Default::default(),
         };
         params.request.timeout_ms = Some(1234);
         params.request.redirect_policy = HttpRedirectPolicy::Stop;

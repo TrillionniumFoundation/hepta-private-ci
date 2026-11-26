@@ -35,7 +35,10 @@ enum RedirectResponse {
 
 enum HttpRequestAccess {
     Ordinary,
-    Restricted { configured_resource_origin: String },
+    Restricted {
+        configured_resource_origin: String,
+        authorization_origins: codex_protocol::OAuthAuthorizationOrigins,
+    },
 }
 
 impl SameOriginRedirectHttpClient {
@@ -77,12 +80,14 @@ impl SameOriginRedirectHttpClient {
             let result = match &access {
                 HttpRequestAccess::Restricted {
                     configured_resource_origin,
+                    authorization_origins,
                 } => {
                     let (response, stream) = self
                         .inner
                         .http_request_stream_restricted(HttpRequestRestrictedParams {
                             request: params.clone(),
                             configured_resource_origin: configured_resource_origin.clone(),
+                            authorization_origins: authorization_origins.clone(),
                         })
                         .await?;
                     RedirectResponse::Streaming(response, stream)
@@ -214,6 +219,7 @@ impl HttpClient for SameOriginRedirectHttpClient {
                     params.request,
                     HttpRequestAccess::Restricted {
                         configured_resource_origin: params.configured_resource_origin,
+                        authorization_origins: params.authorization_origins,
                     },
                 )
                 .await?

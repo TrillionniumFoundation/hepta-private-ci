@@ -122,6 +122,7 @@ impl FixtureHttpClient {
                         .http_request_stream_restricted(HttpRequestRestrictedParams {
                             request: params.clone(),
                             configured_resource_origin: self.resource_origin.clone(),
+                            authorization_origins: Default::default(),
                         })
                         .await?
                 }
@@ -193,7 +194,9 @@ impl HttpClient for FixtureHttpClient {
         params: HttpRequestRestrictedParams,
     ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
         Box::pin(async move {
-            if params.configured_resource_origin != self.resource_origin {
+            if params.configured_resource_origin != self.resource_origin
+                || !params.authorization_origins.is_empty()
+            {
                 return Err(ExecServerError::HttpRequest(
                     "OAuth fixture resource capability changed".to_string(),
                 ));

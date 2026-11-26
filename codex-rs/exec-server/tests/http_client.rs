@@ -1504,6 +1504,7 @@ async fn older_executor_rejects_restricted_method_without_plain_or_cancellable_f
                 stream_response: true,
             },
             configured_resource_origin: "https://resource.example".to_string(),
+            authorization_origins: Default::default(),
         }),
     )
     .await?;

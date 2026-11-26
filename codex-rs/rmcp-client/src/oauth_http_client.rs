@@ -224,6 +224,7 @@ impl OAuthHttpClientAdapter {
                 .http_request_stream_restricted(HttpRequestRestrictedParams {
                     request: params.clone(),
                     configured_resource_origin: self.resource_origin.ascii_serialization(),
+                    authorization_origins: Default::default(),
                 })
                 .await
                 .map_err(oauth_http_client_error)?;

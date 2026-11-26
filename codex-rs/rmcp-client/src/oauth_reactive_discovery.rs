@@ -231,6 +231,7 @@ impl HttpClient for RestrictedMcpProbeClient {
                 .http_request_stream_restricted(HttpRequestRestrictedParams {
                     request: params,
                     configured_resource_origin: self.configured_resource_origin.clone(),
+                    authorization_origins: Default::default(),
                 })
                 .await
         })
