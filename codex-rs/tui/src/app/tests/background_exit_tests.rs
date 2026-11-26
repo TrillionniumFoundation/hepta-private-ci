@@ -1,4 +1,5 @@
 use super::*;
+use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
 
 fn prepare_local_daemon_thread(app: &mut App) -> Result<ThreadId> {
@@ -150,11 +151,11 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
     let (mut app_server, mut tui) =
         prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
-    // This test runs a real shell command. The chat-widget fixture's display-only
-    // cwd is not guaranteed to exist on the native test host.
-    let workspace = tempdir()?;
+    // This fixture starts a real shell. The widget's display-only default cwd
+    // need not exist, so give the thread an owned working directory.
+    let working_dir = tempfile::tempdir()?;
     let mut thread_config = app.chat_widget.config_ref().clone();
-    thread_config.cwd = AbsolutePathBuf::from_absolute_path(workspace.path())?;
+    thread_config.cwd = working_dir.path().abs();
     let started = app_server.start_thread(&thread_config).await?;
     let thread_id = started.session.thread_id;
     app.active_thread_id = Some(thread_id);
@@ -183,15 +184,16 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         /*replay_kind*/ None,
     );
     let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
+        "Set-Content -LiteralPath exit-ready -Value ready; Start-Sleep -Seconds 30"
     } else {
-        "sleep 30"
+        "printf 'ready\\n' > exit-ready; sleep 30"
     };
     app_server
         .thread_shell_command(thread_id, command.to_string())
         .await?;
+    let ready_deadline = time::Instant::now() + Duration::from_secs(/*secs*/ 5);
     let turn_id = loop {
-        let event = time::timeout(Duration::from_secs(/*secs*/ 5), app_server.next_event())
+        let event = time::timeout_at(ready_deadline, app_server.next_event())
             .await
             .expect("app-server should emit a turn/start event")
             .expect("app-server event stream should remain open");
@@ -202,6 +204,27 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
             break notification.turn.id.clone();
         }
     };
+    // TurnStarted precedes process launch. Observe the child itself before
+    // testing interruption, using the same deadline as the turn-start wait.
+    let ready_path = working_dir.path().join("exit-ready");
+    time::timeout_at(ready_deadline, async {
+        while !ready_path.is_file() {
+            tokio::select! {
+                event = app_server.next_event() => {
+                    let event = event.expect("app-server event stream should remain open");
+                    if let codex_app_server_client::AppServerEvent::ServerNotification(notification) = event
+                        && let ServerNotification::TurnCompleted(completed) = notification.as_ref()
+                        && completed.thread_id == thread_id.to_string()
+                    {
+                        panic!("shell turn completed before the child became ready: {completed:?}");
+                    }
+                }
+                () = time::sleep(Duration::from_millis(/*millis*/ 10)) => {}
+            }
+        }
+    })
+    .await
+    .expect("the actual shell child should become ready before interruption");
     app.thread_event_channels.insert(
         thread_id,
         ThreadEventChannel::new_with_session(
