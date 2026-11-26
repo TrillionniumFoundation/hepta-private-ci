@@ -519,6 +519,13 @@ fn current_source_withdrawal_rejects_previously_signed_candidate() {
         issued_at: 20,
     }));
     must(f.publisher.install_withdrawal_frontier(withdrawn));
+    // The current owner persists the valid monotonic withdrawal before it
+    // evaluates the now-stale review. Only that authorized write may change it.
+    let after_withdrawal = bytes_beneath(&f.directory);
+    assert!(
+        after_withdrawal != before,
+        "the valid withdrawal must be durable"
+    );
     assert!(
         f.publisher
             .install_withdrawal_frontier(previous_frontier)
@@ -531,7 +538,7 @@ fn current_source_withdrawal_rejects_previously_signed_candidate() {
         ),
         Err(ScientificCandidateReviewError::Admission)
     ));
-    assert_eq!(bytes_beneath(&f.directory), before);
+    assert_eq!(bytes_beneath(&f.directory), after_withdrawal);
 }
 
 #[test]
