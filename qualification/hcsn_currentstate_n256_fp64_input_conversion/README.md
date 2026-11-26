@@ -18,3 +18,4 @@ numerical idempotency key, or grant provider/N256/production qualification.
 
 Historical RED/UNKNOWN and Draft #6317's source-only scope remain unchanged.
 C2 full replay remains 0/6 and HPCA remains NoUpdate. Global status is HOLD.
+
