@@ -141,6 +141,7 @@ impl RecoveryDiagnostics {
                         |_| json!({"lock": "busy_or_poisoned"}),
                         |slot| slot.as_ref().map_or(Value::Null, |handoff| json!({
                             "phase": format!("{:?}", handoff.phase),
+                            "abort_stage": format!("{:?}", handoff.abort_stage),
                             "failed_closed": handoff.failed_closed,
                             "task_quiesced": handoff.task_quiesced,
                             "terminal_persistence_generation": handoff.terminal_persistence_generation,

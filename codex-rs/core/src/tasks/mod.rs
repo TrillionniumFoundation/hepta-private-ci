@@ -1,3 +1,4 @@
+mod abort_observation;
 mod compact;
 mod lifecycle;
 pub(crate) mod recovery_diagnostics;
@@ -6,6 +7,7 @@ mod review;
 mod terminal_event;
 mod user_shell;
 
+use self::abort_observation::TaskAbortStage;
 use self::terminal_event::TerminalEventOwner;
 
 use std::panic::AssertUnwindSafe;
@@ -186,6 +188,7 @@ pub(crate) struct TaskAbortHandoff {
     reason: TurnAbortReason,
     deferred_idle_cause: Option<ThreadIdleCause>,
     phase: TaskAbortHandoffPhase,
+    abort_stage: TaskAbortStage,
     failed_closed: bool,
     task_quiesced: bool,
     terminal_persistence_generation: Option<u64>,
@@ -3742,6 +3745,7 @@ impl Session {
                 handoff.reason.clone(),
                 handoff.recovery_seed.clone(),
                 handoff.recovery_authority.clone(),
+                &mut handoff.abort_stage,
             )
             .await;
         handoff.task_quiesced = outcome.task_quiesced;
@@ -3949,6 +3953,7 @@ impl Session {
             reason: reason.clone(),
             deferred_idle_cause,
             phase: TaskAbortHandoffPhase::Claimed,
+            abort_stage: TaskAbortStage::NotEntered,
             failed_closed: false,
             task_quiesced: false,
             terminal_persistence_generation: None,
@@ -4022,12 +4027,14 @@ impl Session {
             _diagnostics_guard: ACTIVE_TURNS.track(),
             _timer: None,
         };
+        let mut abort_stage = TaskAbortStage::NotEntered;
         let abort_outcome = self
             .handle_task_abort(
                 &mut placeholder,
                 reason.clone(),
                 /*recovery_seed*/ None,
                 /*recovery_authority*/ None,
+                &mut abort_stage,
             )
             .await;
         drop(placeholder);
@@ -4331,6 +4338,7 @@ impl Session {
         reason: TurnAbortReason,
         recovery_seed: Option<RecoverySeed>,
         recovery_authority: Option<Arc<TurnRecoveryAuthority>>,
+        stage: &mut TaskAbortStage,
     ) -> TaskAbortOutcome {
         let sub_id = task.turn_context.sub_id.clone();
         // The caller already persisted Unready while holding the active-turn
@@ -4339,11 +4347,13 @@ impl Session {
         // session can be observed as idle.
         if task.cancellation_token.is_cancelled() {
             if let Some(authority) = recovery_authority.as_ref() {
+                *stage = TaskAbortStage::CancelledAuthority;
                 let mut state = authority.state.lock().await;
                 authority.ready.store(false, Ordering::Release);
                 state.ready_persistence_failure_generation = None;
                 state.poisoned = true;
             }
+            *stage = TaskAbortStage::AlreadyCancelled;
             return TaskAbortOutcome::default();
         }
 
@@ -4358,6 +4368,7 @@ impl Session {
                 .features
                 .enabled(Feature::CodeModeInterrupt)
         {
+            *stage = TaskAbortStage::CodeModeInterrupt;
             self.services
                 .code_mode_service
                 .interrupt_active_cells()
@@ -4368,6 +4379,7 @@ impl Session {
             .cancel_git_enrichment_task();
         let session_task = Arc::clone(&task.task);
 
+        *stage = TaskAbortStage::TaskNotification;
         let mut task_quiesced = select! {
             _ = task.done.notified() => {
                 true
@@ -4380,6 +4392,7 @@ impl Session {
 
         task.handle.abort();
         if !task_quiesced {
+            *stage = TaskAbortStage::TaskHandleQuiescence;
             task_quiesced = tokio::time::timeout(
                 Duration::from_millis(GRACEFULL_INTERRUPTION_TIMEOUT_MS),
                 async {
@@ -4392,6 +4405,7 @@ impl Session {
             .is_ok();
         }
 
+        *stage = TaskAbortStage::TaskAbortHook;
         session_task
             .abort(Arc::clone(self), Arc::clone(&task.turn_context))
             .await;
@@ -4404,6 +4418,7 @@ impl Session {
         // been revoked by the caller before entering this method, so this
         // barrier is now safe and preserves the normal abort durability
         // ordering: task output, interrupted marker, then TurnAborted.
+        *stage = TaskAbortStage::RolloutFlush;
         if let Err(err) = self.flush_rollout().await {
             warn!("failed to flush rollout before terminalizing aborted turn: {err}");
         }
@@ -4416,6 +4431,7 @@ impl Session {
                 ),
             )
         {
+            *stage = TaskAbortStage::InterruptedMarkerRecord;
             self.record_conversation_items(
                 task.turn_context.as_ref(),
                 std::slice::from_ref(&marker),
@@ -4423,16 +4439,19 @@ impl Session {
             .await;
             // Ensure the marker is durably visible before emitting TurnAborted: some clients
             // synchronously re-read the rollout on receipt of the abort event.
+            *stage = TaskAbortStage::InterruptedMarkerFlush;
             if let Err(err) = self.flush_rollout().await {
                 warn!("failed to flush interrupted-turn marker before emitting TurnAborted: {err}");
             }
         }
 
+        *stage = TaskAbortStage::StartedAtRead;
         let started_at = task
             .turn_context
             .turn_timing_state
             .started_at_unix_secs()
             .await;
+        *stage = TaskAbortStage::TimingProfile;
         let (completed_at, duration_ms, profile) = task
             .turn_context
             .turn_timing_state
@@ -4451,14 +4470,17 @@ impl Session {
             completed_at,
             duration_ms,
         });
+        *stage = TaskAbortStage::TerminalEventPersistence;
         let (terminal_event, terminal_persistence_generation) = self
             .persist_terminal_event_and_flush(task.turn_context.as_ref(), event)
             .await;
+        *stage = TaskAbortStage::GuardianCleanup;
         self.services
             .guardian_rejection_circuit_breaker
             .lock()
             .await
             .clear_turn(&task.turn_context.sub_id);
+        *stage = TaskAbortStage::Complete;
         TaskAbortOutcome {
             task_quiesced,
             terminal_persistence_generation,
