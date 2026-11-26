@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fs;
+use std::io::Read;
 use std::io::Write;
 use std::num::NonZeroUsize;
 use std::path::Path;
@@ -241,18 +242,26 @@ fn python_hook_uses_resolved_interpreter_without_child_path() {
 fn write_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
+    let started_path = home.join("queue_prompt_hook.started");
+    let input_read_path = home.join("queue_prompt_hook.input-read");
     let script = format!(
         r#"import json
+import os
 from pathlib import Path
 import sys
 
+marker_pid = os.getpid()
+Path(r"{started_path}").write_text(json.dumps({{"pid": marker_pid}}), encoding="utf-8")
 payload = json.load(sys.stdin)
+Path(r"{input_read_path}").write_text(json.dumps({{"pid": marker_pid, "prompt": payload["prompt"][:256]}}, ensure_ascii=True), encoding="utf-8")
 with Path(r"{log_path}").open("a", encoding="utf-8") as log:
     log.write(payload["prompt"] + "\n")
 if payload["prompt"] == "blocked":
     print(json.dumps({{"decision": "block", "reason": "blocked by queue hook"}}))
 "#,
         log_path = log_path.display(),
+        started_path = started_path.display(),
+        input_read_path = input_read_path.display(),
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
@@ -272,15 +281,21 @@ if payload["prompt"] == "blocked":
 
 fn write_blocking_prompt_hook(home: &Path) {
     let script_path = home.join("queue_blocking_prompt_hook.py");
+    let started_path = home.join("queue_blocking_prompt_hook.started");
+    let input_read_path = home.join("queue_blocking_prompt_hook.input-read");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
     let script = format!(
         r#"import json
+import os
 from pathlib import Path
 import sys
 import time
 
+marker_pid = os.getpid()
+Path(r"{started_path}").write_text(json.dumps({{"pid": marker_pid}}), encoding="utf-8")
 payload = json.load(sys.stdin)
+Path(r"{input_read_path}").write_text(json.dumps({{"pid": marker_pid, "prompt": payload["prompt"][:256]}}, ensure_ascii=True), encoding="utf-8")
 if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     Path(r"{entered_path}").write_text("entered", encoding="utf-8")
     deadline = time.monotonic() + 20
@@ -293,6 +308,8 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
 "#,
         entered_path = entered_path.display(),
         release_path = release_path.display(),
+        started_path = started_path.display(),
+        input_read_path = input_read_path.display(),
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
@@ -352,6 +369,23 @@ fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
     );
     assert_eq!(hook_log.lines().collect::<Vec<_>>(), ["blocked"]);
     Ok(())
+}
+
+fn queue_hook_timeout_context(home: &Path, hook_stem: &str, expected_prompt: &str) -> String {
+    let started = home.join(format!("{hook_stem}.started"));
+    let input_read = home.join(format!("{hook_stem}.input-read"));
+    let read_marker = |path: &Path| -> std::io::Result<String> {
+        let mut content = String::new();
+        fs::File::open(path)?
+            .take(/*limit*/ 512)
+            .read_to_string(&mut content)?;
+        Ok(content)
+    };
+    format!(
+        "queue hook marker snapshots (possibly stale or truncated; at most 512 bytes per file, 1024 bytes total): expected_prompt={expected_prompt:?}, started={:?}, input_read={:?}",
+        read_marker(&started),
+        read_marker(&input_read),
+    )
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
@@ -1024,7 +1058,17 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     let release = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.release");
-    wait_for_path(&entered).await?;
+    wait_for_path(&entered).await.with_context(|| {
+        format!(
+            "{}; owner_start_finished={}",
+            queue_hook_timeout_context(
+                test.codex_home_path(),
+                "queue_blocking_prompt_hook",
+                "delay exact persistence",
+            ),
+            owner_start.is_finished(),
+        )
+    })?;
     owner_start.abort();
     let aborted = owner_start
         .await
@@ -1135,7 +1179,17 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     let release = test
         .codex_home_path()
         .join("queue_blocking_prompt_hook.release");
-    wait_for_path(&entered).await?;
+    wait_for_path(&entered).await.with_context(|| {
+        format!(
+            "{}; owner_start_finished={}",
+            queue_hook_timeout_context(
+                test.codex_home_path(),
+                "queue_blocking_prompt_hook",
+                "delay exact rejection",
+            ),
+            owner_start.is_finished(),
+        )
+    })?;
     tokio::time::sleep(Duration::from_millis(400)).await;
     let competing = competitor
         .start(test.codex.as_ref(), Some(item.id.clone()), None)
@@ -2511,7 +2565,10 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
         anyhow::Ok(())
     })
     .await
-    .context("the queued head must complete its rejection after turn A")??;
+    .context("the queued head must complete its rejection after turn A")
+    .with_context(|| {
+        queue_hook_timeout_context(test.codex_home_path(), "queue_prompt_hook", "blocked")
+    })??;
 
     let prompts = responses
         .requests()
@@ -2561,7 +2618,10 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
             /*trace*/ None,
         ),
     )
-    .await?
+    .await
+    .with_context(|| {
+        queue_hook_timeout_context(test.codex_home_path(), "queue_prompt_hook", "blocked")
+    })?
     .expect_err("hook rejection must not consume an unpersisted queue item");
     let QueueServiceError::CoreSubmissionError(error) = error else {
         anyhow::bail!("unexpected hook rejection error: {error:?}");

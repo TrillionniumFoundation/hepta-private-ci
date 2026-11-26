@@ -1,0 +1,58 @@
+{
+  "archive_bytes": 419528,
+  "archive_member_count": 94,
+  "archive_name": "WINDOWS_DIAGNOSTICS_10.tar.xz",
+  "archive_sha256": "e223e68e3cb672c45ed08a83e10ae4c641f80d03ed71169f0ed55741b0da3f02",
+  "base_commit": "4ffa56f6d0be94e68d23d1bfe72aa2cbfd50d479",
+  "branch": "fix/windows-ci-diagnostics-20261126-0198a7",
+  "compilations": 0,
+  "formatted_sources": {
+    ".github/workflows/bazel.yml": {
+      "bytes": 26674,
+      "git_blob": "91d74244975ad6eb0cbd161d66e2b6a66ef12a37",
+      "sha256": "31bbf6572c7c0dbcc40ebd5399ea70475cc4697a43289b4da696abf878a858e8"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "bytes": 120441,
+      "git_blob": "5c5be3f27a1fe15d3bc80d0a0cd8a0d3387546db",
+      "sha256": "0905650e5d0caa4edfe51c5960d1d4643d619eae8507b4a52239c4c2bbf1c1d2"
+    }
+  },
+  "formatter_invocations": 1,
+  "formatter_returncode": 0,
+  "manifest": {
+    "bytes": 25378,
+    "git_blob": "f533787a1466625e539053d6f58e6373444ddf9a",
+    "path": "MANIFEST.json",
+    "sha256": "7a387b53d2ac0cc94b5e6ca196f0f1068a746d97619eda39380dec2195952eec"
+  },
+  "models": 0,
+  "optimizer_calls": 0,
+  "ordered_parts": [
+    {
+      "bytes": 419528,
+      "path": "WINDOWS_DIAGNOSTICS_10.tar.xz",
+      "sha256": "e223e68e3cb672c45ed08a83e10ae4c641f80d03ed71169f0ed55741b0da3f02"
+    }
+  ],
+  "original_sources": {
+    ".github/workflows/bazel.yml": {
+      "bytes": 26642,
+      "git_blob": "e1b5a9e43c8bcfb9589b7efd633d0291b6fbcb04",
+      "sha256": "fc3841dd148a386ceb8750a6824af6447a8c71d2fc207a628d948deb0cf11fd7"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "bytes": 117795,
+      "git_blob": "1313c776cfdd1ce333fa55534c0572ea8a95a246",
+      "sha256": "fc2d71bff5e82beb5c6cb66c9e9cb599c6d4406b1421ba8d10ca73e02610914a"
+    }
+  },
+  "raw_input_count": 90,
+  "ready_sha256": "5bd4a96f0f09c29b5ba5b16a89cc3169c7f599cf8a40a72153eef0f438e5476b",
+  "schema": "hepta.windows-diagnostics-archive-index.v1",
+  "scientific_and_production_hold_unchanged": true,
+  "status": "FORMATTED_SOURCE_CANDIDATE_WINDOWS_UNVERIFIED",
+  "tests": 0,
+  "validation_sha256": "18acb7db765fc6ad426fa4ec2a0690fb7ca62c114574f7f1f17e20946639fe42",
+  "windows_qualification": false
+}
