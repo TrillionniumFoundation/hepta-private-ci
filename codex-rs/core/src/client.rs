@@ -3063,6 +3063,13 @@ fn provider_http_dispatch_metadata(headers: &ApiHeaderMap) -> RequestDispatchMet
 const RESPONSE_STREAM_CHANNEL_CAPACITY: usize = 1600;
 const STREAM_DROPPED_REASON: &str = "response stream dropped before provider terminal event";
 
+/// The provider request identity travels with its event stream so correlation,
+/// redaction and terminal observation refer to the same physical attempt.
+struct ResponseEventSource<S> {
+    upstream_request_id: Option<String>,
+    events: S,
+}
+
 fn map_response_stream(
     api_stream: codex_api::ResponseStream,
     session_telemetry: SessionTelemetry,
@@ -3086,8 +3093,10 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
-        api_stream,
+        ResponseEventSource {
+            upstream_request_id,
+            events: api_stream,
+        },
         session_telemetry,
         inference_trace_attempt,
         provider,
@@ -3098,8 +3107,7 @@ fn map_response_stream(
 }
 
 fn map_response_events<S>(
-    upstream_request_id: Option<String>,
-    api_stream: S,
+    source: ResponseEventSource<S>,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
@@ -3113,6 +3121,10 @@ where
         + Send
         + 'static,
 {
+    let ResponseEventSource {
+        upstream_request_id,
+        events: api_stream,
+    } = source;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

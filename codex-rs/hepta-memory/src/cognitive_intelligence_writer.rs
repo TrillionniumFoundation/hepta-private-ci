@@ -36,6 +36,13 @@ const MAX_TYPE_BYTES: usize = 128;
 const MAX_LABEL_BYTES: usize = 1024;
 const MAX_RELATION_BYTES: usize = 128;
 
+/// Exact revision CAS target for a correction performed in the caller's transaction.
+/// Keeping the target together prevents mismatched predecessor bindings.
+pub(crate) struct ExpectedMemoryRevision<'a> {
+    pub(crate) memory_id: &'a StableMemoryId,
+    pub(crate) expected_revision: u64,
+}
+
 #[derive(Clone, Debug)]
 pub(crate) struct CanonicalEntityFact {
     pub(crate) key: String,
@@ -142,8 +149,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                ExpectedMemoryRevision {
+                    memory_id,
+                    expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -157,8 +166,7 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        target: ExpectedMemoryRevision<'_>,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
@@ -179,8 +187,8 @@ impl CognitiveStore {
             .revise_memory_revision_tx(
                 transaction,
                 access,
-                memory_id,
-                expected_revision,
+                target.memory_id,
+                target.expected_revision,
                 &bound_draft,
             )
             .await?;

@@ -186,6 +186,7 @@ pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
+pub use plasticity_host::AgentdPlasticityProposeInputsV1;
 pub use plasticity_host::PlasticityOwnerEvidenceErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceKindV1;
 pub use plasticity_host::PlasticityOwnerEvidencePolicyErrorV1;

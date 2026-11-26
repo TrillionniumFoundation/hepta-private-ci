@@ -936,7 +936,7 @@ impl RemoteAppServerClient {
     {
         self.request_typed_observed_response(request)
             .await
-            .map(|observed| observed.into_response())
+            .map(RemoteAppServerObservedResponse::into_response)
     }
 
     pub async fn request_typed_observed_response<T>(
@@ -1506,6 +1506,26 @@ fn websocket_close_error_is_already_closed(err: &TungsteniteError) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn observed_response_conversion_preserves_the_typed_response() {
+        let observed = RemoteAppServerObservedResponse {
+            response: "existing-response",
+            method: "thread/read".to_string(),
+            request_id: RequestId::Integer(7),
+            connection_id: 1,
+            server_version: None,
+            codex_home: None,
+        };
+        assert_eq!(observed.method(), "thread/read");
+        assert_eq!(observed.request_id(), &RequestId::Integer(7));
+        let response: Result<RemoteAppServerObservedResponse<&str>, std::convert::Infallible> =
+            Ok(observed);
+        assert_eq!(
+            response.map(RemoteAppServerObservedResponse::into_response),
+            Ok("existing-response"),
+        );
+    }
 
     #[tokio::test]
     async fn shutdown_tolerates_worker_exit_after_command_is_queued() {

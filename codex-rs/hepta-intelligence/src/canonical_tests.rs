@@ -6,6 +6,14 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+#[test]
+fn canonical_run_outcome_is_pointer_sized_not_inline_large_receipts() {
+    assert!(
+        std::mem::size_of::<CanonicalRunOutcomeV1>() <= 3 * std::mem::size_of::<usize>(),
+        "canonical outcome should remain a small tagged pointer",
+    );
+}
+
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
 }
