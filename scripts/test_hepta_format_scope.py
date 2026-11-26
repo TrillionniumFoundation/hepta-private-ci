@@ -3,6 +3,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import runpy
 import shutil
 import subprocess
 import sys
@@ -17,6 +18,7 @@ FMT = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = FMT
 SPEC.loader.exec_module(FMT)
 SOURCE_ROOT = FMT.REPO_ROOT
+RAW_EVIDENCE = runpy.run_path(str(SOURCE_ROOT / FMT.RAW_EVIDENCE_RESTORER))
 RELOCATED_BROKER_PREFIX = (
     "qualification/main-consolidation/historical-continuations/"
     "continuation-20261021/os/broker-review"
@@ -52,7 +54,14 @@ class FormatterScopeTests(unittest.TestCase):
         ):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(SOURCE_ROOT / relative, destination)
+            original = SOURCE_ROOT / relative
+            if relative == FMT.SEALED_READER_RUST and not original.exists():
+                sha256, size = FMT.ORIGINAL_EVIDENCE_FILES[relative]
+                destination.write_bytes(
+                    RAW_EVIDENCE["read_verified"](SOURCE_ROOT, relative, size, sha256)
+                )
+            else:
+                shutil.copy2(original, destination)
         self.write("scripts/first.py", "value = 1\n")
         self.write("scripts/delete.py", "value = 1\n")
         self.git("add", ".")
@@ -185,6 +194,31 @@ class FormatterScopeTests(unittest.TestCase):
                     sorted(str(path) for path in neighbors),
                 )
         self.assertEqual(FMT.verified_original_evidence_paths(), frozenset(records))
+
+    def test_sealed_reader_archive_and_raw_drift(self):
+        relative = FMT.SEALED_READER_RUST
+        paths = (FMT.RAW_EVIDENCE_RESTORER, *RAW_EVIDENCE["INDEX_SHA256"])
+        for path in paths:
+            destination = self.root / path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(SOURCE_ROOT / path, destination)
+
+        raw = self.root / relative
+        original = raw.read_bytes()
+        raw.unlink()
+        archived = raw.with_name(raw.name + ".evidence.gz")
+        shutil.copy2(SOURCE_ROOT / archived.relative_to(self.root), archived)
+
+        self.assertIn(relative, FMT.verified_original_evidence_paths())
+        self.assertFalse(raw.exists())
+        raw.write_bytes(bytes([original[0] ^ 1]) + original[1:])
+        with self.assertRaisesRegex(ValueError, "original evidence bytes changed"):
+            FMT.verified_original_evidence_paths()
+        raw.unlink()
+        compressed = archived.read_bytes()
+        archived.write_bytes(compressed[:-1] + bytes([compressed[-1] ^ 1]))
+        with self.assertRaisesRegex(ValueError, "stored evidence checksum mismatch"):
+            FMT.verified_original_evidence_paths()
 
     def test_historical_rust_record_mutation_fails_before_format(self):
         for relative in FMT.ORIGINAL_EVIDENCE_FILES:

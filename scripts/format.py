@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import os
+import runpy
 import shlex
 import subprocess
 import sys
@@ -59,6 +60,10 @@ RELOCATED_READER_EVIDENCE_PREFIX = (
     "qualification/main-consolidation/historical-continuations/"
     "continuation-20261021/research/reader-2969/source"
 )
+SEALED_READER_RUST = (
+    f"{RELOCATED_READER_EVIDENCE_PREFIX}/codex-rs/hepta-ndu/src/recursive.rs"
+)
+RAW_EVIDENCE_RESTORER = "qa/repository-consolidation/20261115/restore_raw_evidence.py"
 PREFORMAT_RESEARCH_EVIDENCE_PREFIX = "research/rrsnn_v4/hepta"
 RELOCATED_BROKER_EVIDENCE_PREFIX = (
     "qualification/main-consolidation/historical-continuations/"
@@ -214,7 +219,7 @@ ORIGINAL_EVIDENCE_FILES = {
         16476,
     ),
     # The sealed continuation manifest preserves this fourth historical Rust file.
-    f"{RELOCATED_READER_EVIDENCE_PREFIX}/codex-rs/hepta-ndu/src/recursive.rs": (
+    SEALED_READER_RUST: (
         "8f5b71cbbc217d4b07a0d4797944eedf5d3c3bd3884cd6fbcb304a48318102fb",
         5219,
     ),
@@ -254,6 +259,12 @@ def verified_original_evidence_paths() -> frozenset[str]:
             )
         source = root / path
         try:
+            if relative == SEALED_READER_RUST and not source.exists():
+                # That exact historical Rust record can be stored in the
+                # registered gzip archive; the original size and hash still apply.
+                storage = runpy.run_path(str(root / RAW_EVIDENCE_RESTORER))
+                storage["read_verified"](root, relative, expected_size, expected_sha256)
+                continue
             resolved = source.resolve(strict=True)
             if not resolved.is_relative_to(root / prefix) or any(
                 parent.is_symlink()
@@ -267,7 +278,7 @@ def verified_original_evidence_paths() -> frozenset[str]:
                 raise ValueError(f"original evidence bytes changed: {relative!r}")
             if hashlib.sha256(source.read_bytes()).hexdigest() != expected_sha256:
                 raise ValueError(f"original evidence bytes changed: {relative!r}")
-        except OSError as error:
+        except (KeyError, OSError) as error:
             raise ValueError(
                 f"cannot verify original evidence {relative!r}: {error}"
             ) from error
