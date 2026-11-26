@@ -26,6 +26,8 @@ use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::ProductionDurableWriter;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_cognitive_store::ProductionWriterError;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -48,13 +50,15 @@ use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
+#[cfg(feature = "qualification-cognitive-write")]
+use codex_hepta_memory::LocalLeaseOutboxError;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 #[tokio::test]
 #[cfg(feature = "qualification-cognitive-write")]
-async fn agentd_product_host_commits_through_canonical_cognitive_store()
+async fn agentd_product_host_persists_queued_intent_and_fences_release()
 -> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
     let fleet_root = temp.path().join("fleet");
@@ -107,12 +111,33 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
 
     let after = host.writer().recovery_anchor().await?;
     assert_ne!(after, before);
+    let release = host.writer().release().await;
+    assert!(matches!(
+        release,
+        Err(ProductionWriterError::Local(LocalLeaseOutboxError::IllegalTransition(ref reason)))
+            if reason.contains("occurrence:product-writer:1")
+    ));
+    assert_eq!(
+        host.writer().status(&queued.occurrence_key).await?,
+        LocalOutcomeState::Queued
+    );
+    assert_eq!(host.writer().recovery_anchor().await?, after);
+    let settled = host
+        .writer()
+        .rollback_occurrence(
+            &queued.occurrence_key,
+            "qualification fixture never dispatched",
+        )
+        .await?;
+    assert_eq!(settled.state, LocalOutcomeState::RolledBack);
+    assert!(!settled.external_effect);
     host.writer().release().await?;
+    let released = host.writer().recovery_anchor().await?;
+    assert_ne!(released, after);
     drop(host);
 
     let reopened = DurableCognitiveStore::open(&layout).await?;
-    let reopened_anchor = reopened.recovery_anchor().await?;
-    assert_ne!(reopened_anchor, before);
+    assert_eq!(reopened.recovery_anchor().await?, released);
     Ok(())
 }
 
