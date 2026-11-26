@@ -1,0 +1,207 @@
+name: Stage A Bazel version continuation and sixteen local controls
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-time-utc-stage-a-generation-v2.yml"
+      - "scripts/run_time_utc_stage_a_generation_v2.py"
+      - "scripts/hepta_time_utc_stage_a_generation_inputs_v2.json"
+      - "scripts/hepta_time_stage_a_v2/**"
+      - "scripts/hepta_time_utc_stage_a_v2/proposal/**"
+
+permissions:
+  contents: read
+
+jobs:
+  stage-a-candidate:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.action == 'opened' &&
+      github.event.pull_request.head.ref == 'fix/hepta-time-stage-a-bazel-version-continuation-20261126-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 17
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      STAGE_A_GENERATION_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Claim the remaining original source budget once
+        id: job_scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          import json, os, pathlib, re, time
+          started = time.monotonic()
+          head = os.environ["STAGE_A_GENERATION_HEAD"]
+          if re.fullmatch(r"[0-9a-f]{40}", head) is None:
+              raise SystemExit("invalid original generation head")
+          if os.environ["GITHUB_RUN_ATTEMPT"] != "1":
+              raise SystemExit("only the first original attempt is admitted")
+          stage = pathlib.Path(os.environ["RUNNER_TEMP"]) / (
+              "hepta-time-stage-a-" + head + "-" + os.environ["GITHUB_RUN_ID"] + "-1")
+          stage.mkdir()
+          evidence = stage / "evidence"
+          evidence.mkdir()
+          record = {
+              "schema": "hepta.time-stage-a-original-job-start.v1",
+              "generation_head": head,
+              "github_sha": os.environ["GITHUB_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": "1",
+              "source_started_monotonic": started,
+              "unix_seconds": time.time(),
+              "prior_source_acquisition_seconds": 246.16948156717888,
+              "source_remaining_seconds": 53.83051843282112,
+              "source_original_cap_seconds": 300,
+              "engineering_cap_seconds": 883,
+              "engineering_original_cap_seconds": 900,
+              "prior_engineering_observed_seconds": 16.625500185000007,
+              "prior_engineering_conservative_charge_seconds": 17,
+              "previous_attempt_run_id": 45826166498,
+              "previous_source_admission_succeeded": True,
+              "engineering_started": False,
+              "workflow_timeout_minutes": 17,
+              "old_native48_or_E1_E6_budget_reused": False,
+              "automatic_retry": False,
+          }
+          with (evidence / "job-start.json").open("x") as output:
+              json.dump(record, output, indent=2, sort_keys=True)
+              output.write("\n")
+          with open(os.environ["GITHUB_ENV"], "a") as output:
+              output.write("STAGE_A_EVIDENCE=" + str(evidence) + "\n")
+          PY
+
+      - name: Check out the exact original generation head and sole parent
+        id: checkout
+        timeout-minutes: 1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.STAGE_A_GENERATION_HEAD }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Verify complete physical source and frozen inactive-to-active admission
+        id: source
+        timeout-minutes: 1
+        shell: bash
+        run: python3 -B scripts/run_time_utc_stage_a_generation_v2.py begin
+
+      - name: Install the fixed Rust toolchain and original fix/format components
+        id: rust
+        if: steps.source.outcome == 'success'
+        timeout-minutes: 1
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+          components: clippy, rustfmt
+
+      - name: Install fixed just and nextest releases
+        id: rust_tools
+        if: steps.rust.outcome == 'success'
+        timeout-minutes: 1
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Generate exact Stage A postimages and observe one local candidate
+        id: generate
+        if: steps.rust_tools.outcome == 'success'
+        timeout-minutes: 14
+        shell: bash
+        env:
+          STAGE_A_TOOL_STEPS: ${{ toJSON(steps) }}
+        run: python3 -B scripts/run_time_utc_stage_a_generation_v2.py generate
+
+      - name: Retain all original outputs and failed candidate postimages
+        id: artifacts
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: time-stage-a-local-candidate-${{ env.STAGE_A_GENERATION_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.STAGE_A_EVIDENCE }}/
+          if-no-files-found: error
+          retention-days: 30
+          include-hidden-files: true
+
+      - name: Read actual terminal outcomes without transferring qualification
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        shell: bash
+        env:
+          STAGE_A_ALL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 -B - <<'PY'
+          import json, math, os, pathlib, time
+          evidence = pathlib.Path(os.environ["STAGE_A_EVIDENCE"])
+          start = json.loads((evidence / "job-start.json").read_bytes())
+          steps = json.loads(os.environ["STAGE_A_ALL_STEPS"])
+          admission_path = evidence / "source-admission.json"
+          result_path = evidence / "generate.RESULT.json"
+          admission = json.loads(admission_path.read_bytes()) if admission_path.is_file() else None
+          result = json.loads(result_path.read_bytes()) if result_path.is_file() else None
+          terminal = time.monotonic()
+          engineering_elapsed = (
+              terminal - admission["engineering_started_monotonic"]
+              if admission is not None else None)
+          source_ok = bool(
+              admission and admission["source_elapsed_seconds"] <= 53.83051843282112
+              and admission["source_cumulative_seconds"] <= 300)
+          required = ("job_scope", "checkout", "source", "rust", "rust_tools", "generate", "artifacts")
+          passed = bool(
+              all(steps.get(name, {}).get("outcome") == "success" for name in required)
+              and source_ok and result
+              and result["status"] == "LOCAL_DERIVED_CANDIDATE_ONLY"
+              and result["actual_native16_observed"] is True
+              and result["source_generation_head"]["head"] == os.environ["STAGE_A_GENERATION_HEAD"]
+              and result["github_event"]["github_sha"] == os.environ["GITHUB_SHA"]
+              and result["github_event"]["github_run_id"] == os.environ["GITHUB_RUN_ID"]
+              and result["github_event"]["github_run_attempt"] == "1"
+              and result["local_tested_identity"]["head"] != os.environ["STAGE_A_GENERATION_HEAD"]
+              and result["local_tested_identity"]["parents"] == [os.environ["STAGE_A_GENERATION_HEAD"]]
+              and engineering_elapsed is not None and math.isfinite(engineering_elapsed)
+              and 0 <= engineering_elapsed <= 883
+              and 17 + engineering_elapsed <= 900)
+          terminal_record = {
+              "schema": "hepta.time-stage-a-workflow-terminal.v1",
+              "status": "LOCAL_CANDIDATE_REQUIRES_ROOT_REVIEW" if passed else "FAIL",
+              "actual_original_steps": steps,
+              "source_admission": admission,
+              "engineering_elapsed_seconds_through_artifact_upload": engineering_elapsed,
+              "elapsed_seconds_since_source_claim": terminal - start["source_started_monotonic"],
+              "prior_source_acquisition_seconds": 246.16948156717888,
+              "prior_engineering_observed_seconds": 16.625500185000007,
+              "prior_engineering_conservative_charge_seconds": 17,
+              "engineering_observed_cumulative_seconds_through_upload": (
+                  16.625500185000007 + engineering_elapsed
+                  if engineering_elapsed is not None else None),
+              "engineering_conservatively_charged_seconds_through_upload": (
+                  17 + engineering_elapsed if engineering_elapsed is not None else None),
+              "engineering_original_cap_seconds": 900,
+              "engineering_remaining_cap_seconds": 883,
+              "previous_attempt_run_id": 45826166498,
+              "previous_attempt_status": "FAIL",
+              "previous_source_admission_succeeded": True,
+              "generation_head": os.environ["STAGE_A_GENERATION_HEAD"],
+              "unchanged_github_sha": os.environ["GITHUB_SHA"],
+              "local_tested_identity": result.get("local_tested_identity") if result else None,
+              "publication_qualified": False,
+              "generation_head_native_qualified": False,
+              "chrono_advisory_closed": False,
+              "cloud_or_models_activation": False,
+              "old_qualification_transferred": False,
+              "terminal_record_location": "This original workflow log; the preceding artifact cannot include a future upload outcome.",
+              "queue_setup_post_job_and_aggregate_CPU_require_original_API_and_log_readback": True,
+          }
+          print(json.dumps(terminal_record, indent=2, sort_keys=True), flush=True)
+          if not passed:
+              raise SystemExit("original Stage A generation/native/retention scope did not close")
+          PY

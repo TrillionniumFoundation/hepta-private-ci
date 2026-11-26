@@ -1,0 +1,507 @@
+{
+  "E1_E6_added": 0,
+  "accepted": true,
+  "actual_main_lock_scope": {
+    "evidence_from": "SQLx owner readback of accepted bc8 main Cargo.lock",
+    "keep_frozen_cargo_1_96_and_reject_any_actual_drift": true,
+    "main_lock_has_unused_patch_rows": false,
+    "nightly_cargo_fixture_qualification_not_borrowed": true,
+    "sqlx_fixture_random_unused_patch_order_not_transferred_as_a_main_lock_failure": true
+  },
+  "automatic_command_retries": 0,
+  "branch": "fix/hepta-time-stage-a-bazel-version-continuation-20261126-7c9e",
+  "budgets": {
+    "automatic_command_retries": 0,
+    "engineering_cap_seconds": 883,
+    "engineering_original_cap_seconds": 900,
+    "engineering_previous_conservative_charge_seconds": 17,
+    "engineering_previous_observed_seconds": 16.625500185000007,
+    "final_reserve_seconds": 100,
+    "old_E1_E6_seconds_used": 0,
+    "old_native48_seconds_used": 0,
+    "source_original_cap_seconds": 300,
+    "source_previous_seconds": 246.16948156717888,
+    "source_remaining_seconds": 53.83051843282112
+  },
+  "continuation_review": {
+    "deadline_delta": "Original source budget remains 300 with 246.16948156717888 already used. Original engineering900 has a conservative17 debit, leaving883 shared by commands783 and retention100.",
+    "functional_delta": "Only the Bazel version case calls the already verified absolute tools/bazel.real executable directly. Every real Bazel build/analysis/update/query still uses the unchanged private --batch launcher.",
+    "no_original_control_reexecution_in_source_preparation": true,
+    "official_primary": {
+      "bytes": 91877,
+      "fastpath_lines": [
+        1629,
+        1632
+      ],
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/BAZEL_9_3_VERSION_FASTPATH_PRIMARY_blaze.cc",
+      "sha256": "a3e67f1dc3a21f1f46c8d923894b405f1401b0046892485742a669eaa72fbee3"
+    },
+    "original_7135_source_and_native_qualification_not_transferred": true,
+    "original_failure_reclassified": false,
+    "phase_caps_unchanged": true,
+    "proposals_and_sixteen_control_source_unchanged": true,
+    "status": "ROOT_ACCEPTED_FINAL_SOURCE_AND_REMAINING_SCOPE"
+  },
+  "current_continuation_format": {
+    "dual_eof": {
+      "stderr": true,
+      "stdout": true
+    },
+    "final_format_rows": [
+      {
+        "after": {
+          "bytes": 6816,
+          "git_blob": "0a4ab3e12362af51813e032a0372679dd44372e7",
+          "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-stage-a-three-new-python-format-root-v1/sources/scripts/hepta_time_stage_a_v2/contract.py",
+          "sha256": "5db38c9a56a0a0c9ee501807fcf0619cd1eb8a119d268d2040a35e8eb2a5dd1f"
+        },
+        "before": {
+          "bytes": 6815,
+          "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_STAGE_A_BAZEL_VERSION_CONTINUATION_SOURCE_ONLY_V1__scripts__hepta_time_stage_a_v2__contract.py",
+          "repo_path": "scripts/hepta_time_stage_a_v2/contract.py",
+          "sha256": "5483a559d675c998211c8e952cdb1f90b2d55719805766309a952a6f2001f40c"
+        },
+        "changed": true,
+        "format_invocations": 1,
+        "repo_path": "scripts/hepta_time_stage_a_v2/contract.py"
+      },
+      {
+        "after": {
+          "bytes": 9482,
+          "git_blob": "8e960ae3ac670df9e82481dbb87c2534b6ee1a72",
+          "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-stage-a-three-new-python-format-root-v1/sources/scripts/hepta_time_stage_a_v2/tools.py",
+          "sha256": "eef77a58b53568f99184fcc87de0c820a9915c352e71eface7905e3489f64f05"
+        },
+        "before": {
+          "bytes": 9482,
+          "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_STAGE_A_BAZEL_VERSION_CONTINUATION_SOURCE_ONLY_V1__scripts__hepta_time_stage_a_v2__tools.py",
+          "repo_path": "scripts/hepta_time_stage_a_v2/tools.py",
+          "sha256": "eef77a58b53568f99184fcc87de0c820a9915c352e71eface7905e3489f64f05"
+        },
+        "changed": false,
+        "format_invocations": 1,
+        "repo_path": "scripts/hepta_time_stage_a_v2/tools.py"
+      },
+      {
+        "after": {
+          "bytes": 16468,
+          "git_blob": "09a23fb59bf8631c781b44301358d47cd3d5d1d9",
+          "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-stage-a-three-new-python-format-root-v1/sources/scripts/run_time_utc_stage_a_generation_v2.py",
+          "sha256": "3311aa1e823e5ceeef415fad4d1387ff27cefc000dc70f2eb6ed2e70c8d5fb6a"
+        },
+        "before": {
+          "bytes": 16468,
+          "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_STAGE_A_BAZEL_VERSION_CONTINUATION_SOURCE_ONLY_V1__scripts__run_time_utc_stage_a_generation_v2.py",
+          "repo_path": "scripts/run_time_utc_stage_a_generation_v2.py",
+          "sha256": "3311aa1e823e5ceeef415fad4d1387ff27cefc000dc70f2eb6ed2e70c8d5fb6a"
+        },
+        "changed": false,
+        "format_invocations": 1,
+        "repo_path": "scripts/run_time_utc_stage_a_generation_v2.py"
+      }
+    ],
+    "receipt": {
+      "bytes": 10064,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-stage-a-three-new-python-format-root-v1/RESULT.json",
+      "sha256": "251487156fe2f4300b8473de879a222c4e4b62019737cf6b38791655a864c07d"
+    },
+    "terminal": {
+      "at_unix_ms": 1795701780266,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a2182aadf0-ffbe-47d7",
+      "launch_nonce": "00f20afa557e138aab94cfd86ada6ac4",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 399,
+          "stored": 399
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "current_entry_rebinding": {
+    "post_format_literal_only": true,
+    "proof": {
+      "bytes": 1195,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_STAGE_A_BAZEL_CONTINUATION_ROOT_SOURCE_LITERAL_PROOF_V1.json",
+      "sha256": "64d5462ee767f54d3b237b326d46925beb4fac342a536314e35badd85f5cec92"
+    },
+    "source": {
+      "bytes": 16468,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-stage-a-bazel16-publication-v1/sources-prepared/scripts/run_time_utc_stage_a_generation_v2.py",
+      "sha256": "b14c394de3b483e930efac3b54fa50d7dd0b457ffbc7a1547ec0d5cd9f7d1c91"
+    }
+  },
+  "draft_only": true,
+  "engineering_execution_authorized": true,
+  "exact_native_controls": [
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::serde_preserves_legacy_autosi_zero_three_six_nine_digits"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::serde_normalizes_offsets_before_canonical_bytes"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::public_rfc3339_parser_keeps_relaxed_forms_at_serde_boundary"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::negative_epoch_seconds_and_milliseconds_floor"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::explicit_numeric_schemas_keep_integers_and_old_units"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::numeric_constructors_never_infer_units_from_small_values"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::fixed_precision_and_explicit_utc_suffix_do_not_round"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::display_and_debug_keep_their_distinct_legacy_shapes"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::four_digit_utc_range_is_checked_after_offset_normalization"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::unsupported_chrono_leap_and_expanded_year_inputs_are_explicit_errors"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::malformed_and_non_string_inputs_are_not_coerced"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::numeric_range_errors_do_not_saturate_into_an_instant"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::legacy_duration_boundary_remains_exact_to_one_nanosecond"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::checked_arithmetic_preserves_instant_and_rejects_range_overflow"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::system_clock_conversion_preserves_pre_epoch_fraction"
+    },
+    {
+      "binary_id": "codex-utils-time",
+      "name": "tests::signed_age_keeps_future_timestamp_negative"
+    }
+  ],
+  "execution_bounds": {
+    "commands_share_seconds": 783,
+    "engineering_original_cap_seconds": 900,
+    "engineering_whole_seconds": 883,
+    "phase_caps_share_same_absolute_deadline": true,
+    "previous_engineering_conservative_charge_seconds": 17,
+    "previous_engineering_observed_seconds": 16.625500185000007,
+    "queue_checkout_setup_failed_candidates_and_upload_costs_retained": true,
+    "retention_reserve_seconds": 100,
+    "unknown_CPU_remains_null": true,
+    "workflow_hard_timeout_is_not_engineering_cap": true,
+    "workflow_hard_timeout_seconds": 1020
+  },
+  "first_open_only": true,
+  "generated_lock_paths": [
+    "codex-rs/Cargo.lock",
+    "MODULE.bazel.lock"
+  ],
+  "historical_original_7135_format_and_AST_receipts": {
+    "new_format_and_AST_receipt": {
+      "bytes": 17153,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-windows-stage-a-six-python-format-root-v1/RESULT.json",
+      "sha256": "9ebf1005960863bad86493c2889d9ce2ed236a3bc21225c8e886612239f160c1"
+    },
+    "old_eleven_AST_receipt": {
+      "bytes": 23208,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta-eleven-ast-sqlx-twelve-controls-root-v1/RESULT.json",
+      "sha256": "91fc929d027539ff2c823c509dfeb72ea3a454d0dc6bc825eb389ddc26e69703"
+    }
+  },
+  "historical_original_7135_reviewed_source_receipts": [
+    {
+      "bytes": 4341,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_STAGE_A_JUNIT_WORKSPACE_SOURCE_CORRECTION_V4/SOURCE_REVIEW.json",
+      "sha256": "1a59d886540995609fdafe250c2c2b2a52989b5a718b1980653a53067fb1d425"
+    },
+    {
+      "bytes": 12662,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_STAGE_A_V2_CE_SCOPE_NATIVE_STATIC_REVIEW_V1.json",
+      "sha256": "52286d63c3e3e8f34901d52ab6314044d5263b4eafe33a02774e45945d88e168"
+    },
+    {
+      "bytes": 4120,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_STAGE_A_CONTROLLED_LOADER_JUNIT_DELTA_CE_STATIC_REVIEW_V1.json",
+      "sha256": "d545645860e8a6b4e541c817b2fb544d36f85866d0a3430a1e3f4fd698634b12"
+    },
+    {
+      "bytes": 22954,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_WINDOWS_STAGE_A_SIX_FORMAL_PYTHON_HG_PIN_REVIEW_V1.json",
+      "sha256": "2be4741b4c6668217b01a55e72781120127d841ca48ccbf452ccf3a039e47c4d"
+    },
+    {
+      "bytes": 13055,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_5B9_BAZEL_STABILITY_HG_INDEPENDENT_READBACK_V1.json",
+      "sha256": "be93711c2af3010bbaebf728f6714289f57e2229c66f1a8d3ef93af212c0d6aa"
+    },
+    {
+      "bytes": 249871,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/NEXTEST_0103_JUNIT_WORKSPACE_FULL_CHAIN_PRIMARY_V1.json",
+      "sha256": "5c02886ee868b23f5a180e44862e34efa278406287a6f8b49caee33bfaed18ce"
+    }
+  ],
+  "identity": {
+    "derived_local_head_sole_parent": "actual published generation head",
+    "github_environment_not_rewritten": true,
+    "local_scope": "LOCAL_DERIVED_CANDIDATE_ONLY",
+    "owner_github_writes_authorized": false,
+    "publication_transfer_requires_separate_root_readback": true,
+    "published_generation_head_sole_parent": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1"
+  },
+  "maximum_original_attempts": 1,
+  "native_command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-utils-time",
+    "--lib",
+    "--retries",
+    "0",
+    "--test-threads",
+    "1",
+    "--status-level",
+    "pass",
+    "--final-status-level",
+    "fail",
+    "-E",
+    "(binary_id(=codex-utils-time) & test(=tests::serde_preserves_legacy_autosi_zero_three_six_nine_digits)) | (binary_id(=codex-utils-time) & test(=tests::serde_normalizes_offsets_before_canonical_bytes)) | (binary_id(=codex-utils-time) & test(=tests::public_rfc3339_parser_keeps_relaxed_forms_at_serde_boundary)) | (binary_id(=codex-utils-time) & test(=tests::negative_epoch_seconds_and_milliseconds_floor)) | (binary_id(=codex-utils-time) & test(=tests::explicit_numeric_schemas_keep_integers_and_old_units)) | (binary_id(=codex-utils-time) & test(=tests::numeric_constructors_never_infer_units_from_small_values)) | (binary_id(=codex-utils-time) & test(=tests::fixed_precision_and_explicit_utc_suffix_do_not_round)) | (binary_id(=codex-utils-time) & test(=tests::display_and_debug_keep_their_distinct_legacy_shapes)) | (binary_id(=codex-utils-time) & test(=tests::four_digit_utc_range_is_checked_after_offset_normalization)) | (binary_id(=codex-utils-time) & test(=tests::unsupported_chrono_leap_and_expanded_year_inputs_are_explicit_errors)) | (binary_id(=codex-utils-time) & test(=tests::malformed_and_non_string_inputs_are_not_coerced)) | (binary_id(=codex-utils-time) & test(=tests::numeric_range_errors_do_not_saturate_into_an_instant)) | (binary_id(=codex-utils-time) & test(=tests::legacy_duration_boundary_remains_exact_to_one_nanosecond)) | (binary_id(=codex-utils-time) & test(=tests::checked_arithmetic_preserves_instant_and_rejects_range_overflow)) | (binary_id(=codex-utils-time) & test(=tests::system_clock_conversion_preserves_pre_epoch_fraction)) | (binary_id(=codex-utils-time) & test(=tests::signed_age_keeps_future_timestamp_negative))"
+  ],
+  "native_list_command": [
+    "cargo",
+    "nextest",
+    "list",
+    "--locked",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "-p",
+    "codex-utils-time",
+    "--lib",
+    "--message-format",
+    "json",
+    "-E",
+    "(binary_id(=codex-utils-time) & test(=tests::serde_preserves_legacy_autosi_zero_three_six_nine_digits)) | (binary_id(=codex-utils-time) & test(=tests::serde_normalizes_offsets_before_canonical_bytes)) | (binary_id(=codex-utils-time) & test(=tests::public_rfc3339_parser_keeps_relaxed_forms_at_serde_boundary)) | (binary_id(=codex-utils-time) & test(=tests::negative_epoch_seconds_and_milliseconds_floor)) | (binary_id(=codex-utils-time) & test(=tests::explicit_numeric_schemas_keep_integers_and_old_units)) | (binary_id(=codex-utils-time) & test(=tests::numeric_constructors_never_infer_units_from_small_values)) | (binary_id(=codex-utils-time) & test(=tests::fixed_precision_and_explicit_utc_suffix_do_not_round)) | (binary_id(=codex-utils-time) & test(=tests::display_and_debug_keep_their_distinct_legacy_shapes)) | (binary_id(=codex-utils-time) & test(=tests::four_digit_utc_range_is_checked_after_offset_normalization)) | (binary_id(=codex-utils-time) & test(=tests::unsupported_chrono_leap_and_expanded_year_inputs_are_explicit_errors)) | (binary_id(=codex-utils-time) & test(=tests::malformed_and_non_string_inputs_are_not_coerced)) | (binary_id(=codex-utils-time) & test(=tests::numeric_range_errors_do_not_saturate_into_an_instant)) | (binary_id(=codex-utils-time) & test(=tests::legacy_duration_boundary_remains_exact_to_one_nanosecond)) | (binary_id(=codex-utils-time) & test(=tests::checked_arithmetic_preserves_instant_and_rejects_range_overflow)) | (binary_id(=codex-utils-time) & test(=tests::system_clock_conversion_preserves_pre_epoch_fraction)) | (binary_id(=codex-utils-time) & test(=tests::signed_age_keeps_future_timestamp_negative))"
+  ],
+  "original_bazel_evidence": {
+    "accepted_for_original_5b9_unchanged_lock_only": true,
+    "artifact_id": 15091806526,
+    "artifact_sha256": "172ec583f916793b74a55297eed3613e3126f3e95fbaa42be19d7cd570cfe3fd",
+    "job_id": 139689521234,
+    "lock_sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892",
+    "new_stage_A_generation_still_required": true,
+    "original_generation_repeated": false,
+    "run_id": 45754403268
+  },
+  "original_native48_budget_used": 0,
+  "parent": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+  "parent_tree": "a720083f7bd3d1df4222908bd5aa946c9eb43dce",
+  "phase_caps_seconds": {
+    "bazel-analysis": 180,
+    "bazel-lock-error-mode": 90,
+    "bazel-lock-update": 180,
+    "bazel-query": 90,
+    "cargo-workspace-update": 120,
+    "download-bazel": 45,
+    "download-dotslash": 20,
+    "locked-metadata": 120,
+    "native16": 180,
+    "nextest-list": 120,
+    "scoped-fix": 180,
+    "scoped-format": 45,
+    "version": 5
+  },
+  "previous_attempt": {
+    "artifact_id": 15120002925,
+    "attempt": 1,
+    "engineering_conservative_charge_seconds": 17,
+    "engineering_elapsed_seconds_through_artifact_upload": 16.625500185000007,
+    "failure": "ValueError: actual command failed: version-bazel",
+    "head": "98f3e7e3ccd38ca18244cb58a183bccad556df4f",
+    "job_id": 139930742628,
+    "lock_generation_started": false,
+    "native16_started": false,
+    "pull_request": 7135,
+    "run_id": 45826166498,
+    "source_admission_status": "SOURCE_ACQUIRED_ENGINEERING_ADMITTED",
+    "source_cumulative_seconds": 246.16948156717888,
+    "source_elapsed_seconds": 15.131083567000005,
+    "source_previous_seconds": 231.03839800017886,
+    "status": "FAIL",
+    "tree": "58fc9f9008a1c0dd9f153eb350d432aa8544959f"
+  },
+  "previous_attempt_evidence": [
+    {
+      "bytes": 2346,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7134-7135-two-original-artifacts-root-v1-continuation-v2/members/15120002925/source-admission.json",
+      "sha256": "7e7ade6b5566ebfddf07c82136d804570f8065f8c256c7e6642a66ac1c44a03d",
+      "status": "Original full physical source acquisition passed; actual source cost retained."
+    },
+    {
+      "bytes": 25605,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7134-7135-two-original-artifacts-root-v1-continuation-v2/members/15120002925/generate.RESULT.json",
+      "sha256": "e2e1b010dc5caf5590b549b8a15ddb71effb92c4a8461002ff7300d38bfe3cbd",
+      "status": "Original generation invocation failed during version-bazel; overlay/lock generation/native16 were not started."
+    },
+    {
+      "bytes": 136,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7134-7135-two-original-artifacts-root-v1-continuation-v2/members/15120002925/generate-14-version-bazel.stderr",
+      "sha256": "cbf21dc1aef7edc82bae8367b6a32c1796c4fd4b195e33949680e1c0f7fcb7aa",
+      "status": "Actual unknown startup option --version, original exit2."
+    }
+  ],
+  "proposal_scope": {
+    "cloud_activation": false,
+    "leap_seconds_supported": false,
+    "legacy_extended_year_and_leap_compatibility_open": true,
+    "models_activation": false,
+    "new_package": "codex-utils-time",
+    "old_cloud_or_models_or_native48_controls_rerun": false,
+    "source_control_count": 16,
+    "source_reference_manifest": {
+      "bytes": 6063,
+      "path": "HEPTA_7120_TIME_UTC_CLOUD_SOURCE_ONLY_V3/STAGE_A_SOURCE_MANIFEST.json",
+      "sha256": "2316fe9e7a1c8041df493e4779ff41d108416b959f740a2e011bbddcc5f9ede2"
+    },
+    "stage": "A only",
+    "supported_utc_years": [
+      0,
+      9999
+    ]
+  },
+  "proposed_stage_paths": [
+    "codex-rs/Cargo.toml",
+    "codex-rs/utils/time/BUILD.bazel",
+    "codex-rs/utils/time/Cargo.toml",
+    "codex-rs/utils/time/src/lib.rs",
+    "codex-rs/utils/time/src/parser.rs",
+    "codex-rs/utils/time/src/utc_timestamp_tests.rs"
+  ],
+  "publication_paths": [
+    ".github/workflows/hepta-time-utc-stage-a-generation-v2.yml",
+    "qualification/time_utc_stage_a_generation_admission_v1.json",
+    "scripts/hepta_time_stage_a_v2/contract.py",
+    "scripts/hepta_time_stage_a_v2/generation.py",
+    "scripts/hepta_time_stage_a_v2/native.py",
+    "scripts/hepta_time_stage_a_v2/runtime.py",
+    "scripts/hepta_time_stage_a_v2/source.py",
+    "scripts/hepta_time_stage_a_v2/tools.py",
+    "scripts/hepta_time_utc_stage_a_generation_inputs_v2.json",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__Cargo.toml.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__BUILD.bazel.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__Cargo.toml.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__lib.rs.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__parser.rs.source",
+    "scripts/hepta_time_utc_stage_a_v2/proposal/codex-rs__utils__time__src__utc_timestamp_tests.rs.source",
+    "scripts/run_time_utc_stage_a_generation_v2.py"
+  ],
+  "qualifications": {
+    "adoption_qualified": false,
+    "chrono_advisory_closed": false,
+    "cloud_cache_migration_activated": false,
+    "final_use_qualified": false,
+    "generation_head_native_qualified": false,
+    "models_cache_migration_activated": false,
+    "old_campaign_qualification_transferred": false,
+    "old_chrono_input_domain_fully_preserved": false,
+    "ordinary_ci_qualified": false,
+    "published_candidate_qualified": false,
+    "whole_repo_or_platforms_qualified": false
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_size_guidance": {
+    "exception_accepted_by_root": true,
+    "reason": "One immutable first-open candidate binds the controlled source loader, scoped process owner, six opaque UTC proposals, locked graph and Bazel generation, exact sixteen-control discovery, and complete raw identity and cost retention. Code, proposal data and admission JSON are counted separately; no small-diff compliance is claimed.",
+    "suggested_max_changed_lines": 800
+  },
+  "reviewer": "root",
+  "schema": "hepta.time-utc-stage-a-root-engineering-admission.v1",
+  "source_controls": {
+    "AST_equal_verified": true,
+    "current_continuation_formatter_and_AST_executed": true,
+    "current_formatted_sources": 3,
+    "existing_controls_replayed": false,
+    "new_native16_executed_before_publication": false,
+    "original_source_AST_receipts_preserved": true,
+    "scope": "Three newly changed Python sources have original before/after formatter AST equivalence; ten unchanged postimages remain exact. The sole post-format entry SHA literal rebinding has a separate reversible source proof, not an AST-equivalence claim."
+  },
+  "source_preparation": {
+    "failed_acquisition_costs_retained": true,
+    "original_cap_seconds": 300,
+    "previous_7135_source_admission_succeeded": true,
+    "previous_seconds": 246.16948156717888,
+    "remaining_seconds": 53.83051843282112,
+    "reset": false
+  },
+  "source_preparation_only": false,
+  "tool_payloads": {
+    "bazel": {
+      "bytes": 77023347,
+      "format": "elf",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+      "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64"
+    },
+    "dotslash": {
+      "bytes": 775216,
+      "format": "tar.gz",
+      "sha256": "7400dd0dbdf05d3be4e604b62807eb1bcbaa0d1bced010d30746243759e0ac03",
+      "url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.tar.gz"
+    }
+  },
+  "tools": {
+    "bazel": "9.3.0",
+    "buildifier": "8.5.1",
+    "dotslash": "0.5.9",
+    "just": "1.51.0",
+    "native_host": "x86_64-unknown-linux-gnu",
+    "nextest": "0.9.103",
+    "nextest_commit": "d2e7b879fb79975e8b47a8e3ce569b651e6381c0",
+    "nextest_date": "2025-08-25",
+    "rust": "1.96.0"
+  }
+}

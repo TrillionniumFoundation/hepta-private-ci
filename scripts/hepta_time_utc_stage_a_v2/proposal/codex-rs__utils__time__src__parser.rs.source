@@ -1,0 +1,123 @@
+use super::TimestampError;
+use super::UtcTimestamp;
+use super::invalid_syntax;
+
+pub(super) fn parse_legacy_serde(input: &str) -> Result<UtcTimestamp, TimestampError> {
+    // Chrono's serde reader used its relaxed FromStr grammar, not the
+    // strict RFC 3339 parser. Keep each delimiter/space boundary in order
+    // so normalization does not turn formerly invalid text into a date.
+    let mut remaining = input.trim_start();
+    let signed = matches!(remaining.as_bytes().first(), Some(&b'+') | Some(&b'-'));
+    let negative_year = remaining.starts_with('-');
+    if signed {
+        remaining = &remaining[1..];
+    }
+    let year = take_legacy_digits(&mut remaining, /*minimum*/ 1, /*maximum*/ if signed { usize::MAX } else { 4 })?;
+    if year > 9999 || (negative_year && year != 0) {
+        return Err(TimestampError::UnsupportedExpandedYear);
+    }
+    take_legacy_delimiter(&mut remaining, '-')?;
+    let month = take_legacy_component(&mut remaining)?;
+    take_legacy_delimiter(&mut remaining, '-')?;
+    let day = take_legacy_component(&mut remaining)?;
+
+    // Only an ASCII space or T/t can follow the day. Whitespace before
+    // later numeric components is accepted, including Unicode whitespace.
+    match remaining.as_bytes().first() {
+        Some(&b'T') | Some(&b't') | Some(&b' ') => remaining = &remaining[1..],
+        _ => return Err(invalid_syntax()),
+    }
+    let hour = take_legacy_component(&mut remaining)?;
+    take_legacy_delimiter(&mut remaining, ':')?;
+    let minute = take_legacy_component(&mut remaining)?;
+    take_legacy_delimiter(&mut remaining, ':')?;
+    let second = take_legacy_component(&mut remaining)?;
+    if second == 60 {
+        return Err(TimestampError::UnsupportedLeapSecond);
+    }
+
+    // The fraction must touch the seconds. Chrono consumes every ASCII
+    // fractional digit but keeps only the first nine, without rounding.
+    let fraction = if let Some(digits_and_zone) = remaining.strip_prefix('.') {
+        let count = digits_and_zone.bytes().take_while(u8::is_ascii_digit).count();
+        if count == 0 {
+            return Err(invalid_syntax());
+        }
+        remaining = &digits_and_zone[count..];
+        let kept_digits = &digits_and_zone[..count.min(/*other*/ 9)];
+        format!(".{kept_digits}")
+    } else {
+        String::new()
+    };
+    remaining = remaining.trim_start();
+    let zone = take_legacy_zone(&mut remaining)?;
+    if !remaining.trim_start().is_empty() {
+        return Err(invalid_syntax());
+    }
+    UtcTimestamp::parse_rfc3339(&format!(
+        "{year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}{fraction}{zone}"
+    ))
+}
+
+// These small readers preserve the old serde grammar at its own boundary.
+// They do not expand the strict public parse_rfc3339 input contract.
+fn take_legacy_digits(
+    remaining: &mut &str,
+    minimum: usize,
+    maximum: usize,
+) -> Result<u32, TimestampError> {
+    let count = remaining.bytes().take(maximum).take_while(u8::is_ascii_digit).count();
+    if count < minimum {
+        return Err(invalid_syntax());
+    }
+    let value = remaining[..count].parse::<u32>().map_err(|_| invalid_syntax())?;
+    *remaining = &remaining[count..];
+    Ok(value)
+}
+
+fn take_legacy_component(remaining: &mut &str) -> Result<u32, TimestampError> {
+    *remaining = remaining.trim_start();
+    take_legacy_digits(remaining, /*minimum*/ 1, /*maximum*/ 2)
+}
+
+fn take_legacy_delimiter(remaining: &mut &str, delimiter: char) -> Result<(), TimestampError> {
+    *remaining = remaining.trim_start().strip_prefix(delimiter).ok_or_else(invalid_syntax)?;
+    Ok(())
+}
+
+fn take_legacy_zone(remaining: &mut &str) -> Result<String, TimestampError> {
+    let bytes = remaining.as_bytes();
+    if bytes.len() >= 3 && bytes[..3].eq_ignore_ascii_case(b"UTC") {
+        *remaining = &remaining[3..];
+        return Ok("Z".to_string());
+    }
+    if matches!(bytes.first(), Some(&b'Z') | Some(&b'z')) {
+        *remaining = &remaining[1..];
+        return Ok("Z".to_string());
+    }
+    let sign = match remaining.chars().next() {
+        Some('+') => {
+            *remaining = &remaining[1..];
+            '+'
+        }
+        Some('-') => {
+            *remaining = &remaining[1..];
+            '-'
+        }
+        Some('\u{2212}') => {
+            *remaining = &remaining['\u{2212}'.len_utf8()..];
+            '-'
+        }
+        _ => return Err(invalid_syntax()),
+    };
+    let hours = take_legacy_digits(remaining, /*minimum*/ 2, /*maximum*/ 2)?;
+    *remaining = remaining.trim_start_matches(|character: char| {
+        character == ':' || character.is_whitespace()
+    });
+    let minutes = take_legacy_digits(remaining, /*minimum*/ 2, /*maximum*/ 2)?;
+    if hours > 23 || minutes > 59 {
+        return Err(invalid_syntax());
+    }
+    Ok(format!("{sign}{hours:02}:{minutes:02}"))
+}
+
