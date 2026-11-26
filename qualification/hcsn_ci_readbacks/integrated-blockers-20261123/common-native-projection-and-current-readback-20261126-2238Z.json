@@ -1,0 +1,303 @@
+{
+  "schema": "hcsn-common-native-projection-and-current-readback-v1",
+  "observed_after_utc": "2026-11-26T22:34:55Z",
+  "native_projection": {
+    "status": {
+      "at_unix_ms": 1795732824236,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a21a045cb1-ffbe-4b1c",
+      "launch_nonce": "802b5404a53e2d01609f078921a34d24",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 6672,
+          "stored": 6672
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "result": {
+      "all_closed": false,
+      "consumption_ledger_verified": false,
+      "exact_glob_identity": true,
+      "expected": 29,
+      "file_rows": [
+        {
+          "bytes": 8164,
+          "git_blob": "f06253382882042c23f30593afa93357c17725da",
+          "path": "qualification/hcsn_boundary_audit/refractory_transport.py",
+          "sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+        },
+        {
+          "bytes": 6021,
+          "git_blob": "c0818b50d6fd7bc6088d736aeca4f4239c6e53bd",
+          "path": "qualification/hcsn_boundary_audit/spatial_generator.py",
+          "sha256": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419"
+        },
+        {
+          "bytes": 14996,
+          "git_blob": "28ab8b4dce5d045e730f8f1929cdac83e89f9951",
+          "path": "qualification/hcsn_joint_dde/audit_graded.py",
+          "sha256": "634735fef3008ee5e6e6781d692b6a6f31b1c857f255671b1c46f450d778dfcd"
+        },
+        {
+          "bytes": 5284,
+          "git_blob": "39436ff6da653af0ead44501fc064521523c60d7",
+          "path": "qualification/hcsn_joint_dde/basis.py",
+          "sha256": "514df92e13970f2839e9bea6d03e24b4cf52fde57915425e4684fe6de866e13d"
+        },
+        {
+          "bytes": 6896,
+          "git_blob": "1caf658121093dfa315f75fdb50904e140620e14",
+          "path": "qualification/hcsn_joint_dde/graded.py",
+          "sha256": "29024ea1a0c7c0502e8cb48659a7152564937ff4002705a1083d1e5d60d9f6da"
+        },
+        {
+          "bytes": 6767,
+          "git_blob": "f460ecf2546cd9adde99cae85757c1f23c738473",
+          "path": "qualification/hcsn_joint_dde/graded_migration.py",
+          "sha256": "ac2fc4ed94d87f20dbd6cb6ee2ba8d91342538cbef70426c4bad26a126d8a1a4"
+        },
+        {
+          "bytes": 14672,
+          "git_blob": "5183735889cbd7ef436049e7bd69fa4b7d1b9002",
+          "path": "qualification/hcsn_joint_dde/model.py",
+          "sha256": "3b4371866f1c2ecf137e6848b39df693713777df3f00aa5d44c04f79317900e4"
+        },
+        {
+          "bytes": 3973,
+          "git_blob": "a79829644fbd13d2b9a15c52f4c058924d7f86e5",
+          "path": "qualification/hcsn_joint_dde/qualify_state.py",
+          "sha256": "339db2c38b1950ea814e83ddba94c0f7de27384869062d162825f3932d9b1a06"
+        },
+        {
+          "bytes": 5529,
+          "git_blob": "bbb75cbd9d29e9d83b1c4a803e10174a93fd40d7",
+          "path": "qualification/hcsn_joint_dde/reference.py",
+          "sha256": "9e8ea431118229c8eb1bec0fe809faffc158b3decd2157a52331551d675d18de"
+        },
+        {
+          "bytes": 2653,
+          "git_blob": "ad54df18fef8b159739232d0084e6ee7e805ec36",
+          "path": "qualification/hcsn_joint_dde/short_gap_reference.py",
+          "sha256": "426b1b47732f7044d14b610abc9d7ab3f67a34173caec8d9f43297b38c47812c"
+        },
+        {
+          "bytes": 9430,
+          "git_blob": "f72a3e80ddc30e0a42424e876929b1f1597a78f4",
+          "path": "qualification/hcsn_joint_dde/state_io.py",
+          "sha256": "43aafa029d1cbcb2bacfad936ee2f9e9496ae7e7a85f3139bf5eab5b10f5d446"
+        },
+        {
+          "bytes": 6371,
+          "git_blob": "b35717586e2452b3190b1f02008e018691fea68a",
+          "path": "qualification/hcsn_joint_dde/test_graded.py",
+          "sha256": "9b2b1453c82d0adfacc7b3211a211650c1317de2b85fae6a3f1efc24ccce4092"
+        },
+        {
+          "bytes": 2839,
+          "git_blob": "25215cd032d9fea57c5675bf8c770f8d48dd13b9",
+          "path": "qualification/hcsn_joint_dde/test_migration_binding.py",
+          "sha256": "b49e3aabf8ff9efa267cd2503b0bf3ef2f1235afbf7329b91ee6dba6e9add3aa"
+        },
+        {
+          "bytes": 9697,
+          "git_blob": "65b24ade4af553cc1939f13535ce2d0ff3f4a00b",
+          "path": "qualification/hcsn_joint_dde/test_model.py",
+          "sha256": "195e4e43d619dbb5434154bf406a256e51ef45ec448c1f73323e03c762e675dc"
+        },
+        {
+          "bytes": 9661,
+          "git_blob": "f4492cd19b042eb041f09403d931b593999b27ac",
+          "path": "qualification/hcsn_joint_dde/test_state.py",
+          "sha256": "52ac862ca2bcaccadb758d9267507d18f38cb6360d2067b08168ca30e1ea29d7"
+        },
+        {
+          "bytes": 1745,
+          "git_blob": "74aa1f02371d0e7a8e5704381d91c34e7f9fcbfe",
+          "path": "qualification/hcsn_reset_aligned/first_hit.py",
+          "sha256": "61bd86f5ff25b8dc2fdc8129d8faa65aa13871ff70bfc5ca8e15e759d73af144"
+        },
+        {
+          "bytes": 3843,
+          "git_blob": "8275df8148ac1ec99139759179d3416ff16031fa",
+          "path": "qualification/hcsn_reset_aligned/mesh.py",
+          "sha256": "9b2d57a70ee677e9d71a18d16ec555b15bc18b3dca636cbaa3b7afd5941bf3a8"
+        },
+        {
+          "bytes": 1829,
+          "git_blob": "94baa66c7ef5df137142431656470d1383732674",
+          "path": "qualification/hcsn_reset_aligned/perpetual.py",
+          "sha256": "d0bf03ddb9cf17310a2e353f4d851b9552872533e14ebfc713f83f9dbdd8e537"
+        },
+        {
+          "bytes": 6928,
+          "git_blob": "cf091f8bc6e71fa2251658cdc3836c18b233d763",
+          "path": "qualification/hcsn_reset_aligned/qualify_common.py",
+          "sha256": "5ef9369b13cd14c6bf7732a6d9e28ce2dc19bc8041b895ffbd42a612ce3fe4d4"
+        },
+        {
+          "bytes": 8745,
+          "git_blob": "ec2e23dd3e7d2c994b417e3debe19cdaebc46585",
+          "path": "qualification/hcsn_reset_aligned/sensitivities.py",
+          "sha256": "4cb4e0d285a301020a9c25b97cbd4fed106957b02eeb31bd98e9d437e8bb9983"
+        },
+        {
+          "bytes": 5257,
+          "git_blob": "f71732c891ddd89624163d19669680fadbcc608f",
+          "path": "qualification/hcsn_reset_aligned/test_common_state.py",
+          "sha256": "e2274ef90f2670f5c08a31d56409da2082295a5eed09d7ec12775116dc024fa4"
+        },
+        {
+          "bytes": 3530,
+          "git_blob": "1762b891d3c8535acf3dae50edaa14b40035eb0f",
+          "path": "qualification/hcsn_reset_aligned/test_first_hit.py",
+          "sha256": "e0e420ed6615f3f9c9eabb4cce0aa9384eac20c01b144667301d41e701a89538"
+        },
+        {
+          "bytes": 8265,
+          "git_blob": "300e2be66f61ec98503c97521d4b6097a8ab49d4",
+          "path": "qualification/hcsn_reset_aligned/test_model.py",
+          "sha256": "479735238fdcdd4ad4ec5ff3a04edde95efe7e178d8ed7db82df790b92eaf491"
+        },
+        {
+          "bytes": 4150,
+          "git_blob": "7df0f9a4cd4b09284d4081773b3986449882b804",
+          "path": "qualification/hcsn_reset_aligned/test_perpetual.py",
+          "sha256": "987d9a6023011532c5c47224114d225a746a8ac6bb7968711ddd4e1be63c7106"
+        },
+        {
+          "bytes": 3695,
+          "git_blob": "22724958348cea7423588a7f9a45b4e9d44ce4fd",
+          "path": "qualification/hcsn_reset_aligned/test_readouts_torch.py",
+          "sha256": "47d4910ceb0bd0a4c17a069f7fab655d1927a7ec7c5b0ca337248b126d69cfc3"
+        },
+        {
+          "bytes": 4678,
+          "git_blob": "878e812e9990c9f5e5f13d5b8fb9c90c82d17e4b",
+          "path": "qualification/hcsn_reset_aligned/test_torch.py",
+          "sha256": "b8f8f756c2b75d2f928ad229bb82fdcbc2a15d1317d34dbb444f1ec606a1bf48"
+        },
+        {
+          "bytes": 1798,
+          "git_blob": "b78b4fec311a5f8fc1ccf4caa17696c1aefb58e9",
+          "path": "qualification/hcsn_reset_aligned/torch_first_hit.py",
+          "sha256": "5484e8d1dce5d2aecb8ad61021ce14cc813ff2d7b944b4e312a5975957899ea2"
+        },
+        {
+          "bytes": 3810,
+          "git_blob": "44dc7bf9e721a15bf1bf10b5067c28c63bbafe11",
+          "path": "qualification/hcsn_reset_aligned/torch_flow.py",
+          "sha256": "1d599043ab5b997f6863c5c05266712c80d6aaccf70c3e395ac22aea9182b6a9"
+        },
+        {
+          "bytes": 1611,
+          "git_blob": "da8414b3eb58ffaa700f367105ee982f27078e25",
+          "path": "qualification/hcsn_reset_aligned/torch_perpetual.py",
+          "sha256": "bf277899f36e4a0067b486f9df995ece216244a336bbcd8ca664af1115a341a3"
+        }
+      ],
+      "manifest_blob": "864f0d4438e0fabd476dab7424d47595dc79e017",
+      "manifest_sha256": "850d341309b75c14ea035d9d3a841d8d3f539bbc6d50db95fcc07a6bc1f7fbcf",
+      "model_calls": 0,
+      "observed": 29,
+      "optimizer_updates": 0,
+      "schema": "common-projected-native-source-only-v1",
+      "source_bytes": 172837,
+      "source_cache_unchanged": true,
+      "source_ref": "c440d2baff9c2befaef3ea96148b77f2ae3582b6",
+      "tests_executed": 0,
+      "view": "/home/qian-qi/.cache/hepta-hcsn-common-20261126-2238/source-c440d2ba"
+    },
+    "stderr": "",
+    "scope": "29 exact historical source paths and unmodified manifest in separate native directory; original glob identity equals manifest. Not full Common numerical qualification. No source or product edits; prior Split cache unchanged."
+  },
+  "current_head": "4d98afb7fd1d7f31a81c5b7f7884449cdc9d5ed0",
+  "previous_head": "c167d16d2ef9064e1f9de5cce2f0fd987aaabcf2",
+  "workflow_first_page": {
+    "current": {
+      "success": 60,
+      "failure": 15,
+      "skipped": 14,
+      "in_progress": 11
+    },
+    "previous": {
+      "success": 69,
+      "failure": 22,
+      "skipped": 7,
+      "cancelled": 2
+    }
+  },
+  "native_readbacks": [
+    {
+      "run": 45904766044,
+      "job": 140198736890,
+      "status": "success",
+      "retained_scalar_comparisons": 345,
+      "source_files": 17,
+      "source_unchanged": true,
+      "retained_candidate_tested_source": "caba5a3f3a77d0a6eb7d54b5a906ae3bbb4fb772",
+      "review_sha256": "278f745d8d4ef55ad7c5ec1de9e5b0e9a229e2a8d4fd52e9121f82a69efd8107",
+      "artifact_sha256": "8380c49edf3dc2dfbd8871e0a83ac9b5129ae79061203aef8f23eba37ce48eda",
+      "new_model_kernel_calls": 0,
+      "candidate_numerical_qualification": false,
+      "independent_artifact_download": false
+    },
+    {
+      "run": 45904766115,
+      "job": 140198737508,
+      "status": "success",
+      "tests": 5,
+      "wall_seconds": 11.093,
+      "scope": "fixed prior uniform model, new geometry fail closed; overlapping previously recomputed 585 coordinates not recomputed again"
+    },
+    {
+      "run": 45904766134,
+      "job": 140198737438,
+      "status": "success",
+      "read_only": true,
+      "planned_scalar_denominator": 128380,
+      "planned_expm_counter": 1380,
+      "matrix_exponentials_executed": 0,
+      "dynamic_runs": 0,
+      "admission": "HOLD_INTENT_ONLY"
+    },
+    {
+      "run": 45904766060,
+      "job": 140198737139,
+      "status": "failure",
+      "tests": 12,
+      "passed": 10,
+      "errors": 2,
+      "reason": "source size drift: qualification/hcsn_currentstate_n256_uniformization_provider_intent/README.md",
+      "consumed_original_readback": "skipped"
+    }
+  ],
+  "common_original_45_tests_rerun": 0,
+  "common_original_120_updates_rerun": 0,
+  "consumption_ledger_verified": false,
+  "all_closed": false
+}
