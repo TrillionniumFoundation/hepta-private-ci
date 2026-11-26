@@ -271,3 +271,245 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
 }
+
+#[derive(Clone, Copy, Debug, Default)]
+enum BatchFault {
+    #[default]
+    None,
+    Swapped,
+    Missing,
+    WrongDigest,
+    WrongMemory,
+    DriverError,
+}
+
+#[derive(Debug, Default)]
+struct MockBatchDriver {
+    inner: Driver,
+    backend_calls: usize,
+    fault: BatchFault,
+}
+
+impl ModelDriver for MockBatchDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        self.inner.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        self.inner.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        self.inner.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for MockBatchDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.inner.run_neuron_features(handle, request)
+    }
+}
+
+impl NeuronBackendBatchDriver for MockBatchDriver {
+    fn run_neuron_backend_batch(
+        &mut self,
+        handle: &DriverModelHandle,
+        batch_digest: &str,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<DriverNeuronBackendBatch, Error> {
+        self.backend_calls += 1;
+        if matches!(self.fault, BatchFault::DriverError) {
+            return Err(Error::DriverFailure("mock backend failure".to_string()));
+        }
+        // This mock deliberately loops: it proves worker admission/receipt
+        // behavior, NOT execution of a fused tensor batch on target hardware.
+        let mut members = requests
+            .iter()
+            .map(|request| {
+                Ok(DriverNeuronBatchMember {
+                    request_id: request.authorization.request_id.clone(),
+                    input_digest: request.input_digest.clone(),
+                    observation: self.inner.run_neuron_features(handle, request)?,
+                })
+            })
+            .collect::<Result<Vec<_>, Error>>()?;
+        match self.fault {
+            BatchFault::Swapped => members.swap(0, 1),
+            BatchFault::Missing => {
+                members.pop();
+            }
+            BatchFault::None
+            | BatchFault::WrongDigest
+            | BatchFault::WrongMemory
+            | BatchFault::DriverError => {}
+        }
+        Ok(DriverNeuronBackendBatch {
+            batch_digest: if matches!(self.fault, BatchFault::WrongDigest) {
+                "0".repeat(64)
+            } else {
+                batch_digest.to_string()
+            },
+            members,
+            observed_peak_memory_bytes: if matches!(self.fault, BatchFault::WrongMemory) {
+                8_192
+            } else {
+                1_024
+            },
+            backend_elapsed_micros: 120,
+        })
+    }
+}
+
+fn two_batch_requests() -> Vec<NeuronFeatureRequest> {
+    let first = neuron_feature_request();
+    let mut second = neuron_feature_request();
+    second.authorization.request_id = "request.2".to_string();
+    second.authorization.reservation_id = "reservation.2".to_string();
+    second.head_digest = "d".repeat(64);
+    second.input_digest = "e".repeat(64);
+    second.feature_vector_q24 = vec![1 << 21, -(1 << 20)];
+    let payload = canonical_neuron_feature_payload_digest(&second);
+    second.authorization.payload_digest = payload.clone();
+    second.authorization.lease_payload_digest = payload;
+    vec![first, second]
+}
+
+fn batch_worker(fault: BatchFault) -> InferenceWorker<MockBatchDriver> {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.batch".to_string(),
+        3,
+        grant(),
+        MockBatchDriver {
+            fault,
+            ..MockBatchDriver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("model");
+    worker
+}
+
+#[test]
+fn native_batch_boundary_calls_driver_once_and_binds_distinct_cell_heads() {
+    let mut worker = batch_worker(BatchFault::None);
+    let requests = two_batch_requests();
+    let expected = canonical_neuron_batch_digest("model.1", 3, &requests);
+    let result = worker
+        .run_neuron_features_backend_batch(100, "model.1", requests)
+        .expect("batch");
+    assert_eq!(worker.driver.backend_calls, 1);
+    assert_eq!(result.batch_digest, expected);
+    assert_eq!(result.backend_elapsed_micros, 120);
+    assert_eq!(result.receipts.len(), 2);
+    assert_ne!(
+        result.receipts[0].request_digest,
+        result.receipts[1].request_digest
+    );
+    assert_ne!(
+        result.receipts[0].receipt_digest,
+        result.receipts[1].receipt_digest
+    );
+    assert_eq!(result.receipts[0].head_digest.to_string(), "b".repeat(64));
+    assert_eq!(result.receipts[1].head_digest.to_string(), "d".repeat(64));
+    assert!(result.receipts.iter().all(|r| !r.authority.grants_any()));
+    worker.unload_model(100, "model.1").expect("released");
+}
+
+#[test]
+fn batch_preflight_rejects_partial_payload_and_duplicate_without_dispatch() {
+    let mut worker = batch_worker(BatchFault::None);
+    let mut changed = two_batch_requests();
+    changed[1].feature_vector_q24[0] += 1;
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", changed),
+        Err(Error::PayloadMismatch)
+    );
+    let mut duplicate = two_batch_requests();
+    duplicate[1].authorization.request_id = duplicate[0].authorization.request_id.clone();
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", duplicate),
+        Err(Error::FeatureBatchMismatch)
+    );
+    let mut mixed = two_batch_requests();
+    mixed[1].encoder_digest = "f".repeat(64);
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", mixed),
+        Err(Error::FeatureBatchMismatch)
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    worker.unload_model(100, "model.1").expect("released");
+}
+
+#[test]
+fn batch_rejects_wrong_member_order_and_missing_or_forged_driver_evidence() {
+    for fault in [
+        BatchFault::Swapped,
+        BatchFault::Missing,
+        BatchFault::WrongDigest,
+        BatchFault::WrongMemory,
+    ] {
+        let mut worker = batch_worker(fault);
+        assert!(
+            worker
+                .run_neuron_features_backend_batch(100, "model.1", two_batch_requests())
+                .is_err()
+        );
+        assert_eq!(worker.driver.backend_calls, 1);
+        worker.unload_model(100, "model.1").expect("released");
+    }
+}
+
+#[test]
+fn batch_driver_error_releases_active_ids_and_allows_retry() {
+    let mut worker = batch_worker(BatchFault::DriverError);
+    assert!(matches!(
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+        Err(Error::DriverFailure(_))
+    ));
+    worker.driver.fault = BatchFault::None;
+    assert_eq!(
+        worker
+            .run_neuron_features_backend_batch(100, "model.1", two_batch_requests())
+            .expect("retry")
+            .receipts
+            .len(),
+        2
+    );
+    worker.unload_model(100, "model.1").expect("released");
+}
+
+#[test]
+fn batch_capacity_and_cancelled_requests_fail_closed() {
+    let mut worker = batch_worker(BatchFault::None);
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", vec![neuron_feature_request()]),
+        Err(Error::FeatureBatchLimit)
+    );
+    let mut cancelled = two_batch_requests();
+    cancelled[1].authorization.cancelled = true;
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", cancelled),
+        Err(Error::FeatureBatchMismatch)
+    );
+    let mut too_many = Vec::new();
+    for i in 0..5 {
+        let mut request = neuron_feature_request();
+        request.authorization.request_id = format!("request.{i}");
+        too_many.push(request);
+    }
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", too_many),
+        Err(Error::RequestCapacity)
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    worker.unload_model(100, "model.1").expect("released");
+}
