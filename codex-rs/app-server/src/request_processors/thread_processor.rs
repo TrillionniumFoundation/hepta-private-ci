@@ -19,6 +19,7 @@ use codex_extension_api::ThreadIdleCause;
 use codex_protocol::config_types::MultiAgentMode;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::mcp::ClientMcpExtensions;
+use codex_protocol::models::ActivePermissionProfile as RuntimePermissionProfile;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_thread_store::PersistContext;
 
@@ -28,6 +29,12 @@ const CODEX_TUI_CLIENT_NAME: &str = "codex-tui";
 const THREAD_HARD_DELETE_STARTUP_DRAIN_TIMEOUT: Duration = Duration::from_secs(10);
 const THREAD_ROLLBACK_DEPRECATION_SUMMARY: &str =
     "thread/rollback is deprecated and will be removed soon";
+
+struct PersistedResumeEnvironment {
+    permission_profile: Option<RuntimePermissionProfile>,
+    cwd: Option<AbsolutePathBuf>,
+    workspace_roots: Vec<AbsolutePathBuf>,
+}
 
 enum ThreadRemovalAuthority<T> {
     /// Core has fenced the ID and returned all pre-fence startup barriers. The complete
@@ -4058,19 +4065,61 @@ impl ThreadRequestProcessor {
             )
             .await;
 
-        // Derive a Config using the same logic as new conversation, honoring overrides if provided.
+        // Resolve current policy before letting an earlier turn contribute workspace roots.
         let mut config = match self
             .config_manager
-            .load_for_cwd(request_overrides, typesafe_overrides, history_cwd)
+            .load_for_cwd(
+                request_overrides.clone(),
+                typesafe_overrides.clone(),
+                history_cwd.clone(),
+            )
             .await
         {
             Ok(config) => config,
             Err(err) => {
-                let error = config_load_error(&err);
-                self.outgoing.send_error(request_id, error).await;
+                self.outgoing
+                    .send_error(request_id, config_load_error(&err))
+                    .await;
                 return Ok(());
             }
         };
+        let mut resume_environments = None;
+        if let Some(persisted) = persisted_runtime_environment
+            && config.permissions.active_permission_profile() == persisted.permission_profile
+        {
+            typesafe_overrides.workspace_roots = Some(persisted.workspace_roots.clone());
+            match self
+                .config_manager
+                .load_for_cwd(request_overrides, typesafe_overrides, history_cwd)
+                .await
+            {
+                Ok(with_environment)
+                    if with_environment.permissions.active_permission_profile()
+                        == persisted.permission_profile =>
+                {
+                    config = with_environment;
+                }
+                Ok(_) => {
+                    self.outgoing
+                        .send_error(
+                            request_id,
+                            invalid_request("permission profile changed during thread resume"),
+                        )
+                        .await;
+                    return Ok(());
+                }
+                Err(err) => {
+                    self.outgoing
+                        .send_error(request_id, config_load_error(&err))
+                        .await;
+                    return Ok(());
+                }
+            }
+            resume_environments = persisted.cwd.as_ref().map(|cwd| {
+                self.thread_manager
+                    .default_environment_selections(cwd, &persisted.workspace_roots)
+            });
+        }
         if !has_explicit_model_resume_override
             && persisted_metadata
                 .as_ref()
@@ -4080,10 +4129,6 @@ impl ThreadRequestProcessor {
         }
 
         let response_history = thread_history.clone();
-        let resume_environments = persisted_runtime_environment.map(|(cwd, workspace_roots)| {
-            self.thread_manager
-                .default_environment_selections(&cwd, &workspace_roots)
-        });
 
         match self
             .thread_manager
@@ -4324,10 +4369,7 @@ impl ThreadRequestProcessor {
         thread_history: &InitialHistory,
         request_overrides: &mut Option<HashMap<String, serde_json::Value>>,
         typesafe_overrides: &mut ConfigOverrides,
-    ) -> (
-        Option<ThreadMetadata>,
-        Option<(AbsolutePathBuf, Vec<AbsolutePathBuf>)>,
-    ) {
+    ) -> (Option<ThreadMetadata>, Option<PersistedResumeEnvironment>) {
         let InitialHistory::Resumed(resumed_history) = thread_history else {
             return (None, None);
         };
@@ -4340,19 +4382,24 @@ impl ThreadRequestProcessor {
             let has_raw_workspace_roots_override = request_overrides
                 .as_ref()
                 .is_some_and(|overrides| overrides.contains_key("workspace_roots"));
-            if typesafe_overrides.cwd.is_none()
-                && typesafe_overrides.workspace_roots.is_none()
-                && !has_raw_cwd_override
+            let has_explicit_permissions =
+                has_permission_override(request_overrides.as_ref(), typesafe_overrides);
+            if typesafe_overrides.workspace_roots.is_none()
                 && !has_raw_workspace_roots_override
+                && !has_explicit_permissions
             {
-                persisted_runtime_environment = persisted_settings
-                    .runtime_cwd
-                    .clone()
-                    .zip(persisted_settings.runtime_workspace_roots.clone());
-            }
-            if typesafe_overrides.workspace_roots.is_none() && !has_raw_workspace_roots_override {
-                typesafe_overrides.workspace_roots =
-                    persisted_settings.runtime_workspace_roots.clone();
+                persisted_runtime_environment =
+                    persisted_settings
+                        .runtime_workspace_roots
+                        .map(|workspace_roots| PersistedResumeEnvironment {
+                            permission_profile: persisted_settings.runtime_permission_profile,
+                            cwd: if typesafe_overrides.cwd.is_none() && !has_raw_cwd_override {
+                                persisted_settings.runtime_cwd
+                            } else {
+                                None
+                            },
+                            workspace_roots,
+                        });
             }
             if typesafe_overrides.approval_policy.is_none() {
                 typesafe_overrides.approval_policy = Some(persisted_settings.approval_policy);
@@ -4364,7 +4411,7 @@ impl ThreadRequestProcessor {
             {
                 typesafe_overrides.approvals_reviewer = persisted_settings.approvals_reviewer;
             }
-            if !has_permission_override(request_overrides.as_ref(), typesafe_overrides) {
+            if !has_explicit_permissions {
                 typesafe_overrides.persisted_permission_profile_id = persisted_settings
                     .active_permission_profile
                     .map(|profile| profile.id);
