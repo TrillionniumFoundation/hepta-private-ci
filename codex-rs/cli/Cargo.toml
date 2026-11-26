@@ -8,7 +8,12 @@ default-run = "codex"
 
 [[bin]]
 name = "codex"
-path = "src/main.rs"
+path = "src/codex.rs"
+
+# Preserve Cargo's package-named binary with the same bounded crate root.
+[[bin]]
+name = "codex-cli"
+path = "src/codex.rs"
 
 [[bin]]
 name = "hepta"
