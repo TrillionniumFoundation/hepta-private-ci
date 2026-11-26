@@ -3,15 +3,71 @@
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import stat
+import selectors
+import signal
 import subprocess
 import tempfile
+import time
 
 from intake_contract import BLOCKER, Refused, canonical, digest, read_json, require
 
 MAX_OUTPUT = 32768
+
+
+def _bounded_statement(command, fd, raw, timeout):
+    require(type(timeout) in (int, float) and math.isfinite(timeout) and timeout > 0,
+            "positive finite native timeout required")
+    deadline = time.monotonic() + timeout
+    buffers = (bytearray(), bytearray())
+    with tempfile.TemporaryFile() as source:
+        source.write(raw)
+        source.seek(0)
+        proc = subprocess.Popen(command, stdin=source, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, pass_fds=(fd,),
+                                env={"PATH": os.defpath, "LANG": "C"},
+                                start_new_session=True)
+        try:
+            with selectors.DefaultSelector() as selector:
+                for index, pipe in enumerate((proc.stdout, proc.stderr)):
+                    os.set_blocking(pipe.fileno(), False)
+                    selector.register(pipe, selectors.EVENT_READ, index)
+                while True:
+                    remaining = deadline - time.monotonic()
+                    require(remaining > 0, "native statement timeout")
+                    # Observe without reaping: retain the leader PID until its
+                    # original process group has received final cancellation.
+                    exited = os.waitid(os.P_PID, proc.pid,
+                                       os.WEXITED | os.WNOHANG | os.WNOWAIT)
+                    if exited is not None and not selector.get_map():
+                        break
+                    for key, _ in selector.select(min(remaining, 0.05)):
+                        target = buffers[key.data]
+                        chunk = os.read(key.fd, min(8192, MAX_OUTPUT - len(target) + 1))
+                        if not chunk:
+                            selector.unregister(key.fileobj)
+                            continue
+                        require(len(target) + len(chunk) <= MAX_OUTPUT, "native output bound")
+                        target.extend(chunk)
+        finally:
+            try:
+                try:
+                    os.killpg(proc.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+            finally:
+                try:
+                    proc.wait(timeout=2)
+                except subprocess.TimeoutExpired as error:
+                    raise Refused("native process-group cleanup incomplete") from error
+                finally:
+                    proc.stdout.close()
+                    proc.stderr.close()
+        require(proc.returncode == 0, "native statement rejected")
+        return bytes(buffers[0])
 
 
 def invoke(executable, expected_sha256, scope=None, timeout=10):
@@ -30,25 +86,11 @@ def invoke(executable, expected_sha256, scope=None, timeout=10):
         command = [f"/proc/self/fd/{fd}", "--help" if scope is None else "--print-statement"]
         raw = b"" if scope is None else canonical(scope)
         require(len(raw) <= MAX_OUTPUT, "statement scope too large")
-        # Files bound memory even if an incorrectly configured trusted process
-        # writes excessive diagnostics. Logs are private and not exported.
-        with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as errors:
-            with subprocess.Popen(command, stdin=subprocess.PIPE, stdout=output, stderr=errors,
-                                  pass_fds=(fd,), env={"PATH": os.defpath, "LANG": "C"}) as proc:
-                try:
-                    proc.communicate(raw, timeout=timeout)
-                except subprocess.TimeoutExpired:
-                    proc.kill()
-                    proc.wait()
-                    raise Refused("native statement timeout")
-            output.seek(0); errors.seek(0)
-            answer, error = output.read(MAX_OUTPUT + 1), errors.read(MAX_OUTPUT + 1)
-            require(len(answer) <= MAX_OUTPUT and len(error) <= MAX_OUTPUT, "native output bound")
+        answer = _bounded_statement(command, fd, raw, timeout)
         after = os.fstat(fd)
         require((before.st_dev, before.st_ino, before.st_size, before.st_ctime_ns, before.st_mtime_ns)
                 == (after.st_dev, after.st_ino, after.st_size, after.st_ctime_ns, after.st_mtime_ns),
                 "native changed during statement rendering")
-        require(proc.returncode == 0, "native statement rejected")
         return answer
     finally:
         os.close(fd)

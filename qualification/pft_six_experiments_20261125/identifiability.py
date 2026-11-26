@@ -92,7 +92,7 @@ def fit_and_measure(x, y, weight, tests, ridge_relative):
         "parameter_count": size * size,
         "rank_fraction": rank / size,
         "per_output_singular_values": np.pad(singular, (0, size - len(singular))).tolist(),
-        "nonzero_condition_number": float(singular[0] / singular[rank - 1]),
+        "nonzero_condition_number": float(singular[0] / singular[rank - 1]) if rank else None,
         "effective_ridge": regularizer,
         "design_sha256": digest(x),
         "target_sha256": digest(y),
