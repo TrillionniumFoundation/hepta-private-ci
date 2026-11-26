@@ -7,6 +7,7 @@
 
 mod admin;
 mod admission_v3;
+mod candidate_review;
 mod cell_bundle;
 mod cell_implementation;
 mod cell_parameter_bundle;
@@ -48,6 +49,15 @@ pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
 pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
 pub use admission_v3::validate_artifact_publication_v3;
 pub use admission_v3::verify_artifact_admission_v3;
+pub use candidate_review::ScientificCandidatePolicyV1;
+pub use candidate_review::ScientificCandidatePublicationReceiptV1;
+pub use candidate_review::ScientificCandidatePublisherV1;
+pub use candidate_review::ScientificCandidateReviewError;
+pub use candidate_review::ScientificComparisonPolicyV1;
+pub use candidate_review::ScientificMeasurementStatusV1;
+pub use candidate_review::ScientificMeasurementV1;
+pub use candidate_review::ScientificReviewEvidenceV1;
+pub use candidate_review::SignedScientificCandidateReviewV1;
 pub use cell_bundle::CellBundleComponentsV1;
 pub use cell_bundle::CellBundleCutoverPlanV1;
 pub use cell_bundle::CellBundleCutoverReceiptV1;
