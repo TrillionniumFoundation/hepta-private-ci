@@ -767,7 +767,8 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         );
         observer.observe("before_spawn", codex_home.path());
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = crate::legacy_spawn_token_observer::observe_spawn(
+            spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(workspace.as_path()).as_slice(),
             codex_home.path(),
@@ -785,6 +786,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             /*tty*/ false,
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
+            )
         )
         .await
         .expect("spawn legacy delete session");

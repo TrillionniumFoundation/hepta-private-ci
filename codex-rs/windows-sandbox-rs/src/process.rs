@@ -179,6 +179,9 @@ pub unsafe fn create_process_as_user(
         return Err(std::io::Error::from_raw_os_error(err)).context(msg);
     }
 
+    #[cfg(test)]
+    crate::legacy_spawn_token_observer::observe_created_process(h_token, pi.hProcess);
+
     Ok(CreatedProcess {
         process_info: pi,
         startup_info: si.StartupInfo,

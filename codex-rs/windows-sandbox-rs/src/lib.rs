@@ -70,6 +70,9 @@ mod helper_materialization;
 mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
+#[cfg(all(test, target_os = "windows"))]
+#[path = "legacy_spawn_token_observer_tests.rs"]
+mod legacy_spawn_token_observer;
 #[cfg(target_os = "windows")]
 mod logging;
 #[cfg(target_os = "windows")]
