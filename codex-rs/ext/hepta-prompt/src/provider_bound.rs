@@ -1,6 +1,4 @@
 use std::fmt;
-use std::future::Future;
-use std::pin::Pin;
 use std::sync::Arc;
 
 use codex_extension_api::ContextContributor;
@@ -13,7 +11,6 @@ use codex_extension_api::ModelProviderExactTokenizerHost;
 use codex_extension_api::ModelProviderInvocationInput;
 use codex_extension_api::ModelProviderPolicyContributor;
 use codex_extension_api::ModelProviderPolicyDecision;
-use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
 use codex_extension_api::ModelProviderRequestKind;
 use codex_extension_api::ModelProviderTerminal;
