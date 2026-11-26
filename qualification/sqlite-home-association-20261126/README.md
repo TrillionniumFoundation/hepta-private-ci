@@ -46,3 +46,22 @@ This source candidate has no Rust build or native result before its own
 qualification. It does not establish that every other macOS timeout has this
 cause. The existing mismatched-config regression and all upstream authority
 tests remain in place.
+
+## First native qualification and fixture correction
+
+At source `be271ddfa2a2d519a44112e4f176d2d8c3499c25`, the GNU and musl
+rollout unit targets each reported 124 passing tests and one failure in the new
+home-alias regression. Its first ID-list assertion received `Some([])`, not the
+seeded thread ID. The complete original logs are retained.
+
+The fixture set a title but left both `preview` and `first_user_message` absent.
+`metadata_preview` therefore stored an empty string, while both existing list
+queries require `threads.preview <> ''`. Receiving `Some([])` is consistent with
+the association succeeding and the row being filtered; it does not establish a
+failure to associate the alias.
+
+The correction seeds an explicit nonempty preview and checks the entire row
+immediately after insertion. The query filters, association implementation,
+invalid rollout placeholder, all positive and negative cases, and final
+non-mutation assertions remain unchanged. This fixture correction still needs
+native qualification at its own source revision.

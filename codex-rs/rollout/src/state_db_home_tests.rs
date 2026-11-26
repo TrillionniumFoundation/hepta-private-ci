@@ -80,7 +80,14 @@ async fn metadata_queries_accept_current_home_alias_and_reject_retargeted_or_mis
     )
     .build("test-provider");
     metadata.title = "metadata retained only in the index".to_string();
+    // Both listing queries exclude records with an empty preview. Seed a
+    // visible index row so this test isolates home association.
+    metadata.preview = Some("index-only preview".to_string());
     runtime.upsert_thread(&metadata).await?;
+    assert_eq!(
+        runtime.get_thread(metadata.id).await?,
+        Some(metadata.clone())
+    );
 
     assert_metadata_queries(&runtime, &requested, Some(&metadata)).await;
     assert_metadata_queries(&runtime, runtime.sqlite(), Some(&metadata)).await;
