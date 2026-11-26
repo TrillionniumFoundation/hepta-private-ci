@@ -86,4 +86,3 @@ open_prs.jsonl保留全部1623条规范化PR元数据；dependency_edges.jsonl�
 RUNNING_TASKS.jsonl记录远端运行ID、branch、SHA、PR、status、attempt及日志链接；本机PID、worktree与host owner保持UNKNOWN。主机调查归root所有，本子任务没有访问用户专用主机。
 
 本盘点没有任何远端写操作，没有终止或抢占既有任务，没有清理runner缓存，没有取消旧PR，也没有批准生产效果。权限姿态保持DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO。
-

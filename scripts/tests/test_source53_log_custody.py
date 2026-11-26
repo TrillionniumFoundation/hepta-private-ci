@@ -126,7 +126,9 @@ class Source53LogCustodyTests(unittest.TestCase):
                 self.assertEqual(
                     custody.identity(read_original())["oid"], entry["original_git_blob"]
                 )
-                live_notice.write_bytes(live_notice.read_bytes() + b"tampered")
+                # Alter the bytes without changing the size bound of a view.
+                view = live_notice.read_bytes()
+                live_notice.write_bytes(bytes([view[0] ^ 1]) + view[1:])
                 with self.assertRaisesRegex(
                     ValueError, "original evidence length or checksum mismatch"
                 ):

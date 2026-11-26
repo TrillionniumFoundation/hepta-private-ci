@@ -101,7 +101,11 @@ HCSN_NATIVE_READBACK_INDEX = "qa/repository-consolidation/20261126/hcsn-native-r
 FINITE_NOTES_NATIVE_LAUNCHER_INDEX = "qa/repository-consolidation/20261126/finite-notes-native-launcher-storage.json"
 VERIFIED_REPORTS_INDEX = "qa/repository-consolidation/20261126/verified-reports-storage.json"
 TERMINAL_REVIEW_INDEX = "qa/repository-consolidation/20261126/terminal-report-storage.json"
+HISTORICAL_INVENTORY_DOCUMENTS_INDEX = (
+    "qa/repository-consolidation/20261126/historical-inventory-documents/raw-evidence-storage.json"
+)
 INDEX_SHA256 = {
+    HISTORICAL_INVENTORY_DOCUMENTS_INDEX: "12a0a89718be4e89d2820cc213d7334efd497267397204ff8704ab43a9059948",
     TERMINAL_REVIEW_INDEX: "b5847c3675ceec9a0d33754022837a628b2a47b2f446a10fcc7d9489afb13359",
     VERIFIED_REPORTS_INDEX: "dab53d7a440850d210cd1ea8b4bd06d3335ead6bda37ea735a27086956fcf1a1",
     FINITE_NOTES_NATIVE_LAUNCHER_INDEX: "126f299feb14f46c9d22c57476652688740752adf92ad4b375bf66974f6ffe23",
@@ -191,6 +195,12 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "AUDIT/2026-10-20-agent-continuation/pr_inventory/README.md": (
+        "3886c85347bb0bc611d536a305a4da57a3c6436d335b9f805c200a76905c0b05"
+    ),
+    "qualification/hcsn_differentiable/evidence/localization-v2-20261108/math/repair-v2/REPAIR.md": (
+        "fb6ad6d1b24706513dd486c2ab1bd49e5e2ba01a6260b8cc3c5002f8680ac72a"
+    ),
     "qa/stem-bakeoff/reviews/cell-field-v8-remaining-terminal/REMAINING_TERMINAL_V8_REPORT.md": (
         "4785c96609cf424bc30d1a2d88b45e2c0559b8108fe18b46f34cedaadbf314de"
     ),

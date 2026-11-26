@@ -138,4 +138,3 @@ reviewable implementation stage. Its original baseline remains in the frozen
 candidate; repair-source is the separate measured candidate.
 
 No training run or model-effect claim is included in these receipts.
-
