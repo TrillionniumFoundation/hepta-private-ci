@@ -1,0 +1,87 @@
+name: Hepta neuron shared-encoder shadow (no promotion)
+
+on:
+  pull_request:
+    paths:
+      - qualification/neuron-shared-encoder/**
+      - .github/workflows/hepta-neuron-shared-encoder-shadow.yml
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-shared-encoder-shadow-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shadow-smoke:
+    name: Shadow-only Python contracts and synthetic matrices
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    defaults:
+      run:
+        working-directory: qualification/neuron-shared-encoder
+    steps:
+      - name: Check out exact PR source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Install CPU-only test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/neuron-shadow-venv"
+          "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check 'pytest==9.0.2'
+          echo "$RUNNER_TEMP/neuron-shadow-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Run fail-closed regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pytest -q tests/
+          python3 -m compileall -q neuron_shared_encoder tests
+
+      - name: Execute isolated synthetic grids, never production
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m neuron_shared_encoder.experiment synth-data --allow-synthetic --output smoke_dataset.jsonl --data-count 32
+          python3 -m neuron_shared_encoder.experiment validate --dataset smoke_dataset.jsonl --output validated.json
+          python3 -m neuron_shared_encoder.experiment head --allow-synthetic --dataset smoke_dataset.jsonl --output head_results.json --steps 16
+          python3 -m neuron_shared_encoder.experiment stress --allow-synthetic --output stress_results.json --rounds 2
+          python3 -m neuron_shared_encoder.experiment gate --output gate.json
+          python3 - <<'PY'
+          import json
+          head = json.load(open('head_results.json'))
+          stress = json.load(open('stress_results.json'))
+          gate = json.load(open('gate.json'))
+          assert head['production_admission'] == 'BLOCKED'
+          assert stress['production_admission'] == 'BLOCKED'
+          assert gate['status'] == 'BLOCKED'
+          assert len(head['head_candidates']) == 24
+          assert len(stress['results']) == 36
+          assert max(x['cells'] for x in stress['results']) == 4096
+          PY
+          sha256sum smoke_dataset.jsonl validated.json head_results.json stress_results.json gate.json > result_hashes.txt
+
+      - name: Retain synthetic evidence without authority
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-shared-encoder-shadow-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            qualification/neuron-shared-encoder/validated.json
+            qualification/neuron-shared-encoder/head_results.json
+            qualification/neuron-shared-encoder/stress_results.json
+            qualification/neuron-shared-encoder/gate.json
+            qualification/neuron-shared-encoder/result_hashes.txt
+          if-no-files-found: warn
+          retention-days: 7
