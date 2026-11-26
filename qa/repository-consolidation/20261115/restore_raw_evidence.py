@@ -95,7 +95,9 @@ SYNTECT_METADATA_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/syntect
 BM25_FORMAT_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/bm25-format-originals/raw-evidence-storage.json"
 COMPANION_DOCUMENT_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/companion-document-originals/raw-evidence-storage.json"
 CONTEXT_DOCUMENT_ORIGINALS_INDEX = "qa/repository-consolidation/20261126/context-document-originals/raw-evidence-storage.json"
+ARCHIVED_PAIRED_OWNER_LOGS_INDEX = "qa/repository-consolidation/20261126/archived-paired-owner-logs/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    ARCHIVED_PAIRED_OWNER_LOGS_INDEX: "9618111bf18d8a228f8681a7ba59db9b308a08906572de6d75fa6565ed86eece",
     CONTEXT_DOCUMENT_ORIGINALS_INDEX: "7db67de4c3a3fe9c69b9cc7a9d30f7f4cbe79a6851bbabab2965d7a1246139d7",
     COMPANION_DOCUMENT_ORIGINALS_INDEX: "29504ec13ca2d589170b5d723d36e9f786127408d38f3a31b3b02f0bfce41680",
     BM25_FORMAT_ORIGINALS_INDEX: "b2f7521d9e5332224bc20c777d92a4719357d88dceec64a0d029136df12ff900",
