@@ -100,6 +100,7 @@ fn latest_settings_snapshot_wins() {
         approval_policy: AskForApproval::OnRequest,
         approvals_reviewer: Some(ApprovalsReviewer::AutoReview),
         active_permission_profile: Some(ActivePermissionProfile::new("dev")),
+        runtime_permission_profile: None,
         runtime_cwd: None,
         runtime_workspace_roots: None,
     };
@@ -125,6 +126,7 @@ fn latest_turn_context_wins_over_earlier_settings_update() {
         approval_policy: AskForApproval::UnlessTrusted,
         approvals_reviewer: Some(ApprovalsReviewer::User),
         active_permission_profile: Some(ActivePermissionProfile::read_only()),
+        runtime_permission_profile: Some(ActivePermissionProfile::read_only()),
         runtime_cwd: Some(cwd()),
         runtime_workspace_roots: Some(vec![workspace_root("turn-2-root")]),
     };
@@ -171,6 +173,7 @@ fn older_reviewer_is_used_when_latest_turn_context_omits_it() {
             approval_policy: AskForApproval::OnRequest,
             approvals_reviewer: Some(ApprovalsReviewer::AutoReview),
             active_permission_profile: None,
+            runtime_permission_profile: None,
             runtime_cwd: Some(cwd()),
             runtime_workspace_roots: Some(vec![workspace_root("turn-2-root")]),
         })
@@ -201,6 +204,7 @@ fn later_settings_snapshot_does_not_erase_turn_context_workspace_roots() {
             approval_policy: AskForApproval::OnRequest,
             approvals_reviewer: Some(ApprovalsReviewer::AutoReview),
             active_permission_profile: Some(ActivePermissionProfile::new("dev")),
+            runtime_permission_profile: None,
             runtime_cwd: Some(cwd()),
             runtime_workspace_roots: Some(vec![persisted_root]),
         })
