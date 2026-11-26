@@ -2497,16 +2497,24 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
     tokio::time::timeout(Duration::from_secs(10), async {
+        // This helper already consumes A's completion. The only queued
+        // attempt required here is the rejected head, not a second wake.
         test.submit_text_turn("A").await?;
-        for _ in 0..2 {
-            wait_for_event_match(test.codex.as_ref(), |event| {
-                matches!(event, EventMsg::TurnComplete(_)).then_some(())
-            })
-            .await;
+        let rejected_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        if let Some(completion) = test
+            .codex
+            .pending_normal_turn_finish_completion(&rejected_turn_id)
+        {
+            completion.await;
         }
         anyhow::Ok(())
     })
-    .await??;
+    .await
+    .context("the queued head must complete its rejection after turn A")??;
 
     let prompts = responses
         .requests()
