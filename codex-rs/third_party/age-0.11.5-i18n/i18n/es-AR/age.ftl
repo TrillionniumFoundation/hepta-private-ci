@@ -91,7 +91,7 @@ ssh-insecure-key-format =
     Si estas utilizando {-openssh} entre las versiones 6.5 y 7.7 (tal como el {-openssh}
     provisto por defecto en Ubuntu 18.04 LTS), puedes usar el siguiente comando para
     forzar la generación de claves utilizando el nuevo formato:
-    
+
     {"    "}{$gen_new}
 
 ssh-unsupported-cipher =
@@ -102,7 +102,7 @@ ssh-unsupported-cipher =
     los cifrados que {-ssh-keygen} pudiera generar, y esta siendo actualizado
     caso a caso para soportar aquellos cifrados no-estándar. Tu clave utiliza
     un cifrado no soportado actualmente: ({$cipher}).
-    
+
     Si quisieras soporte para este tipo de clave, por favor abre un issue aquí:
 
     {$new_issue}

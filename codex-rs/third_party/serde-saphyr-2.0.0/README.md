@@ -294,7 +294,7 @@ for strings or `from_slice_multiple` for UTF-8 byte slices. Both support owned v
 that borrow from the input, with `_with_options` variants for custom options. Empty and null-like
 documents are skipped; other documents retain their input order.
 Use an enum to represent diverse documents while retaining strong typing on the Rust side.
- 
+
 ```rust
 use serde::Deserialize;
 
@@ -539,7 +539,7 @@ assert_eq!(data.name, "hello");
 
 Reader-based entry points (`from_reader`, `from_reader_with_options`,
 `read`, and `read_with_options`) accept BOM-marked UTF-8, UTF-16LE, and
-UTF-16BE. If no recognized BOM is present, reader input is treated as UTF-8. String- and slice-based entry 
+UTF-16BE. If no recognized BOM is present, reader input is treated as UTF-8. String- and slice-based entry
 points take UTF-8 only.
 
 ## YAML composition, comments, and external values
@@ -690,7 +690,7 @@ to accept and validate comments.
 - During serialization, [Commented](https://docs.rs/serde-saphyr/latest/serde_saphyr/struct.Commented.html) also emits a comment next to a scalar or reference (handy when the reference is far from its definition and needs explanation).
 - For container values, a comment attached to the parent value itself, such as `root: # comment`, is captured only by `Commented<Container>` and is not inherited by the first child. A comment inside the container, directly above a child key or sequence item, is captured by that child.
 - Comments are not copied from anchor definitions through aliases or merge keys. In `actual: { <<: *defaults }`, a `Commented` field materialized from `&defaults` will not receive a comment that was written at the definition site above `defaults.port`; that comment belongs to the original field.
-- For aliases to containers used as nested values, leading comments above the alias follow the same rule as comments inside a direct nested container. In `root:\n  # comment\n  *defaults`, the comment remains available to the expanded container's first child rather than being captured as a comment on the alias use itself. 
+- For aliases to containers used as nested values, leading comments above the alias follow the same rule as comments inside a direct nested container. In `root:\n  # comment\n  *defaults`, the comment remains available to the expanded container's first child rather than being captured as a comment on the alias use itself.
 - See example [commented.rs](https://github.com/bourumir-wyngs/serde-saphyr/blob/master/examples/commented.rs).
 
 ### Properties
@@ -837,12 +837,12 @@ When the property values are secrets, interpolation resolves the final value bef
 `serde-saphyr` tracks interpolated values and redacts them back to their `${...}` form in later error messages.
 Treat the property map itself as sensitive - do not log or format it directly.
 
-If you write a loaded data structure with resolved properties, the resolved values will obviously appear in the output. 
+If you write a loaded data structure with resolved properties, the resolved values will obviously appear in the output.
 If this is unwanted, do not write the structure that has been loaded with property resolver.
 
 ### Includes
 
-The need for including YAML (not part of the official specs) can be seen from the popularity of the command-line [yaml-include](https://crates.io/crates/yaml-include) crate. That crate is very feature-complete. However, if the YAML parser and validator are separate from the pre-processor, they usually only report the line number and snippet in the processed document. For large documents with multiple and deep includes, this becomes challenging to interpret. YAML indentation and security requirements like path confinement or anchor isolation make "quick adding" of includes non-trivial.  
+The need for including YAML (not part of the official specs) can be seen from the popularity of the command-line [yaml-include](https://crates.io/crates/yaml-include) crate. That crate is very feature-complete. However, if the YAML parser and validator are separate from the pre-processor, they usually only report the line number and snippet in the processed document. For large documents with multiple and deep includes, this becomes challenging to interpret. YAML indentation and security requirements like path confinement or anchor isolation make "quick adding" of includes non-trivial.
 
 `serde-saphyr` allows resolving `!include` tags via a custom resolver configured in [`Options`](https://docs.rs/serde-saphyr/latest/serde_saphyr/options/struct.Options.html). When using a single `!include` directly as a value, it works naturally for replacing a scalar, sequence, or an entire mapping:
 
@@ -912,7 +912,7 @@ Instead of including the whole document, you can also include only the value of 
 
 `SafeFileResolver` has a built-in capability for anchor extraction. For flexibility, custom [`IncludeResolver`](https://docs.rs/serde-saphyr/latest/serde_saphyr/type.IncludeResolver.html) implementations must do this on their own, splitting anchor from the reference and then returning [`InputSource::AnchoredText`](https://docs.rs/serde-saphyr/latest/serde_saphyr/enum.InputSource.html#variant.AnchoredText).
 
-Unless otherwise stated, the anchor scope is restricted to the document where it is defined. Overriding a parent anchor value somewhere deep inside included content would be challenging to debug and could even become a security issue. 
+Unless otherwise stated, the anchor scope is restricted to the document where it is defined. Overriding a parent anchor value somewhere deep inside included content would be challenging to debug and could even become a security issue.
 
 Whole-document includes only support sources that contain a single YAML document. Fragment includes also require the included source to contain a single YAML document; multi-document sources are rejected instead of scanning across document boundaries. Recursive inclusion is not permitted (and the file, not the fragment, is the include's identity).
 
@@ -1009,15 +1009,15 @@ error: line 3 column 23: invalid here, validation error: length is lower than 2 
 2 |         firstString: &A "x"
 3 |         secondString: *A
   |                       ^ invalid here, validation error: length is lower than 2 for `secondString`
-4 |  
+4 |
   |
   | This value comes indirectly from the anchor at line 2 column 25:
   |
-1 | 
+1 |
 2 |         firstString: &A "x"
   |                         ^ defined here
 3 |         secondString: *A
-4 |  
+4 |
 ```
 
 The integration of garde is feature-gated and disabled by default. Use `serde-saphyr = { version = "2", features = ["garde"] }` (or `features = ["validator"]`) in `Cargo.toml` to enable it.
@@ -1161,7 +1161,7 @@ Serde-saphyr supports recursive structures, but Rust requires being very explici
 - The wrapper [SpaceAfter](https://docs.rs/serde-saphyr/latest/serde_saphyr/struct.SpaceAfter.html) adds an empty line after the wrapped value, useful for visually separating sections in the output YAML.
 - It is possible to request that all strings be **quoted** — using single quotes when no escape sequences are present, and double quotes otherwise. This is very explicit and unambiguous, but such YAML may be less readable for humans. Line wrapping is disabled in this mode.
 - YAML 1.1 booleans (`y`, `yes`, `on`, etc.) are normally quoted as both keys and values. If this is undesired (y is a coordinate), set `yaml_12` to true.
-- Set `no_lang_directive` to omit the `%YAML 1.2` directive. 
+- Set `no_lang_directive` to omit the `%YAML 1.2` directive.
 
 These settings can be changed in [SerializerOptions](https://docs.rs/serde-saphyr/latest/serde_saphyr/ser/options/struct.SerializerOptions.html).
 
@@ -1217,10 +1217,10 @@ Safety hardening measures with this feature enabled include limits on maximal ex
 - Anchors are not fully compatible with `#[serde(flatten)]` directive (this is Serde limitation we can't work around). Deserialization succeeds, but full strong-pointer identity may be lost for nested anchors inside flattened payloads.
 - Borrowing works for any scalar whose parsed value exists **verbatim** in the input. This includes plain scalars and simple quoted strings without escape sequences (e.g., `"hello world"` can be borrowed, but `"hello\nworld"` cannot because `\n` is transformed to a newline). To allow both borrowed and owned strings, use a Cow<'a, str> field annotated with #[serde(borrow)]. It borrows when the deserializer can provide borrowed data and otherwise owns the string, for example when transformation is required. Borrowing is explicit because it ties the result’s lifetime to the input. Without this annotation, Serde’s default deserialization of Cow<str> produces Cow::Owned, even when the input could be borrowed.
 - Reader-based entry points (`from_reader`) require `DeserializeOwned` and cannot return borrowed values.
-- `serde-saphyr` does not capture freestanding comments, not obviously attached to any node (separated by multiple empty lines, or at the end of the document). Use [`granit-parser`](https://crates.io/crates/granit-parser) directly to capture such comments (serde-saphyr re-exports it). 
+- `serde-saphyr` does not capture freestanding comments, not obviously attached to any node (separated by multiple empty lines, or at the end of the document). Use [`granit-parser`](https://crates.io/crates/granit-parser) directly to capture such comments (serde-saphyr re-exports it).
 
 ## Financial Support
 
-Let's all donate strategically to [David Tolnay](https://github.com/sponsors/dtolnay). Without his 
+Let's all donate strategically to [David Tolnay](https://github.com/sponsors/dtolnay). Without his
 [serde](https://crates.io/crates/serde), serde-saphyr would not make any sense. If all donations go to a single person,
 this is more likely to make a difference. We are not affiliated with him.
