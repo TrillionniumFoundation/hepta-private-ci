@@ -4,6 +4,8 @@
 mod acl_setup_tests;
 #[path = "legacy_delete_observer_tests.rs"]
 mod legacy_delete_observer;
+#[path = "psec_support_observer_tests.rs"]
+mod psec_support_observer;
 
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
@@ -683,6 +685,7 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
 #[test]
 fn legacy_workspace_write_delete_is_limited_to_writable_roots() -> anyhow::Result<()> {
     let _guard = legacy_process_test_guard();
+    psec_support_observer::record();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
         // Keep writable roots out of USERPROFILE exclusions such as AppData.
