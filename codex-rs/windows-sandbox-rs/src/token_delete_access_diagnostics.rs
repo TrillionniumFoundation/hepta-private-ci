@@ -219,18 +219,13 @@ fn read_privileges(
         .collect())
 }
 
-pub(super) struct AuthorizationSnapshot {
+pub struct AuthorizationSnapshot {
     parent: Descriptor,
     target: Descriptor,
 }
 
 impl AuthorizationSnapshot {
-    pub(super) fn capture(
-        parent: &Path,
-        target: &Path,
-        scenario: &str,
-        phase: &str,
-    ) -> Result<Self> {
+    pub fn capture(parent: &Path, target: &Path, scenario: &str, phase: &str) -> Result<Self> {
         support::ensure_unimpersonated().context("query descriptors using original identity")?;
         Ok(Self {
             parent: Descriptor::capture(parent, "parent", scenario, phase)?,
@@ -238,7 +233,7 @@ impl AuthorizationSnapshot {
         })
     }
 
-    pub(super) fn observe_current_token(&self, scenario: &str, phase: &str) -> Result<()> {
+    pub fn observe_current_token(&self, scenario: &str, phase: &str) -> Result<()> {
         let mut raw = 0;
         // OpenAsSelf changes the access check for this query handle, not the token
         // it refers to. AccessCheck receives the current thread's impersonation token.

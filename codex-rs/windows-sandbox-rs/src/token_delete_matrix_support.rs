@@ -66,7 +66,7 @@ use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
 use windows_sys::Win32::System::Threading::OpenThreadToken;
 
-const CAPABILITY: &str = "S-1-5-21-197-263-389-487";
+pub const CAPABILITY: &str = "S-1-5-21-197-263-389-487";
 
 fn wide(value: impl AsRef<std::ffi::OsStr>) -> Vec<u16> {
     use std::os::windows::ffi::OsStrExt;
@@ -109,15 +109,15 @@ fn descriptor(sddl: &str) -> Result<Allocation> {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(super) enum Restriction {
+pub enum Restriction {
     WriteOnly,
     Full,
 }
 
-pub(super) struct RestrictedToken(OwnedHandle);
+pub struct RestrictedToken(OwnedHandle);
 
 impl RestrictedToken {
-    pub(super) fn new(mode: Restriction) -> Result<Self> {
+    pub fn new(mode: Restriction) -> Result<Self> {
         let mut base = 0;
         ensure!(
             unsafe {
@@ -213,7 +213,7 @@ impl RestrictedToken {
         Ok(data)
     }
 
-    pub(super) fn lower_integrity(&self) -> Result<()> {
+    pub fn lower_integrity(&self) -> Result<()> {
         let low = sid("S-1-16-4096")?;
         let sid_len = unsafe { GetLengthSid(low.0) } as usize;
         let byte_len = std::mem::size_of::<TOKEN_MANDATORY_LABEL>() + sid_len;
@@ -264,7 +264,7 @@ impl RestrictedToken {
         Ok(())
     }
 
-    pub(super) fn run<T>(&self, operation: impl FnOnce() -> T) -> Result<T> {
+    pub fn run<T>(&self, operation: impl FnOnce() -> T) -> Result<T> {
         ensure_unimpersonated()?;
         ensure!(
             unsafe { ImpersonateLoggedOnUser(self.0.as_raw_handle() as _) } != 0,
@@ -288,7 +288,7 @@ impl RestrictedToken {
     }
 }
 
-pub(super) fn ensure_unimpersonated() -> Result<()> {
+pub fn ensure_unimpersonated() -> Result<()> {
     let mut previous = 0;
     let has_previous = unsafe {
         OpenThreadToken(
@@ -308,7 +308,7 @@ pub(super) fn ensure_unimpersonated() -> Result<()> {
 }
 
 #[derive(Clone, Copy)]
-pub(super) enum Dacl {
+pub enum Dacl {
     Identity(u32),
     Capability(u32),
     InheritableCapability(u32),
@@ -327,8 +327,7 @@ fn acl_bytes(acl: *const ACL) -> Option<Vec<u8>> {
     }
 }
 
-pub(super) fn set_dacl(path: &Path, policy: Dacl) -> Result<()> {
-    ensure_unimpersonated().context("configure owned ACL fixture with original thread identity")?;
+pub fn set_dacl(path: &Path, policy: Dacl) -> Result<()> {
     let sddl = match policy {
         Dacl::Identity(mask) => format!("D:P(A;;0x{mask:08x};;;WD)"),
         Dacl::Capability(mask) => format!("D:P(A;;FA;;;WD)(A;;0x{mask:08x};;;{CAPABILITY})"),
@@ -337,7 +336,14 @@ pub(super) fn set_dacl(path: &Path, policy: Dacl) -> Result<()> {
         }
         Dacl::Null => "D:PNO_ACCESS_CONTROL".to_string(),
     };
-    let sd = descriptor(&sddl)?;
+    set_dacl_sddl(path, &sddl)
+}
+
+/// Install and read back a precise DACL on an owned test fixture.
+/// Callers must never pass a live, user-owned or system object.
+pub fn set_dacl_sddl(path: &Path, sddl: &str) -> Result<()> {
+    ensure_unimpersonated().context("configure owned ACL fixture with original thread identity")?;
+    let sd = descriptor(sddl)?;
     let (mut present, mut defaulted, mut dacl) = (0, 0, std::ptr::null_mut());
     ensure!(
         unsafe { GetSecurityDescriptorDacl(sd.0, &mut present, &mut dacl, &mut defaulted) } != 0
@@ -397,7 +403,7 @@ pub(super) fn set_dacl(path: &Path, policy: Dacl) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn lower_object_integrity(path: &Path) -> Result<()> {
+pub fn lower_object_integrity(path: &Path) -> Result<()> {
     let sd = descriptor("S:(ML;;NW;;;LW)")?;
     let (mut present, mut defaulted, mut label) = (0, 0, std::ptr::null_mut());
     ensure!(
@@ -454,12 +460,12 @@ pub(super) fn lower_object_integrity(path: &Path) -> Result<()> {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(super) enum Kind {
+pub enum Kind {
     File,
     Directory,
 }
 
-pub(super) fn create_target(path: &Path, kind: Kind) -> Result<()> {
+pub fn create_target(path: &Path, kind: Kind) -> Result<()> {
     match kind {
         Kind::File => std::fs::write(path, b"unchanged")?,
         Kind::Directory => std::fs::create_dir(path)?,
@@ -477,7 +483,7 @@ pub(super) fn create_target(path: &Path, kind: Kind) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn delete(path: &Path, kind: Kind) -> std::io::Result<()> {
+pub fn delete(path: &Path, kind: Kind) -> std::io::Result<()> {
     let path = wide(path);
     let ok = unsafe {
         match kind {
