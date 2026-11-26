@@ -371,10 +371,15 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         provider: &mut P,
     ) -> Result<ProductTemporalEvaluationReceiptV1, ProductEvaluationError> {
         product_plan.validate_integrity()?;
+        // Validate the actual execution inputs before consuming or disclosing
+        // the holdout. Their public fields can change after preregistration;
+        // matching a retained plan_digest alone does not authenticate them.
         if candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest
             || baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest
             || candidate_plan.objective_digest != product_plan.frozen_plan.objective_digest
             || baseline_plan.objective_digest != product_plan.frozen_plan.objective_digest
+            || candidate_plan.plan_digest != candidate_plan.canonical_digest()?
+            || baseline_plan.plan_digest != baseline_plan.canonical_digest()?
         {
             return Err(ProductEvaluationError::Binding("temporal execution plan"));
         }
