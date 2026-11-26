@@ -12,6 +12,7 @@ import time
 import tomllib
 
 from environment_observer_parser import record_environment_observations
+from parent_sd_parser import record_parent_sd_observation
 
 ROOT = Path(__file__).resolve().parents[3]
 PACKAGE = "codex-windows-sandbox"
@@ -25,7 +26,9 @@ REQUESTS = (("target", 0x10000), ("parent", 0x40), ("target", 0x10002),
             ("parent", 0x42), ("target", 0x2), ("target", 0x1))
 OBSERVER_BLOBS = {
     "codex-rs/windows-sandbox-rs/src/token_delete_product_facts_tests.rs": "6a23b3fa53f64a97d0dac9dbadc9f0aab10dddbc",
-    "codex-rs/windows-sandbox-rs/src/token_delete_product_observer_tests.rs": "ea05c5177b5c822edb97433748aac1b5d2a21362",
+    "codex-rs/windows-sandbox-rs/src/token_delete_product_observer_tests.rs": "c9666da4ed815954d23c408ab0a96f4c6a9d6597",
+    "codex-rs/windows-sandbox-rs/src/token_delete_parent_sd_tests.rs": "2b04631184917819a8e6b009ec5a3d21c18656e9",
+    "qualification/ci-remediation/windows-production-token-observer-20261126/PARENT_SD_PROTOCOL.md": "f36b7ef54710ddc9228c4df487d051b38e969e6d",
     "codex-rs/windows-sandbox-rs/src/token_tests.rs": "d6cb6be7dac762a209a7f7f52dd6e626fa446c0b",
     "qualification/ci-remediation/windows-production-token-observer-20261126/README.md": "fa5fd1a46412360abb94f4dbdcfdf95862108517",
 }
@@ -370,6 +373,7 @@ def main():
         report["native"] = {"status": "command_completed", "exit": code, "observation": "unverified"}
         record_child_token(report, [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")])
         record_environment_observations(report, [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")])
+        record_parent_sd_observation(report, [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")])
         report["native"].update(verify_native(
             [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")], listing))
     except Exception as error:
