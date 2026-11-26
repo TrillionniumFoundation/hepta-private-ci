@@ -18,7 +18,7 @@ B/C ownership, full physical-cost measurement, or whole-daemon/Root recovery.
 | --- | --- | --- |
 | #6035 | 307dced98e8b40c1e8321a357e1af1cde3400fef | Original formatter successor of tested 086cc7d2; accepted Submit survives waiter loss |
 | #6034 | 21d2699b7ac7831f355f5acb9570a90da077dbe3 | Stage only the affected generation record; install after original durable append |
-| #6047 | 98730dda67417a93689835f4961d3e807abf107d | Preserve typed evaluation Pending/Indeterminate through original error wrappers |
+| #6047 | ea4b1e0452adb10c8cb0b7eae2ba1754689d11c6 | Preserve typed evaluation uncertainty; constrain added receipt-owner assertions to their original Linux platform |
 | #6018 | 95894b8c958a1fab691f7779942f5fb25b778f9f | Exact generic control-function locator with original negative source controls |
 | #6060 | 4ae6bbe94ef5be31401ac31b4a6fdeb5128d548f | Explicit pinned resident v1/v2 transport and immutable initial-encoder reuse |
 
@@ -208,6 +208,14 @@ follow-up preparation child updates this record and enables the existing Cell
 framework native workflow for this exact convergence branch. No test command,
 expected assertion or owner boundary is replaced.
 
+The original Q24 portability correction is retained by two-parent merge
+7643df848e0ee29db2c0e45b4dec01a0ac67af3b, with parents 0cef9fe240ba3d341732fe9e537e275fcd358b2d
+and ea4b1e0452adb10c8cb0b7eae2ba1754689d11c6. Its tree is
+9f9d5a064c4b73c6ae4e367911b5e287ea186198. After the local executor recovered,
+actual `git merge-tree --write-tree` reproduced every one of the six recorded
+merge trees with exit zero. This verifies source integration, not compilation
+or behavior.
+
 ## Qualification
 
 Record each result against its exact source/tree, command, native log and
@@ -235,8 +243,19 @@ postimage blob 033e0e762525c320cdd4373933048b8a4147e60c is retained in successor
 307dced98e8b40c1e8321a357e1af1cde3400fef. Behavior tests belong to the original
 086cc7d2 source, not the formatter successor or the combined candidate.
 
-At preparation time, evaluation-uncertainty, resident and common-source CI were
-queued. Windows containment native CI was running. No combined-source
-pass, ordinary Adopt/NoUpdate chain or full daemon/Root cold-restart pass is
-claimed by this document. The managed local executor was unavailable; GitHub
-source operations and the original GitHub CI are the available execution path.
+The first evaluation-uncertainty source 98730dda failed Windows security-only
+run 43128124820/job130885288509 with four E0433 errors in its added readback
+assertions: the original Q24 receipt owner and classifier are Linux-only. This
+was a new test portability defect, not the elevated sandbox deletion regression
+or CI noise. Successor ea4b1e04 applies the same Linux cfg only to those two new
+assertion blocks; original cross-platform typed readback, call-count, anchor and
+holdout checks remain. Its separate long-line wrap was manual and is not an
+observed formatter pass. The original failure remains part of qualification.
+
+At preparation time, corrected evaluation-uncertainty, resident and common-source
+native CI remained unqualified. Windows containment native CI was running.
+No combined-source pass, ordinary Adopt/NoUpdate chain or full daemon/Root
+cold-restart pass is claimed by this document. The managed local executor
+recovered after the earlier interruption, but Cargo, rustc, rustfmt and just are
+absent. Local Git source checks therefore supplement original CI; they do not
+replace Rust compilation, formatting or native tests.
