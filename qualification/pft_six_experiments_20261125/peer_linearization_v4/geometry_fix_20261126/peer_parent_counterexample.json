@@ -1,0 +1,145 @@
+{
+  "common": {
+    "candidate_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "linearization": {
+      "coordinate_layout": [
+        {
+          "dtype": "float64",
+          "flat_index": 0,
+          "name": "matrix_fixture",
+          "scale": 1.0,
+          "shape": [
+            2
+          ]
+        },
+        {
+          "dtype": "float64",
+          "flat_index": 1,
+          "name": "matrix_fixture",
+          "scale": 1.0,
+          "shape": [
+            2
+          ]
+        }
+      ],
+      "coordinate_sha256": "0757096eba2661fb79c6607d1dcf0b5e86f65fccc216151ff5a2ac15a107e0a1",
+      "derivative": "exact given matrix",
+      "objective_state": "known matrix fixture",
+      "output": "matrix product",
+      "parent_state_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+      "second_order_autograd": false
+    },
+    "objective": "sum of half weighted residual squares; alpha-coordinate ridge applied once globally",
+    "profile_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "ridge": 1e-30,
+    "roster": [
+      "fixture_a",
+      "fixture_b"
+    ],
+    "round": "synthetic-algebra-fixture",
+    "runtime": {
+      "fixture": "algebra only; no physical model or participant"
+    },
+    "schema": "hepta.smallhcsn.common-linearization.v1",
+    "source_binding_sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+  },
+  "contributions": [
+    {
+      "body": {
+        "batch_sha256": "e9b308e2509344658234a0008f73e9b889da44cd60ca71139164035c1d1955ae",
+        "common_sha256": "56c40fc91b3c47b6a1094ff117730b7344e2e8aedd19f6b1e6ee26757a60f594",
+        "gram": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "local_linearization_sha256": "50596933c26173046650f09e3fd43aef5f12e28c94ac52022b40af33fed721b2",
+        "moment": [
+          1e-14,
+          0.0
+        ],
+        "node": "fixture_a",
+        "observation_count": 1,
+        "residual_square": 0.0,
+        "schema": "hepta.smallhcsn.normal-equation-contribution.v1"
+      },
+      "sha256": "48ab13526515abca0d406d774b0ea5bb783cea641c30b664fa4837261f7dfa47"
+    },
+    {
+      "body": {
+        "batch_sha256": "2d5b819a5c8ec88b55bd5e1c52547fdd3a1b36b9c5e5e2d33618870f82c1e6f8",
+        "common_sha256": "56c40fc91b3c47b6a1094ff117730b7344e2e8aedd19f6b1e6ee26757a60f594",
+        "gram": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "local_linearization_sha256": "8b874a4e98b36dd4ac3eb781a6c6997e2886015232701481fd7bd2fe36b66347",
+        "moment": [
+          1e-14,
+          0.0
+        ],
+        "node": "fixture_b",
+        "observation_count": 1,
+        "residual_square": 0.0,
+        "schema": "hepta.smallhcsn.normal-equation-contribution.v1"
+      },
+      "sha256": "976a9697f0eeef59c0afb384eba313d8d29c48fee3a8a96c23232e53ac1889b6"
+    }
+  ],
+  "kind": "synthetic_algebra_counterexample",
+  "model_executions": 0,
+  "numpy": "2.3.5",
+  "process_cpu_seconds": 0.0042893139999999885,
+  "python": "3.12.14",
+  "result": {
+    "actual_nonlinear_improvement_measured": false,
+    "common_sha256": "56c40fc91b3c47b6a1094ff117730b7344e2e8aedd19f6b1e6ee26757a60f594",
+    "contributions": [
+      {
+        "node": "fixture_a",
+        "sha256": "48ab13526515abca0d406d774b0ea5bb783cea641c30b664fa4837261f7dfa47"
+      },
+      {
+        "node": "fixture_b",
+        "sha256": "976a9697f0eeef59c0afb384eba313d8d29c48fee3a8a96c23232e53ac1889b6"
+      }
+    ],
+    "coordinate_sha256": "0757096eba2661fb79c6607d1dcf0b5e86f65fccc216151ff5a2ac15a107e0a1",
+    "delta": [
+      2e+16,
+      0.0
+    ],
+    "gram_eigenvalues": [
+      0.0,
+      0.0
+    ],
+    "gram_rank_estimate": 0,
+    "gram_rank_tolerance": 0.0,
+    "linearized_data_objective": -400.0,
+    "objective_at_zero": 0.0,
+    "observation_count": 2,
+    "parent_state_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+    "production_adoption": false,
+    "rank_method": "Gram eigenvalues; less reliable than original-Jacobian SVD under ill conditioning",
+    "regularized_objective": -199.99999999999997,
+    "relative_normal_residual": 3.1554436208840472e-30,
+    "ridge": 1e-30,
+    "ridge_applications": 1,
+    "schema": "hepta.smallhcsn.aggregate-step.v1"
+  },
+  "source_commit": "f9b4cdb63261c5531ac255a4f7b270893c828323",
+  "source_git_blob": "12a68dc3de4904a5a6bc5a331336f9070cac1410",
+  "training_updates": 0,
+  "wall_seconds": 0.0020365310010674875
+}
