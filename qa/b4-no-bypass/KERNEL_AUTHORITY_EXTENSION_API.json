@@ -1,0 +1,124 @@
+{
+  "schema": "hepta.kernel-authority-extension-api.v1",
+  "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+  "canonicalDelegates": [
+    "final_use_open_state"
+  ],
+  "freeFunctions": {
+    "privileged": {
+      "open_production_final_use_authority": "final_use_open_state",
+      "recover_production_final_use_authority": "final_use_open_state"
+    },
+    "nonPrivileged": []
+  },
+  "types": [
+    {
+      "typeName": "ProductionAuthorityTrustEvidence",
+      "privilegedMethods": {},
+      "nonPrivilegedMethods": [
+        "validate"
+      ]
+    },
+    {
+      "typeName": "ProductionAuthorityKeyCustodyEvidence",
+      "privilegedMethods": {},
+      "nonPrivilegedMethods": [
+        "validate"
+      ]
+    },
+    {
+      "typeName": "VerifiedFinalUseRevocationHead",
+      "privilegedMethods": {
+        "verify": "final_use_verified_revocation_head_verify"
+      },
+      "nonPrivilegedMethods": [
+        "distributor_id",
+        "trust_key_id",
+        "head",
+        "update_sha256",
+        "issued_at_unix_ms",
+        "expires_at_unix_ms"
+      ]
+    },
+    {
+      "typeName": "FinalUseFeedClock",
+      "privilegedMethods": {
+        "publish": "final_use_feed_clock_publish"
+      },
+      "nonPrivilegedMethods": [
+        "new",
+        "invalidate"
+      ]
+    },
+    {
+      "typeName": "ProductionFinalUseTrustContext",
+      "privilegedMethods": {
+        "bind": "final_use_production_trust_bind",
+        "recover_state_dir_with_feed_clock": "final_use_open_state"
+      },
+      "nonPrivilegedMethods": [
+        "clock",
+        "feed_clock",
+        "verified_revocations"
+      ]
+    },
+    {
+      "typeName": "ProductionAuthorityTrustBundle",
+      "privilegedMethods": {},
+      "nonPrivilegedMethods": [
+        "new",
+        "validate"
+      ]
+    },
+    {
+      "typeName": "AuthorityDispatchBinding",
+      "privilegedMethods": {
+        "dispatch": "authority_lease_dispatch_binding"
+      },
+      "nonPrivilegedMethods": []
+    },
+    {
+      "typeName": "AuthorityLeaseVerifier",
+      "privilegedMethods": {
+        "bind_dispatch": "authority_lease_bind_dispatch"
+      },
+      "nonPrivilegedMethods": []
+    },
+    {
+      "typeName": "AuthorityLeaseRegistry",
+      "privilegedMethods": {
+        "open_production_state_dir": "authority_lease_open_production_state"
+      },
+      "nonPrivilegedMethods": []
+    }
+  ],
+  "freeFunctionCallers": [
+    {
+      "function": "open_production_final_use_authority",
+      "boundaryId": "final_use_open_state",
+      "callPatterns": [
+        "\\bopen_production_final_use_authority\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "function": "recover_production_final_use_authority",
+      "boundaryId": "final_use_open_state",
+      "callPatterns": [
+        "\\brecover_production_final_use_authority\\s*\\("
+      ],
+      "allowedCallers": []
+    }
+  ],
+  "methodDelegates": [
+    {
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "enclosingType": "VerifiedFinalUseRevocationHead",
+      "enclosingMethod": "verify",
+      "wrapperBoundary": "final_use_verified_revocation_head_verify",
+      "calleeBoundary": "final_use_revocation_feed_verify",
+      "expectedCalls": 1,
+      "definitionSha256": "4835ceb7715d8a9971956a316569bad6e2e0718849ee0f19540e7f695bf3bd12"
+    }
+  ]
+}

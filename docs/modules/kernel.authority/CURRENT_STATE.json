@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.kernel-authority-current-state.v1",
+  "schemaVersion": 1,
+  "generatedFrom": "qualification/kernel-authority/status_manifest.json",
+  "generatedBy": "qualification/kernel-authority/generate_status.py",
+  "sourceBase": {
+    "commit": "5992ae29f355454c1a17ce6428d536b186fe6902",
+    "tree": "f3824d4f38193ed84c6d1f98104cba1a33a4091e"
+  },
+  "module": "kernel.authority",
+  "status": "clock-evidence-hardened-native-validation-pending",
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "implementedOperationMappingComplete": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "productionTrustBundle": {
+    "sourceImplemented": true,
+    "mandatoryComponents": [
+      "production clock",
+      "rollback-independent CAS frontier",
+      "live KMS/HSM key custody",
+      "authenticated fresh recovery head",
+      "deployment and disaster-recovery receipts"
+    ],
+    "liveKeySetDigestBound": true,
+    "keyGenerationAndRevocationFloorBound": true,
+    "privateKeyExportRejected": true,
+    "verifiedRevocationHeadRequired": true,
+    "clockUncertaintyBoundAtRecovery": true,
+    "runtimeCustodyRetainedInProductionConstructors": true,
+    "finalUseClockIntervalChecksInSource": true,
+    "genericLeaseClockIntervalComplete": true,
+    "normalAgentdProductionTrustComposed": false,
+    "targetDeploymentQualified": false,
+    "runtimePostSampleCustodyRecheck": true,
+    "runtimeObservedClockRollbackFenced": true
+  },
+  "productPilots": {
+    "fleet": "Exact named native test with same-process owner reopen; native execution pending, not two-product-process recovery.",
+    "browserAgentd": "Exact Browser/Agentd product cases plus seven bounded owner-task identities are required; native execution pending.",
+    "restartRevocationRollbackRotation": "Durable pending and frontier-first recovery source tests retained; no target-host drill substituted.",
+    "deploymentActivationProved": false
+  },
+  "qualification": {
+    "exactHead": "workflow defined; successful receipt pending",
+    "syntheticMerge": "workflow defined; successful receipt pending",
+    "postMergeMain": "read-only workflow trigger defined; no main merge performed",
+    "staleArtifactReuseRejected": true,
+    "differentShaReuseRejected": true,
+    "selfModifyingQualificationRejected": true,
+    "zeroTestPilotRejectedByParser": true,
+    "ownedEffectRuntimeExactTestsRequired": true,
+    "capacityCollectorSelfTestRequired": true,
+    "currentCandidateGreen": false,
+    "nativePassingSha": null,
+    "evidenceIntegrityGateDefined": true,
+    "rawPilotLogsReopenedByPortProjection": true
+  },
+  "performanceAndScale": {
+    "latencyPercentiles": "Limited source benchmark plus strict target collector contract; no real target-host result supplied.",
+    "throughputAndContention": "Source benchmark defined; selected production-profile measurements pending.",
+    "snapshotAndRestart": "Same-process source benchmarks are distinct from product cold-start recovery.",
+    "walCheckpoint": "executable reference model only",
+    "registrySharding": "deterministic reference model only",
+    "capacityLifetime": "Agentd bounded in-flight tasks and conservative nonce reserve in source; signed rollover not self-issued.",
+    "productionMatrixCollectorImplemented": true,
+    "historyDiagnosticsCollectorImplemented": true,
+    "productionMatrixExecuted": false,
+    "productionSloGranted": false,
+    "sampleMutexAndLiveCustodyRecheckMeasured": false
+  },
+  "repositoryControlledGaps": [
+    "Obtain successful exact-candidate formatting, all-target compilation, package tests, strict Clippy and two-product-process recovery after the clock/evidence changes in REMEDIATION_20260929.md; Python parser success is not native execution.",
+    "Wire selected real production trust providers into normal Agentd and Fleet bootstrap without falling back to local compatibility trust.",
+    "Execute normal two-process cold-start recovery and preserve nonce, pending revocation, attempt identity and provider-owned terminal evidence.",
+    "Execute the complete 55-row target-host matrix, eight fault cuts, reserve observation and history-sensitive diagnostics through a selected real driver; the collector self-test is synthetic only.",
+    "Use measured frontier hashing, lease image clone/serialization, clock-floor persistence and restart costs before adopting an incremental digest/checkpoint runtime design.",
+    "Complete the remaining target-only generic-authority consumer ports without relabelling independent owner protocols.",
+    "Retain exact candidate, commands, logs, artifacts and the complete executed test set; queued, missing, ignored and zero-test runs are not success."
+  ],
+  "externalEvidenceGates": [
+    "independently protected or attested time source and measured maximum uncertainty",
+    "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
+    "KMS or HSM custody for issuer approval and revocation roles with real rotation and compromise-response evidence",
+    "deployed revocation fanout under delay partition restart and recovery",
+    "target filesystem mount backup boot rollback and provider failure qualification",
+    "approved target-host performance budgets and complete real capacity measurements",
+    "independent semantic/operator acceptance and verifier-only topology evidence",
+    "operator canary promotion and release authorization"
+  ],
+  "activationGranted": false,
+  "releaseGranted": false
+}

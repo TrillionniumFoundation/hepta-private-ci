@@ -271,12 +271,14 @@ impl AgentdState {
                 // Current lifecycle authority remains fenced before and after I/O.
                 let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
-                    &self.identity.agent_id,
-                    self.identity.spawn_generation,
+                    crate::cognitive_context::CognitiveRetrievalRuntime {
+                        owner: &self.identity.agent_id,
+                        body_generation: self.identity.spawn_generation,
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                    },
                     &query,
                     limit,
-                    self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
                     self.cognitive_retrieval_learning.get(),
                     Some(request_id),
                 )
@@ -351,15 +353,17 @@ impl AgentdState {
                 };
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
-                    &self.identity.agent_id,
+                    crate::cognitive_context::CognitiveRetrievalRuntime {
+                        owner: &self.identity.agent_id,
+                        body_generation: self.identity.spawn_generation,
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                    },
                     &snapshot_digest,
                     &read_digest,
                     omitted_records,
                     &items,
                     plan.as_ref(),
-                    self.cognitive_ranker.get(),
-                    self.identity.spawn_generation,
-                    self.cognitive_retrieval_context.get(),
                 )
                 .await;
                 self.refresh_generation()?;
@@ -666,7 +670,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {

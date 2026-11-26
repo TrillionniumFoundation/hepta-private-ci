@@ -256,15 +256,17 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
         .unwrap();
     let accepted = crate::cognitive_context::revalidate_with_retrieval_context(
         &store,
-        &owner,
+        crate::cognitive_context::CognitiveRetrievalRuntime {
+            owner: &owner,
+            body_generation: 1,
+            ranker: None,
+            current_retrieval: Some(&stable),
+        },
         &snapshot.snapshot_digest,
         &snapshot.read_digest,
         snapshot.omitted_records,
         &snapshot.items,
         snapshot.plan.as_ref(),
-        None,
-        1,
-        Some(&stable),
     )
     .await
     .unwrap();
@@ -281,15 +283,17 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
     });
     let rejected = crate::cognitive_context::revalidate_with_retrieval_context(
         &store,
-        &owner,
+        crate::cognitive_context::CognitiveRetrievalRuntime {
+            owner: &owner,
+            body_generation: 1,
+            ranker: None,
+            current_retrieval: Some(&changed),
+        },
         &snapshot.snapshot_digest,
         &snapshot.read_digest,
         snapshot.omitted_records,
         &snapshot.items,
         snapshot.plan.as_ref(),
-        None,
-        1,
-        Some(&changed),
     )
     .await;
     assert!(matches!(

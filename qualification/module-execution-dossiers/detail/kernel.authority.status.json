@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.kernel-authority-dossier-status.v1",
+  "schemaVersion": 1,
+  "generatedFrom": "qualification/kernel-authority/status_manifest.json",
+  "generatedBy": "qualification/kernel-authority/generate_status.py",
+  "sourceBase": {
+    "commit": "5992ae29f355454c1a17ce6428d536b186fe6902",
+    "tree": "f3824d4f38193ed84c6d1f98104cba1a33a4091e"
+  },
+  "module": "kernel.authority",
+  "laneId": "LANE-A-FOUNDATION",
+  "status": "clock-evidence-hardened-native-validation-pending",
+  "claimBoundary": {
+    "nativeSourceMappingComplete": true,
+    "sourceRootPresent": true,
+    "implementedOperationMappingComplete": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "operationIds": [
+    "authority_lease_registry",
+    "authority_dispatch_binding",
+    "final_use_authority",
+    "final_use_control",
+    "production_trust_bundle",
+    "verified_use_witness",
+    "agentd_external_trust_host",
+    "agentd_effect_owner",
+    "candidate_product_pilot",
+    "owned_effect_runtime_qualification",
+    "performance_qualification",
+    "capacity_matrix_collection",
+    "storage_scaling_model",
+    "native_quality_evidence"
+  ],
+  "productCallerIds": [
+    "runtime.fleet.issue",
+    "browser.servo.agentd",
+    "automation.taskflow.agentd",
+    "secrets.heptabao.registered_host"
+  ],
+  "evidencePrograms": [
+    {
+      "id": "kernel-authority-production-closure",
+      "path": ".github/workflows/kernel-authority-production-closure.yml",
+      "modes": [
+        "exact-head",
+        "synthetic-merge"
+      ],
+      "state": "read_only_native_product_owner_task_source_benchmark_capacity_self_test_and_post_main_exact_head_execution_pending"
+    },
+    {
+      "id": "kernel-authority-evidence-integrity",
+      "path": ".github/workflows/kernel-authority-evidence-gate.yml",
+      "modes": [
+        "exact-head"
+      ],
+      "state": "parser_and_source_integrity_only_not_native_or_production_acceptance"
+    }
+  ],
+  "externalEvidenceGates": [
+    "independently protected or attested time source and measured maximum uncertainty",
+    "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
+    "KMS or HSM custody for issuer approval and revocation roles with real rotation and compromise-response evidence",
+    "deployed revocation fanout under delay partition restart and recovery",
+    "target filesystem mount backup boot rollback and provider failure qualification",
+    "approved target-host performance budgets and complete real capacity measurements",
+    "independent semantic/operator acceptance and verifier-only topology evidence",
+    "operator canary promotion and release authorization"
+  ],
+  "activationGranted": false,
+  "releaseGranted": false
+}

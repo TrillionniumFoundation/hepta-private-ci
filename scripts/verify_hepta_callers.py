@@ -23,6 +23,7 @@ Rows without either option retain the original exact-symbol behavior.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -39,8 +40,12 @@ MANIFEST = ROOT / "CALLERS.toml"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from hepta_typed_callers import (
     UnresolvedTypedReceiver,
+    _impl_owner,
+    _is_invocation,
     authority_fields,
     has_authority_call,
+    normalize_symbol_aliases,
+    symbol_aliases,
 )
 
 RAW_STRING_START = re.compile(r'r(#{0,255})"')
@@ -59,8 +64,12 @@ class Boundary:
     product_callers: tuple[str, ...]
     caller_markers: tuple[str, ...]
     call_pattern: str | None
+    caller_type_marker: str | None
     receiver_type: str | None = None
     receiver_methods: tuple[str, ...] = ()
+    receiver_associated_only: bool = False
+    receiver_alternatives: tuple[str, ...] = ()
+    free_function: bool = False
 
 
 def _load_manifest(path: Path) -> dict[str, Any]:
@@ -106,6 +115,13 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
         if symbol in symbols:
             raise VerificationFailure(f"duplicate boundary symbol: {symbol}")
         call_pattern = row.get("call_pattern")
+        caller_type_marker = row.get("caller_type_marker")
+        if caller_type_marker is not None and (
+            not isinstance(caller_type_marker, str) or not caller_type_marker
+        ):
+            raise VerificationFailure(
+                f"{identifier}: caller_type_marker must be a non-empty string"
+            )
         if call_pattern is not None:
             if not isinstance(call_pattern, str) or not call_pattern:
                 raise VerificationFailure(
@@ -133,6 +149,35 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
             )
         ):
             raise VerificationFailure(f"{identifier}: invalid receiver_methods")
+        alternatives = (
+            _string_tuple(row, "receiver_alternatives")
+            if "receiver_alternatives" in row
+            else ()
+        )
+        if alternatives and (
+            receiver_type is None
+            or any(
+                not re.fullmatch(r"[A-Za-z_]\w*::[A-Za-z_]\w*", item)
+                for item in alternatives
+            )
+        ):
+            raise VerificationFailure(f"{identifier}: invalid receiver_alternatives")
+        associated_only = row.get("receiver_associated_only", False)
+        if not isinstance(associated_only, bool) or (
+            associated_only and receiver_type is None
+        ):
+            raise VerificationFailure(f"{identifier}: invalid receiver_associated_only")
+        free_function = row.get("free_function", False)
+        if not isinstance(free_function, bool) or (
+            free_function
+            and (
+                receiver_type is not None
+                or re.fullmatch(r"[A-Za-z_]\w*", symbol) is None
+            )
+        ):
+            raise VerificationFailure(
+                f"{identifier}: invalid free_function classification"
+            )
         identifiers.add(identifier)
         symbols.add(symbol)
         boundaries.append(
@@ -144,8 +189,12 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
                 product_callers=_string_tuple(row, "product_callers"),
                 caller_markers=_string_tuple(row, "caller_markers"),
                 call_pattern=call_pattern,
+                caller_type_marker=caller_type_marker,
                 receiver_type=receiver_type,
                 receiver_methods=receiver_methods,
+                receiver_associated_only=associated_only,
+                receiver_alternatives=alternatives,
+                free_function=free_function,
             )
         )
     return tuple(boundaries)
@@ -494,18 +543,60 @@ def _verify_boundary(
                 f"{boundary.identifier}: missing definition marker {marker!r}"
             )
 
+    if boundary.receiver_associated_only:
+        definition_code = _strip_cfg_test_items(_strip_rust_non_code(definition_text))
+        for method in boundary.receiver_methods or (
+            boundary.symbol.rsplit("::", 1)[-1],
+        ):
+            candidates = []
+            for match in re.finditer(
+                rf"\bpub\s+(?:(?:async|const)\s+)?fn\s+(?:r#)?{re.escape(method)}\s*(?:<[^{{}};]*>)?\s*\(",
+                definition_code,
+            ):
+                try:
+                    owner = _impl_owner(definition_code, match.start())
+                except UnresolvedTypedReceiver as error:
+                    raise VerificationFailure(
+                        f"{boundary.identifier}: {error}"
+                    ) from error
+                if owner == boundary.receiver_type:
+                    candidates.append(match)
+            if len(candidates) != 1:
+                raise VerificationFailure(
+                    f"{boundary.identifier}: associated method signature is not unique"
+                )
+            opening = candidates[0].end() - 1
+            closing = _matching_delimiter(definition_code, opening, "(", ")")
+            if closing is None or re.search(
+                r"\bself\b", definition_code[opening:closing]
+            ):
+                raise VerificationFailure(
+                    f"{boundary.identifier}: associated-only method gained a receiver"
+                )
+
     if boundary.call_pattern is None:
         call_pattern = re.compile(re.escape(boundary.symbol) + r"\s*\(")
     else:
         call_pattern = re.compile(boundary.call_pattern)
-    try:
-        fields = (
-            authority_fields(source_index, boundary.receiver_type)
-            if boundary.receiver_type
-            else {}
+    receiver_specs = []
+    if boundary.receiver_type:
+        methods = boundary.receiver_methods or (boundary.symbol.rsplit("::", 1)[-1],)
+        receiver_specs.extend((boundary.receiver_type, method) for method in methods)
+        receiver_specs.extend(
+            tuple(item.split("::")) for item in boundary.receiver_alternatives
         )
+    try:
+        fields_by_type = {
+            target: authority_fields(source_index, target)
+            for target in {target for target, _ in receiver_specs}
+        }
     except UnresolvedTypedReceiver as error:
         raise VerificationFailure(f"{boundary.identifier}: {error}") from error
+    free_aliases = (
+        symbol_aliases(source_index, boundary.symbol)
+        if boundary.free_function
+        else frozenset()
+    )
     observed: set[str] = set()
     for relative, code in source_index.items():
         if relative == boundary.definition_path or _is_ignored(
@@ -514,18 +605,46 @@ def _verify_boundary(
             continue
         if boundary.receiver_type:
             try:
-                methods = boundary.receiver_methods or (
-                    boundary.symbol.rsplit("::", 1)[-1],
-                )
                 matched = any(
-                    has_authority_call(code, boundary.receiver_type, method, fields)
-                    for method in methods
+                    has_authority_call(
+                        code,
+                        target,
+                        method,
+                        fields_by_type[target],
+                        associated_only=boundary.receiver_associated_only,
+                    )
+                    for target, method in receiver_specs
                 )
             except UnresolvedTypedReceiver as error:
                 raise VerificationFailure(
                     f"{boundary.identifier}: {relative}: {error}"
                 ) from error
         else:
+            if free_aliases:
+                code = normalize_symbol_aliases(code, boundary.symbol, free_aliases)
+            if boundary.free_function:
+                reference_code = re.sub(r"\buse\s+[^;]+;", "", code)
+                for reference in re.finditer(
+                    rf"\b(?:r#)?{re.escape(boundary.symbol)}\b", reference_code
+                ):
+                    prefix = reference_code[: reference.start()].rstrip()
+                    if prefix.endswith(".") or re.search(r"\bfn$", prefix):
+                        continue
+                    try:
+                        direct = _is_invocation(reference_code, reference.end())
+                    except UnresolvedTypedReceiver as error:
+                        raise VerificationFailure(
+                            f"{boundary.identifier}: {error}"
+                        ) from error
+                    if not direct:
+                        raise VerificationFailure(
+                            f"{boundary.identifier}: privileged function reference is not a direct call"
+                        )
+            if (
+                boundary.caller_type_marker is not None
+                and boundary.caller_type_marker not in code
+            ):
+                continue
             matched = bool(call_pattern.search(code))
         if matched:
             observed.add(relative)
@@ -552,8 +671,12 @@ def _verify_boundary(
         "id": boundary.identifier,
         "symbol": boundary.symbol,
         "callPattern": boundary.call_pattern,
+        "callerTypeMarker": boundary.caller_type_marker,
         "receiverType": boundary.receiver_type,
         "receiverMethods": list(boundary.receiver_methods),
+        "receiverAssociatedOnly": boundary.receiver_associated_only,
+        "receiverAlternatives": list(boundary.receiver_alternatives),
+        "freeFunction": boundary.free_function,
         "productCallers": sorted(observed),
     }
 
@@ -576,7 +699,11 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 raise VerificationFailure(
                     f"{relative}: required marker missing: {marker!r}"
                 )
-        code = _strip_cfg_test_items(_strip_rust_non_code(text))
+        code = (
+            _strip_cfg_test_items(_strip_rust_non_code(text))
+            if path.suffix == ".rs"
+            else text
+        )
         for marker in _string_tuple(row, "forbidden"):
             pattern = re.escape(marker)
             if marker and (marker[0].isalnum() or marker[0] == "_"):
@@ -589,6 +716,130 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 )
         checked.append(relative)
     return checked
+
+
+def _verified_method_delegate_spans(
+    root: Path, boundaries: tuple[Boundary, ...], source_index: dict[str, str]
+) -> dict[str, dict[str, list[tuple[int, int]]]]:
+    """Bind the single reviewed internal method delegate, never a whole file."""
+    policy_path = root / "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json"
+    if not policy_path.is_file():
+        return {}
+    policy = json.loads(policy_path.read_text(encoding="utf-8"))
+    delegates = policy.get("methodDelegates", [])
+    if not isinstance(delegates, list) or len(delegates) > 1:
+        raise VerificationFailure("expected at most one reviewed method delegate")
+    result: dict[str, dict[str, list[tuple[int, int]]]] = {}
+    by_id = {row.identifier: row for row in boundaries}
+    required = {
+        "sourcePath",
+        "enclosingType",
+        "enclosingMethod",
+        "wrapperBoundary",
+        "calleeBoundary",
+        "expectedCalls",
+        "definitionSha256",
+    }
+    for entry in delegates:
+        if not isinstance(entry, dict) or set(entry) != required:
+            raise VerificationFailure("invalid method delegate record")
+        path, owner, method = (
+            entry[key] for key in ("sourcePath", "enclosingType", "enclosingMethod")
+        )
+        if path != policy.get("sourcePath") or path not in source_index:
+            raise VerificationFailure(
+                "method delegate source does not match the extension"
+            )
+        if not all(
+            isinstance(value, str) and re.fullmatch(r"[A-Za-z_]\w*", value)
+            for value in (owner, method)
+        ):
+            raise VerificationFailure("invalid method delegate owner")
+        wrapper = by_id.get(entry["wrapperBoundary"])
+        callee = by_id.get(entry["calleeBoundary"])
+        classified = [
+            row
+            for row in policy.get("types", [])
+            if row.get("typeName") == owner
+            and row.get("privilegedMethods", {}).get(method) == entry["wrapperBoundary"]
+        ]
+        if (
+            len(classified) != 1
+            or wrapper is None
+            or wrapper.symbol != f"{owner}::{method}"
+            or wrapper.definition_path != path
+        ):
+            raise VerificationFailure(
+                "method delegate wrapper is not an inventoried method"
+            )
+        if (
+            callee is None
+            or callee.receiver_type is None
+            or callee.receiver_alternatives
+        ):
+            raise VerificationFailure(
+                "method delegate callee must have one typed owner"
+            )
+        if type(entry["expectedCalls"]) is not int or entry["expectedCalls"] != 1:
+            raise VerificationFailure("method delegate requires exactly one call")
+        digest = entry["definitionSha256"]
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            raise VerificationFailure("invalid method delegate source digest")
+        raw = (root / path).read_text(encoding="utf-8")
+        code = source_index[path]
+        spans = []
+        for impl in re.finditer(rf"\bimpl\s+{re.escape(owner)}\s*\{{", code):
+            impl_end = _matching_delimiter(code, impl.end() - 1, "{", "}")
+            if impl_end is None:
+                raise VerificationFailure("unbalanced method delegate impl")
+            for function in re.finditer(
+                rf"\bpub\s+(?:async\s+)?fn\s+{re.escape(method)}\s*\(",
+                code[impl.end() : impl_end],
+            ):
+                start = impl.end() + function.start()
+                prefix = code[impl.end() : start]
+                if prefix.count("{") != prefix.count("}"):
+                    continue
+                opening = code.find("{", start, impl_end)
+                end = (
+                    _matching_delimiter(code, opening, "{", "}")
+                    if opening >= 0
+                    else None
+                )
+                if end is None or end > impl_end:
+                    raise VerificationFailure("unbalanced method delegate body")
+                spans.append((start, end + 1))
+        if len(spans) != 1:
+            raise VerificationFailure(
+                "method delegate must identify exactly one function"
+            )
+        start, end = spans[0]
+        if hashlib.sha256(raw[start:end].encode("utf-8")).hexdigest() != digest:
+            raise VerificationFailure("method delegate source digest changed")
+        body = code[start:end]
+        methods = callee.receiver_methods or (callee.symbol.rsplit("::", 1)[-1],)
+        pattern = rf"(?:\.|::)\s*(?:r#)?(?:{'|'.join(re.escape(name) for name in methods)})\b\s*(?:\(|::\s*<)"
+        if len(re.findall(pattern, body)) != 1:
+            raise VerificationFailure("method delegate call count changed")
+        fields = authority_fields({path: body}, callee.receiver_type)
+        if not any(
+            has_authority_call(body, callee.receiver_type, name, fields)
+            for name in methods
+        ):
+            raise VerificationFailure("method delegate has no verified typed callee")
+        result.setdefault(callee.identifier, {}).setdefault(path, []).append(
+            (start, end)
+        )
+    return result
+
+
+def _mask_method_delegate_spans(code: str, spans: list[tuple[int, int]]) -> str:
+    output = list(code)
+    for start, end in spans:
+        for index in range(start, end):
+            if output[index] != "\n":
+                output[index] = " "
+    return "".join(output)
 
 
 def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, Any]:
@@ -606,10 +857,15 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
         source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(
             code
         )
-    results = [
-        _verify_boundary(root, boundary, source_index, ignored)
-        for boundary in boundaries
-    ]
+    delegates = _verified_method_delegate_spans(root, boundaries, source_index)
+    results = []
+    for boundary in boundaries:
+        scoped_source = dict(source_index)
+        for relative, spans in delegates.get(boundary.identifier, {}).items():
+            scoped_source[relative] = _mask_method_delegate_spans(
+                scoped_source[relative], spans
+            )
+        results.append(_verify_boundary(root, boundary, scoped_source, ignored))
     protected = _verify_protected_files(root, data)
     return {
         "schema": "hepta.caller-proof-receipt.v2",
@@ -619,6 +875,7 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
         "protectedFiles": protected,
         "rustFilesScanned": len(files),
         "authorityGranted": False,
+        "internalMethodDelegateSpans": delegates,
     }
 
 

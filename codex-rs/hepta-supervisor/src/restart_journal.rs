@@ -378,10 +378,10 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    if u128::from(elapsed_millis) >= RESTART_RECOVERY_WINDOW.as_millis() {
+    let elapsed = Duration::from_millis(elapsed_millis);
+    if elapsed >= RESTART_RECOVERY_WINDOW {
         return (0, None, None, false);
     }
-    let elapsed = Duration::from_millis(elapsed_millis);
     let started = now.checked_sub(elapsed).unwrap_or(now);
     (
         durable.attempts,
