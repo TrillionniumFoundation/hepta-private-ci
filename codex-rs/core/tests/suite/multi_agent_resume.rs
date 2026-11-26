@@ -323,6 +323,14 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         )
     );
 
+    // A sibling can evict the completed worker under the resident-child limit.
+    // Flush while this runtime still owns its live writer; eviction itself
+    // shuts the writer down before removing the worker from the registry.
+    worker_thread
+        .flush_rollout()
+        .await
+        .with_context(|| format!("flush initial worker {worker_thread_id} before sibling spawn"))?;
+
     let sibling_spawn_args = serde_json::to_string(&json!({
         "message": SIBLING_TASK,
         "task_name": SIBLING_NAME,
@@ -374,10 +382,6 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     sibling_thread.flush_rollout().await.with_context(|| {
         format!("flush initial sibling {sibling_thread_id} before cold restart")
     })?;
-    worker_thread
-        .flush_rollout()
-        .await
-        .with_context(|| format!("flush initial worker {worker_thread_id} after sibling spawn"))?;
     initial
         .codex
         .flush_rollout()
