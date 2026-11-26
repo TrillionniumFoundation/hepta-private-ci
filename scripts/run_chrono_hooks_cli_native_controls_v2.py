@@ -27,7 +27,8 @@ SPEC_PATH = "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json"
 RUNNER_PATH = "scripts/run_chrono_hooks_cli_native_controls_v2.py"
 WORKFLOW_PATH = ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-BASE = "40d15b4bbba331f28e45889ff00846517b08375a"
+BASE = "861e4b03dd7615515fbe02f3c236af73e4999d96"
+LOCK_GENERATION_SOURCE = "40d15b4bbba331f28e45889ff00846517b08375a"
 ROOT_ACCEPTANCE_SHA256 = (
     "952cdc4dd2e63ad2277123f5be0738cb2075b00f6cf834a1f13d6d847587e384"
 )
@@ -75,14 +76,8 @@ DEADLINE_NS = None
 JOB_START_NS = None
 SOURCE_FILE_LIMIT = 64 * 1024 * 1024
 SOURCE_TOTAL_LIMIT = 4 * 1024 * 1024 * 1024
-PUBLICATION_REQUIRED = {
-    "codex-rs/Cargo.lock",
-    "codex-rs/rmcp-client/src/auth_status.rs",
-    RUNNER_PATH,
-    SPEC_PATH,
-    WORKFLOW_PATH,
-}
-PUBLICATION_OPTIONAL = {".github/workflows/blob-size-policy.yml"}
+PUBLICATION_REQUIRED = {RUNNER_PATH, SPEC_PATH, WORKFLOW_PATH}
+PUBLICATION_OPTIONAL = set()
 
 
 def require(condition, message):
@@ -315,7 +310,7 @@ def read_root_acceptance(spec):
         and accepted["status"]
         == "ORIGINAL_GENERATED_LOCKS_ACCEPTED_FOR_NEW_NATIVE_CANDIDATE"
         and accepted["repository"] == REPOSITORY
-        and accepted["head"] == BASE
+        and accepted["head"] == LOCK_GENERATION_SOURCE
         and accepted["tree"] == "dd412d87f99be786de5fc2cf4e155243fa0d5c71"
         and accepted["run_id"] == 45718835160
         and accepted["run_attempt"] == 1
@@ -405,7 +400,7 @@ def load_inputs(root):
         and os.environ["TESTED_SHA"] == head
         and os.environ["HEPTA_CI_LANE"] == "source-head"
         and spec["parent"] == BASE
-        and spec["lock_generation_source"] == BASE,
+        and spec["lock_generation_source"] == LOCK_GENERATION_SOURCE,
         "source head, sole parent, lock origin, or lane changed",
     )
     require(
@@ -668,6 +663,40 @@ def verify_original_log(evidence, execution_raw, record, controls, identity, com
     }
 
 
+def verify_tool_version_lines(case, lines):
+    """Validate the frozen executable version output without I/O."""
+    require(
+        lines
+        and re.fullmatch(re.escape(case["prefix"]) + r"(?: \([^\r\n]*\))?", lines[0])
+        is not None,
+        "observed executable version does not match the frozen version: "
+        + case["name"],
+    )
+    if case["name"] in ("cargo", "rustc"):
+        require(
+            lines.count("release: 1.96.0") == 1,
+            "verbose release does not match the frozen Rust/Cargo version",
+        )
+        require(
+            lines.count("host: aarch64-unknown-linux-gnu") == 1,
+            "Rust/Cargo executable targets a different native host",
+        )
+    elif case["name"] == "nextest":
+        require(
+            lines
+            == [
+                "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)",
+                "release: 0.9.103",
+                "commit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0",
+                "commit-date: 2025-08-25",
+                "host: aarch64-unknown-linux-gnu",
+            ],
+            "nextest version metadata does not match the frozen release, commit, date, or host",
+        )
+    else:
+        require(len(lines) == 1, "unexpected extra lines in tool-version observation")
+
+
 def verify_tool_observation(evidence, identity, case):
     output = evidence / ("version-" + case["name"] + ".json")
     raw, _ = read_regular(output, 1024 * 1024)
@@ -710,24 +739,7 @@ def verify_tool_observation(evidence, identity, case):
         "tool-version original merged log changed",
     )
     lines = log.decode("utf-8").splitlines()
-    require(
-        lines
-        and re.fullmatch(re.escape(case["prefix"]) + r"(?: \([^\r\n]*\))?", lines[0])
-        is not None,
-        "observed executable version does not match the frozen version: "
-        + case["name"],
-    )
-    if case["name"] in ("cargo", "rustc"):
-        require(
-            lines.count("release: 1.96.0") == 1,
-            "verbose release does not match the frozen Rust/Cargo version",
-        )
-        require(
-            lines.count("host: aarch64-unknown-linux-gnu") == 1,
-            "Rust/Cargo executable targets a different native host",
-        )
-    else:
-        require(len(lines) == 1, "unexpected extra lines in tool-version observation")
+    verify_tool_version_lines(case, lines)
     return {
         "name": case["name"],
         "command": case["command"],

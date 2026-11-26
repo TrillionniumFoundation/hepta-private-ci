@@ -15,7 +15,7 @@
   },
   "activated": true,
   "activation_blockers": [],
-  "branch": "fix/hepta-hooks-cli-native-reconstruction-20261126-7c9e",
+  "branch": "fix/hepta-native-version-format-20261126-7c9e",
   "command": [
     "just",
     "test",
@@ -439,13 +439,22 @@
   "new_count": 33,
   "old_native48_original_bytes_recovered": false,
   "old_native48_roster_recovered": false,
-  "parent": "40d15b4bbba331f28e45889ff00846517b08375a",
-  "proposed_parent": "40d15b4bbba331f28e45889ff00846517b08375a",
+  "parent": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+  "prior_native_original_failure": {
+    "artifact_id": 15077517081,
+    "artifact_sha256": "3ce28e05b244a00a20bd926681a8a3ecaad11b557ef65e04b031072cc8c753f9",
+    "error": "ValueError: unexpected extra lines in tool-version observation",
+    "head": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+    "job_id": 139619309481,
+    "native_execution_entered": false,
+    "qualified_native48": false,
+    "rerun_requested": false,
+    "run_attempt": 1,
+    "run_id": 45732991292
+  },
+  "proposed_parent": "861e4b03dd7615515fbe02f3c236af73e4999d96",
   "publication_paths": [
-    ".github/workflows/blob-size-policy.yml",
     ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
-    "codex-rs/Cargo.lock",
-    "codex-rs/rmcp-client/src/auth_status.rs",
     "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json",
     "scripts/run_chrono_hooks_cli_native_controls_v2.py"
   ],
@@ -495,11 +504,11 @@
       "sha256": "e18e65ee676346f988c44a52dca9243322d114e11942a9c8dc263e9b1e1f234b"
     },
     {
-      "bytes": 5401,
-      "git_blob": "35d0b1a701e3562e9056484ba7ffd0a6c90ddcbf",
+      "bytes": 5391,
+      "git_blob": "16040d9ff7269eb9340ceb4cae4dc3febd914725",
       "mode": "100644",
       "path": ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
-      "sha256": "2a8cf5c6cff41daa784a71440c03524677d9899105084d6ed343deb407cefebf"
+      "sha256": "7786bfcc421f11686cdb2f27c89cd26f950943a90d83137b5ff786dff9c7ca07"
     },
     {
       "bytes": 7666,
@@ -2798,11 +2807,11 @@
       "sha256": "9f7611b839ebe6518260e40cae81344169e7037a8551b1be00a2f20f28513ac2"
     },
     {
-      "bytes": 39602,
-      "git_blob": "91f69769425251d09a5b5263deb05674dde78554",
+      "bytes": 40215,
+      "git_blob": "94b5d768ddf62c2a6111964773ae48cc68c8af35",
       "mode": "100644",
       "path": "scripts/run_chrono_hooks_cli_native_controls_v2.py",
-      "sha256": "10471823abc908c789ed2c9066683cca89853f7d765db0fddeb448f106d2be54"
+      "sha256": "64e51fbc0908c0f12639dedd4ac771fc6a9d837c802569326f81cb9e3de12f64"
     },
     {
       "bytes": 51236,
@@ -2869,21 +2878,26 @@
     "speed_qualified": false
   },
   "skip_interpretation": "All 48 selected instances must PASS exactly once and appear in fresh JUnit. Nextest's terminal count of filter-excluded unselected tests is recorded separately; it is not treated as a skipped selected test.",
-  "source_only_revision_note": "Adds actual bounded versions through unchanged WNOWAIT owner; fixed RUSTUP_TOOLCHAIN and observed native platform. Original v2 inactive source proposal is retained; an uncertain pure-data assembly RPC is not replayed.",
+  "source_only_revision_note": "New three-file stacked candidate on the actual #7111 head. Corrects only version-output parsing and the publication/lock-origin distinction. Original #7111 run 45732991292 attempt 1 failed before native execution because nextest 0.9.103 correctly emits five lines; the original failure, artifacts, and all costs remain retained. This proposal is inactive and has not been imported, formatted, or executed.",
   "source_pin_basis": {
     "accepted_generation_head": "40d15b4bbba331f28e45889ff00846517b08375a",
     "accepted_original_source_tree": "dd412d87f99be786de5fc2cf4e155243fa0d5c71",
-    "new_postimage_pins": [
-      "codex-rs/Cargo.lock",
-      "codex-rs/rmcp-client/src/auth_status.rs",
+    "inherited_prior_postimage_pins": [
       ".github/workflows/blob-size-policy.yml",
-      "scripts/run_chrono_hooks_cli_native_controls_v2.py",
-      ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml"
+      "codex-rs/Cargo.lock",
+      "codex-rs/rmcp-client/src/auth_status.rs"
+    ],
+    "new_postimage_pins": [
+      ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
+      "scripts/run_chrono_hooks_cli_native_controls_v2.py"
     ],
     "original_335_source_pins": 335,
     "original_nextest_0_9_103_capsule_sha256": "b72acb7e709088a60c13305d0edc4a976c35c04f1f3e13870db605fc75a2fbcd",
     "primary_original_capsule_sha256": "5c2e010cc7e327e6beae17ddc997da3ca8c11eb602df5c332c0f72f7a859777a",
-    "spec_self_pin_omitted_to_avoid_circular_hash": true
+    "prior_published_spec_git_blob": "48e08fd726498597c44c8274f2df6d0bc7faa74f",
+    "spec_self_pin_omitted_to_avoid_circular_hash": true,
+    "stacked_parent_head": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+    "stacked_parent_tree": "040d42dd05eb6d62c4837dd8668d0b78c7e1f0f4"
   },
   "template_basis": {
     "git_blob": "1d0c1fc533b081cc2668f1bd5cee17ce27aea632",
