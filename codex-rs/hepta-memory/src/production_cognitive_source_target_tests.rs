@@ -407,3 +407,6 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch()
 
 #[path = "production_terminal_journal_tests.rs"]
 mod terminal_journal_tests;
+
+#[path = "production_reconciliation_fairness_tests.rs"]
+mod reconciliation_fairness_tests;
