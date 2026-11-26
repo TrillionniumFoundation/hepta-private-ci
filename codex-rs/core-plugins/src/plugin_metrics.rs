@@ -74,7 +74,11 @@ pub(crate) fn load_plugin_metrics_operations(
     if contents.len() as u64 > MAX_ANALYTICS_MANIFEST_BYTES {
         return None;
     }
-    let manifest: AnalyticsManifest = serde_yaml::from_slice(&contents).ok()?;
+    let manifest: AnalyticsManifest = serde_yaml::from_slice_with_options(
+        &contents,
+        serde_yaml::options! { reject_unsupported_tags: true },
+    )
+    .ok()?;
     validate_manifest(manifest, plugin_root)
 }
 
