@@ -182,6 +182,11 @@ impl HcsnClockCheckpointV1 {
         self.state_digest
     }
 
+    /// Verified owner, clock and model identity retained by this checkpoint.
+    pub fn identity(&self) -> HcsnClockIdentityV1 {
+        self.identity
+    }
+
     fn calculate_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.neuron.hcsn-clock-checkpoint.v1".to_vec();
         for digest in [
