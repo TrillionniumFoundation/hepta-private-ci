@@ -1,0 +1,143 @@
+{
+  "record": "N256 precision policy exact frozen-source repair",
+  "observed_utc": "2026-11-26T23:56Z onward",
+  "base": "f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db",
+  "head": "36e49da6f83a20bae931976b06fd6a6f2d91446c",
+  "branch": "repair/hcsn-n256-precision-frozen-lf-20261126",
+  "compare": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "base": "f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db",
+    "head": "36e49da6f83a20bae931976b06fd6a6f2d91446c",
+    "status": "ahead",
+    "ahead_by": 3,
+    "behind_by": 0,
+    "total_commits": 3,
+    "too_large": null,
+    "base_commit": {
+      "sha": "f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db"
+    },
+    "merge_base_commit": {
+      "sha": "f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db"
+    },
+    "files": [
+      {
+        "filename": "qualification/hcsn_currentstate_n256_uniformization_precision_policy/README.md",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": "qualification/hcsn_currentstate_n256_uniformization_precision_policy/__init__.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": "qualification/hcsn_currentstate_n256_uniformization_precision_policy/test_precision_policy.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      }
+    ]
+  },
+  "three_files": [
+    {
+      "path": "qualification/hcsn_currentstate_n256_uniformization_precision_policy/README.md",
+      "base_blob": "65b58273039ef698b9c5e3a1a3ec0a3edf829f28",
+      "head_blob": "fdc639b486837cb06a9e40b442efe3c1c60e6617",
+      "exact_single_LF": true
+    },
+    {
+      "path": "qualification/hcsn_currentstate_n256_uniformization_precision_policy/__init__.py",
+      "base_blob": "5a9e2a2ab4f1290e5ce802b688df1688593349c3",
+      "head_blob": "64f8a83076286c2b19706c11c1a903471ee40096",
+      "exact_single_LF": true
+    },
+    {
+      "path": "qualification/hcsn_currentstate_n256_uniformization_precision_policy/test_precision_policy.py",
+      "base_blob": "0fa943f0b77b9b590d8de42a40924ecc7d064bfc",
+      "head_blob": "29003253dd75c0352eb6a81b451c664f099d341f",
+      "exact_single_LF": true
+    }
+  ],
+  "native_status": {
+    "at_unix_ms": 1795737531799,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a21a4c3134-ffbe-4c30",
+    "launch_nonce": "76caf19d74334007cd29a24fcd4c989d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 4917,
+        "stored": 4917
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native_stdout": "source f9d56c67aeb8bd75acbc32d0856e61e8fd3f61db root /tmp/hepta-precision-frozen-20261126-dfz01xv3 python 3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]\n{\"args\": [\"-m\", \"qualification.hcsn_currentstate_n256_uniformization_precision_policy.verify_source\"], \"rc\": 1, \"stdout\": \"\", \"stderr\": \"exact source/parent mismatch: qualification/hcsn_currentstate_n256_uniformization_precision_policy/README.md\\n\"}\n{\"path\": \".github/workflows/hcsn-currentstate-n256-uniformization-precision-policy.yml\", \"before_sha256\": \"fcfb0f9f3601fcade34fd7154d6d220fe2375423d3c3f6202bc7aa5e12ebd9bb\", \"after_sha256\": \"fcfb0f9f3601fcade34fd7154d6d220fe2375423d3c3f6202bc7aa5e12ebd9bb\", \"expected\": \"fcfb0f9f3601fcade34fd7154d6d220fe2375423d3c3f6202bc7aa5e12ebd9bb\", \"bytes_before\": 1121, \"bytes_after\": 1121}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_precision_policy/README.md\", \"before_sha256\": \"59d7a1efd9115069f9c7040ce4c4fb0998bb6673f2be508637614aa13274de7d\", \"after_sha256\": \"323632c7a97d69bf99f7693df05a833a09c4729cb73e76e6c946242b15ec1f2f\", \"expected\": \"323632c7a97d69bf99f7693df05a833a09c4729cb73e76e6c946242b15ec1f2f\", \"bytes_before\": 1566, \"bytes_after\": 1567}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_precision_policy/REQUEST.json\", \"before_sha256\": \"efedc79f156094b00573db681bd934d0b1e426d667d0365315e0a81ec53edbcd\", \"after_sha256\": \"efedc79f156094b00573db681bd934d0b1e426d667d0365315e0a81ec53edbcd\", \"expected\": \"efedc79f156094b00573db681bd934d0b1e426d667d0365315e0a81ec53edbcd\", \"bytes_before\": 1062, \"bytes_after\": 1062}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_precision_policy/__init__.py\", \"before_sha256\": \"309b819a922d151cddf80f6bd5b95d7d2eda53c507aae7fbeba0a8b02c9b0c0a\", \"after_sha256\": \"d85ca7548ff300c4cd461b5162b37c15ad67f4e28c34c6070db8b52a6e3f07fe\", \"expected\": \"d85ca7548ff300c4cd461b5162b37c15ad67f4e28c34c6070db8b52a6e3f07fe\", \"bytes_before\": 80, \"bytes_after\": 81}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_precision_policy/precision_policy.py\", \"before_sha256\": \"7298330e00de24a4b823dcf62d344437d14f7f9643327489e81c557ed984ab08\", \"after_sha256\": \"7298330e00de24a4b823dcf62d344437d14f7f9643327489e81c557ed984ab08\", \"expected\": \"7298330e00de24a4b823dcf62d344437d14f7f9643327489e81c557ed984ab08\", \"bytes_before\": 6231, \"bytes_after\": 6231}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_precision_policy/test_precision_policy.py\", \"before_sha256\": \"7b46ed672c3941cbf4bda608fd77011ba012a7c884cb1eb5b1529f019f5d5724\", \"after_sha256\": \"dabc07048dc3372de1ce790e58f039c32d64b833b2ca9311676e7311332326f2\", \"expected\": \"dabc07048dc3372de1ce790e58f039c32d64b833b2ca9311676e7311332326f2\", \"bytes_before\": 3399, \"bytes_after\": 3400}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_provider_intent/provider.py\", \"before_sha256\": \"602dcedd5827a35fbee81b51687a8e8bc3f4038f519a308eef3e884d088e2be2\", \"after_sha256\": \"602dcedd5827a35fbee81b51687a8e8bc3f4038f519a308eef3e884d088e2be2\", \"expected\": \"602dcedd5827a35fbee81b51687a8e8bc3f4038f519a308eef3e884d088e2be2\", \"bytes_before\": 13409, \"bytes_after\": 13409}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_provider_intent/REQUEST.json\", \"before_sha256\": \"72cf751d50a43311cc5079e8fe35a5137eafa0f7fed6a0b1a0fcafec40a8b275\", \"after_sha256\": \"72cf751d50a43311cc5079e8fe35a5137eafa0f7fed6a0b1a0fcafec40a8b275\", \"expected\": \"72cf751d50a43311cc5079e8fe35a5137eafa0f7fed6a0b1a0fcafec40a8b275\", \"bytes_before\": 1525, \"bytes_after\": 1525}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_provider_intent/SOURCE_FREEZE.json\", \"before_sha256\": \"27ad5b29b87c9bfae91b812b23e4b9fe191ae4f649c96fed43fe5f24ba1543e3\", \"after_sha256\": \"27ad5b29b87c9bfae91b812b23e4b9fe191ae4f649c96fed43fe5f24ba1543e3\", \"expected\": \"27ad5b29b87c9bfae91b812b23e4b9fe191ae4f649c96fed43fe5f24ba1543e3\", \"bytes_before\": 1779, \"bytes_after\": 1779}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_contract/stiffness_review.py\", \"before_sha256\": \"4ead22435bc776a2266d0d051281b4a6960c5714888d930a64ca63e721ae8041\", \"after_sha256\": \"4ead22435bc776a2266d0d051281b4a6960c5714888d930a64ca63e721ae8041\", \"expected\": \"4ead22435bc776a2266d0d051281b4a6960c5714888d930a64ca63e721ae8041\", \"bytes_before\": 10108, \"bytes_after\": 10108}\n{\"args\": [\"-m\", \"qualification.hcsn_currentstate_n256_uniformization_precision_policy.verify_source\"], \"rc\": 0, \"stdout\": \"PASS_CURRENTSTATE_N256_UNIFORMIZATION_PRECISION_POLICY\\n\", \"stderr\": \"\"}\n{\"local_frozen_source_gate\": \"PASS\", \"changed_paths\": [\"qualification/hcsn_currentstate_n256_uniformization_precision_policy/README.md\", \"qualification/hcsn_currentstate_n256_uniformization_precision_policy/__init__.py\", \"qualification/hcsn_currentstate_n256_uniformization_precision_policy/test_precision_policy.py\"], \"model_calls\": 0, \"provider_calls\": 0, \"optimizer_calls\": 0, \"production_qualified\": false, \"source_freeze_unchanged\": true}\n",
+  "original_ci": {
+    "run": 45904766020,
+    "job": 140198737217,
+    "merge_checkout": "f3dc18b19ccdd01fdf55c56db7be67ab73bcb4de",
+    "normal": 5,
+    "optimized": 5,
+    "source_gate": "README.md mismatch",
+    "conclusion": "failure"
+  },
+  "latest_PR": {
+    "number": 6799,
+    "head": "b8ed02a3f31c08e685040e09d9b23a1354d77b0d",
+    "draft": true,
+    "merged": false,
+    "first_page_counts": {
+      "skipped": 7,
+      "queued": 72,
+      "pending": 13,
+      "in_progress": 1
+    },
+    "first_page_only": true
+  },
+  "scope": "source-only local frozen verifier PASS; product integration, provider/numerical admission HOLD; no model/provider/optimizer calls, no red PR merge; no repeated original fixture runs",
+  "prior_run": {
+    "head": "4d98afb7fd1d7f31a81c5b7f7884449cdc9d5ed0",
+    "first_page_counts": {
+      "success": 68,
+      "failure": 16,
+      "skipped": 14,
+      "cancelled": 2
+    }
+  }
+}
