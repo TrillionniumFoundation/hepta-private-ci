@@ -109,6 +109,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
                 );
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
+                );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
@@ -167,7 +173,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             } else {
                 None
             };
-            self.finalize_exit(agent_id, slot, runtime, exit)?;
+            let exit_generation = self.finalize_exit(agent_id, slot, runtime, exit)?;
+            if matches!(
+                &restart_fault,
+                Some(SupervisorError::RestartBudgetExhausted(_))
+            ) {
+                slot.event(
+                    exit_generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: self.config.restart_max_attempts,
+                    },
+                );
+            }
             return Ok(RuntimeTickOutcome::Exited { restart_fault });
         }
         if runtime.fenced {
@@ -272,7 +289,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         runtime: &AgentRuntime<D::Process>,
         exit: crate::ProcessExit,
-    ) -> Result<(), SupervisorError> {
+    ) -> Result<u64, SupervisorError> {
         let record = self.record(agent_id)?;
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
         let lease = ProcessLease {
@@ -314,7 +331,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             );
         }
         slot.event(generation, SupervisorEventKind::Exited(exit));
-        Ok(())
+        Ok(generation)
     }
 
     fn push_logs(&self, slot: &mut AgentSlot<D::Process>, logs: Vec<ProcessLog>) {

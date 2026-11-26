@@ -1691,6 +1691,15 @@ mod tests {
         .expect("signed intent");
         crate::signed_intent::write_intent(record.layout.run_root(), &intent)
             .expect("persist signed intent");
+        let expected_recovery = intent
+            .with_status(crate::signed_intent::SignedIntentStatus::RecoveryRequired)
+            .expect("expected recovered intent");
+        let directive = crate::signed_intent::SignedIntentRecoveryDirective::abort(
+            expected_recovery.intent_sha256.clone(),
+        )
+        .expect("exact-digest legacy directive");
+        crate::signed_intent::write_recovery_directive(record.layout.run_root(), &directive)
+            .expect("persist legacy directive without recovery authority");
 
         let cancellation = CancellationToken::new();
         let daemon = tokio::spawn(run_supervisord_inner(
@@ -1728,13 +1737,18 @@ mod tests {
             mutation.receipt.status,
             crate::ProductionMutationStatus::RecoveryRequired
         );
+        assert_eq!(mutation.intent_sha256, directive.intent_sha256);
 
         let status = client
             .snapshot(agent_id.clone())
             .await
             .expect("recovery snapshot");
+        assert_eq!(status.lifecycle, AgentLifecycle::Failed);
+        assert!(!status.active);
+        assert!(!status.healthy);
+        assert_eq!(status.process_id, None);
         let restart_error = client
-            .restart(status.control_fence)
+            .restart(status.control_fence.clone())
             .await
             .expect_err("ordinary mutation must remain blocked during production recovery");
         assert!(
@@ -1742,6 +1756,25 @@ mod tests {
                 .to_string()
                 .contains("signed_intent_recovery_required"),
             "unexpected recovery rejection: {restart_error}"
+        );
+        assert_eq!(
+            client
+                .snapshot(agent_id.clone())
+                .await
+                .expect("unchanged recovery snapshot"),
+            status
+        );
+        assert_eq!(
+            client
+                .production_mutation_status(agent_id)
+                .await
+                .expect("unchanged recovery status"),
+            Some(mutation)
+        );
+        assert_eq!(
+            crate::signed_intent::read_intent(record.layout.run_root())
+                .expect("read preserved signed intent"),
+            Some(expected_recovery)
         );
 
         cancellation.cancel();
