@@ -372,6 +372,23 @@ class LineagePolicyTests(unittest.TestCase):
                 review = review_update(current, replace(candidate, costs=costs))
                 self.assertEqual(review.status, "REVIEW_ONLY")
 
+    def test_provider_costs_keep_real_units_and_reject_overflow(self):
+        current = roster()
+        cell = next(c for c in current.cells if c.lineage == "PRED")
+        candidate = evidence(cell)
+        for axis in ("provider_charges", "resident_byte_seconds"):
+            with self.subTest(axis=axis):
+                finite = dict(candidate.costs, **{axis: float(2**64)})
+                review = review_update(current, replace(candidate, costs=finite))
+                self.assertEqual(review.status, "REVIEW_ONLY")
+                self.assertFalse(review.adoption_authorized)
+
+                invalid = dict(candidate.costs, **{axis: float("inf")})
+                with self.assertRaisesRegex(
+                    LineagePolicyError, "invalid measured cost"
+                ):
+                    review_update(current, replace(candidate, costs=invalid))
+
     def test_cost_census_cannot_drop_failures_or_unmeasured_axes(self):
         r = roster()
         c = next(c for c in r.cells if c.lineage == "VERIFY")
