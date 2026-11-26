@@ -13,7 +13,7 @@ import sys
 from typing import Any
 
 from run_prepared_pair import (
-    ARMS, MODES, SCALES, SCHEMA, reject_nonfinite_number, require,
+    ARMS, LEGACY_SCHEMA, MODES, SCALES, SCHEMA, reject_nonfinite_number, require,
     sha256_binary, unique_json_keys, validate_pair,
 )
 
@@ -58,7 +58,8 @@ def audit(
 ) -> dict[str, Any]:
     require(isinstance(report, dict) and set(report) == ROOT_FIELDS,
             "missing or unregistered paired root field")
-    require(report["schema"] == SCHEMA, "unregistered paired schema")
+    require(report["schema"] in (LEGACY_SCHEMA, SCHEMA), "unregistered paired schema")
+    require_isolated_residency = report["schema"] == SCHEMA
     require(report["evidence_kind"] == "UNVERIFIED_HOST_UNTRAINED_KERNEL_ONLY",
             "paired report impersonates host evidence")
     require(report["arms"] == list(ARMS) and report["scales"] == list(SCALES),
@@ -111,7 +112,8 @@ def audit(
         require(isinstance(records, dict) and set(records) == set(MODES),
                 "missing one original mode receipt")
         derived = validate_pair(
-            records, arm, cells, report["source_trace_sha256"], current_events
+            records, arm, cells, report["source_trace_sha256"], current_events,
+            require_isolated_residency=require_isolated_residency,
         )
         require(row == derived,
                 "paired summary, frontier, local receipt hashes or ratios are not reproducible")

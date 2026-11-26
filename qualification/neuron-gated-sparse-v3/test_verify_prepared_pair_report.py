@@ -52,6 +52,28 @@ class IndependentPairedAuditTests(unittest.TestCase):
         self.assertFalse(report["production_qualification"])
         self.assertEqual(report["decision"], "NO_PROMOTION")
 
+    def test_legacy_receipts_still_replay_but_cannot_claim_isolated_residency(self) -> None:
+        report = synthetic_report()
+        report["schema"] = pair.LEGACY_SCHEMA
+        for index, row in enumerate(report["pairs"]):
+            records = row["raw_mode_receipts"]
+            for receipt in records.values():
+                for field in (
+                    "single_selected_config_resident",
+                    "simultaneous_legacy_and_prepared_config_resident",
+                    "model_config_setup_micros",
+                ):
+                    del receipt[field]
+            report["pairs"][index] = pair.validate_pair(
+                records, row["arm"], row["cells"], fixtures.TRACE, row["events"],
+                require_isolated_residency=False,
+            )
+
+        self.assertEqual(verify.audit(report)["decision"], "NO_PROMOTION")
+        report["schema"] = pair.SCHEMA
+        with self.assertRaisesRegex(ValueError, "only its selected model"):
+            verify.audit(report)
+
     def test_submitted_binary_must_match_content_digest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             binary = Path(tmp) / "bin"
