@@ -421,8 +421,6 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
 
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -447,16 +445,39 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Leave room for nested Fleet socket names even if the runner's TMPDIR is long.
+    let configured = std::env::temp_dir();
+    let socket_root =
+        if configured.is_absolute() && configured.as_os_str().as_encoded_bytes().len() <= 32 {
+            configured.as_path()
+        } else {
+            std::path::Path::new("/tmp")
+        };
+    let fixture = tempfile::Builder::new()
+        .prefix("hw-")
+        .tempdir_in(socket_root)?;
+    let root = fixture.path().join("host");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let app_server_paths = codex_hepta_agentd::test_support::Arg0DispatchPaths {
+        // core_test_support registers real arg0 helper dispatch for this executable.
+        codex_self_exe: Some(std::env::current_exe()?),
+        #[cfg(target_os = "linux")]
+        codex_linux_sandbox_exe: Some(core_test_support::find_codex_linux_sandbox_exe()?),
+        ..Default::default()
+    };
+    let host = CognitiveTestHost::start_with_runtime_paths(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        app_server_paths,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
 
-    let authority_directory = tempfile::tempdir()?;
+    let authority_directory = tempfile::tempdir_in(fixture.path())?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
         3,
@@ -470,7 +491,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
+    let journal = fixture.path().join("worker.journal");
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
     let accepted = driver
@@ -647,7 +668,6 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         Some(&correction_stopped)
     );
     drop(reopened);
-    let _ = std::fs::remove_file(&journal);
     issuer.await??;
     host.shutdown().await;
     Ok(())
