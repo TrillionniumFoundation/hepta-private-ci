@@ -358,7 +358,23 @@ end
 fn equal_slice(b1_source:readbuf,b1_start:usize,b1_needle:mutbuf,b1_length:usize) -> (bool) effects(read,trap) entry(entry)
 block entry(b1_source:readbuf,b1_start:usize,b1_needle:mutbuf,b1_length:usize)
   b1_zero:usize = const() {"value":0}
-  jump word_scan(b1_source,b1_start,b1_needle,b1_length,b1_zero)
+  b1_sixteen:usize = const() {"value":16}
+  b1_two_words:bool = compare.ge(b1_length,b1_sixteen)
+  branch b1_two_words head_probe(b1_source,b1_start,b1_needle,b1_length) word_scan(b1_source,b1_start,b1_needle,b1_length,b1_zero)
+block head_probe(h_source:readbuf,h_start:usize,h_needle:mutbuf,h_length:usize)
+  h_zero:usize = const() {"value":0}
+  h_left:u64 = buffer.load.u64.le(h_source,h_start)
+  h_right:u64 = buffer.load.u64.le(h_needle,h_zero)
+  h_same:bool = compare.eq(h_left,h_right)
+  branch h_same tail_probe(h_source,h_start,h_needle,h_length) different()
+block tail_probe(t_source:readbuf,t_start:usize,t_needle:mutbuf,t_length:usize)
+  t_eight:usize = const() {"value":8}
+  t_tail:usize = int.sub.checked(t_length,t_eight)
+  t_position:usize = int.add.checked(t_start,t_tail)
+  t_left:u64 = buffer.load.u64.le(t_source,t_position)
+  t_right:u64 = buffer.load.u64.le(t_needle,t_tail)
+  t_same:bool = compare.eq(t_left,t_right)
+  branch t_same word_scan(t_source,t_start,t_needle,t_tail,t_eight) different()
 block word_scan(w_source:readbuf,w_start:usize,w_needle:mutbuf,w_length:usize,w_index:usize)
   w_remaining:usize = int.sub.checked(w_length,w_index)
   w_eight:usize = const() {"value":8}
