@@ -1,5 +1,12 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 06:10 UTC 后：R20 原数学审核及六负控正式转绿（精确 f1f32eb0）
+
+- [原正式 R20 run45754754351/job139690651251](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45754754351/job/139690651251) 已 completed/success，实际 checkout f1f32eb09275707e5947ef4b9a1f383d4ed9ec99。9/9 API 可见步骤全部 success，含原数学 proof、80-case replication、adversarial replay 和工件保全；原日志580行。独立解析 JSON case 回执80条/80个不同 case、累计 child_cpu=104.007085s。原审核报告 runs=80、checkpoints=6072、certified_qualified=39、max_checkpoint_replay_error=0.0、audit wall=16.521865488s；原六个篡改负控 missing_case、rehashed_weight、rehashed_checkpoint、rehashed_false_success、modified_certificate、changed_initial 6/6 OK（47.399s）。原导入冲突所阻断的完整原生 R20 数学审核在该精确源正式闭合；39/80 为此次独立新原生运行的资格计数，不混同旧归档33/80，不能视为80个全部达标或端到端生产资格。之前登记的旧树重复节点ID缺陷未因此闭合。此次80个是 GitHub 已有原生作业实际执行，监测未再次派发。
+- 新原 ZIP [15091743650](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45754754351/artifacts/15091743650) 1762828B，API与原上传日志均为 SHA256 dfd975936c8e31bb336360329cf030a59ca41d60b2c88ace5737046bdd7e98c8，未过期，绑定 f1f32eb0。独立 Mac 只读下载/散列/ZIP成员校验进程 1a2167c8fda-ffbe-4411 已启动，最近读回仍 running、无输出，尚未取得完整原字节独立复算；不把原 API 登记视为独立数据复算。
+- 同源 [Windows storage 45754753067](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45754753067) 四项 observe success，ACL/AppContainer/CMD 各 failure；直接读三份红原日志689/1048/422行。ACL仍拒绝 reviewed mode/OID/SHA/size differs: codex-rs/.config/nextest.toml，未生成preflight.json，后续未执行；AppContainer native mechanism及固定cmd路径失败，CMD两条原谓词均退出1。与既有根因一致，仍无四生产隔离正例；未改冻结守卫/安全权限，不重试。
+- #6799 最新精确 head 1a814b58ac2ef36a567ae2c5edc53cd2f230c13a，base 732e934ba496d90fbe042b8d41d479ef901643e5，open draft/merged=false；相对 f1f32eb0 ahead209/behind0，PR workflow 首屏100条85 queued/8 skipped/1 in_progress/2 success/3 pending/1 failure（Windows storage 45764622102），非全分页或终局。R20通过归属原 f1f32eb0，不转移到最新整树。全仓仍 HOLD；未修改冻结科学条件、原500ms期限、安全权限，未合并红门，未重复派发已完成实验。
+
 ## 2026-11-26 04:54 UTC 后：三份历史冻结源码恢复、原始 Torch 清单十项复核、11份压缩证据独立复原
 
 - #6799 原 API 精确 head f1f32eb09275707e5947ef4b9a1f383d4ed9ec99，base 732e934ba496d90fbe042b8d41d479ef901643e5，draft=true/merged=false；相对76410525 ahead24/behind0。R20 单文件导入修补 d821c82a 已进入该 head，Git blob 9fbecaea61862f1919d4beffd3242c416a127915 且逐字相同。原新 CI [45754754351](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45754754351) 初读 queued；尚无完整数学审核/六负控终局，不重复派发80组训练。此 head 321 workflow 首屏100条一次读回7 success/1 failure/25 cancelled/9 skipped/58 queued，非全分页终局；唯一当时首屏红为 NDU native Windows storage observation 45754753067。
