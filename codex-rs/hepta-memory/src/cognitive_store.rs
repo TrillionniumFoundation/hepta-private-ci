@@ -1821,6 +1821,16 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
 }
 
 #[cfg(all(test, unix))]
+fn canonical_database_test_directory() -> tempfile::TempDir {
+    // A runner's temporary directory can be spelled through an OS-managed
+    // symlink. Resolve the fixture parent, not the database's security boundary.
+    let parent = std::env::temp_dir()
+        .canonicalize()
+        .expect("canonical temporary fixture directory");
+    tempfile::tempdir_in(parent).expect("private SQLite fixture directory")
+}
+
+#[cfg(all(test, unix))]
 fn create_private_initial_database(path: &Path) -> Result<(), CognitiveStoreError> {
     let parent = path
         .parent()
@@ -1857,7 +1867,7 @@ mod additional_initial_database_permissions_tests {
 
     #[tokio::test]
     async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() {
-        let directory = tempfile::tempdir().expect("private SQLite directory");
+        let directory = canonical_database_test_directory();
         let path = directory.path().join(COGNITIVE_DB_FILENAME);
         create_private_initial_database(&path).expect("create private main before SQLite");
         assert_eq!(
@@ -1899,7 +1909,7 @@ mod additional_initial_database_permissions_tests {
 
     #[test]
     fn existing_main_is_not_rewritten_by_initial_creation() {
-        let directory = tempfile::tempdir().expect("SQLite directory");
+        let directory = canonical_database_test_directory();
         let path = directory.path().join(COGNITIVE_DB_FILENAME);
         fs::write(&path, b"existing crash evidence").expect("existing file");
         fs::set_permissions(&path, fs::Permissions::from_mode(0o640))

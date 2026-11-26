@@ -54,7 +54,7 @@ async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejecte
 async fn first_generation_wal_uses_private_file_permissions() {
     use std::os::unix::fs::MetadataExt;
 
-    let directory = tempfile::tempdir().expect("private SQLite directory");
+    let directory = canonical_database_test_directory();
     let path = directory.path().join(COGNITIVE_DB_FILENAME);
     create_private_initial_database(&path).expect("atomically create private initial database");
     let sqlite_home =
@@ -96,7 +96,7 @@ async fn first_generation_wal_uses_private_file_permissions() {
 #[cfg(unix)]
 #[test]
 fn private_initialization_never_replaces_existing_database() {
-    let directory = tempfile::tempdir().expect("private SQLite directory");
+    let directory = canonical_database_test_directory();
     let path = directory.path().join(COGNITIVE_DB_FILENAME);
     fs::write(&path, b"retained-existing-bytes").expect("existing data");
     use std::os::unix::fs::PermissionsExt;

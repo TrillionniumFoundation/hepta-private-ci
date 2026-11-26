@@ -198,7 +198,7 @@ async fn recovery_does_not_repair_an_unsafe_existing_sidecar() {
 
 #[test]
 fn existing_private_bytes_are_neither_truncated_nor_rewritten() {
-    let temp = tempfile::tempdir().expect("fixture");
+    let temp = canonical_database_test_directory();
     let root = create_private_directory(temp.path()).expect("private canonical fixture root");
     let home = AbsolutePathBuf::try_from(root.clone()).expect("absolute fixture root");
     let config = SqliteConfig::from_sqlite_home(home);
@@ -219,7 +219,7 @@ fn existing_private_bytes_are_neither_truncated_nor_rewritten() {
 
 #[test]
 fn existing_links_and_restrictive_permissions_are_rejected_without_repair() {
-    let temp = tempfile::tempdir().expect("fixture");
+    let temp = canonical_database_test_directory();
     let root = create_private_directory(temp.path()).expect("private canonical fixture root");
     let home = AbsolutePathBuf::try_from(root.clone()).expect("absolute fixture root");
     let config = SqliteConfig::from_sqlite_home(home);
@@ -256,7 +256,7 @@ fn existing_links_and_restrictive_permissions_are_rejected_without_repair() {
 #[test]
 fn existing_fifo_is_rejected_without_waiting_for_a_peer() {
     use std::os::unix::fs::FileTypeExt;
-    let temp = tempfile::tempdir().expect("fixture");
+    let temp = canonical_database_test_directory();
     let root = create_private_directory(temp.path()).expect("private canonical fixture root");
     let home = AbsolutePathBuf::try_from(root.clone()).expect("absolute fixture root");
     let config = SqliteConfig::from_sqlite_home(home);
