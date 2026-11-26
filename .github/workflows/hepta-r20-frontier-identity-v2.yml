@@ -1,0 +1,29 @@
+name: R20 frontier identity v2
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval_identity_v2/**"
+      - ".github/workflows/hepta-r20-frontier-identity-v2.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval_identity_v2/**"
+      - ".github/workflows/hepta-r20-frontier-identity-v2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  frontier-identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Run bounded frontier identity regressions
+        run: python3 -B -m unittest discover -s codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval_identity_v2 -p 'test_*.py' -v
