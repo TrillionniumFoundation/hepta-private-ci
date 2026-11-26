@@ -1711,7 +1711,7 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
         &responses,
         "exec-network-single",
         command_fixture::ExpectedCompletion::GuardianDenial(
-            "Auto-reviewer denied the action without a specific rationale.",
+            "Auto-review returned a deny decision without a rationale.",
         ),
         sse(vec![
             ev_response_created("resp-network-guardian"),
@@ -1736,7 +1736,7 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
         &responses,
         "exec-network-single",
         command_fixture::ExpectedCompletion::GuardianDenial(
-            "Auto-reviewer denied the action without a specific rationale.",
+            "Auto-review returned a deny decision without a rationale.",
         ),
     )?;
 
