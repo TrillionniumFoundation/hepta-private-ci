@@ -71,6 +71,11 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
+    // Keep the synthetic fleet's sockets within Darwin's sun_path limit,
+    // independent of the test runner's temporary-directory depth.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::Builder::new().prefix("hsp-").tempdir_in("/tmp")?;
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -396,6 +401,20 @@ fn register_agents(
 }
 
 fn assert_distinct_roots(agents: &[AgentFixture]) -> Result<()> {
+    #[cfg(target_os = "macos")]
+    for agent in agents {
+        for socket in [
+            agent.layout.agentd_control_socket(),
+            agent.layout.matrixd_control_socket(),
+            agent.layout.app_server_socket(),
+        ] {
+            ensure!(
+                socket.as_os_str().len() < 104,
+                "fixture socket exceeds Darwin sun_path: {}",
+                socket.display()
+            );
+        }
+    }
     let homes = agents
         .iter()
         .map(|agent| agent.layout.home_root().to_path_buf())
