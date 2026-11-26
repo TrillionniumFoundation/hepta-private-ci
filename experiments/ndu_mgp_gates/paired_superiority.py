@@ -350,15 +350,19 @@ def evaluate(study: Mapping):
         ratio = point[0, -1] / point[index + 1, -1]
         cost_margin_upper = float(np.quantile(cost_margin[:, index], 1 - tail_level))
         # A good pooled CVaR or mean must NEVER override a protected world's
-        # worse external loss, correct quality, ambiguity, or inconsistency.
+        # worse external loss, correct quality, ambiguity, inconsistency, or
+        # a physical cost ratio beyond the preregistered paired bound.
         # Metric ordering: loss (lower), quality (higher), ambiguity (lower),
         # inconsistency (lower). Compare each registered world and control.
-        protected_delta = values[0, :, :, :len(METRICS)] - values[index + 1, :, :, :len(METRICS)]
+        protected_ndu = values[0][protected]
+        protected_control = values[index + 1][protected]
+        protected_delta = protected_ndu[:, :len(METRICS)] - protected_control[:, :len(METRICS)]
         protected_ok = bool(
-            np.all(protected_delta[:, :, 0][protected] <= 1e-12)
-            and np.all(protected_delta[:, :, 1][protected] >= -1e-12)
-            and np.all(protected_delta[:, :, 2][protected] <= 1e-12)
-            and np.all(protected_delta[:, :, 3][protected] <= 1e-12)
+            np.all(protected_delta[:, 0] <= 1e-12)
+            and np.all(protected_delta[:, 1] >= -1e-12)
+            and np.all(protected_delta[:, 2] <= 1e-12)
+            and np.all(protected_delta[:, 3] <= 1e-12)
+            and np.all(protected_ndu[:, -1] <= max_cost_ratio * protected_control[:, -1] + 1e-12)
         )
         gates = {
             # Strong comparators must obey exactly the same preregistered

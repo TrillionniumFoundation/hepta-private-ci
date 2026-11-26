@@ -16,7 +16,9 @@ that ceiling, without the historical additive epsilon. Any overrun must remain i
 the denominator with every draw carrying the registered full failure penalty.
 `absolute_world_cost_budget` rejects an overrun in any arm, while
 `physical_total_cost` separately reports the paired relative-cost and bootstrap
-uncertainty check. The aggregate requires every gate to pass. The receipt records
+uncertainty check. In addition, a single protected world must not exceed the
+same registered relative cost bound against any control, even if the aggregate
+cost comparison passes. The aggregate requires every gate to pass. The receipt records
 `registered_hard_world_cost_limit` and `overbudget_episodes_by_arm`.
 
 These are research checks on caller-supplied evidence. They do not authenticate

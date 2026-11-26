@@ -400,6 +400,19 @@ class PairedEvidenceTests(unittest.TestCase):
         rec = evaluate(d)
         self.assertFalse(rec['comparison']['free_controller']['gates']['physical_total_cost'])
 
+    def test_one_protected_cost_regression_fails_despite_global_cost_pass(self):
+        study = study_fixture()
+        protected_world = study['worlds'][0]
+        self.assertTrue(protected_world['protected_task'])
+        cost = protected_world['outcomes']['ndu']['measured_cost']
+        cost['controller'] += 0.04
+        cost['total'] += 0.04
+
+        comparison = evaluate(study)['comparison']['free_controller']
+        self.assertTrue(comparison['gates']['absolute_world_cost_budget'])
+        self.assertTrue(comparison['gates']['physical_total_cost'])
+        self.assertFalse(comparison['gates']['protected_task_no_regression'])
+
     def test_protected_task_world_deterioration_is_not_averaged_away(self):
         d = study_fixture()
         dr = d['worlds'][0]['outcomes']['ndu']['decoded_draw_scores']
