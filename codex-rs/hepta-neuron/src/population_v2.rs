@@ -133,17 +133,14 @@ impl StdError for PopulationSparseError {}
 pub struct PreparedPopulationSparseConfigV2 {
     config: PopulationSparseConfigV2,
     selected_digest: Digest32,
-    zero_decay_digest: Digest32,
 }
 
 impl PreparedPopulationSparseConfigV2 {
     pub fn new(config: PopulationSparseConfigV2) -> Result<Self, PopulationSparseError> {
         let selected_digest = config.digest()?;
-        let zero_decay_digest = config.digest_with_temporal_decay(0)?;
         Ok(Self {
             config,
             selected_digest,
-            zero_decay_digest,
         })
     }
 
@@ -172,30 +169,6 @@ impl PreparedPopulationSparseConfigV2 {
             input,
             None,
             Some(self.selected_digest),
-            previous,
-        )
-    }
-
-    /// V3/SSM/minGRU shadow-only temporal update, with one prevalidated zero
-    /// decay configuration digest. It still verifies the whole original input,
-    /// the forwarded vector and exact predecessor at every invocation.
-    pub(crate) fn tick_from_temporal_override(
-        &self,
-        input: &PopulationSparseTickV2,
-        forwarded_temporal_q24: &[i64],
-        previous: Option<&PopulationSparseCheckpointV2>,
-    ) -> Result<
-        (
-            PopulationSparseCheckpointV2,
-            PopulationSparseSignalReceiptV2,
-        ),
-        PopulationSparseError,
-    > {
-        population_sparse_tick_v2_inner(
-            &self.config,
-            input,
-            Some(forwarded_temporal_q24),
-            Some(self.zero_decay_digest),
             previous,
         )
     }

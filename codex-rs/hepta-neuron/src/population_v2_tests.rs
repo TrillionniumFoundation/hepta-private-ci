@@ -294,6 +294,7 @@ fn prepared_v2_64_tick_replay_is_byte_identical_to_unprepared() {
 fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
     let cfg = config();
     let prepared = checked(PreparedPopulationSparseConfigV2::new(cfg.clone()));
+    let prepared_shadow = checked(PreparedPopulationSparseDigestV2::new(&cfg));
     let mut legacy_config = cfg.clone();
     legacy_config.temporal_decay_q24 = 0;
     let mut legacy = None;
@@ -312,7 +313,8 @@ fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
             &old_input,
             legacy.as_ref(),
         ));
-        let fast = checked(prepared.tick_from_temporal_override(
+        let fast = checked(prepared_shadow.tick_from_temporal_override(
+            &cfg,
             &original,
             &forwarded,
             optimized.as_ref(),
@@ -323,7 +325,8 @@ fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
     }
     let mut changed = cfg;
     changed.generation = generation(9);
-    let new_prepared = checked(PreparedPopulationSparseConfigV2::new(changed));
+    let new_prepared = checked(PreparedPopulationSparseConfigV2::new(changed.clone()));
+    let new_shadow = checked(PreparedPopulationSparseDigestV2::new(&changed));
     assert_ne!(new_prepared.digest(), prepared.digest());
     assert_eq!(
         new_prepared.tick(&tick(65, 65 * 20), None).err(),
@@ -331,8 +334,8 @@ fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
     );
     let old_state = legacy.expect("64 old checkpoints");
     assert_eq!(
-        new_prepared
-            .tick_from_temporal_override(&tick(65, 65 * 20), &[Q, Q], Some(&old_state),)
+        new_shadow
+            .tick_from_temporal_override(&changed, &tick(65, 65 * 20), &[Q, Q], Some(&old_state))
             .err(),
         Some(PopulationSparseError::ConfigDrift)
     );
