@@ -166,6 +166,11 @@ impl TestEnv {
     /// Builds a host-local test environment, optionally using the provided
     /// exec-server URL instead of the normal implicit local executor.
     pub async fn local_with_exec_server_url(exec_server_url: Option<String>) -> Result<Self> {
+        // Darwin authorized reads compare the final kernel path with policy roots.
+        // Keep this owned local fixture under its canonical temporary parent.
+        #[cfg(target_os = "macos")]
+        let local_cwd_temp_dir = Arc::new(TempDir::new_in(std::env::temp_dir().canonicalize()?)?);
+        #[cfg(not(target_os = "macos"))]
         let local_cwd_temp_dir = Arc::new(TempDir::new()?);
         let cwd = local_cwd_temp_dir.abs();
         let selection = match exec_server_url {
