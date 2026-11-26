@@ -31,6 +31,9 @@ use crate::recover_agentd_generation_update_v1;
 #[path = "neuron_generation_learning_contract_tests.rs"]
 mod contract;
 
+#[path = "neuron_generation_cold_revocation_tests.rs"]
+mod cold_revocation;
+
 fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
