@@ -5,9 +5,10 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+time = { workspace = true }
+codex-utils-time = { workspace = true }
 codex-git-utils = { path = "../git-utils" }
 anyhow = { workspace = true }
-chrono = { workspace = true }
 codex-history = { workspace = true }
 codex-protocol = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
@@ -23,6 +24,17 @@ tokio = { workspace = true, features = ["fs", "io-util", "macros", "rt-multi-thr
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 uuid = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.52", features = [
+    "Wdk_Foundation",
+    "Wdk_Storage_FileSystem",
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Storage_FileSystem",
+    "Win32_System_IO",
+    "Win32_System_Threading",
+] }
 
 [dev-dependencies]
 codex-git-utils = { workspace = true }

@@ -46,10 +46,15 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut AgentMessageOutput::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
-fn output() -> NativeRunOutput {
+pub(super) fn output() -> NativeRunOutput {
     NativeRunOutput {
         thread_id: "thread-a".to_string(),
         turn_id: "turn-a".to_string(),
@@ -64,6 +69,24 @@ fn output() -> NativeRunOutput {
         owner_authority: NativeOwnerAuthority::Unverified,
         codex_terminal_correlation_digest: None,
     }
+}
+
+#[test]
+fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
+    let note = format!("grace observed: {}", "界".repeat(1024));
+    let reason = append_stop_reason(
+        Some(format!("provider interruption: {}", "界".repeat(1024))),
+        note.clone(),
+    );
+
+    assert!(reason.len() <= MAX_STOP_REASON_BYTES);
+    assert!(reason.is_char_boundary(reason.len()));
+    assert!(reason.ends_with(truncate_utf8(&note, MAX_STOP_REASON_BYTES - 2)));
+
+    let observation_failure = "界".repeat(2048);
+    let bounded_failure = truncate_utf8(&observation_failure, MAX_STOP_REASON_BYTES);
+    assert_eq!(bounded_failure.len(), MAX_STOP_REASON_BYTES - 1);
+    assert!(bounded_failure.is_char_boundary(bounded_failure.len()));
 }
 
 fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
@@ -160,9 +183,18 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     assert!(output.codex_terminal_correlation_digest.is_some());
 }
 
+fn observe_with_messages(
+    output: &mut NativeRunOutput,
+    messages: &mut AgentMessageOutput,
+    notification: ServerNotification,
+) -> std::result::Result<bool, String> {
+    observe_event(output, messages, &observed(notification), &binding())
+}
+
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut messages = AgentMessageOutput::default();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -171,12 +203,27 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe_with_messages(
+        &mut output,
+        &mut messages,
+        delta("unrelated", "discard".to_string()),
+    )
+    .unwrap();
+    observe_with_messages(
+        &mut output,
+        &mut messages,
+        delta("thread-a", "model output".to_string()),
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe_with_messages(
+            &mut output,
+            &mut messages,
+            delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -407,14 +454,29 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("token-bound physical turn start");
+    let authority_entry = source
+        .find("let entered_use = match verified_use.enter(&authority_binding)")
+        .expect("final-use authority entry");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(revalidation < authority_entry);
+    assert!(authority_entry < turn_start);
+
+    let (_, send_helper) = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized send helper");
+    let (send_helper, _) = send_helper
+        .split_once("\n}")
+        .expect("complete authorized send helper");
+    assert!(send_helper.contains("_entered: EnteredUseToken"));
+    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart {"));
+    assert_eq!(source.matches("ClientRequest::TurnStart {").count(), 1);
 }
 
 #[cfg(unix)]
@@ -450,8 +512,21 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let app_server_paths = codex_hepta_agentd::test_support::Arg0DispatchPaths {
+        // core_test_support registers real arg0 helper dispatch for this executable.
+        codex_self_exe: Some(std::env::current_exe()?),
+        #[cfg(target_os = "linux")]
+        codex_linux_sandbox_exe: Some(core_test_support::find_codex_linux_sandbox_exe()?),
+        ..Default::default()
+    };
+    let host = CognitiveTestHost::start_with_runtime_paths(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        app_server_paths,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -487,9 +562,17 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         .await?;
     assert!(
         accepted.succeeded(),
-        "fresh context must reach a successful real TurnStart"
+        "fresh context must reach a successful real TurnStart: status={:?}, reason={:?}",
+        accepted.status,
+        accepted.stop_reason,
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "model output and terminal summary diverged: status={:?}, reason={:?}, output={:?}",
+        accepted.status,
+        accepted.stop_reason,
+        accepted.output,
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
