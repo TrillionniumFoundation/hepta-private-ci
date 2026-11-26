@@ -97,6 +97,7 @@ esac
 
 print_bazel_test_log_tails() {
   local console_log="$1"
+  local mode="${2:-tail-and-archive}"
   local testlogs_dir
 
   local -a bazel_info_args=(info)
@@ -175,13 +176,18 @@ print_bazel_test_log_tails() {
         fi
       done < <(
         {
-          printf '%s\n' "$test_log"
+          if [[ "$mode" != archive-only ]]; then
+            printf '%s\n' "$test_log"
+          fi
           grep -F "FAIL: ${target} " "$console_log" \
             | sed -nE 's#.* \(see (.*[\\/](test|attempt_[0-9]+)\.log)\).*#\1#p' || true
         } | sed 's#\\#/#g' | sort -u
       )
     fi
 
+    if [[ "$mode" == archive-only ]]; then
+      continue
+    fi
     echo "::group::Bazel test log tail for ${target}"
     if [[ -f "$test_log" ]]; then
       tail -n 200 "$test_log"
@@ -475,4 +481,13 @@ if [[ ${bazel_status:-0} -ne 0 ]]; then
     print_bazel_test_log_tails "$bazel_console_log"
   fi
   exit "$bazel_status"
+fi
+
+# A successful Bazel invocation can still have failed retry attempts. Preserve
+# only their reported logs; leave the existing console tails and exit code alone.
+if [[ $print_failed_bazel_test_logs -eq 1 && -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]] \
+  && grep -q '^FAIL: //' "$bazel_console_log"; then
+  if ! print_bazel_test_log_tails "$bazel_console_log" archive-only; then
+    echo "::warning::Could not preserve failed Bazel attempts after a successful invocation" >&2
+  fi
 fi

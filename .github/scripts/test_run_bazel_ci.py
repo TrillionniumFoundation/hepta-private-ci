@@ -58,6 +58,10 @@ elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     if not reported_logs:
         print('FAIL: //fake:target')
     sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_FLAKY') == '1':
+    for reported_log in json.loads(os.environ['BAZEL_PROBE_REPORTED_TEST_LOGS']):
+        print(f'FAIL: //fake:target (see {reported_log})')
+    print('//fake:target FLAKY, passed in 2 out of 3 attempts')
 """
 
 
@@ -533,6 +537,75 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
         self.assertIn("actual failing test diagnostic", result.stdout)
         self.assertIn("Could not preserve full Bazel test log", result.stderr)
+        self.assertEqual(blocked.read_bytes(), b"existing file must not be replaced")
+
+    def test_success_preserves_failed_attempts_without_a_tail_or_passing_log(
+        self,
+    ) -> None:
+        archive = self.root / "execution logs"
+        first = self.root / "shard one" / "test_attempts" / "attempt_1.log"
+        second = self.root / "shard two" / "test_attempts" / "attempt_1.log"
+        first.parent.mkdir(parents=True)
+        second.parent.mkdir(parents=True)
+        first.write_bytes(b"first shard failure\r\n")
+        second.write_bytes(b"second shard failure\r\n")
+        self.env.update(
+            BAZEL_PROBE_FLAKY="1",
+            BAZEL_PROBE_REPORTED_TEST_LOGS=json.dumps(
+                [str(first).replace("/", "\\"), str(first), str(second)]
+            ),
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(archive),
+        )
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, "archiving must not rerun a test")
+        self.assertIn("FLAKY", result.stdout)
+        self.assertNotIn("Bazel test log tail", result.stdout)
+        self.assertNotIn("actual failing test diagnostic", result.stdout)
+        logs = list(archive.glob("failed-test-logs-*/fake/target/*/*.log"))
+        self.assertEqual(len(logs), 2)
+        self.assertEqual(
+            {
+                (path.parent / "source-path.txt").read_text().strip(): path.read_bytes()
+                for path in logs
+            },
+            {
+                str(path).replace("\\", "/"): path.read_bytes()
+                for path in (first, second)
+            },
+        )
+
+    def test_success_without_failed_attempts_never_queries_or_archives_logs(
+        self,
+    ) -> None:
+        archive = self.root / "execution logs"
+        self.env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(archive)
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1)
+        self.assertFalse(archive.exists())
+
+    def test_successful_flaky_status_survives_artifact_copy_failure(self) -> None:
+        blocked = self.root / "blocked artifact directory"
+        blocked.write_bytes(b"existing file must not be replaced")
+        self.env.update(
+            BAZEL_PROBE_FLAKY="1",
+            BAZEL_PROBE_REPORTED_TEST_LOGS=json.dumps(
+                [str(self.testlogs / "fake" / "target" / "test.log")]
+            ),
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(blocked),
+        )
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2)
+        self.assertIn("Could not preserve full Bazel test log", result.stderr)
+        self.assertNotIn("Bazel test log tail", result.stdout)
         self.assertEqual(blocked.read_bytes(), b"existing file must not be replaced")
 
 
