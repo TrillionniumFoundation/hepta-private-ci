@@ -201,6 +201,44 @@ impl PreparedPopulationSparseConfigV2 {
     }
 }
 
+/// Compact, validated Q24 V2 *digest*, for shadow wrappers that ALREADY own
+/// their immutable V3/SSM/minGRU config. Unlike PreparedPopulationSparseConfigV2
+/// this must not duplicate its base projection/inhibition graph. Never expose
+/// this token outside the crate or accept a mutable model configuration.
+#[derive(Clone, Debug)]
+pub(crate) struct PreparedPopulationSparseDigestV2 {
+    zero_decay_digest: Digest32,
+}
+
+impl PreparedPopulationSparseDigestV2 {
+    pub(crate) fn new(config: &PopulationSparseConfigV2) -> Result<Self, PopulationSparseError> {
+        let zero_decay_digest = config.digest_with_temporal_decay(0)?;
+        Ok(Self { zero_decay_digest })
+    }
+
+    pub(crate) fn tick_from_temporal_override(
+        &self,
+        config: &PopulationSparseConfigV2,
+        input: &PopulationSparseTickV2,
+        forwarded_temporal_q24: &[i64],
+        previous: Option<&PopulationSparseCheckpointV2>,
+    ) -> Result<
+        (
+            PopulationSparseCheckpointV2,
+            PopulationSparseSignalReceiptV2,
+        ),
+        PopulationSparseError,
+    > {
+        population_sparse_tick_v2_inner(
+            config,
+            input,
+            Some(forwarded_temporal_q24),
+            Some(self.zero_decay_digest),
+            previous,
+        )
+    }
+}
+
 impl PopulationSparseConfigV2 {
     pub fn digest(&self) -> Result<Digest32, PopulationSparseError> {
         self.digest_with_temporal_decay(self.temporal_decay_q24)
