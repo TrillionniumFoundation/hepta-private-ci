@@ -309,7 +309,10 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
                     drive_q24: drive,
                     prediction_q24: prediction,
                     observed_memory_bytes: handle.observed_memory_bytes,
-                    transient_allocation_bytes: transient_bytes(request)?,
+                    transient_allocation_bytes: batch_transient_dimensions_bytes(
+                        request.feature_vector_q24.len(),
+                        request.expected_output_width,
+                    )?,
                     queue_age_micros: 0,
                     latency_micros: 0,
                 },
@@ -364,7 +367,7 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
                     drive_q24: drive,
                     prediction_q24: prediction,
                     observed_memory_bytes: handle.observed_memory_bytes,
-                    transient_allocation_bytes: transient_dimensions_bytes(
+                    transient_allocation_bytes: batch_transient_dimensions_bytes(
                         request.snapshot.features_q24.len(),
                         request.expected_output_width,
                     )?,
@@ -388,6 +391,16 @@ fn transient_bytes(request: &NeuronFeatureRequest) -> Result<u64, Error> {
         request.feature_vector_q24.len(),
         request.expected_output_width,
     )
+}
+
+fn batch_transient_dimensions_bytes(input_width: usize, output_width: usize) -> Result<u64, Error> {
+    // Cohort admission already owns the input and both output allocations.
+    // Include that logical floor in the row's report, then account separately
+    // for the gated Vec; it is not the borrowed input, even for a shared Arc.
+    let input_and_gated_width = input_width
+        .checked_mul(2)
+        .ok_or(Error::ArithmeticOverflow)?;
+    transient_dimensions_bytes(input_and_gated_width, output_width)
 }
 
 fn transient_dimensions_bytes(input_width: usize, output_width: usize) -> Result<u64, Error> {
@@ -900,8 +913,9 @@ mod tests {
         assert_eq!(bounded_worker.driver.batch_calls(), 0);
 
         // The same two Cells can reuse one immutable Arc under a tight grant.
-        // Two equal-content but physically distinct Arc allocations cannot
-        // exploit that grant to bypass memory admission before driver entry.
+        // A physically duplicated input may fit the initial buffer floor,
+        // but its extra allocation must fail the *post-dispatch* cohort
+        // envelope before any result is published. The worker is then fenced.
         let mut memory_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("memory driver");
         memory_driver.register_head(first).expect("memory head a");
         memory_driver
@@ -915,8 +929,9 @@ mod tests {
             revoked: false,
             maximum_models: 1,
             maximum_active_requests: 4,
-            // Head tensors + two independent outputs + one shared 16-byte Arc.
-            maximum_memory_bytes: resident + 48,
+            // Head tensors + two Cell output pairs + one shared 16-byte Arc
+            // + two 16-byte gated intermediates (one conservative cohort).
+            maximum_memory_bytes: resident + 80,
             semantic_digest: "1".repeat(64),
         };
         let mut memory_worker = InferenceWorker::new(
@@ -940,6 +955,18 @@ mod tests {
             &duplicated.snapshot.features_q24
         ));
         assert_eq!(
+            memory_worker
+                .run_shared_neuron_features_batch_v2(
+                    100,
+                    "model.gated",
+                    vec![a.clone(), b.clone()],
+                )
+                .expect("shared Arc and separate gated scratch within budget")
+                .len(),
+            2
+        );
+        assert_eq!(memory_worker.driver.batch_calls(), 1);
+        assert_eq!(
             memory_worker.run_shared_neuron_features_batch_v2(
                 100,
                 "model.gated",
@@ -947,19 +974,18 @@ mod tests {
             ),
             Err(Error::ModelCapacity)
         );
-        assert_eq!(memory_worker.driver.batch_calls(), 0);
+        assert!(memory_worker.poisoned);
+        assert!(memory_worker.active_requests.is_empty());
+        assert_eq!(memory_worker.driver.batch_calls(), 2);
         assert_eq!(
-            memory_worker
-                .run_shared_neuron_features_batch_v2(
-                    100,
-                    "model.gated",
-                    vec![a.clone(), b.clone()],
-                )
-                .expect("shared Arc within budget")
-                .len(),
-            2
+            memory_worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), b.clone()],
+            ),
+            Err(Error::IndeterminateLifecycle)
         );
-        assert_eq!(memory_worker.driver.batch_calls(), 1);
+        assert_eq!(memory_worker.driver.batch_calls(), 2);
 
         let grant = ResourceGrant {
             grant_id: "grant.ref".into(),
