@@ -24,14 +24,17 @@ impl JournalGenerationStore {
 
     pub fn commit_generation(
         &self,
-        generation: u64,
-        previous_manifest_sha256: Option<JournalDigest32>,
-        snapshot: &[u8],
-        predecessor_archive: &[u8],
-        created_at_unix_ms: u64,
-        retain_checkpoints: usize,
+        input: JournalGenerationInput<'_>,
         failpoints: &mut dyn JournalFailpointController,
     ) -> Result<CommittedJournalGeneration, JournalGenerationError> {
+        let JournalGenerationInput {
+            generation,
+            previous_manifest_sha256,
+            snapshot,
+            predecessor_archive,
+            created_at_unix_ms,
+            retain_checkpoints,
+        } = input;
         if generation == 0
             || snapshot.len() as u64 > MAX_SNAPSHOT_BYTES
             || predecessor_archive.len() as u64 > MAX_ARCHIVE_BYTES

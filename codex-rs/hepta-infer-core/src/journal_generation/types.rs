@@ -132,6 +132,17 @@ struct CurrentPointerV1 {
     manifest_sha256: JournalDigest32,
 }
 
+/// Contents and retention for one journal-generation commit.
+#[derive(Clone, Copy, Debug)]
+pub struct JournalGenerationInput<'a> {
+    pub generation: u64,
+    pub previous_manifest_sha256: Option<JournalDigest32>,
+    pub snapshot: &'a [u8],
+    pub predecessor_archive: &'a [u8],
+    pub created_at_unix_ms: u64,
+    pub retain_checkpoints: usize,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CommittedJournalGeneration {
     pub manifest: JournalGenerationManifestV1,

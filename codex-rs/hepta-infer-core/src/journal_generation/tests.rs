@@ -26,12 +26,14 @@ mod tests {
     fn commit_first(store: &JournalGenerationStore) -> CommittedJournalGeneration {
         store
             .commit_generation(
-                1,
-                None,
-                b"snapshot-one",
-                b"journal-one",
-                1_800_000_000_000,
-                3,
+                JournalGenerationInput {
+                    generation: 1,
+                    previous_manifest_sha256: None,
+                    snapshot: b"snapshot-one",
+                    predecessor_archive: b"journal-one",
+                    created_at_unix_ms: 1_800_000_000_000,
+                    retain_checkpoints: 3,
+                },
                 &mut NoJournalFailpoints,
             )
             .expect("generation one")
@@ -58,12 +60,14 @@ mod tests {
                 fired: false,
             };
             let _ = store.commit_generation(
-                2,
-                Some(first.manifest_sha256),
-                b"snapshot-two",
-                b"journal-two",
-                1_800_000_001_000,
-                3,
+                JournalGenerationInput {
+                    generation: 2,
+                    previous_manifest_sha256: Some(first.manifest_sha256),
+                    snapshot: b"snapshot-two",
+                    predecessor_archive: b"journal-two",
+                    created_at_unix_ms: 1_800_000_001_000,
+                    retain_checkpoints: 3,
+                },
                 &mut failpoint,
             );
             let recovered = store.recover().expect("recover exact generation");
@@ -84,12 +88,14 @@ mod tests {
         fs::write(&first.archive_path, b"tampered").expect("tamper");
         let error = store
             .commit_generation(
-                2,
-                Some(first.manifest_sha256),
-                b"snapshot-two",
-                b"journal-one",
-                1_800_000_001_000,
-                3,
+                JournalGenerationInput {
+                    generation: 2,
+                    previous_manifest_sha256: Some(first.manifest_sha256),
+                    snapshot: b"snapshot-two",
+                    predecessor_archive: b"journal-one",
+                    created_at_unix_ms: 1_800_000_001_000,
+                    retain_checkpoints: 3,
+                },
                 &mut NoJournalFailpoints,
             )
             .expect_err("archive mismatch");
@@ -107,12 +113,14 @@ mod tests {
         }
         store
             .commit_generation(
-                1,
-                None,
-                &snapshot,
-                b"bounded predecessor journal",
-                1_800_000_000_000,
-                2,
+                JournalGenerationInput {
+                    generation: 1,
+                    previous_manifest_sha256: None,
+                    snapshot: &snapshot,
+                    predecessor_archive: b"bounded predecessor journal",
+                    created_at_unix_ms: 1_800_000_000_000,
+                    retain_checkpoints: 2,
+                },
                 &mut NoJournalFailpoints,
             )
             .expect("soak checkpoint");
@@ -129,12 +137,14 @@ mod tests {
         assert_eq!(
             store
                 .commit_generation(
-                    3,
-                    Some(first.manifest_sha256),
-                    b"snapshot-three",
-                    b"journal-three",
-                    1_800_000_002_000,
-                    3,
+                    JournalGenerationInput {
+                        generation: 3,
+                        previous_manifest_sha256: Some(first.manifest_sha256),
+                        snapshot: b"snapshot-three",
+                        predecessor_archive: b"journal-three",
+                        created_at_unix_ms: 1_800_000_002_000,
+                        retain_checkpoints: 3,
+                    },
                     &mut NoJournalFailpoints,
                 )
                 .expect_err("skip"),

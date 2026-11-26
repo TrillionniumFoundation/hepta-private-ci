@@ -739,6 +739,15 @@ impl VerifiedRetirementReceiptV1 {
     }
 }
 
+/// Admission and dispatch identity expected independently of a signed proposal.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RetirementExpectedBindingV1<'a> {
+    pub request_id: &'a str,
+    pub admission_sha256: Digest32,
+    pub manifest_sha256: Digest32,
+    pub dispatch_sha256: Digest32,
+}
+
 pub struct RetirementVerifierV1 {
     keys: Vec<PinnedTrustKey>,
     consumed_proposals: BTreeSet<Digest32>,
@@ -762,17 +771,14 @@ impl RetirementVerifierV1 {
         &mut self,
         proposal: &IndeterminateRetirementProposalV1,
         approvals: &[SignedRetirementApprovalV1],
-        expected_request_id: &str,
-        expected_admission_sha256: Digest32,
-        expected_manifest_sha256: Digest32,
-        expected_dispatch_sha256: Digest32,
+        expected: RetirementExpectedBindingV1<'_>,
         now_unix_ms: u64,
     ) -> Result<VerifiedRetirementReceiptV1, ControlContractError> {
         proposal.validate(now_unix_ms)?;
-        if proposal.request_id != expected_request_id
-            || proposal.admission_sha256 != expected_admission_sha256
-            || proposal.manifest_sha256 != expected_manifest_sha256
-            || proposal.dispatch_sha256 != expected_dispatch_sha256
+        if proposal.request_id != expected.request_id
+            || proposal.admission_sha256 != expected.admission_sha256
+            || proposal.manifest_sha256 != expected.manifest_sha256
+            || proposal.dispatch_sha256 != expected.dispatch_sha256
         {
             return Err(ControlContractError::BindingMismatch("retirement"));
         }
@@ -1138,28 +1144,18 @@ mod tests {
                 &key_b,
             ),
         ];
+        let expected = RetirementExpectedBindingV1 {
+            request_id: "request-1",
+            admission_sha256: digest(1),
+            manifest_sha256: digest(2),
+            dispatch_sha256: digest(3),
+        };
         let receipt = verifier
-            .verify(
-                &proposal,
-                &approvals,
-                "request-1",
-                digest(1),
-                digest(2),
-                digest(3),
-                NOW + 2,
-            )
+            .verify(&proposal, &approvals, expected, NOW + 2)
             .expect("quorum");
         assert_eq!(receipt.approval_key_ids().len(), 2);
         assert_eq!(
-            verifier.verify(
-                &proposal,
-                &approvals,
-                "request-1",
-                digest(1),
-                digest(2),
-                digest(3),
-                NOW + 2,
-            ),
+            verifier.verify(&proposal, &approvals, expected, NOW + 2),
             Err(ControlContractError::Replay)
         );
     }
