@@ -37,3 +37,11 @@ The source manifest retains the original patch digests.
 
 For these recorded patches, recover the original bytes before applying: `HEPTA-maintenance.patch`.
 See the [patch restoration instructions](../../../qa/repository-consolidation/20261125/vendor-maintenance-patches/README.md).
+
+## Verbatim test vectors
+
+Eight original testkit vectors intentionally contain CRLF or trailing spaces.
+The standalone test harness reads their gzip carriers without normalizing the
+payload. For an upstream-layout comparison, use the repository evidence
+restorer; the registry and the upstream SHA-256 entries bind the original
+uncompressed bytes. The crate's runtime source and dependencies are unchanged.
