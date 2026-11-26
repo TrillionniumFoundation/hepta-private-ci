@@ -507,9 +507,12 @@ jobs:
           $ErrorActionPreference = 'Stop'
           & sccache --stop-server
           $stopStatus = $LASTEXITCODE
+          Write-Output ("Source-cache observation: stop_status={0}" -f $stopStatus)
           $writerNames = @('cargo', 'rustc', 'gn', 'ninja', 'clang', 'clang-cl', 'clang++', 'cl', 'lld', 'lld-link', 'link', 'sccache')
           $processes = @(Get-Process -ErrorAction Stop)
           $writers = @($processes | Where-Object { $writerNames -contains $_.ProcessName })
+          $observedWriterNames = @($writerNames | Where-Object { $writers.ProcessName -contains $_ })
+          Write-Output ("Source-cache observation: writer_count={0}; writer_names=[{1}]" -f $writers.Count, ($observedWriterNames -join ','))
           if ($stopStatus -ne 0 -or $writers.Count -ne 0) {
             Write-Output '::warning::Source-cache writers are not confirmed stopped; no cache will be saved.'
             Write-Output 'ready=false' >> $env:GITHUB_OUTPUT
