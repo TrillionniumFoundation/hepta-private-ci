@@ -2128,7 +2128,6 @@ mod tests {
     use anyhow::Result;
     use anyhow::anyhow;
     use anyhow::bail;
-    use chrono::Utc;
     use codex_app_server_protocol::AutoReviewDecisionSource;
     use codex_app_server_protocol::GuardianApprovalReviewStatus;
     use codex_app_server_protocol::JSONRPCErrorError;
@@ -2211,7 +2210,7 @@ mod tests {
     #[test]
     fn rollback_response_rebuilds_pathless_thread_from_stored_history() -> Result<()> {
         let thread_id = ThreadId::from_string("00000000-0000-0000-0000-000000000789")?;
-        let created_at = Utc::now();
+        let created_at = codex_utils_time::Timestamp::now();
         let history_items = vec![
             RolloutItem::EventMsg(EventMsg::UserMessage(UserMessageEvent {
                 client_id: None,
