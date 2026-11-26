@@ -126,6 +126,54 @@ of the original path-based API. They are not a claim about that API's internal
 implementation. The original failure expectations remain failures if reproduced;
 this diagnostic cannot qualify the matrix merely by printing observations.
 
+## Third native execution and descriptor authorization diagnostic
+
+Run `45635681589`, exact source `74d4170593e5161d93fe903f5e1ddc960316727d`,
+again ran all four tests once: two passed, two failed, no skips or retries, and
+the same fifteen deletion cells completed. All 32 new `CreateFileW` observations
+returned OS error 5, including DELETE-only overlapped opens before and after
+each failed deletion. The added error context identifies the NULL-parent /
+directory failure as `RemoveDirectoryW`, rather than fixture cleanup. Artifact
+`15032403983` is 6,184 bytes, SHA-256
+`1fa6bc68ed937fd2f32e82fefc76837aed5166192b2b6130531c6ad9258c99bd`.
+These observations do not establish a particular hidden access mask inside
+`RemoveDirectoryW`.
+
+The next diagnostic asks a separate authorization question without changing
+the original policy. For the same two failed directory scenarios, the original
+thread identity opens parent and target with READ_CONTROL and all sharing,
+queries OWNER, GROUP and DACL through that handle, and closes the filesystem
+handle. The returned descriptor allocation remains alive during the checks.
+Exact DACL bytes and control flags are recorded; owner and group must be present
+for AccessCheck but their SID bytes are not logged. No SACL query, privilege
+adjustment, ACL change or filesystem write is added.
+
+Inside the existing restricted-token impersonation scope, OpenThreadToken with
+TOKEN_QUERY obtains the actual current impersonation token. OpenAsSelf only
+selects the identity used to authorize that query handle; it does not substitute
+the process token. The diagnostic records this token's privilege LUIDs and
+attributes, then performs AccessCheck for DELETE and MAXIMUM_ALLOWED on each
+descriptor using the file-object generic mapping. Buffers and privilege counts
+are bounded. The API result, authorization status and granted mask are separate
+fields; an API error fails the diagnostic as unknown authorization, never as
+an ACL denial.
+No token is duplicated or changed. The query handle is dropped before the
+existing opens and deletion; the original impersonation restoration remains.
+
+There are at most **16 AccessCheck observations**: two scenarios, before and
+after a repeated deletion failure, two descriptors, and two requested masks.
+They are neither new tests nor completed deletion cells. The four test
+identities, all original token/ACL masks, 32 open observations, delete calls,
+namespace assertions, zero-retry setting and 18-cell qualification gate remain
+unchanged. API failures or repeated original failures do not qualify the matrix.
+
+AccessCheck evaluates the captured descriptor and token. It does not establish
+path traversal, sharing, current object identity, mandatory-integrity behavior,
+filesystem semantics or a race-free snapshot. Comparing its result with the
+unchanged path operations can narrow the cause, but cannot by itself prove a
+safe launcher or discharge the original 40 refused-execution guards. This source
+change has no native result until its own exact source is executed.
+
 ## Primary contracts
 
 - [CreateRestrictedToken](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken)
@@ -133,3 +181,6 @@ this diagnostic cannot qualify the matrix merely by printing observations.
 - [NULL and empty DACLs](https://learn.microsoft.com/en-us/windows/win32/secauthz/null-dacls-and-empty-dacls)
 - [Mandatory integrity control](https://learn.microsoft.com/en-us/windows/win32/secauthz/mandatory-integrity-control)
 - [Security information and required rights](https://learn.microsoft.com/en-us/windows/win32/secauthz/security-information)
+- [AccessCheck](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-accesscheck)
+- [OpenThreadToken](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-openthreadtoken)
+- [GetSecurityInfo](https://learn.microsoft.com/en-us/windows/win32/api/aclapi/nf-aclapi-getsecurityinfo)

@@ -1,5 +1,7 @@
 //! These experiments characterize the OS boundary; they do not enable a launcher.
 
+#[path = "token_delete_access_diagnostics.rs"]
+mod authorization;
 #[path = "token_delete_open_diagnostics.rs"]
 mod diagnostics;
 #[path = "token_delete_matrix_support.rs"]
@@ -61,7 +63,14 @@ fn native_delete_distinguishes_target_right_from_parent_delete_child() -> Result
                     (Restriction::Full, Kind::Directory, DeleteGrant::Target)
                 );
                 if diagnose {
+                    let snapshot = authorization::AuthorizationSnapshot::capture(
+                        &parent,
+                        &target,
+                        "full-target",
+                        "before",
+                    )?;
                     token.run(|| {
+                        snapshot.observe_current_token("full-target", "before")?;
                         diagnostics::observe_directory_opens(&target, "full-target", "before")
                     })??;
                 }
@@ -70,7 +79,14 @@ fn native_delete_distinguishes_target_right_from_parent_delete_child() -> Result
                     .err()
                     .map(|error| error.raw_os_error());
                 if diagnose && outcome.is_some() {
+                    let snapshot = authorization::AuthorizationSnapshot::capture(
+                        &parent,
+                        &target,
+                        "full-target",
+                        "after",
+                    )?;
                     token.run(|| {
+                        snapshot.observe_current_token("full-target", "after")?;
                         diagnostics::observe_directory_opens(&target, "full-target", "after")
                     })??;
                 }
@@ -179,13 +195,27 @@ fn null_dacl_is_an_explicit_limit_of_full_restriction() -> Result<()> {
             support::set_dacl(&target, target_policy)?;
             let diagnose = matches!((kind, grant), (Kind::Directory, DeleteGrant::Parent));
             if diagnose {
+                let snapshot = authorization::AuthorizationSnapshot::capture(
+                    &parent,
+                    &target,
+                    "null-parent",
+                    "before",
+                )?;
                 token.run(|| {
+                    snapshot.observe_current_token("null-parent", "before")?;
                     diagnostics::observe_directory_opens(&target, "null-parent", "before")
                 })??;
             }
             let outcome = token.run(|| support::delete(&target, kind))?;
             if diagnose && outcome.is_err() {
+                let snapshot = authorization::AuthorizationSnapshot::capture(
+                    &parent,
+                    &target,
+                    "null-parent",
+                    "after",
+                )?;
                 token.run(|| {
+                    snapshot.observe_current_token("null-parent", "after")?;
                     diagnostics::observe_directory_opens(&target, "null-parent", "after")
                 })??;
             }

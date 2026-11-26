@@ -288,7 +288,7 @@ impl RestrictedToken {
     }
 }
 
-fn ensure_unimpersonated() -> Result<()> {
+pub(super) fn ensure_unimpersonated() -> Result<()> {
     let mut previous = 0;
     let has_previous = unsafe {
         OpenThreadToken(
