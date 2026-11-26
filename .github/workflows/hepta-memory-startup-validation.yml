@@ -1,0 +1,65 @@
+name: MemoryCell trusted startup validation
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-agentd/**"
+      - ".github/workflows/hepta-memory-startup-validation.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-cell-startup-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  startup-and-owner-regressions:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Test startup fences and unopened service factory
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-startup-validation
+          git rev-parse HEAD > /tmp/memory-startup-validation/tested-commit.txt
+          cd codex-rs
+          just test -p codex-hepta-agentd --lib memory_bootstrap::tests 2>&1 | tee /tmp/memory-startup-validation/bootstrap.log
+          just test -p codex-hepta-agentd --lib service::fleet::startup::tests 2>&1 | tee /tmp/memory-startup-validation/readiness.log
+      - name: Test existing serving cancellation, generation retirement and fleet owners
+        if: always() && !cancelled()
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          just test -p codex-hepta-agentd --lib memory_serving_process::tests 2>&1 | tee /tmp/memory-startup-validation/process.log
+          just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests 2>&1 | tee /tmp/memory-startup-validation/fleet.log
+      - name: Run the entire affected Agentd unit suite without weakening filters
+        if: always() && !cancelled()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-startup-validation
+          cd codex-rs
+          just test -p codex-hepta-agentd --lib 2>&1 | tee /tmp/memory-startup-validation/all-agentd-unit-tests.log
+      - name: Retain exact source and test evidence, never a production signature
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-startup-validation
+          git rev-parse HEAD > /tmp/memory-startup-validation/tested-commit.txt
+          printf '%s\n' 'Tests exercise compiled startup and owner boundaries, not a deployed production rollout or independent acceptance.' > /tmp/memory-startup-validation/SCOPE.txt
+          (cd /tmp/memory-startup-validation && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-startup-validation
+          path: /tmp/memory-startup-validation
+          if-no-files-found: error

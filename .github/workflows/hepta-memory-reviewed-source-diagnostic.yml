@@ -1,0 +1,122 @@
+name: MemoryCell audited source reader diagnosis
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reviewed_*.py"
+      - "scripts/memory_cell/prepare_source_audit.py"
+      - "scripts/memory_cell/test_reviewed*.py"
+      - "scripts/memory_cell/test_source_audit*.py"
+      - "scripts/memory_cell/data/necessity-source-audit-20261010.json"
+      - ".github/workflows/hepta-memory-reviewed-source-diagnostic.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-audited-source-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  inputs:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-necessity-data
+          run-id: 38041339781
+          github-token: ${{ github.token }}
+          path: /tmp/original-reviewed-data
+      - name: Locked regression environment and full test census
+        run: |
+          set -euo pipefail
+          mkdir /tmp/audited-validation
+          python3 -m venv /tmp/audited-python
+          /tmp/audited-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/audited-python/bin/pip install -r /tmp/original-reviewed-data/environment.txt
+          /tmp/audited-python/bin/pip freeze > /tmp/audited-validation/environment.txt
+          diff -u /tmp/original-reviewed-data/environment.txt /tmp/audited-validation/environment.txt
+          /tmp/audited-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/audited-validation/tests.log
+      - name: Bind all eight original cases before any new generation
+        run: |
+          set -euo pipefail
+          /tmp/audited-python/bin/python scripts/memory_cell/prepare_source_audit.py /tmp/original-reviewed-data scripts/memory_cell/data/necessity-source-audit-20261010.json /tmp/audited-input --audit-sha 908ac6ef6eebb67e3449e7fba8b2ec06fbb43670b497cddad4de452d5a989aba
+          cp /tmp/original-reviewed-data/environment.txt /tmp/audited-input/environment.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-audited-source-inputs
+          path: /tmp/audited-input
+          if-no-files-found: error
+      - name: Keep exact code and test failures
+        if: always()
+        run: |
+          mkdir -p /tmp/audited-validation/source
+          cp scripts/memory_cell/reviewed*.py scripts/memory_cell/prepare_source_audit.py scripts/memory_cell/test_reviewed*.py scripts/memory_cell/test_source_audit*.py /tmp/audited-validation/source/
+          git rev-parse HEAD > /tmp/audited-validation/tested-commit.txt
+          (cd /tmp/audited-validation && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-audited-source-validation
+          path: /tmp/audited-validation
+          if-no-files-found: error
+  reader:
+    needs: inputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        size: [135M, 1.7B]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          path: /tmp/audited-input
+      - name: Stage the unchanged model, tokenizer and package profile
+        run: |
+          set -euo pipefail
+          mkdir /tmp/audited-reader-result
+          python3 -m venv /tmp/audited-python
+          /tmp/audited-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/audited-python/bin/pip install -r /tmp/audited-input/environment.txt
+          /tmp/audited-python/bin/pip freeze > /tmp/audited-reader-result/environment.txt
+          diff -u /tmp/audited-input/environment.txt /tmp/audited-reader-result/environment.txt
+          /tmp/audited-python/bin/python scripts/memory_cell/bundle_assets.py stage '${{ matrix.size }}' /tmp/audited-model
+          cp /tmp/audited-model/inventory.json /tmp/audited-reader-result/inventory.json
+      - name: Generate every available condition before scoring; no optimizer or admission
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/audited-reader-result/resources.txt /tmp/audited-python/bin/python scripts/memory_cell/reviewed_bundle.py /tmp/audited-input/plan.json /tmp/audited-input/reviews.json /tmp/audited-input/withdrawals.json /tmp/audited-reader-result/diagnostic --plan-sha f1edc186065acab9b56a85e9b38e7d585ef5d670293cd95ff0ecc82579aa0725 --reviews-sha 3cc77008c68dae5cc57f468464b9c0b2ca4e700986de01aedfde8b69033daf79 --withdrawals-sha 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570 --labels /tmp/audited-input/labels.json --labels-sha 5973e13de088b5973d045db543444ab1050dfe3ede2b843c84642781dfd6232e --reader /tmp/audited-model/reader --inventory /tmp/audited-model/inventory.json --inventory-sha "$(sha256sum /tmp/audited-model/inventory.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/audited-reader-result/run.log
+      - name: Retain raw observations and failures on the exact tested source
+        if: always()
+        run: |
+          mkdir -p /tmp/audited-reader-result/source
+          cp scripts/memory_cell/reviewed*.py scripts/memory_cell/bundle_reader.py scripts/memory_cell/bundle_trial.py /tmp/audited-reader-result/source/
+          git rev-parse HEAD > /tmp/audited-reader-result/tested-commit.txt
+          (cd /tmp/audited-reader-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-audited-source-reader-${{ matrix.size }}
+          path: /tmp/audited-reader-result
+          if-no-files-found: error

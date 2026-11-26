@@ -1,0 +1,105 @@
+name: MemoryCell shared stem native matrix
+on:
+  push:
+    branches:
+      - "codex/stem-cell-matrix-staging-20261011"
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/stem_cell*.py"
+      - "scripts/memory_cell/test_stem_cell*.py"
+      - ".github/workflows/hepta-memory-stem-matrix.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-native-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-matrix:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fixed CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-native
+          python3 -m venv /tmp/stem-python
+          /tmp/stem-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
+          /tmp/stem-python/bin/pip freeze > /tmp/stem-native/environment.txt
+      - name: Full regression set and static diagnostics
+        run: |
+          set -euo pipefail
+          /tmp/stem-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/stem-native/tests.log
+          /tmp/stem-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py 2>&1 | tee /tmp/stem-native/lint.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Stage pinned existing models and native data
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          /tmp/stem-python/bin/python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import tarfile
+          from huggingface_hub import snapshot_download
+          from native import digest
+          from pretrained import file_inventory
+          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
+          with tarfile.open('/tmp/memory-inputs.tar.gz', 'r:gz') as archive:
+              members = archive.getmembers()
+              if sum(m.size for m in members) > 2 * 1024**3 or len(members) > 10000:
+                  raise ValueError('bounded staged archive required')
+              for member in members:
+                  path = PurePosixPath(member.name)
+                  if (path.is_absolute() or '..' in path.parts or not path.parts
+                      or path.parts[0] != 'memory-inputs'
+                      or not (member.isfile() or member.isdir())):
+                      raise ValueError('unsafe staged archive member')
+              archive.extractall('/tmp', members=members, filter='data')
+          if digest(file_inventory(Path('/tmp/memory-inputs/encoder'))) != '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a':
+              raise ValueError('retrieval encoder drift')
+          snapshot_download(RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/stem-ranker',
+              allow_patterns=['config.json', 'model.safetensors', 'tokenizer.json', 'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt'], token=False)
+          if file_inventory(Path('/tmp/stem-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
+              raise ValueError('pair encoder tensor drift')
+          PY
+      - name: All six arms and persistent checkpoints with the same Reader
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/stem-native/resources.txt /tmp/stem-python/bin/python scripts/memory_cell/stem_cell_trial.py /tmp/memory-inputs /tmp/stem-ranker /tmp/stem-native/comparison 2>&1 | tee /tmp/stem-native/execution.log
+      - name: Preserve unchanged tested source and every failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-native/source
+          git rev-parse HEAD > /tmp/stem-native/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-native/tested-tree.txt
+          cp scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py /tmp/stem-native/source/
+          cp .github/workflows/hepta-memory-stem-matrix.yml /tmp/stem-native/source/
+          /tmp/stem-python/bin/ruff format --diff scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py > /tmp/stem-native/format.patch || true
+          (cd /tmp/stem-native && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-native-matrix
+          path: /tmp/stem-native
+          if-no-files-found: error

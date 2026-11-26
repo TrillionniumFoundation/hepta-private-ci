@@ -48,6 +48,12 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     let health = client.health().await?;
     ensure!(health.ready && health.registered_agents == 1);
     let initial_epoch = health.supervisor_epoch;
+    let original_fence = client.snapshot(agent_id.clone()).await?.control_fence;
+    let stop = tokio_util::sync::CancellationToken::new();
+    let measured = client.observe_current(&original_fence, &stop).await?;
+    ensure!(measured.agent.control_fence == original_fence);
+    ensure!(!measured.atomic_snapshot && !measured.independently_attested);
+    ensure!(!measured.production_accepted);
     ensure!(
         std::fs::metadata(registry.layout().supervisor_socket())?
             .permissions()
@@ -115,6 +121,21 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
         restarted_health.supervisor_epoch != initial_epoch,
         "supervisord reused its authority epoch after daemon restart"
     );
+    ensure!(
+        restarted_client
+            .observe_current(&original_fence, &stop)
+            .await
+            .is_err()
+    );
+    let current_fence = restarted_client
+        .snapshot(agent_id.clone())
+        .await?
+        .control_fence;
+    let recovered = restarted_client
+        .observe_current(&current_fence, &stop)
+        .await?;
+    ensure!(recovered.health.supervisor_epoch == restarted_health.supervisor_epoch);
+    ensure!(!recovered.production_accepted);
     let roster = restarted_client.roster(16).await?;
     ensure!(roster.len() == 1 && roster[0].agent_id == agent_id);
     restarted.terminate()?;

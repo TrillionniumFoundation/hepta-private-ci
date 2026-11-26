@@ -33,16 +33,19 @@ pub(crate) fn schedule_restart(
     }
 
     *attempt = attempt.saturating_add(1);
-    let shift = attempt.saturating_sub(1).min(7);
-    let delay = RESTART_BACKOFF_MIN
-        .checked_mul(1_u32 << shift)
-        .unwrap_or(RESTART_BACKOFF_MAX)
-        .min(RESTART_BACKOFF_MAX);
-    let retry_at = now.checked_add(delay).unwrap_or(now);
+    let retry_at = now.checked_add(restart_delay(*attempt)).unwrap_or(now);
     RestartSchedule::Retry {
         attempt: *attempt,
         retry_at,
     }
+}
+
+pub(crate) fn restart_delay(attempt: u32) -> Duration {
+    let shift = attempt.saturating_sub(1).min(7);
+    RESTART_BACKOFF_MIN
+        .checked_mul(1_u32 << shift)
+        .unwrap_or(RESTART_BACKOFF_MAX)
+        .min(RESTART_BACKOFF_MAX)
 }
 
 pub(crate) fn clear_restart_budget(attempt: &mut u32, window_started_at: &mut Option<Instant>) {
