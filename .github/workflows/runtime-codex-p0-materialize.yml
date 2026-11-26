@@ -1,0 +1,216 @@
+name: runtime.codex P0 materialize
+
+on:
+  push:
+    branches:
+      - codex/runtime-codex-p0-durable-convergence-20260930
+    paths:
+      - .github/workflows/runtime-codex-p0-materialize.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: runtime-codex-p0-materialize-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  LOG_DIR: qualification/runtime-codex-materialize-debug
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt,clippy
+      - uses: ./.github/actions/setup-rusty-v8
+        with:
+          target: x86_64-unknown-linux-gnu
+
+      - name: Materialize, verify and publish immutable source
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          input_sha="${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "$input_sha"
+          test -z "$(git status --porcelain=v1)"
+          rm -rf "$LOG_DIR"
+          mkdir -p "$LOG_DIR"
+          : > "$LOG_DIR/status.txt"
+
+          run_logged() {
+            local name="$1"
+            shift
+            printf 'START %s\n' "$name" | tee -a "$LOG_DIR/status.txt"
+            set +e
+            "$@" >"$LOG_DIR/$name.log" 2>&1
+            local rc=$?
+            set -e
+            printf '%s=%s\n' "$name" "$rc" | tee -a "$LOG_DIR/status.txt"
+            if test "$rc" -ne 0; then
+              tail -n 400 "$LOG_DIR/$name.log" | tee "$LOG_DIR/$name.tail.log"
+              return "$rc"
+            fi
+          }
+
+          retain_failure() {
+            local rc=$?
+            trap - EXIT
+            if test "$rc" -eq 0; then return 0; fi
+            cp -a "$LOG_DIR" /tmp/runtime-codex-materialize-debug
+            git reset --hard "$input_sha"
+            git clean -fdx
+            mkdir -p "$(dirname "$LOG_DIR")"
+            cp -a /tmp/runtime-codex-materialize-debug "$LOG_DIR"
+            git config user.name 'runtime.codex P0 diagnostics'
+            git config user.email 'runtime-codex-p0@invalid'
+            git add "$LOG_DIR"
+            git commit -m 'test(runtime.codex): retain first P0 materialization failure'
+            git push \
+              --force-with-lease="refs/heads/codex/runtime-codex-p0-durable-convergence-20260930:${input_sha}" \
+              origin HEAD:refs/heads/codex/runtime-codex-p0-durable-convergence-20260930
+            exit "$rc"
+          }
+          trap retain_failure EXIT
+
+          migrations=(
+            scripts/runtime-codex-maintainer.py
+            scripts/runtime-codex-maintainer-followup.py
+            scripts/runtime-codex-durability-migration.py
+            scripts/runtime-codex-durability-fixup.py
+            scripts/runtime-codex-transactional-owner-fixup.py
+            scripts/runtime-codex-quarantine-migration.py
+            scripts/runtime-codex-quarantine-authority-fixup.py
+            scripts/runtime-codex-deadline-migration.py
+            scripts/runtime-codex-cleanup-migration.py
+            scripts/runtime-codex-storage-fixup.py
+            scripts/runtime-codex-terminal-outbox-migration.py
+            scripts/runtime-codex-product-executor-migration.py
+            scripts/runtime-codex-product-executor-hardening.py
+            scripts/runtime-codex-effect-guard-fixup.py
+            scripts/runtime-codex-deadline-ceiling-fixup.py
+            scripts/runtime-codex-structured-sequence-migration.py
+            scripts/runtime-codex-process-crash-migration.py
+            scripts/runtime-codex-process-crash-expansion.py
+            scripts/runtime-codex-qualification-fixup.py
+            scripts/runtime-codex-final-closure.py
+          )
+          support=(
+            scripts/runtime-codex-owner-lineage-fixup.py
+            scripts/runtime-codex-quarantine-authority-v2.py
+            scripts/runtime-codex-process-crash-expansion-v2.py
+          )
+          finalizers=(
+            scripts/runtime-codex-finalize-map.py
+            scripts/runtime-codex-finalize-map-followup.py
+          )
+
+          run_logged py_compile python3 -m py_compile \
+            "${migrations[@]}" "${support[@]}" "${finalizers[@]}"
+          for script in "${migrations[@]}"; do
+            run_logged "$(basename "$script" .py)" python3 "$script"
+          done
+          run_logged rustfmt_materialized bash -lc 'cd codex-rs && cargo fmt --all'
+          run_logged materialized_diff_check git diff --check
+          run_logged fault_matrix python3 scripts/check-runtime-codex-fault-matrix.py
+
+          cp "${finalizers[0]}" /tmp/runtime-codex-finalize-map.py
+          cp "${finalizers[1]}" /tmp/runtime-codex-finalize-map-followup.py
+          cat > /tmp/run-runtime-codex-finalizer.py <<'PY'
+          import pathlib
+          import sys
+          copy = pathlib.Path(sys.argv[1])
+          original = pathlib.Path(sys.argv[2]).resolve()
+          namespace = {"__name__": "__main__", "__file__": str(original)}
+          exec(compile(copy.read_text(encoding="utf-8"), str(original), "exec"), namespace)
+          PY
+
+          rm -f \
+            .github/workflows/runtime-codex-p0-materialize.yml \
+            .github/workflows/runtime-codex-materialize-once.yml \
+            .github/workflows/runtime-codex-maintainer.yml \
+            .github/workflows/runtime-codex-fast-feedback.yml \
+            .github/workflows/runtime-codex-candidate-qualification.yml \
+            "${migrations[@]}" "${support[@]}" "${finalizers[@]}"
+
+          cat > docs/modules/runtime.codex/MIGRATION_HISTORY.md <<'EOF'
+          # runtime.codex migration history
+
+          The P0 convergence migrations were materialized into ordinary source on
+          2026-09-30. Source-writing workflows and migration programs were removed
+          from the immutable candidate and remain available only in Git history.
+
+          All qualification after this point is read-only: a clean checkout must
+          compile, test, lint, generate receipts, and remain clean without applying
+          patches or regenerating production source.
+          EOF
+
+          run_logged post_cleanup_diff git diff --check
+          run_logged format_check bash -lc 'cd codex-rs && cargo fmt --all -- --check'
+          run_logged all_target_check bash -lc \
+            'cd codex-rs && cargo check --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets'
+          run_logged agent_protocol bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agent-protocol'
+          run_logged infer_core bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-infer-core'
+          run_logged codex_adapter bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-codex-adapter'
+          run_logged agentd_owner bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agentd --lib lane_b_runtime'
+          run_logged worker_host bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-infer-worker-host'
+          run_logged crash_model bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-infer-worker-host --test runtime_codex_crash_matrix'
+          run_logged process_crash bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agentd --test runtime_codex_process_crash'
+          run_logged product_e2e bash -lc \
+            'cd codex-rs && cargo test --locked -p codex-hepta-agentd runtime_codex_product_caller_commits_one_authorized_terminal_turn'
+          run_logged strict_clippy bash -lc \
+            'cd codex-rs && cargo clippy --locked -p codex-hepta-agent-protocol -p codex-hepta-infer-core -p codex-hepta-codex-adapter -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings'
+          run_logged precommit_diff_check git diff --check
+
+          git config user.name 'runtime.codex P0 materializer'
+          git config user.email 'runtime-codex-p0@invalid'
+          git add -A -- . ':!qualification/runtime-codex-materialize-debug'
+          git diff --cached --check
+          git commit -m 'fix(runtime.codex): materialize immutable P0 convergence source'
+
+          source_commit="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse 'HEAD^{tree}')"
+          run_logged finalize_map env \
+            RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
+            RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
+            python3 /tmp/run-runtime-codex-finalizer.py \
+              /tmp/runtime-codex-finalize-map.py scripts/runtime-codex-finalize-map.py
+          run_logged finalize_map_followup env \
+            RUNTIME_CODEX_SOURCE_COMMIT="$source_commit" \
+            RUNTIME_CODEX_SOURCE_TREE="$source_tree" \
+            python3 /tmp/run-runtime-codex-finalizer.py \
+              /tmp/runtime-codex-finalize-map-followup.py \
+              scripts/runtime-codex-finalize-map-followup.py
+          run_logged lane_b_generate python3 scripts/hepta-lane-b-truth.py generate
+          run_logged map_diff_check git diff --check
+
+          git add -A -- . ':!qualification/runtime-codex-materialize-debug'
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'docs(runtime.codex): bind immutable P0 source identity'
+          fi
+          run_logged lane_b_truth python3 scripts/hepta-lane-b-truth.py verify
+          test -z "$(git status --short --untracked-files=no)"
+
+          trap - EXIT
+          rm -rf "$LOG_DIR"
+          git push \
+            --force-with-lease="refs/heads/codex/runtime-codex-p0-durable-convergence-20260930:${input_sha}" \
+            origin HEAD:refs/heads/codex/runtime-codex-p0-durable-convergence-20260930

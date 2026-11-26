@@ -1,0 +1,222 @@
+{
+  "schema": "hepta.runtime-codex.fault-injection-matrix.v1",
+  "schemaVersion": 1,
+  "module": "runtime.codex",
+  "claimBoundary": {
+    "repositoryTestsAreSourceEvidence": true,
+    "targetHostKillEvidenceRequired": true,
+    "realProviderEvidenceRequired": true
+  },
+  "boundaries": [
+    {
+      "id": "RCX-FI-001",
+      "boundary": "before_local_reservation_append",
+      "owner": "hepta-infer-core",
+      "fault": "process_exit_or_io_error",
+      "expectedLocalState": "absent_or_reserved_only_if_append_committed",
+      "expectedOwnerState": "not_admitted_by_runtime_codex",
+      "recovery": "retry admission with identical semantics only",
+      "forbidden": ["claim_dispatch", "consume_capacity_twice"],
+      "repositoryEvidence": ["codex-rs/hepta-infer-core/src/native_control_tests.rs"],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-002",
+      "boundary": "after_local_reservation_fsync",
+      "owner": "hepta-infer-core",
+      "fault": "process_exit",
+      "expectedLocalState": "reserved",
+      "expectedOwnerState": "context_attached_or_earlier",
+      "recovery": "reopen exact request without duplicate reservation",
+      "forbidden": ["new_operation_id_to_bypass_capacity"],
+      "repositoryEvidence": ["codex-rs/hepta-infer-core/src/native_control_tests.rs"],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-003",
+      "boundary": "before_and_after_local_dispatch_fsync",
+      "owner": "hepta-infer-core",
+      "fault": "process_exit_or_disk_error",
+      "expectedLocalState": "reserved_or_dispatching_never_half_published",
+      "expectedOwnerState": "context_attached_or_exact_dispatched",
+      "recovery": "exact journal replay and owner-status reconciliation",
+      "forbidden": ["blind_turn_start", "declare_unsent_after_process_loss"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs"
+      ],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-004",
+      "boundary": "owner_bound_dispatch_request_or_ack_loss",
+      "owner": "hepta-agentd",
+      "fault": "rpc_disconnect_timeout_duplicate_response",
+      "expectedLocalState": "dispatching",
+      "expectedOwnerState": "context_attached_or_exact_dispatched",
+      "recovery": "query same run and require exact binding plus nonce commitment",
+      "forbidden": ["unbound_idempotent_ack_as_send_permit", "changed_commitment"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+      ],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-005",
+      "boundary": "after_owner_dispatched_before_effect_entry",
+      "owner": "runtime.codex saga",
+      "fault": "cancel_deadline_owner_loss_context_drift_revocation_advance",
+      "expectedLocalState": "abort_pending_then_released_after_owner_ack",
+      "expectedOwnerState": "aborted_before_effect",
+      "recovery": "replay exact nonce-opening abort proof",
+      "forbidden": ["provider_terminal_observed", "turn_start", "capacity_release_before_owner_ack"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+      ],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-006",
+      "boundary": "after_abort_pending_fsync_before_owner_abort",
+      "owner": "hepta-infer-core",
+      "fault": "process_exit",
+      "expectedLocalState": "abort_pending",
+      "expectedOwnerState": "dispatched_or_aborted_before_effect",
+      "recovery": "abort-only recovery before generic App Server reconciliation",
+      "forbidden": ["thread_read_as_abort_proof", "turn_start"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_run_control.rs"
+      ],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-007",
+      "boundary": "owner_abort_request_or_ack_loss",
+      "owner": "hepta-agentd",
+      "fault": "rpc_disconnect_timeout_duplicate_request",
+      "expectedLocalState": "abort_pending",
+      "expectedOwnerState": "dispatched_or_exact_aborted_before_effect",
+      "recovery": "status query and idempotent exact proof replay",
+      "forbidden": ["changed_reason", "changed_nonce", "changed_binding"],
+      "repositoryEvidence": ["codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs"],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-008",
+      "boundary": "after_owner_abort_before_local_confirm",
+      "owner": "runtime.codex saga",
+      "fault": "process_exit_or_local_fsync_failure",
+      "expectedLocalState": "abort_pending",
+      "expectedOwnerState": "aborted_before_effect",
+      "recovery": "confirm exact proof locally and release capacity",
+      "forbidden": ["send", "invent_terminal_output"],
+      "repositoryEvidence": ["codex-rs/hepta-infer-core/src/native_control_tests.rs"],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-009",
+      "boundary": "final_use_token_entry",
+      "owner": "kernel.authority",
+      "fault": "expiry_revocation_frontier_change_binding_mismatch",
+      "expectedLocalState": "abort_pending_or_released_after_saga",
+      "expectedOwnerState": "aborted_before_effect_for_bound_run",
+      "recovery": "fresh claim only before effect entry and under same operation",
+      "forbidden": ["refund_after_entry", "unsigned_fallback"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+      ],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-010",
+      "boundary": "app_server_socket_write_and_turn_start_ack",
+      "owner": "Codex App Server",
+      "fault": "partial_write_disconnect_timeout_unknown_jsonrpc_error",
+      "expectedLocalState": "dispatching_or_running_or_indeterminate",
+      "expectedOwnerState": "dispatched_orlater",
+      "recovery": "same-connection event then exact thread_read with stable client message id",
+      "forbidden": ["new_turn_start", "infer_not_applied"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+        "docs/modules/runtime.codex/FAULT_MATRIX.md"
+      ],
+      "targetHostRequired": true,
+      "realProviderRequired": true
+    },
+    {
+      "id": "RCX-FI-011",
+      "boundary": "after_turn_started_before_native_started_fsync",
+      "owner": "hepta-infer-core",
+      "fault": "process_exit_or_disk_error",
+      "expectedLocalState": "dispatching_with_possible_effect",
+      "expectedOwnerState": "dispatched",
+      "recovery": "exact App Server history reconciliation",
+      "forbidden": ["pre_effect_abort", "duplicate_turn"],
+      "repositoryEvidence": ["codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs"],
+      "targetHostRequired": true,
+      "realProviderRequired": true
+    },
+    {
+      "id": "RCX-FI-012",
+      "boundary": "cancel_intent_append_and_interrupt_ack",
+      "owner": "runtime.codex and App Server",
+      "fault": "journal_error_interrupt_loss_late_completion",
+      "expectedLocalState": "cancelling_orquarantined_until_terminal",
+      "expectedOwnerState": "cancelling_indeterminate_or_terminal",
+      "recovery": "retain late terminal fact without upgrading cancelled boundary to success",
+      "forbidden": ["release_on_interrupt_ack", "late_success_upgrade"],
+      "repositoryEvidence": ["codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"],
+      "targetHostRequired": true,
+      "realProviderRequired": true
+    },
+    {
+      "id": "RCX-FI-013",
+      "boundary": "terminal_observation_append_and_owner_terminal_ack",
+      "owner": "hepta-infer-core and hepta-agentd",
+      "fault": "process_exit_rpc_ack_loss_duplicate_terminal",
+      "expectedLocalState": "terminal_observation_replayable_idempotently",
+      "expectedOwnerState": "unresolved_or_exact_terminal",
+      "recovery": "replay exact terminal correlation only",
+      "forbidden": ["different_terminal_phase", "missing_correlation_success"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+      ],
+      "targetHostRequired": true,
+      "realProviderRequired": true
+    },
+    {
+      "id": "RCX-FI-014",
+      "boundary": "thread_unsubscribe_and_client_shutdown",
+      "owner": "Codex App Server",
+      "fault": "timeout_disconnect_process_exit",
+      "expectedLocalState": "settlement_unchanged",
+      "expectedOwnerState": "terminal_or_aborted_state_unchanged",
+      "recovery": "bounded cleanup retry and orphan metric",
+      "forbidden": ["rewrite_terminality", "silent_orphan_drop"],
+      "repositoryEvidence": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "docs/modules/runtime.codex/OPERATIONS.md"
+      ],
+      "targetHostRequired": true
+    },
+    {
+      "id": "RCX-FI-015",
+      "boundary": "ephemeral_history_unavailable_after_process_loss",
+      "owner": "independent resolution authority",
+      "fault": "history_loss_backup_restore_provider_lookup_unavailable",
+      "expectedLocalState": "indeterminate_quarantined_capacity_retained",
+      "expectedOwnerState": "indeterminate_or_unresolved",
+      "recovery": "signed independent resolution or indefinite quarantine",
+      "forbidden": ["timeout_release", "manual_success", "changed_operation_id_replay"],
+      "repositoryEvidence": ["docs/modules/runtime.codex/QUARANTINE_AND_RELEASE.md"],
+      "targetHostRequired": true,
+      "realProviderRequired": true
+    }
+  ]
+}
