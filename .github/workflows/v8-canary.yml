@@ -444,7 +444,7 @@ jobs:
           V8_FROM_SOURCE: "1"
         shell: bash
         working-directory: upstream-rusty-v8
-        run: cargo +1.91.0 build --locked --release --target "${TARGET}" --features v8_enable_sandbox
+        run: cargo +1.91.0 build -vv --locked --release --target "${TARGET}" --features v8_enable_sandbox
 
       - name: Stage upstream sandbox release pair
         env:
