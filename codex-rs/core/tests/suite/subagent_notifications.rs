@@ -390,6 +390,26 @@ async fn wait_for_requests(
     }
 }
 
+async fn wait_for_child_request(
+    mock: &core_test_support::responses::ResponseMock,
+    prompt: &str,
+) -> Result<ResponsesRequest> {
+    let deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        // The recorder runs before the mock's final matcher. A captured parent
+        // request must not satisfy the child response's synchronization point.
+        if let Some(request) = mock.requests().into_iter().find(|request| {
+            request.body_contains_text(prompt) && !request.body_contains_text(SPAWN_CALL_ID)
+        }) {
+            return Ok(request);
+        }
+        if Instant::now() >= deadline {
+            anyhow::bail!("timed out waiting for matching child request");
+        }
+        sleep(Duration::from_millis(10)).await;
+    }
+}
+
 async fn wait_for_request_with_model(
     mock: &core_test_support::responses::ResponseMock,
     model: &str,
@@ -773,8 +793,8 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         .await?;
 
     test.submit_turn(TURN_1_PROMPT).await?;
-    let _ = wait_for_requests(&first_child_request).await?;
-    let _ = wait_for_requests(&second_child_request).await?;
+    let _ = wait_for_child_request(&first_child_request, CHILD_PROMPT).await?;
+    let _ = wait_for_child_request(&second_child_request, SUBAGENT_STOP_CONTINUATION).await?;
 
     let subagent_stop_inputs = match wait_for_hook_log(
         test.codex_home_path(),
