@@ -475,7 +475,7 @@ reqwest = { version = "0.12", features = ["cookies"] }
 rmcp = { version = "=3.1.3", default-features = false }
 runfiles = { git = "https://github.com/dzbarsky/rules_rust", rev = "b56cbaa8465e74127f1ea216f813cd377295ad81" }
 rustix = { version = "1.1.4", features = ["net"] }
-rustls = { version = "0.23", default-features = false, features = [
+rustls = { version = "0.23.46", default-features = false, features = [
     "aws_lc_rs",
     "std",
 ] }
@@ -624,6 +624,10 @@ ignored = [
     "icu_provider",
     "openssl-sys",
     "codex-v8-poc",
+    # cargo-shear 1.11.2 running on Linux misses genuine cfg(windows) imports.
+    # The rust-ci source contract below binds both Windows callers to this waiver.
+    # Do not remove the Windows dependency from either production crate.
+    "winapi-util",
 ]
 
 [profile.dev]

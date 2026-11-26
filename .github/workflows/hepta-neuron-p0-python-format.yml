@@ -1,0 +1,46 @@
+name: Neuron P0 exact-source Python formatting
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/test_run_bazel_ci.py"
+      - "scripts/test_hepta_candidate_transport_workflow.py"
+      - ".github/workflows/hepta-neuron-p0-python-format.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-head-ruff:
+    name: Reproduce pinned Ruff diffs (no promotion)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact PR source without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install repository-approved uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Print pinned Ruff source patch and strictly check
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          set +e
+          uv run --frozen --project scripts ruff format --diff \
+            .github/scripts/test_run_bazel_ci.py \
+            scripts/test_hepta_candidate_transport_workflow.py
+          set -e
+          uv run --frozen --project scripts ruff format --check \
+            .github/scripts/test_run_bazel_ci.py \
+            scripts/test_hepta_candidate_transport_workflow.py
+      - name: Confirm no source mutated during formatting audit
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

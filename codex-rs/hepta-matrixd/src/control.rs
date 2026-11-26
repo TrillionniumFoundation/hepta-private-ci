@@ -332,7 +332,8 @@ impl MatrixdControlState {
 
 pub(crate) struct MatrixdControlServer {
     listener: UnixListener,
-    socket_path: PathBuf,
+    // A restarted generation may now own this path. Never unlink it on Drop;
+    // the next start probes and reaps only an abandoned rendezvous.
     state: Arc<MatrixdControlState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -349,7 +350,6 @@ impl MatrixdControlServer {
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
-            socket_path,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -371,19 +371,6 @@ impl MatrixdControlServer {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
-        }
-    }
-}
-
-impl Drop for MatrixdControlServer {
-    fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
-            && error.kind() != ErrorKind::NotFound
-        {
-            eprintln!(
-                "failed to remove matrixd control socket {}: {error}",
-                self.socket_path.display()
-            );
         }
     }
 }
@@ -436,8 +423,15 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
     }
+    // A refused Windows rendezvous can disappear before the stale-path check.
+    // Only a truly missing path may proceed to the exclusive listener bind.
     if codex_uds::is_stale_socket_path(socket_path).await? {
-        tokio::fs::remove_file(socket_path).await?;
+        match tokio::fs::remove_file(socket_path).await {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(error.into()),
+        }
+    } else if !tokio::fs::try_exists(socket_path).await? {
         Ok(())
     } else {
         Err(MatrixdControlError::Io(std::io::Error::new(
@@ -852,6 +846,10 @@ mod tests {
         Ok(())
     }
 
+    // The request/response path requires an OS-authenticated UDS peer.
+    // Windows codex_uds intentionally returns Unsupported instead of trusting
+    // an unauthenticated peer; assert that rejection in the test below.
+    #[cfg(unix)]
     #[tokio::test]
     async fn health_tracks_real_task_state_and_owner_uds_serves_exact_identity() -> TestResult {
         // The product fleet root deliberately leaves Darwin `sun_path`
@@ -903,6 +901,83 @@ mod tests {
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
         cancel.cancel();
         task.await??;
+        Ok(())
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_control_socket_refuses_unverified_peer_identity() -> TestResult {
+        let temp = TempDir::new()?;
+        let (state, connections) = state(&temp, Arc::new(FakeTransport::default())).await?;
+        let socket = temp.path().join("unverified-matrixd-peer");
+        let mut listener = UnixListener::bind(&socket).await?;
+
+        // Exercise an actual connected UDS stream. A Windows connection must
+        // be rejected before any request bytes are parsed or mutations run,
+        // not silently accepted in place of missing OS peer credentials.
+        let _client = UnixStream::connect(&socket).await?;
+        let accepted = listener.accept().await?;
+        let error = serve_connection(accepted, state)
+            .await
+            .expect_err("unverified Windows peer must fail closed");
+        assert!(matches!(
+            error,
+            MatrixdControlError::Io(ref io_error)
+                if io_error.kind() == ErrorKind::Unsupported
+        ));
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Degraded);
+        connections.set_agentd_connected(true);
+        connections.set_matrix_sync_connected(true);
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
+        connections.set_fenced();
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_preserves_existing_regular_files() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("reserved-control-path");
+        fs::write(&path, b"not a socket")?;
+        let result = prepare_socket(&path).await;
+        assert!(
+            matches!(result, Err(MatrixdControlError::Io(_))),
+            "a non-socket path must never be treated as an abandoned socket"
+        );
+        assert_eq!(fs::read(&path)?, b"not a socket");
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_does_not_steal_live_listener() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("live-control-path");
+        let _live = UnixListener::bind(&path).await?;
+        assert!(
+            matches!(prepare_socket(&path).await, Err(MatrixdControlError::Io(_))),
+            "an active control rendezvous must remain exclusively owned"
+        );
+        assert!(path.exists());
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_retired_server_cannot_unlink_successor() -> TestResult {
+        let temp = TempDir::new()?;
+        let (state, _) = state(&temp, Arc::new(FakeTransport::default())).await?;
+        let path = temp.path().join("matrixd-rebound");
+        let retired =
+            MatrixdControlServer::bind(path.clone(), state, CancellationToken::new()).await?;
+
+        // An old owner must never remove an active replacement's rendezvous.
+        fs::remove_file(&path)?;
+        let _successor = UnixListener::bind(&path).await?;
+        drop(retired);
+        assert!(path.exists(), "retired server unlinked newer generation");
+        let _connected = UnixStream::connect(&path).await?;
         Ok(())
     }
 }

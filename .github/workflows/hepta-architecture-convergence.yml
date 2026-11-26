@@ -59,16 +59,27 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
+          # A PR event pins BASE_SHA while GitHub may refresh refs/pull/N/merge
+          # when main advances. Never certify a moving base as this event's tree.
+          live_base_sha="$(gh api "repos/$REPO/git/ref/heads/$GITHUB_BASE_REF" --jq '.object.sha')"
+          if [[ "$live_base_sha" != "$BASE_SHA" ]]; then
+            printf '::error title=Stale PR event base::Event base=%s differs from live %s=%s; requalify with a fresh PR event\n' "$BASE_SHA" "$GITHUB_BASE_REF" "$live_base_sha" >&2
+            exit 1
+          fi
           ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
           actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
           commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
-          test "${#parents[@]}" -eq 2
-          test "${parents[0]}" = "$BASE_SHA"
-          test "${parents[1]}" = "$SOURCE_SHA"
+          if [[ "${#parents[@]}" -ne 2 || "${parents[0]:-}" != "$BASE_SHA" || "${parents[1]:-}" != "$SOURCE_SHA" ]]; then
+            printf '::error title=Prospective merge identity drift::Expected base=%s source=%s; merge=%s has base=%s source=%s\n' "$BASE_SHA" "$SOURCE_SHA" "$actual_sha" "${parents[0]:-missing}" "${parents[1]:-missing}" >&2
+            exit 1
+          fi
           actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
           expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          test "$actual_tree" = "$expected_tree"
+          if [[ "$actual_tree" != "$expected_tree" ]]; then
+            printf '::error title=Prospective merge tree mismatch::Merge=%s actual tree=%s expected tree=%s\n' "$actual_sha" "$actual_tree" "$expected_tree" >&2
+            exit 1
+          fi
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
       - name: Construct the canonical prospective merge

@@ -16,14 +16,71 @@ use windows_sys::Win32::System::LibraryLoader::SizeofResource;
 use windows_sys::Win32::UI::WindowsAndMessaging::CREATEPROCESS_MANIFEST_RESOURCE_ID;
 use windows_sys::Win32::UI::WindowsAndMessaging::RT_MANIFEST;
 
-/// The setup executable must expose an asInvoker manifest through the Windows resource API.
-#[test]
-fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
-    let setup_executable = std::env::var_os("CARGO_BIN_EXE_codex-windows-sandbox-setup")
+// Cargo gives this test an absolute path. Bazel's unsharded rust_test exports
+// an rlocation path instead; on Windows the runfiles tree may be manifest-only.
+// Resolve the *same declared binary*, never an arbitrary executable from PATH.
+fn runfile_manifest_path(manifest: &str, logical_path: &str) -> Option<PathBuf> {
+    manifest.lines().find_map(|line| {
+        let (name, location) = line.split_once(' ')?;
+        (name == logical_path).then(|| PathBuf::from(location))
+    })
+}
+
+fn setup_helper_executable() -> Result<PathBuf> {
+    let configured = std::env::var_os("CARGO_BIN_EXE_codex-windows-sandbox-setup")
         .or_else(|| std::env::var_os("CARGO_BIN_EXE_codex_windows_sandbox_setup"))
         .map(PathBuf::from)
         .or_else(|| option_env!("CARGO_BIN_EXE_codex-windows-sandbox-setup").map(PathBuf::from))
         .context("locate the Windows sandbox setup executable")?;
+    if configured.is_absolute() || configured.is_file() {
+        return Ok(configured);
+    }
+
+    for root_name in ["RUNFILES_DIR", "TEST_SRCDIR"] {
+        if let Some(root) = std::env::var_os(root_name) {
+            let resolved = PathBuf::from(root).join(&configured);
+            if resolved.is_file() {
+                return Ok(resolved);
+            }
+        }
+    }
+
+    if let Some(manifest_path) = std::env::var_os("RUNFILES_MANIFEST_FILE") {
+        let manifest = std::fs::read_to_string(&manifest_path).with_context(|| {
+            format!(
+                "read Bazel runfiles manifest {}",
+                PathBuf::from(&manifest_path).display()
+            )
+        })?;
+        let logical_path = configured.to_string_lossy().replace('\\', "/");
+        if let Some(resolved) = runfile_manifest_path(&manifest, &logical_path) {
+            return Ok(resolved);
+        }
+    }
+    // Preserve the original metadata error when the declared binary is missing.
+    Ok(configured)
+}
+
+#[test]
+fn runfile_manifest_lookup_requires_exact_binary_identity() {
+    let manifest = "_main/codex-rs/windows-sandbox-rs/other.exe C:\\build\\other.exe\n_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe C:\\build with spaces\\setup.exe\n";
+    assert_eq!(
+        runfile_manifest_path(
+            manifest,
+            "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe"
+        ),
+        Some(PathBuf::from(r"C:\build with spaces\setup.exe"))
+    );
+    assert_eq!(
+        runfile_manifest_path(manifest, "_main/codex-rs/windows-sandbox-rs/setup.exe"),
+        None
+    );
+}
+
+/// The setup executable must expose an asInvoker manifest through the Windows resource API.
+#[test]
+fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
+    let setup_executable = setup_helper_executable()?;
     std::fs::metadata(&setup_executable)
         .with_context(|| format!("find setup helper {}", setup_executable.display()))?;
     let setup_path = setup_executable

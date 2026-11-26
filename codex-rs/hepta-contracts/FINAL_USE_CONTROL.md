@@ -214,3 +214,30 @@ The repository-controlled candidate implements the primitives above but does
 
 The canonical target/current/product/evidence table is
 [`TRACEABILITY.md`](../../docs/modules/kernel.authority/TRACEABILITY.md).
+
+
+### Windows AuthorityLease private-state owner
+
+On Windows, `AuthorityLeaseRegistry` now uses the same native
+`codex-utils-path` private-state file/dir handle owner as the existing
+Windows Final-use and Prompt Registry stores. It must validate current-user
+ownership and private DACLs, refuse reparse/hardlink aliases, hold the
+`authority-leases.lock` file lock, persist via bounded fsync/rename and
+reopen the original `authority-leases.json` bytes. No ordinary inherited-ACL
+`File::open` fallback is allowed. Non-Unix/non-Windows platforms still fail
+closed at the authority storage boundary.
+
+The native Windows regression creates a real lease, verifies the exact
+reopened state/frontier, revokes the lease and proves that revocation survives
+another process-owner reopen. An externally claimed future revision and a
+second owner identity must not be adopted, and NTFS hardlink aliases fail
+before the state bytes are trusted. CI explicitly runs these tests on
+`windows-latest` and checks contracts formatting on the exact source SHA.
+
+**Security boundary:** local filesystem/lock tests are not independently
+authenticated host time, a durable external `AuthorityFrontierStore`, a
+signed consumer Final-use receipt, an OS power-loss/recovery certificate or
+P3 production deployment. Production composition must still use
+`open_state_dir_with_trust` with a genuinely independent protected clock and
+frontier CAS store, and remain non-authorizing until signed downstream
+operation and target-host recovery receipts have passed.
