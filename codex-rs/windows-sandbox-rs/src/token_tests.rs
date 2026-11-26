@@ -17,6 +17,9 @@ use windows_sys::Win32::Security::TokenRestrictedSids;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 
+#[path = "token_delete_product_observer_tests.rs"]
+mod production_observer;
+
 struct OwnedToken(HANDLE);
 
 impl Drop for OwnedToken {
@@ -260,12 +263,20 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     let token = OwnedToken(unsafe {
         create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
     });
+    let mut observation = production_observer::Observer::capture(
+        &outside,
+        &outside.join("keep.txt"),
+        &[&cap_a, &cap_b],
+    );
     let (outside_read, refused) = {
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
         for path in &allowed {
             std::fs::write(path.join("created.txt"), "allowed")?;
             std::fs::remove_file(path.join("delete.txt"))?;
             std::fs::remove_dir(path.join("delete-dir"))?;
+        }
+        if let Some(observer) = observation.as_mut() {
+            observer.observe("before");
         }
         let outside_read = std::fs::read_to_string(outside.join("keep.txt"))?;
         let refused = [
@@ -275,8 +286,14 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
             std::fs::remove_dir(outside.join("keep-dir")),
         ]
         .map(|result| result.err().map(|error| error.kind()));
+        if let Some(observer) = observation.as_mut() {
+            observer.observe("after");
+        }
         (outside_read, refused)
     };
+    if let Some(observer) = observation.as_mut() {
+        observer.finish(&outside, &outside.join("keep.txt"));
+    }
     assert_eq!(refused, [Some(std::io::ErrorKind::PermissionDenied); 4]);
     assert_eq!(outside_read, "outside");
     assert_eq!(
