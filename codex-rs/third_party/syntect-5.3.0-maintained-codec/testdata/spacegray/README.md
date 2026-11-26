@@ -121,7 +121,7 @@ Tabs height:
   "spacegray_tabs_xlarge": true
 ```
 
-Tabs width: 
+Tabs width:
 
 ```json
   "spacegray_tabs_auto_width": true

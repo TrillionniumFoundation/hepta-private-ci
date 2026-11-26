@@ -18,7 +18,7 @@ green:     #859900;
 ```
 
 ## ACCENT
-Colour    |  Use 
+Colour    |  Use
 --------- | -----
 `#b58900` | instance?
 `#cb4b16` | include/import
@@ -30,7 +30,7 @@ Colour    |  Use
 `#859900` | punctuation.definition
 
 ## LIGHT
-Colour    |  Use 
+Colour    |  Use
 --------- | -----
 base3     | bg
 base2     | highlights bg (current line, gutter)
@@ -45,7 +45,7 @@ base03    | unused
 `#ec9489` | invalid   (red   on base3; 33%)
 
 ## DARK
-Colour    |  Use 
+Colour    |  Use
 --------- | -----
 base03    | bg
 base02    | highlight
