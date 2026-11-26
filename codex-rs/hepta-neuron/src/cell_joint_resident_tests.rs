@@ -390,26 +390,29 @@ fn resident_refuses_another_manifest_without_discarding_the_original_cache() -> 
     let asset_bytes = (assets.weights.len() + assets.public.len()) as u64;
     let mut harness = Harness::with_assets(assets.weights, assets.public, Arc::new(|| 10))?;
     resident(&mut harness)?;
-    let original = harness.worker.execute(
-        &harness.manifest,
-        &harness.request,
-        &AtomicBool::new(false),
-    )?;
+    let original =
+        harness
+            .worker
+            .execute(&harness.manifest, &harness.request, &AtomicBool::new(false))?;
     let mut other = harness.manifest.clone();
     other.bundle_digest = [91; 32];
     let mut request = harness.request.clone();
     request.predecessor.manifest_digest = other.digest()?;
     assert_eq!(
-        harness.worker.execute(&other, &request, &AtomicBool::new(false)),
+        harness
+            .worker
+            .execute(&other, &request, &AtomicBool::new(false)),
         Err(CellGenerationErrorV2::InvalidBinding)
     );
-    let reused = harness.worker.execute(
-        &harness.manifest,
-        &harness.request,
-        &AtomicBool::new(false),
-    )?;
+    let reused =
+        harness
+            .worker
+            .execute(&harness.manifest, &harness.request, &AtomicBool::new(false))?;
     assert_eq!(reused.successor_state, original.successor_state);
-    assert_eq!(communication(&reused)? + asset_bytes, communication(&original)?);
+    assert_eq!(
+        communication(&reused)? + asset_bytes,
+        communication(&original)?
+    );
     Ok(())
 }
 
@@ -418,11 +421,9 @@ fn resident_invalid_clock_keeps_the_operation_unresolved() -> TestResult {
     let mut harness = Harness::new(/*weights_bytes*/ 16, Arc::new(|| 0))?;
     resident(&mut harness)?;
     assert_eq!(
-        harness.worker.execute(
-            &harness.manifest,
-            &harness.request,
-            &AtomicBool::new(false)
-        ),
+        harness
+            .worker
+            .execute(&harness.manifest, &harness.request, &AtomicBool::new(false)),
         Err(CellGenerationErrorV2::Unavailable)
     );
     Ok(())

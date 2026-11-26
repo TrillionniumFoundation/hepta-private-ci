@@ -96,7 +96,12 @@ impl ResidentTransport {
         request.payload = match prepare_payload(include_assets, last_clock) {
             Ok(payload) => payload,
             Err(CellGenerationErrorV2::Deadline) => {
-                return observation(ProcessStatus::Deadline, started, Vec::new(), /*communication_bytes*/ 0);
+                return observation(
+                    ProcessStatus::Deadline,
+                    started,
+                    Vec::new(),
+                    /*communication_bytes*/ 0,
+                );
             }
             Err(error) => return Err(error),
         };
@@ -128,7 +133,9 @@ impl ResidentTransport {
             // No frame entered the writer queue. A cancellation/clock failure
             // here must not poison another Cell's healthy cached model.
             return match result {
-                Ok((status, output)) => observation(status, started, output, /*communication_bytes*/ 0),
+                Ok((status, output)) => {
+                    observation(status, started, output, /*communication_bytes*/ 0)
+                }
                 Err(error) => Err(error),
             };
         }

@@ -83,11 +83,9 @@ fn invalid_observed_clock_never_becomes_terminal_for_either_transport() -> TestR
             harness.request.predecessor.manifest_digest = harness.manifest.digest()?;
         }
         assert_eq!(
-            harness.worker.execute(
-                &harness.manifest,
-                &harness.request,
-                &AtomicBool::new(false)
-            ),
+            harness
+                .worker
+                .execute(&harness.manifest, &harness.request, &AtomicBool::new(false)),
             Err(CellGenerationErrorV2::Unavailable)
         );
     }
