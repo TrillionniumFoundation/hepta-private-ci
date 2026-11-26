@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.hcsn.frozen-view-archive-index.v2",
+  "identity": "FROZEN_VIEWS_READBACK_01",
+  "publication_date_utc": "2026-11-26",
+  "archive": {
+    "name": "FROZEN_VIEWS_READBACK_01.tar.xz",
+    "bytes": 1205528,
+    "sha256": "a512310c7d543566888bd7f20e74a179ac4ac74ac07f2805c5b87e7b452d14df"
+  },
+  "orderedparts": [
+    {"name":"FROZEN_VIEWS_READBACK_01.tar.xz.part000","bytes":450000,"sha256":"a4f70f6c4a6a6edddc548a23263e3544200067ed44e868efbb22fd5f542b7011"},
+    {"name":"FROZEN_VIEWS_READBACK_01.tar.xz.part001","bytes":450000,"sha256":"15df191ca4322978376c938025f188f9308d043f6f0d4b93a6817a249427db37"},
+    {"name":"FROZEN_VIEWS_READBACK_01.tar.xz.part002","bytes":305528,"sha256":"24ef369bd4297bd4c6cf4ced2dfccbdd44730e1cbe345a5fb08817af23ce4a5e"}
+  ],
+  "part_maximum_bytes": 450000,
+  "inventory": {
+    "path": "FROZEN_VIEWS_READBACK_01.members.json",
+    "bytes": 28294,
+    "sha256": "6018c4206af0d1ffef51432014c9b2b14dc7c38c8585829a5c9f2097d884871c",
+    "payload_file_count": 115,
+    "archive_member_count": 116,
+    "excludes_itself": true
+  },
+  "preserved_scope": {
+    "registered_input_files": 33,
+    "unique_envelopes": 30,
+    "firstcycle_view_files": 22,
+    "torch_view_files": 12,
+    "original_manifests_and_readmes_unchanged": true,
+    "all_stage_receipts_logs_and_executed_driver_retained": true
+  },
+  "actual_results": {
+    "byte_gate": "PASS",
+    "firstcycle": "RETAINED_CUSTODY_ARITHMETIC_PASS",
+    "scientific_status": "HOLD_NO_GO",
+    "torch_native_probe_executed": false,
+    "model_calls": 0,
+    "oracle_calls": 0,
+    "optimizer_updates": 0
+  },
+  "cpu_gate_disposition": {
+    "mechanical_methods_passed": 7,
+    "guard_child_processes": 2,
+    "policy_status": "WITHDRAWN_SCOPE_TOO_BROAD",
+    "not_applicable_to_separate_26_call_short_cpu_profile": true,
+    "original_results_and_old_readmes_preserved": true
+  },
+  "archive_readback_verified": true,
+  "orderedparts_reconstruction_verified": true,
+  "all_source_bytes_unchanged_during_packaging": true,
+  "new_verifier_model_or_training_executions_during_packaging": 0,
+  "anchors": [
+    {"path":"hx_residual_candidate/REGISTRATION.json","bytes":9522,"sha256":"4c2a5fcf45d9d5a4f0cf95929d7f0ad4b2651de327a393f4bcfa994d1a45434a"},
+    {"path":"hx_residual_candidate/ASSEMBLY.json","bytes":17708,"sha256":"cd81aabc7d3fb267c234a82278b63563dfe5227d842b59cf881719686ece14fc"},
+    {"path":"local_residuals_01/RESULT.json","bytes":7949,"sha256":"59968a7d0704012935fc053b6139e724add0ef9f6a463edd5b85994aa40a783e"},
+    {"path":"local_residuals_01/frozen_snapshot/INDEX.json","bytes":19240,"sha256":"64a757bcb598c1b3f08c3e4e48f03c92dec2e90e767d1f371ae10877bd4a5b19"},
+    {"path":"local_residuals_01/firstcycle_verifier/RESULT.json","bytes":7667,"sha256":"37a5187ffdc6806269e3b5276badd44dc536e68cffadee0ce715c99cfffc059d"},
+    {"path":"local_residuals_01/firstcycle_verifier/verifier.stdout","bytes":517,"sha256":"7ad2bbad8c114abddf974ba6d5fdb04a241bf6dc192d064f48fe408ee798d68f"},
+    {"path":"evidence/FORMAT_05.json","bytes":1711,"sha256":"461c1e45f0a6eed27e4956cf467df3bad7ec3381c4bfb8a9d10b79d61e8e87d3"}
+  ],
+  "published_text_mirrors": [
+    {"name":"materialize_frozen_views.py","source":"hx_residual_candidate/materialize_frozen_views.py","bytes":9059,"sha256":"0015cf12472d2b852e64597fbf30ecc2bc36d7a7f295b16fda7a2b1f65efb78d","lines":190},
+    {"name":"run_retained_firstcycle.py","source":"hx_residual_candidate/run_retained_firstcycle.py","bytes":10278,"sha256":"a5acb1df8eb63eb71732ffd402ee38e992faa5bf4bfa3d7ce7f3f6dd6495bef5","lines":205},
+    {"name":"README_ZH.md","source":"hx_residual_candidate/README_SCOPE_CORRECTED_ZH.md","bytes":7301,"sha256":"d9d367003057f233eed0088acfca35b3369d1f0972e70c238aa830ad5fe7f685","lines":89,"source_archive":"FROZEN_VIEWS_READBACK_01.publication-v2.tar.xz"},
+    {"name":"RESULT.json","source":"local_residuals_01/firstcycle_verifier/RESULT.json","bytes":7667,"sha256":"37a5187ffdc6806269e3b5276badd44dc536e68cffadee0ce715c99cfffc059d","lines":92}
+  ],
+  "restore_policy": [
+    "verify each orderedpart size and SHA256",
+    "concatenate strictly in listed order and verify full archive",
+    "extract regular relative members into a new empty directory",
+    "verify inventory and each original member before read-only review",
+    "do not reexecute completed verifiers, historical native probes, or withdrawn CPU gate"
+  ],
+  "publication_revision": 2,
+  "historical_probe_scope": "Zero Torch/model calls applies to this retained-readback batch only; historical #6248 and #7000 native probes already executed successfully and are not repeated.",
+  "previous_index": {"name":"FROZEN_VIEWS_READBACK_01.index.json","bytes":4305,"sha256":"59afc3b3be5f793b40d52304c5047d281e07eac74dff65279098410e4038fa10","preserved_in":"FROZEN_VIEWS_READBACK_01.publication-v2.tar.xz"},
+  "publication_supplement": {"name":"FROZEN_VIEWS_READBACK_01.publication-v2.tar.xz","bytes":5592,"sha256":"777c1f89b3e135fb027f39f38e5517ff474f9947ec5316e6fa69cc674a0576eb","members":[{"path":"FROZEN_VIEWS_READBACK_01.index.json","bytes":4305,"sha256":"59afc3b3be5f793b40d52304c5047d281e07eac74dff65279098410e4038fa10"},{"path":"hx_residual_candidate/README_SCOPE_CORRECTED_ZH.md","bytes":7301,"sha256":"d9d367003057f233eed0088acfca35b3369d1f0972e70c238aa830ad5fe7f685"}]}
+}

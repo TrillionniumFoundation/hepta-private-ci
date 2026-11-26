@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.hcsn.torch-history-publication-index.v1",
+  "status": "READBACK_BYTES_PRESERVED_NO_NEW_PROBE",
+  "archive": {
+    "path": "TORCH_HISTORY_READBACK_01.tar.xz",
+    "bytes": 54560,
+    "sha256": "623a0dcb2122eab8b655be4e1364f67d53775480c37688804755a9ff675df819",
+    "payload_files": 28,
+    "total_members": 29,
+    "full_member_inventory": "TORCH_HISTORY_READBACK_01.members.json",
+    "full_member_inventory_sha256": "97f6e140f4c35118f7511e92511fd54159ba8aa8ad00ae0f8beaa0d04df33683"
+  },
+  "observed_source": {
+    "current_head": "55ffa46dc4a74e01714b13bb3625f9ca12aeb684",
+    "qualified_head": "7869063345ea43cc9cb83ff6d76d70bf94ff62a5",
+    "matrix_path_in_archive": "CURRENT_11_BLOB_COMPARISON.json",
+    "matrix_sha256": "8410dd474268d524ae99f24e3111c795362548e6ef1967969119ec43041cc4c6",
+    "same_git_blobs": 9,
+    "different_git_blobs": 2,
+    "total": 11
+  },
+  "readback": {
+    "envelopes": 22,
+    "decoded_job_logs": 4,
+    "original_result_documents": 2,
+    "git_text_content_blobs_recomputed": 9,
+    "arrays_loaded": 0,
+    "original_action_zip_bodies_downloaded": 0,
+    "new_model_or_adjoint_or_optimizer_or_test_executions": 0,
+    "source_inputs_unchanged": true,
+    "archived_bytes_readback_equal": true,
+    "prior_frozen_views_files_unchanged": true
+  },
+  "published_text_mirror": {
+    "path": "README_ZH.md",
+    "archive_path": "PUBLICATION_README_ZH.md",
+    "bytes": 7296,
+    "sha256": "1d395e1ad622429a4aa584be6badf1c3d462b4abe360e03661d0236a593c6877"
+  },
+  "existing_reviewable_fix": {
+    "pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7000",
+    "head": "7869063345ea43cc9cb83ff6d76d70bf94ff62a5",
+    "hosted_run": 45106995789,
+    "hosted_jobs": [
+      137470458296,
+      137470458710
+    ],
+    "no_new_copy_or_push_or_pr_or_probe": true
+  },
+  "claim_limit": "Closes missing historical probe receipts; does not transfer whole-head runtime qualification or alter HCSN HOLD."
+}
