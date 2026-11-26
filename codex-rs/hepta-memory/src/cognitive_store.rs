@@ -238,13 +238,17 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
         "cognitive_operation_pre_boundary_rejections_no_delete",
         "trigger",
     ),
+    (
+        "cognitive_operation_pre_boundary_rejections_no_replace",
+        "trigger",
+    ),
     ("cognitive_local_outbox_hos2_delivery", "index"),
 ];
-// Exact required-object definitions after migrations 0001..=0019.
-// Migration 0019 adds the typed Notes fence exclusion terminal while retaining
-// the immutable original journal and all foreign-key edges.
+// Exact required-object definitions after migrations 0001..=0020.
+// Migration 0020 protects existing pre-boundary proofs at insert time without
+// changing the original journal or its foreign-key edges.
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "4e2fbe096bc4f6c936a932fe279d47b6709da9468499358f34df48ae6cc1c025";
+    "bd1b427a9f23ee9f9ce0afa19d304869f0d50197fd9acaffe6aaabc67e442e08";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {

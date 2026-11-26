@@ -1117,7 +1117,7 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .collect();
     assert_eq!(
         expected_migrations,
-        (1_i64..=19)
+        (1_i64..=20)
             .map(|version| (version, true))
             .collect::<Vec<_>>(),
         "the compiled migration chain must retain every historical version",
