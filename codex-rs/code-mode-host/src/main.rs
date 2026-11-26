@@ -1,3 +1,4 @@
+use std::io::Write as _;
 use std::time::Instant;
 
 use clap::Parser;
@@ -13,8 +14,15 @@ struct Cli {
     listen: String,
 }
 
+fn main() -> anyhow::Result<()> {
+    // One best-effort fixed marker before Tokio or the subscriber is built.
+    // A failed or partial write must not change the host's startup result.
+    let _ = std::io::stderr().write(b"CODEX_CODE_MODE_STARTUP rust_main_entered\n");
+    run_with_runtime()
+}
+
 #[tokio::main(flavor = "current_thread")]
-async fn main() -> anyhow::Result<()> {
+async fn run_with_runtime() -> anyhow::Result<()> {
     // The Tokio runtime has already been constructed before this body starts.
     let startup_started = Instant::now();
     tracing_subscriber::fmt()
