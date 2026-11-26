@@ -1,0 +1,26 @@
+{
+  "schema": "codex.hia.utf8-stream-buffer.v1",
+  "module": "utf8_stream",
+  "source_path": "hia/utf8_stream.hepta",
+  "source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+  "source_bytes": 10133,
+  "compiler_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "entry_profile": "borrowed-buffers-u32-v1",
+  "source": "Complete borrowed raw byte slice; no framing or aggregate byte cap is added.",
+  "output_bytes": 32,
+  "output_words": [
+    "version (1)",
+    "classification (0 complete, 1 invalid, 2 incomplete)",
+    "valid_up_to byte offset",
+    "error_len (1..3 for invalid; 0 otherwise)"
+  ],
+  "return_success": 32,
+  "return_short_output": 4294967294,
+  "capacity_precedence": "Output capacity is checked before any input read. Short output changes no buffer.",
+  "complete": "valid_up_to equals source length; error_len equals zero.",
+  "invalid": "The first invalid sequence has Rust str::from_utf8 valid_up_to and error_len semantics.",
+  "incomplete": "The input ends in 1..3 otherwise valid bytes of a partial scalar. valid_up_to names its first byte.",
+  "effects": "Only output[0..32] is written on success. Source, workspace and output tail remain unchanged. No pointer is retained.",
+  "public_owner": "Utf8StreamParser keeps its original Vec and inner call/rollback/finish order. HIA decides UTF-8 validity and the exact error offsets.",
+  "native_scope": "Linux x86-64 GNU, opt-in hia-native. Public library owner; no installed-CLI reachability claim."
+}
