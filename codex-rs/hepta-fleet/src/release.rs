@@ -43,6 +43,10 @@ const MAX_RELEASE_ARGUMENT_BYTES: usize = 65_536;
 const MAX_ALLOWED_RELEASES: usize = 256;
 static RELEASE_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
+#[cfg(target_os = "macos")]
+#[path = "release_publication_macos.rs"]
+mod publication_macos;
+
 /// Opaque identity of one administrator-installed immutable agentd release.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ReleaseId(String);
@@ -257,7 +261,15 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
+        #[cfg(target_os = "macos")]
+        observe_io(
+            "install.create_staging",
+            publication_macos::create_staging(&staging),
+        )?;
+        #[cfg(not(target_os = "macos"))]
         observe_io("install.create_staging", std::fs::create_dir(&staging))?;
+        #[cfg(target_os = "macos")]
+        let mut publication = publication_macos::Publication::default();
         let result = (|| {
             let bin_root = staging.join("bin");
             observe_io("install.create_bin", std::fs::create_dir(&bin_root))?;
@@ -312,14 +324,15 @@ impl FleetRegistry {
             observe_release("install.mode_bin", set_mode(&bin_root, /*mode*/ 0o555))?;
             observe_release("install.sync_bin", sync_directory(&bin_root))?;
             observe_release("install.sync_staging", sync_directory(&staging))?;
-            observe_release("install.mode_staging", set_mode(&staging, /*mode*/ 0o555))?;
-            let rename_result =
-                observe_io("install.rename", std::fs::rename(&staging, &final_root));
-            #[cfg(all(test, target_os = "macos"))]
-            if let Err(error) = &rename_result {
-                let _ = crate::release_io::observe_failed_rename(&staging, &final_root, error);
+            #[cfg(target_os = "macos")]
+            publication.publish(&staging, &final_root)?;
+            #[cfg(not(target_os = "macos"))]
+            {
+                observe_release("install.mode_staging", set_mode(&staging, /*mode*/ 0o555))?;
+                let rename_result =
+                    observe_io("install.rename", std::fs::rename(&staging, &final_root));
+                rename_result?;
             }
-            rename_result?;
             observe_release(
                 "install.sync_releases_root",
                 sync_directory(self.layout().releases_root()),
@@ -327,8 +340,13 @@ impl FleetRegistry {
             Ok(())
         })();
         if let Err(error) = result {
-            make_tree_removable(&staging);
-            let _ = std::fs::remove_dir_all(&staging);
+            #[cfg(target_os = "macos")]
+            publication.cleanup_staging(&staging);
+            #[cfg(not(target_os = "macos"))]
+            {
+                make_tree_removable(&staging);
+                let _ = std::fs::remove_dir_all(&staging);
+            }
             return Err(error);
         }
         observe_release(
