@@ -1235,12 +1235,10 @@ mod tests {
             release_id: release_id.clone(),
             manifest_sha256,
         };
-        let agent = fixture
-            .registry
-            .load()?
-            .agent(&fixture.first)
-            .unwrap()
-            .clone();
+        let agent = match fixture.registry.load()?.agent(&fixture.first) {
+            Some(agent) => agent.clone(),
+            None => panic!("fixture agent missing before legacy release verification"),
+        };
         let allowance_path = allowance_path(agent.layout.releases_root(), &release_id);
         write_new_json(&allowance_path, &allowance)?;
         set_mode(&allowance_path, 0o444)?;
@@ -1283,14 +1281,11 @@ mod tests {
             Some(v1),
         )?;
         let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
-        assert_eq!(
-            reopened
-                .load()?
-                .agent(&fixture.first)
-                .unwrap()
-                .release_state,
-            second
-        );
+        let reopened_snapshot = reopened.load()?;
+        let Some(reopened_agent) = reopened_snapshot.agent(&fixture.first) else {
+            panic!("reopened fixture agent missing after release state commit");
+        };
+        assert_eq!(reopened_agent.release_state, second);
 
         let program = fixture
             .registry
