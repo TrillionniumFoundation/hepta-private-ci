@@ -205,7 +205,8 @@ impl LearningArtifactOwnerService {
                 &request.admission,
                 request.admission.withdrawal_head_digest,
                 request.admission.admitted_at,
-            ).is_err()
+            )
+            .is_err()
         {
             return Err(LearningArtifactOwnerServiceError::RequestMismatch);
         }
@@ -222,8 +223,14 @@ impl LearningArtifactOwnerService {
         let checkpoint = self.host.recover_publication(&request.operation_id)?;
         if let Some(recovery) = checkpoint.as_ref() {
             validate_request_against_checkpoint(request, &recovery.checkpoint)?;
-            if phase_at_least(recovery.checkpoint.phase, ArtifactPublicationPhaseV1::WitnessDurable) {
-                self.host.verify_published_head_replay(&request.signed_current_head, &recovery.checkpoint)?;
+            if phase_at_least(
+                recovery.checkpoint.phase,
+                ArtifactPublicationPhaseV1::WitnessDurable,
+            ) {
+                self.host.verify_published_head_replay(
+                    &request.signed_current_head,
+                    &recovery.checkpoint,
+                )?;
             }
             if recovery.checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
                 return receipt_from_checkpoint(&recovery.checkpoint);
@@ -680,7 +687,11 @@ mod tests {
         drift.signed_current_head.signature[0] ^= 1;
         assert!(service.publish(drift).is_err());
         let mut drift = request.clone();
-        drift.admission.validated_manifest.manifest.objective_class_digest = digest("drift");
+        drift
+            .admission
+            .validated_manifest
+            .manifest
+            .objective_class_digest = digest("drift");
         assert!(service.publish(drift).is_err());
         let mut drift = request.clone();
         drift.signed_current_head.witness.generation = Generation::new(99).unwrap();
@@ -715,7 +726,6 @@ mod tests {
         );
     }
 
-
     // Exercise the service restart path, not just the host snapshot API.
     // Each cut uses an isolated durable store and a fixture trust domain.
     #[test]
@@ -742,38 +752,88 @@ mod tests {
             let service = LearningArtifactOwnerService::open(config.clone()).unwrap();
             let predecessor = service.registry().snapshot().head_digest;
             let admission = admit_manifest_at_withdrawal_head_v3(
-                &withdrawals, withdrawals.head_digest(), manifest(), 20,
-            ).unwrap();
+                &withdrawals,
+                withdrawals.head_digest(),
+                manifest(),
+                20,
+            )
+            .unwrap();
             let mut staged = service.registry().clone();
-            let mut transaction = service.host.begin_publication(
-                id("operation"), admission, &withdrawals, service.registry(), predecessor, 20,
-            ).unwrap();
-            service.host.stage_compatibility_registration(&transaction, &mut staged, 20).unwrap();
-            let request = publish_request(&key, &withdrawals, predecessor, staged.snapshot().head_digest);
+            let mut transaction = service
+                .host
+                .begin_publication(
+                    id("operation"),
+                    admission,
+                    &withdrawals,
+                    service.registry(),
+                    predecessor,
+                    20,
+                )
+                .unwrap();
+            service
+                .host
+                .stage_compatibility_registration(&transaction, &mut staged, 20)
+                .unwrap();
+            let request = publish_request(
+                &key,
+                &withdrawals,
+                predecessor,
+                staged.snapshot().head_digest,
+            );
             if phase_at_least(cut, ArtifactPublicationPhaseV1::PayloadDurable) {
-                service.host.ensure_payload_durable(&mut transaction, &staged, &request.payload, 20).unwrap();
+                service
+                    .host
+                    .ensure_payload_durable(&mut transaction, &staged, &request.payload, 20)
+                    .unwrap();
             }
             if phase_at_least(cut, ArtifactPublicationPhaseV1::RegistryDurable) {
-                service.host.ensure_registry_durable(&mut transaction, &staged, &withdrawals, digest("binding"), 20).unwrap();
+                service
+                    .host
+                    .ensure_registry_durable(
+                        &mut transaction,
+                        &staged,
+                        &withdrawals,
+                        digest("binding"),
+                        20,
+                    )
+                    .unwrap();
             }
             if phase_at_least(cut, ArtifactPublicationPhaseV1::WitnessDurable) {
-                service.host.ensure_witness_durable(&mut transaction, &request.signed_current_head, &withdrawals, 20).unwrap();
+                service
+                    .host
+                    .ensure_witness_durable(
+                        &mut transaction,
+                        &request.signed_current_head,
+                        &withdrawals,
+                        20,
+                    )
+                    .unwrap();
             }
             assert_eq!(transaction.phase(), cut);
             drop(transaction);
             drop(service);
-            let mut reopened = LearningArtifactOwnerService::open(
-                LearningArtifactOwnerServiceConfigV1 { now: 21, ..config.clone() }
-            ).unwrap();
+            let mut reopened =
+                LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                    now: 21,
+                    ..config.clone()
+                })
+                .unwrap();
             assert_eq!(reopened.recovery_required(), Some(&request.operation_id));
             let mut unrelated = request.clone();
             unrelated.operation_id = id("unrelated");
-            assert!(matches!(reopened.publish(unrelated), Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))));
+            assert!(matches!(
+                reopened.publish(unrelated),
+                Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))
+            ));
             let mut changed = request.clone();
             changed.payload[0] ^= 1;
             assert!(reopened.publish(changed).is_err());
             let mut changed = request.clone();
-            changed.admission.validated_manifest.manifest.objective_class_digest = digest("changed");
+            changed
+                .admission
+                .validated_manifest
+                .manifest
+                .objective_class_digest = digest("changed");
             assert!(reopened.publish(changed).is_err());
             if cut == ArtifactPublicationPhaseV1::WitnessDurable {
                 let mut changed = request.clone();
@@ -784,25 +844,39 @@ mod tests {
                 assert!(reopened.publish(changed).is_err());
             }
             assert_eq!(reopened.recovery_required(), Some(&request.operation_id));
-            let checkpoint = reopened.host.recover_publication(&request.operation_id).unwrap().unwrap();
+            let checkpoint = reopened
+                .host
+                .recover_publication(&request.operation_id)
+                .unwrap()
+                .unwrap();
             assert_eq!(checkpoint.checkpoint.phase, cut);
             let receipt = reopened.publish(request.clone()).unwrap();
             assert!(reopened.recovery_required().is_none());
             assert_eq!(reopened.publish(request.clone()).unwrap(), receipt);
-            assert_eq!(reopened.current_registry_view(21).unwrap().receipt().head_digest, receipt.registry_head_digest);
+            assert_eq!(
+                reopened
+                    .current_registry_view(21)
+                    .unwrap()
+                    .receipt()
+                    .head_digest,
+                receipt.registry_head_digest
+            );
             drop(reopened);
-            let mut terminal = LearningArtifactOwnerService::open(
-                LearningArtifactOwnerServiceConfigV1 {
-                    now: 21, required_current_head: Some(request.signed_current_head.clone()), ..config
-                }
-            ).unwrap();
+            let mut terminal =
+                LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                    now: 21,
+                    required_current_head: Some(request.signed_current_head.clone()),
+                    ..config
+                })
+                .unwrap();
             assert!(terminal.recovery_required().is_none());
             assert_eq!(terminal.publish(request).unwrap(), receipt);
-            println!("PENDING_CUT {:?} exact recovery and durable terminal replay; unrelated/drift rejected", cut);
+            println!(
+                "PENDING_CUT {:?} exact recovery and durable terminal replay; unrelated/drift rejected",
+                cut
+            );
         }
     }
-
-
 
     // Reuse the existing process-fault worker, but actually reconcile its
     // interrupted publications through the named public service after death.
@@ -827,35 +901,69 @@ mod tests {
         let preview = LearningArtifactOwnerService::open(preview_config.clone()).unwrap();
         let predecessor = preview.registry().snapshot().head_digest;
         let admission = admit_manifest_at_withdrawal_head_v3(
-            &withdrawals, withdrawals.head_digest(), manifest(), 20,
-        ).unwrap();
+            &withdrawals,
+            withdrawals.head_digest(),
+            manifest(),
+            20,
+        )
+        .unwrap();
         let mut staged = preview.registry().clone();
         let transaction = ArtifactPublicationTransactionV1::begin(
-            id("process-operation"), admission, &withdrawals, &staged, predecessor, 20,
-        ).unwrap();
-        preview.host.stage_compatibility_registration(&transaction, &mut staged, 20).unwrap();
-        let mut request = publish_request(&key, &withdrawals, predecessor, staged.snapshot().head_digest);
+            id("process-operation"),
+            admission,
+            &withdrawals,
+            &staged,
+            predecessor,
+            20,
+        )
+        .unwrap();
+        preview
+            .host
+            .stage_compatibility_registration(&transaction, &mut staged, 20)
+            .unwrap();
+        let mut request = publish_request(
+            &key,
+            &withdrawals,
+            predecessor,
+            staged.snapshot().head_digest,
+        );
         request.operation_id = id("process-operation");
         drop(preview);
         for (stage, expected_phase) in [
             ("payload-effect", ArtifactPublicationPhaseV1::Prepared),
-            ("registry-effect", ArtifactPublicationPhaseV1::PayloadDurable),
+            (
+                "registry-effect",
+                ArtifactPublicationPhaseV1::PayloadDurable,
+            ),
             ("head-effect", ArtifactPublicationPhaseV1::RegistryDurable),
             ("acknowledged", ArtifactPublicationPhaseV1::Acknowledged),
         ] {
             let directory = TestDir::new();
             let mut child = Command::new(&executable)
-                .args(["--ignored", "--exact", "owner_host::tests::owner_host_process_fault_worker", "--nocapture"])
+                .args([
+                    "--ignored",
+                    "--exact",
+                    "owner_host::tests::owner_host_process_fault_worker",
+                    "--nocapture",
+                ])
                 .env("HEPTA_ARTIFACT_OWNER_WORKER", "1")
                 .env("HEPTA_ARTIFACT_OWNER_ROOT", &directory.0)
                 .env("HEPTA_ARTIFACT_OWNER_STAGE", stage)
-                .stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null())
-                .spawn().unwrap();
+                .stdin(Stdio::null())
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .spawn()
+                .unwrap();
             let marker = directory.0.join(format!("worker-{stage}.ready"));
             let mut ready = false;
             for _ in 0..500 {
-                if marker.is_file() { ready = true; break; }
-                if child.try_wait().unwrap().is_some() { break; }
+                if marker.is_file() {
+                    ready = true;
+                    break;
+                }
+                if child.try_wait().unwrap().is_some() {
+                    break;
+                }
                 std::thread::sleep(Duration::from_millis(10));
             }
             if !ready {
@@ -866,18 +974,28 @@ mod tests {
             child.kill().unwrap();
             let exit = child.wait().unwrap();
             assert!(!exit.success());
-            let mut service = LearningArtifactOwnerService::open(
-                LearningArtifactOwnerServiceConfigV1 {
-                    root: directory.0.clone(), now:21, ..preview_config.clone()
-                }
-            ).unwrap();
-            let cp = service.host.recover_publication(&request.operation_id).unwrap().unwrap().checkpoint;
+            let mut service =
+                LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                    root: directory.0.clone(),
+                    now: 21,
+                    ..preview_config.clone()
+                })
+                .unwrap();
+            let cp = service
+                .host
+                .recover_publication(&request.operation_id)
+                .unwrap()
+                .unwrap()
+                .checkpoint;
             assert_eq!(cp.phase, expected_phase);
             if expected_phase != ArtifactPublicationPhaseV1::Acknowledged {
                 assert_eq!(service.recovery_required(), Some(&request.operation_id));
                 let mut unrelated = request.clone();
                 unrelated.operation_id = id("unrelated");
-                assert!(matches!(service.publish(unrelated), Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))));
+                assert!(matches!(
+                    service.publish(unrelated),
+                    Err(LearningArtifactOwnerServiceError::RecoveryRequired(_))
+                ));
             }
             let mut bad = request.clone();
             bad.payload[0] ^= 1;
@@ -885,141 +1003,279 @@ mod tests {
             let receipt = service.publish(request.clone()).unwrap();
             assert_eq!(service.publish(request.clone()).unwrap(), receipt);
             assert!(service.recovery_required().is_none());
-            assert_eq!(service.current_registry_view(21).unwrap().receipt().head_digest, receipt.registry_head_digest);
-            assert_eq!(service.host.recover_publication(&request.operation_id).unwrap().unwrap().checkpoint.phase,
-                ArtifactPublicationPhaseV1::Acknowledged);
-            println!("PROCESS_DEATH {stage} checkpoint={expected_phase:?} exact public reconciliation");
+            assert_eq!(
+                service
+                    .current_registry_view(21)
+                    .unwrap()
+                    .receipt()
+                    .head_digest,
+                receipt.registry_head_digest
+            );
+            assert_eq!(
+                service
+                    .host
+                    .recover_publication(&request.operation_id)
+                    .unwrap()
+                    .unwrap()
+                    .checkpoint
+                    .phase,
+                ArtifactPublicationPhaseV1::Acknowledged
+            );
+            println!(
+                "PROCESS_DEATH {stage} checkpoint={expected_phase:?} exact public reconciliation"
+            );
         }
     }
 
-
-// Append within owner_service::tests. Explicit opt-in archived-data qualification.
-// This is a disposable research registry; metadata and local trust are test-scoped.
-// No evaluation signature or activation is created.
-#[test]
-#[ignore = "requires hash-pinned PFT archive; run explicitly"]
-fn pft_archived_family_public_owner_lifecycle() {
-    use crate::{ParameterFamilyGuardV1, PinnedCandidateSpec, load_pinned_candidate,
-        PinnedCandidateLoadError};
-    use std::fs::File;
-    use std::io::Read;
-    let data = PathBuf::from(std::env::var("PFT_R35_DATA").unwrap());
-    let entries = [
-        ("pft-parent", "parent.f64", "89dba314bb6d25569149098087f698789cfae70534ced133a318911903a6df32"),
-        ("pft-mean", "mean_generated_pair.f64", "6623a875e35a3f50effe9dd313e5c83dfbb12cf4c293e35ed06bd0ff3e0f6df0"),
-        ("pft-minimax", "minimax_generated_pair.f64", "0460c00ee92407133191eeb1c337cde1a6aad59829cf88e8ae360d00d8bad6cb"),
-    ];
-    let payloads: Vec<Vec<u8>> = entries.iter().map(|(_, name, hash)| {
-        let bytes = fs::read(data.join(name)).unwrap();
-        assert_eq!(bytes.len(), 8192);
-        assert_eq!(Digest32::of_bytes(&bytes).to_string(), *hash);
-        bytes
-    }).collect();
-    let source = fs::read(data.join("training_result.json")).unwrap();
-    assert_eq!(Digest32::of_bytes(&source).to_string(), "2f311d97f2a9995687de43aa9709a27ec8b7eaa883d132093f7600a396a43d28");
-    let directory = TestDir::new();
-    let mut secret = [0u8;32];
-    File::open("/dev/urandom").unwrap().read_exact(&mut secret).unwrap();
-    let key = SigningKey::from_bytes(&secret);
-    secret.fill(0);
-    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
-    let scope_digest = withdrawals.scope_digest().unwrap();
-    let config = LearningArtifactOwnerServiceConfigV1 {
-        root: directory.0.clone(), trust: trust(&key,scope_digest),
-        writer_lease: lease(&key,scope_digest), required_current_head: None,
-        withdrawal_registry: withdrawals.clone(), storage_binding: digest("binding"), now:20,
-    };
-    let mut service = LearningArtifactOwnerService::open(config.clone()).unwrap();
-    let mut signed_final = None;
-    let mut drift_accepts=0;
-    let mut historical=Vec::new();
-    for i in 0..3 {
-        let mut m = manifest();
-        m.artifact_id = id(entries[i].0);
-        m.kind = ArtifactKind::Parameters;
-        m.generation = Generation::new(if i==0 {1} else {2}).unwrap();
-        // Test-scoped provenance: archive identity, not a full pretraining lineage claim.
-        m.source_dataset_digests = vec![Digest32::of_bytes(&source)];
-        m.lineage_digests = vec![Digest32::of_bytes(&payloads[0])];
-        m.predecessor_ids = if i==0 {vec![]} else {vec![id(entries[0].0)]};
-        m.bytes_digest = Digest32::of_bytes(&payloads[i]);
-        m.encoded_size_bytes = payloads[i].len() as u64;
-        let admission = admit_manifest_at_withdrawal_head_v3(&withdrawals, withdrawals.head_digest(),m,20).unwrap();
-        let predecessor = service.registry().snapshot().head_digest;
-        let op = id(&format!("pft-publish-{i}"));
-        let mut staged = service.registry().clone();
-        let preview = ArtifactPublicationTransactionV1::begin(op.clone(), admission.clone(),&withdrawals,&staged,predecessor,20).unwrap();
-        service.host.stage_compatibility_registration(&preview,&mut staged,20).unwrap();
-        let mut signed = SignedCurrentArtifactHeadV1 {
-            withdrawal_scope_digest: scope_digest, binding: digest("binding"),
-            witness: RegistryHeadWitnessV1 {registry_id:id("learning-artifacts"),
-                generation:Generation::new((i+1) as u64).unwrap(),head_digest:staged.snapshot().head_digest,
-                predecessor_head_digest:predecessor,authority_epoch:1,signer_id:id("owner-authority"),
-                signing_key_digest:Digest32::of_bytes(&key.verifying_key().to_bytes()),issued_at:20,expires_at:1000},
-            signature:[0;64],
+    // Append within owner_service::tests. Explicit opt-in archived-data qualification.
+    // This is a disposable research registry; metadata and local trust are test-scoped.
+    // No evaluation signature or activation is created.
+    #[test]
+    #[ignore = "requires hash-pinned PFT archive; run explicitly"]
+    fn pft_archived_family_public_owner_lifecycle() {
+        use crate::{
+            ParameterFamilyGuardV1, PinnedCandidateLoadError, PinnedCandidateSpec,
+            load_pinned_candidate,
         };
-        signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-        let request=LearningArtifactPublishRequestV1{operation_id:op,admission,payload:payloads[i].clone(),
-            signed_current_head:signed.clone(),expected_registry_predecessor_head:predecessor,now:20};
-        let receipt=service.publish(request.clone()).unwrap();
-        // Counterexample probe: terminal retry must not silently acknowledge a changed request.
-        let mut drift = request.clone();
-        drift.payload[0] ^= 1;
-        let payload_accepted = service.publish(drift).is_ok();
-        let mut drift = request.clone();
-        drift.signed_current_head.signature[0] ^= 1;
-        let signature_accepted = service.publish(drift).is_ok();
-        let mut drift = request.clone();
-        drift.admission.validated_manifest.manifest.objective_class_digest = digest("changed-objective");
-        let admission_accepted = service.publish(drift).is_ok();
-        let mut drift = request.clone();
-        drift.signed_current_head.witness.generation = Generation::new(99).unwrap();
-        let head_accepted = service.publish(drift).is_ok();
-        println!("RETRY_DRIFT {} payload={} signature={} admission={} head={}", entries[i].0,
-            payload_accepted, signature_accepted, admission_accepted, head_accepted);
-        drift_accepts += [payload_accepted, signature_accepted, admission_accepted, head_accepted]
-            .iter().filter(|v| **v).count();
-        assert_eq!(service.publish(request.clone()).unwrap(),receipt);
-        historical.push((request,receipt.clone()));
-        let current=service.current_registry_view(20).unwrap();
-        assert_eq!(current.receipt().records,i+1);
-        assert_eq!(current.receipt().head_digest,receipt.registry_head_digest);
-        println!("PUBLISHED {} {} records={}",entries[i].0,entries[i].2,i+1);
-        signed_final=Some(signed);
+        use std::fs::File;
+        use std::io::Read;
+        let data = PathBuf::from(std::env::var("PFT_R35_DATA").unwrap());
+        let entries = [
+            (
+                "pft-parent",
+                "parent.f64",
+                "89dba314bb6d25569149098087f698789cfae70534ced133a318911903a6df32",
+            ),
+            (
+                "pft-mean",
+                "mean_generated_pair.f64",
+                "6623a875e35a3f50effe9dd313e5c83dfbb12cf4c293e35ed06bd0ff3e0f6df0",
+            ),
+            (
+                "pft-minimax",
+                "minimax_generated_pair.f64",
+                "0460c00ee92407133191eeb1c337cde1a6aad59829cf88e8ae360d00d8bad6cb",
+            ),
+        ];
+        let payloads: Vec<Vec<u8>> = entries
+            .iter()
+            .map(|(_, name, hash)| {
+                let bytes = fs::read(data.join(name)).unwrap();
+                assert_eq!(bytes.len(), 8192);
+                assert_eq!(Digest32::of_bytes(&bytes).to_string(), *hash);
+                bytes
+            })
+            .collect();
+        let source = fs::read(data.join("training_result.json")).unwrap();
+        assert_eq!(
+            Digest32::of_bytes(&source).to_string(),
+            "2f311d97f2a9995687de43aa9709a27ec8b7eaa883d132093f7600a396a43d28"
+        );
+        let directory = TestDir::new();
+        let mut secret = [0u8; 32];
+        File::open("/dev/urandom")
+            .unwrap()
+            .read_exact(&mut secret)
+            .unwrap();
+        let key = SigningKey::from_bytes(&secret);
+        secret.fill(0);
+        let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+        let scope_digest = withdrawals.scope_digest().unwrap();
+        let config = LearningArtifactOwnerServiceConfigV1 {
+            root: directory.0.clone(),
+            trust: trust(&key, scope_digest),
+            writer_lease: lease(&key, scope_digest),
+            required_current_head: None,
+            withdrawal_registry: withdrawals.clone(),
+            storage_binding: digest("binding"),
+            now: 20,
+        };
+        let mut service = LearningArtifactOwnerService::open(config.clone()).unwrap();
+        let mut signed_final = None;
+        let mut drift_accepts = 0;
+        let mut historical = Vec::new();
+        for i in 0..3 {
+            let mut m = manifest();
+            m.artifact_id = id(entries[i].0);
+            m.kind = ArtifactKind::Parameters;
+            m.generation = Generation::new(if i == 0 { 1 } else { 2 }).unwrap();
+            // Test-scoped provenance: archive identity, not a full pretraining lineage claim.
+            m.source_dataset_digests = vec![Digest32::of_bytes(&source)];
+            m.lineage_digests = vec![Digest32::of_bytes(&payloads[0])];
+            m.predecessor_ids = if i == 0 {
+                vec![]
+            } else {
+                vec![id(entries[0].0)]
+            };
+            m.bytes_digest = Digest32::of_bytes(&payloads[i]);
+            m.encoded_size_bytes = payloads[i].len() as u64;
+            let admission = admit_manifest_at_withdrawal_head_v3(
+                &withdrawals,
+                withdrawals.head_digest(),
+                m,
+                20,
+            )
+            .unwrap();
+            let predecessor = service.registry().snapshot().head_digest;
+            let op = id(&format!("pft-publish-{i}"));
+            let mut staged = service.registry().clone();
+            let preview = ArtifactPublicationTransactionV1::begin(
+                op.clone(),
+                admission.clone(),
+                &withdrawals,
+                &staged,
+                predecessor,
+                20,
+            )
+            .unwrap();
+            service
+                .host
+                .stage_compatibility_registration(&preview, &mut staged, 20)
+                .unwrap();
+            let mut signed = SignedCurrentArtifactHeadV1 {
+                withdrawal_scope_digest: scope_digest,
+                binding: digest("binding"),
+                witness: RegistryHeadWitnessV1 {
+                    registry_id: id("learning-artifacts"),
+                    generation: Generation::new((i + 1) as u64).unwrap(),
+                    head_digest: staged.snapshot().head_digest,
+                    predecessor_head_digest: predecessor,
+                    authority_epoch: 1,
+                    signer_id: id("owner-authority"),
+                    signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+                    issued_at: 20,
+                    expires_at: 1000,
+                },
+                signature: [0; 64],
+            };
+            signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
+            let request = LearningArtifactPublishRequestV1 {
+                operation_id: op,
+                admission,
+                payload: payloads[i].clone(),
+                signed_current_head: signed.clone(),
+                expected_registry_predecessor_head: predecessor,
+                now: 20,
+            };
+            let receipt = service.publish(request.clone()).unwrap();
+            // Counterexample probe: terminal retry must not silently acknowledge a changed request.
+            let mut drift = request.clone();
+            drift.payload[0] ^= 1;
+            let payload_accepted = service.publish(drift).is_ok();
+            let mut drift = request.clone();
+            drift.signed_current_head.signature[0] ^= 1;
+            let signature_accepted = service.publish(drift).is_ok();
+            let mut drift = request.clone();
+            drift
+                .admission
+                .validated_manifest
+                .manifest
+                .objective_class_digest = digest("changed-objective");
+            let admission_accepted = service.publish(drift).is_ok();
+            let mut drift = request.clone();
+            drift.signed_current_head.witness.generation = Generation::new(99).unwrap();
+            let head_accepted = service.publish(drift).is_ok();
+            println!(
+                "RETRY_DRIFT {} payload={} signature={} admission={} head={}",
+                entries[i].0,
+                payload_accepted,
+                signature_accepted,
+                admission_accepted,
+                head_accepted
+            );
+            drift_accepts += [
+                payload_accepted,
+                signature_accepted,
+                admission_accepted,
+                head_accepted,
+            ]
+            .iter()
+            .filter(|v| **v)
+            .count();
+            assert_eq!(service.publish(request.clone()).unwrap(), receipt);
+            historical.push((request, receipt.clone()));
+            let current = service.current_registry_view(20).unwrap();
+            assert_eq!(current.receipt().records, i + 1);
+            assert_eq!(current.receipt().head_digest, receipt.registry_head_digest);
+            println!(
+                "PUBLISHED {} {} records={}",
+                entries[i].0,
+                entries[i].2,
+                i + 1
+            );
+            signed_final = Some(signed);
+        }
+        for (request, receipt) in historical {
+            assert_eq!(service.publish(request).unwrap(), receipt);
+        }
+        println!("DRIFT_ACCEPTS {}", drift_accepts);
+        assert_eq!(drift_accepts, 0, "terminal retry accepted mutated request");
+        let current = service.current_registry_view(20).unwrap();
+        let receipt = current.receipt();
+        let trust_digest = current.trust_digest();
+        let registry_path = directory.0.join("registries").join(format!(
+            "{}-{}.snapshot",
+            receipt.head_digest, receipt.file_digest
+        ));
+        let mut pins = Vec::new();
+        for (name, _, hash) in entries {
+            let m = service.registry().manifest(&id(name)).unwrap().clone();
+            let path = directory
+                .0
+                .join("payloads")
+                .join(format!("{name}-{hash}.bin"));
+            pins.push(
+                load_pinned_candidate(
+                    File::open(&registry_path).unwrap(),
+                    File::open(path).unwrap(),
+                    PinnedCandidateSpec {
+                        registry_receipt: receipt,
+                        manifest: m,
+                    },
+                )
+                .unwrap(),
+            );
+        }
+        let parent = pins.remove(0);
+        let mut guard = ParameterFamilyGuardV1::new(
+            parent,
+            pins,
+            &[id("pft-mean"), id("pft-minimax")],
+            trust_digest,
+        )
+        .unwrap();
+        let check =
+            |p: &crate::LoadedPinnedCandidate, u: &[crate::LoadedPinnedCandidate], w: Digest32| {
+                assert_eq!(p.bytes(), payloads[0].as_slice());
+                assert_eq!(u.len(), 2);
+                assert_eq!(u[0].bytes(), payloads[1].as_slice());
+                assert_eq!(u[1].bytes(), payloads[2].as_slice());
+                assert!(!w.is_zero());
+                println!(
+                    "FAMILY_READ {} {} {} witness={}",
+                    entries[0].2, entries[1].2, entries[2].2, w
+                );
+            };
+        guard.with_service(&service, 20, check).unwrap();
+        drop(service);
+        let reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+            required_current_head: signed_final,
+            now: 21,
+            ..config
+        })
+        .unwrap();
+        assert!(reopened.recovery_required().is_none());
+        guard.with_service(&reopened, 21, check).unwrap();
+        assert!(matches!(
+            guard.with_service(&reopened, 1001, |_, _, _| panic!("expired head")),
+            Err(PinnedCandidateLoadError::Unavailable)
+        ));
+        assert!(matches!(
+            guard.with_service(&reopened, 21, |_, _, _| panic!("latched")),
+            Err(PinnedCandidateLoadError::Unavailable)
+        ));
+        println!(
+            "PASS public publication + exact retry x3, family read x2, reopen required head, expired/latch rejection; no activation"
+        );
     }
-    for (request,receipt) in historical {assert_eq!(service.publish(request).unwrap(),receipt);}
-    println!("DRIFT_ACCEPTS {}",drift_accepts);
-    assert_eq!(drift_accepts,0,"terminal retry accepted mutated request");
-    let current=service.current_registry_view(20).unwrap();
-    let receipt=current.receipt();
-    let trust_digest=current.trust_digest();
-    let registry_path=directory.0.join("registries").join(format!("{}-{}.snapshot",receipt.head_digest,receipt.file_digest));
-    let mut pins=Vec::new();
-    for (name,_,hash) in entries {
-        let m=service.registry().manifest(&id(name)).unwrap().clone();
-        let path=directory.0.join("payloads").join(format!("{name}-{hash}.bin"));
-        pins.push(load_pinned_candidate(File::open(&registry_path).unwrap(),File::open(path).unwrap(),
-            PinnedCandidateSpec{registry_receipt:receipt,manifest:m}).unwrap());
-    }
-    let parent=pins.remove(0);
-    let mut guard=ParameterFamilyGuardV1::new(parent,pins,&[id("pft-mean"),id("pft-minimax")],trust_digest).unwrap();
-    let check=|p:&crate::LoadedPinnedCandidate,u:&[crate::LoadedPinnedCandidate],w:Digest32| {
-        assert_eq!(p.bytes(),payloads[0].as_slice());
-        assert_eq!(u.len(),2);
-        assert_eq!(u[0].bytes(),payloads[1].as_slice());
-        assert_eq!(u[1].bytes(),payloads[2].as_slice());
-        assert!(!w.is_zero());
-        println!("FAMILY_READ {} {} {} witness={}",entries[0].2,entries[1].2,entries[2].2,w);
-    };
-    guard.with_service(&service,20,check).unwrap();
-    drop(service);
-    let reopened=LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1{
-        required_current_head:signed_final,now:21,..config}).unwrap();
-    assert!(reopened.recovery_required().is_none());
-    guard.with_service(&reopened,21,check).unwrap();
-    assert!(matches!(guard.with_service(&reopened,1001,|_,_,_|panic!("expired head")),Err(PinnedCandidateLoadError::Unavailable)));
-    assert!(matches!(guard.with_service(&reopened,21,|_,_,_|panic!("latched")),Err(PinnedCandidateLoadError::Unavailable)));
-    println!("PASS public publication + exact retry x3, family read x2, reopen required head, expired/latch rejection; no activation");
-}
-
 }

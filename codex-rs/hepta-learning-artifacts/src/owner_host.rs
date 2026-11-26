@@ -1117,11 +1117,17 @@ impl LearningArtifactOwnerHost {
         signed: &SignedCurrentArtifactHeadV1,
         checkpoint: &ArtifactOwnerPublicationCheckpointV1,
     ) -> Result<(), ArtifactOwnerHostError> {
-        let registry = checkpoint.registry_receipt.ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
-        let witness = checkpoint.witness_receipt.ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
-        if signed.binding != registry.binding || signed.binding != witness.binding
+        let registry = checkpoint
+            .registry_receipt
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        let witness = checkpoint
+            .witness_receipt
+            .ok_or(ArtifactOwnerHostError::CheckpointMismatch)?;
+        if signed.binding != registry.binding
+            || signed.binding != witness.binding
             || signed.witness.head_digest != registry.head_digest
-            || signed.witness.predecessor_head_digest != checkpoint.expected_registry_predecessor_head
+            || signed.witness.predecessor_head_digest
+                != checkpoint.expected_registry_predecessor_head
             || signed.withdrawal_scope_digest != checkpoint.withdrawal_scope_digest
         {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
@@ -1133,10 +1139,14 @@ impl LearningArtifactOwnerHost {
             minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
             now: signed.witness.issued_at,
         };
-        let verified = self.verifier.verify_signed_head(signed, &requirement, false)?;
+        let verified = self
+            .verifier
+            .verify_signed_head(signed, &requirement, false)?;
         if verified.witness_digest != witness.witness_digest
-            || read_small_record(&self.signed_head_record_path(signed), MAX_SMALL_RECORD_BYTES)?
-                != encode_signed_head(signed)
+            || read_small_record(
+                &self.signed_head_record_path(signed),
+                MAX_SMALL_RECORD_BYTES,
+            )? != encode_signed_head(signed)
         {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
