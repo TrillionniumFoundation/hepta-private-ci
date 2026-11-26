@@ -121,11 +121,18 @@ jobs:
     secrets: inherit
 
   hepta-scoped:
-    name: Hepta scoped native checks
+    name: Hepta scoped native checks (shard ${{ matrix.shard }}/8)
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        # Distribute the complete exact-revision reverse-consumer closure to
+        # independent clean runners. Every crate is tested by exactly one shard;
+        # no test package is skipped to avoid hosted-runner ENOSPC failures.
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 55
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -153,6 +160,13 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Record free disk before this exact reverse-consumer shard
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$RUNNER_TEMP" .
+          df -B1 "$RUNNER_TEMP" > "$RUNNER_TEMP/shard-disk-before-${{ matrix.shard }}.txt"
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -160,18 +174,31 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
         run: >-
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test-${{ matrix.shard }}.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
-          --output "$RUNNER_TEMP/cargo-impact.json" --run
+          --shard-index ${{ matrix.shard }} --shard-count 8
+          --output "$RUNNER_TEMP/cargo-impact-${{ matrix.shard }}.json" --run
+
+      - name: Preserve actual per-shard disk evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -B1 "$RUNNER_TEMP" > "$RUNNER_TEMP/shard-disk-after-${{ matrix.shard }}.txt"
+          if [ -d codex-rs/target ]; then
+            du -sh codex-rs/target >> "$RUNNER_TEMP/shard-disk-after-${{ matrix.shard }}.txt"
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}
           path: |
-            ${{ runner.temp }}/cargo-impact.json
-            ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/cargo-impact-${{ matrix.shard }}.json
+            ${{ runner.temp }}/impact-test-${{ matrix.shard }}.json*
+            ${{ runner.temp }}/shard-disk-before-${{ matrix.shard }}.txt
+            ${{ runner.temp }}/shard-disk-after-${{ matrix.shard }}.txt
           if-no-files-found: error
           retention-days: 14
 

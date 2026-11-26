@@ -115,6 +115,85 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(ci.select_packages([], self.graph, self.graph)["packages"], [])
 
 
+class NativeShardTests(unittest.TestCase):
+    def selected(self, *, full_workspace=False):
+        return {
+            "packages": [f"codex-owner-{i:02d}" for i in range(31)],
+            "full_workspace": full_workspace,
+            "changed_packages": ["codex-owner-00"],
+            "reasons": ["conservative graph"] if full_workspace else [],
+        }
+
+    def test_every_reverse_consumer_is_tested_exactly_once(self):
+        for fallback in (False, True):
+            selected = self.selected(full_workspace=fallback)
+            for count in (1, 2, 3, 4, 8, 16):
+                with self.subTest(full_workspace=fallback, shards=count):
+                    parts = [
+                        ci.shard_selected_packages(selected, index, count)
+                        for index in range(count)
+                    ]
+                    combined = [item for part in parts for item in part["packages"]]
+                    self.assertEqual(sorted(combined), selected["packages"])
+                    self.assertEqual(len(combined), len(set(combined)))
+                    self.assertEqual(
+                        {part["complete_package_digest"] for part in parts},
+                        {parts[0]["complete_package_digest"]},
+                    )
+                    self.assertTrue(all(
+                        part["complete_package_count"] == len(selected["packages"])
+                        for part in parts
+                    ))
+                    self.assertTrue(all(
+                        part["complete_full_workspace"] == fallback for part in parts
+                    ))
+                    if count > 1:
+                        self.assertTrue(all(not part["full_workspace"] for part in parts))
+                    # The authoritative planner's complete set is never mutated.
+                    self.assertEqual(selected["packages"], self.selected()["packages"])
+
+    def test_full_workspace_fallback_is_partitioned_not_repeated(self):
+        selected = self.selected(full_workspace=True)
+        shards = [ci.shard_selected_packages(selected, i, 8) for i in range(8)]
+        commands = [ci.execution_command(part, "test") for part in shards]
+        self.assertTrue(all(command is not None for command in commands))
+        for part, command in zip(shards, commands):
+            self.assertNotIn("--workspace", command)
+            self.assertEqual([command[i + 1] for i, v in enumerate(command[:-1]) if v == "-p"], part["packages"])
+
+    def test_sparse_and_empty_shards_have_explicit_results(self):
+        selected = {
+            "packages": ["only-owner"],
+            "full_workspace": False,
+            "changed_packages": ["only-owner"],
+            "reasons": [],
+        }
+        shards = [ci.shard_selected_packages(selected, i, 8) for i in range(8)]
+        self.assertEqual(shards[0]["packages"], ["only-owner"])
+        self.assertTrue(all(not shard["packages"] for shard in shards[1:]))
+        self.assertTrue(all(
+            ci.execution_command(shard, "test") is None for shard in shards[1:]
+        ))
+        self.assertEqual(
+            [s["complete_package_digest"] for s in shards],
+            [shards[0]["complete_package_digest"]] * 8,
+        )
+
+    def test_invalid_or_noncanonical_shards_fail_closed(self):
+        selected = self.selected()
+        for index, count in ((-1, 8), (8, 8), (0, 0), (0, 17), (1, 1), (True, 4)):
+            with self.subTest(index=index, count=count):
+                with self.assertRaises(ValueError):
+                    ci.shard_selected_packages(selected, index, count)
+        changed = self.selected()
+        changed["packages"] = ["b", "a"]
+        with self.assertRaises(ValueError):
+            ci.shard_selected_packages(changed, 0, 2)
+        changed["packages"] = ["a", "a"]
+        with self.assertRaises(ValueError):
+            ci.shard_selected_packages(changed, 0, 2)
+
+
 class GitGraphTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
