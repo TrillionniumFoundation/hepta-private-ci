@@ -13,19 +13,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
         with:
-          toolchain: 1.95.0
+          toolchain: 1.96.0
           components: clippy,rustfmt
       - name: Preserve only the public compiler distribution for offline integration
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/compiler-tools"
-          sysroot="$(rustc +1.95.0 --print sysroot)"
-          rustc +1.95.0 --version --verbose > "$RUNNER_TEMP/compiler-tools/version.txt"
-          tar -C "$sysroot" -czf "$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz" bin lib libexec
-          sha256sum "$RUNNER_TEMP/compiler-tools/rust-1.95.0-linux.tar.gz" > "$RUNNER_TEMP/compiler-tools/compiler.sha256"
+          sysroot="$(rustc +1.96.0 --print sysroot)"
+          rustc +1.96.0 --version --verbose > "$RUNNER_TEMP/compiler-tools/version.txt"
+          tar -C "$sysroot" -czf "$RUNNER_TEMP/compiler-tools/rust-1.96.0-linux.tar.gz" bin lib libexec
+          sha256sum "$RUNNER_TEMP/compiler-tools/rust-1.96.0-linux.tar.gz" > "$RUNNER_TEMP/compiler-tools/compiler.sha256"
       - uses: actions/upload-artifact@v4
         with:
           name: single-main-compiler-${{ github.run_id }}
@@ -46,9 +46,9 @@ jobs:
           ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
         with:
-          toolchain: 1.95.0
+          toolchain: 1.96.0
           components: clippy
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
