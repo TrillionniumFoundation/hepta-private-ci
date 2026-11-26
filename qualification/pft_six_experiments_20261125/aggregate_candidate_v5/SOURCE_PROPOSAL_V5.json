@@ -1,0 +1,68 @@
+{
+  "artifacts": [
+    {
+      "bytes": 33691,
+      "path": "aggregate_candidate.py",
+      "sha256": "e57e5fae1adade64926b0f9fa5137f055b745fb5c5f701992c1627a338a6a02b"
+    },
+    {
+      "bytes": 3380,
+      "path": "TRIAL_PROTOCOL_TEMPLATE.json",
+      "sha256": "ed35600ae71cac29143b5c0efad449cb20149996dcadcb5f2d35f5a5fe1c46c4"
+    },
+    {
+      "bytes": 3385,
+      "path": "COLD_PROTOCOL_TEMPLATE.json",
+      "sha256": "ee9e32140f29a9a29d9839154cb8947daf49ae3c0be5496bc19730f3754bf384"
+    },
+    {
+      "bytes": 11971,
+      "path": "README.md",
+      "sha256": "f253462d57acd314375b239b6fa08c8bc6cbbcfedba31198663f3aa816f4cc4c"
+    }
+  ],
+  "diagnostics_restoration_basis": "The pinned old helper and the outer guard deepcopy and reassign saved diagnostics in finally. diagnostics_restored=true records completion of restoration assignment, not an independent deep-value equality assertion. Tensor state, trainability, gradients, config and modes have separate invariant checks.",
+  "entry_physical_lines": 461,
+  "exact_source_budgets": {
+    "cold": {
+      "candidate_exports": 0,
+      "child_invocations": 1,
+      "child_wall_seconds": 55,
+      "model_loads": 1,
+      "outer_wall_seconds": 90,
+      "physical_forward_calls": 1,
+      "quadratic_solves": 0,
+      "retries": 0,
+      "training_updates": 0,
+      "vjp_calls": 0
+    },
+    "trial": {
+      "candidate_exports": 1,
+      "cpu_seconds": 120,
+      "historical_matrix_runs": 0,
+      "model_loads": 1,
+      "physical_forward_calls": 1,
+      "quadratic_solves": 0,
+      "retries": 0,
+      "training_updates": 0,
+      "vjp_calls": 0,
+      "wall_seconds": 120
+    }
+  },
+  "model_or_project_imports_executed": false,
+  "models_loaded": 0,
+  "numerical_solves_executed": 0,
+  "peer_source_sha256": {
+    "exact_equations.py": "8b74a166038456754685c003264ff1c1d892a6856f2f562ba35a31cbb34d5c0d",
+    "peer.py": "ecdffbfb1c2fc2d98658542e93f935fb53639d911a522550ddb19be425b27513",
+    "profile_io.py": "3c6d4d0d6ad478460e3b422bfb22220406080c48a5ef1d33e2cb3479e43e738f"
+  },
+  "physical_forwards_executed": 0,
+  "project_tests_executed": 0,
+  "protocols_active": false,
+  "review_scope": "Source, immutable dependency hashes and AST only. Root and independent CI reviewer have read the main chain; no numerical result or runtime validation is asserted here.",
+  "schema": "hepta.smallhcsn.aggregate-candidate-source-proposal.v1",
+  "source_ast_parsed": true,
+  "status": "SOURCE_REVIEWED_NOT_EXECUTED",
+  "v4_dependency_hashes_statically_verified": true
+}
