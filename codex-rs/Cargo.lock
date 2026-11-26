@@ -3506,6 +3506,7 @@ dependencies = [
  "codex-utils-cargo-bin",
  "codex-utils-cli",
  "codex-utils-home-dir",
+ "codex-utils-path",
  "core_test_support",
  "ed25519-dalek",
  "http 1.4.0",
@@ -3663,6 +3664,7 @@ name = "codex-hepta-contracts"
 version = "0.0.0"
 dependencies = [
  "codex-utils-cargo-bin",
+ "codex-utils-path",
  "ed25519-dalek",
  "pretty_assertions",
  "rustix 1.1.4",
@@ -4118,11 +4120,13 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-utils-path",
  "ed25519-dalek",
  "rustix 1.1.4",
  "serde",
  "serde_json",
  "tempfile",
+ "winapi-util",
 ]
 
 [[package]]
@@ -5548,6 +5552,8 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "winapi-util",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]

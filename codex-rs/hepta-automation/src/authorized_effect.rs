@@ -539,7 +539,9 @@ pub enum AuthorizedEffectRecovery {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AuthorizedEffectRecoveryResult {
     ProvenAbsent,
-    Observed(TaskFlowStepReceipt),
+    /// Box only the observed terminal projection; a proven-absent result
+    /// must not carry the 272+ byte TaskFlow receipt on every recovery path.
+    Observed(Box<TaskFlowStepReceipt>),
 }
 
 #[derive(Debug, Error)]
@@ -556,6 +558,19 @@ pub enum AuthorizedEffectError {
     ProvenAbsentNeedsNewAttempt,
     #[error(transparent)]
     Driver(#[from] AuthorizedEffectDriverError),
+}
+
+/// One immutable pre-effect proposal. The intent, exact provider bytes,
+/// Step Fence and independently signed grant/binding travel as a single
+/// snapshot; constructing it grants no execution authority.
+pub struct AuthorizedTaskflowEffectInvocation<'a> {
+    pub intent: &'a AuthorizedEffectIntent,
+    pub wire_payload: &'a [u8],
+    pub fence: &'a TaskFlowFence,
+    pub signed_grant: &'a SignedFinalUseGrant,
+    pub expected_binding: &'a FinalUseBinding,
+    pub command_id: &'a str,
+    pub now_ms: u64,
 }
 
 impl AutomationStore {
@@ -645,14 +660,17 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        proposal: AuthorizedTaskflowEffectInvocation<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let AuthorizedTaskflowEffectInvocation {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = proposal;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -705,7 +723,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -744,7 +762,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -809,7 +827,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -867,14 +885,17 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        proposal: AuthorizedTaskflowEffectInvocation<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let AuthorizedTaskflowEffectInvocation {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = proposal;
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
@@ -922,7 +943,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -961,7 +982,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -1025,7 +1046,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -1196,7 +1217,7 @@ impl AutomationStore {
             self.reconcile_effect_run(durable, fence, observation, terminal)
                 .await?;
         }
-        Ok(AuthorizedEffectRecoveryResult::Observed(step))
+        Ok(AuthorizedEffectRecoveryResult::Observed(Box::new(step)))
     }
 
     async fn quarantine_effect_run(

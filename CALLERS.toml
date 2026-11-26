@@ -515,8 +515,8 @@ caller_markers = []
 [[boundary]]
 id = "final_use_guarded_effect"
 symbol = "FinalUseAuthority::with_verified_effect"
-call_pattern = '\bauthority\s*\.\s*with_verified_effect\s*\('
+call_pattern = '\.\s*with_verified_effect\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
+product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/model_worker.rs"]
 caller_markers = ["with_verified_effect"]

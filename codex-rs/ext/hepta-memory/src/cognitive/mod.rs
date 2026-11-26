@@ -271,6 +271,9 @@ pub(crate) struct CognitiveExtension {
 }
 
 impl CognitiveExtension {
+    /// Test-only convenience constructor; production composition explicitly
+    /// supplies the mutation/revocation capabilities via new_with_mutation.
+    #[cfg(test)]
     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
         Self::new_with_mutation(runtime, None, false)
     }

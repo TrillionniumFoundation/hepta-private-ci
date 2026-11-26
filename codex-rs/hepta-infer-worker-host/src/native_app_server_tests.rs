@@ -406,15 +406,26 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    let final_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("verified final-use is entered before physical send");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("physical turn start must consume the entered final-use token");
+    let send_helper = source
+        .find("async fn send_authorized_turn_start(")
+        .expect("authorized TurnStart helper remains the sole sending boundary");
+    let physical_send = source[send_helper..]
+        .find("request_typed_observed(ClientRequest::TurnStart {")
+        .expect("authorized helper performs real observed TurnStart");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
+    assert!(revalidation < final_entry);
+    assert!(final_entry < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(physical_send > 0);
 }
 
 #[cfg(unix)]
@@ -450,8 +461,18 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Exactly the same source build provides the runnable App Server helper
+    // binary. A test harness executable is NOT a valid Codex helper.
+    let codex_executable = std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
+        .ok_or("Agentd real E2E requires HEPTA_TEST_CODEX_EXECUTABLE")?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::path::Path::new(&codex_executable),
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -651,6 +672,88 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     issuer.await??;
     host.shutdown().await;
     Ok(())
+}
+
+#[test]
+fn observed_completed_assistant_item_supplies_missing_text_without_duplicate_delta() {
+    fn complete_item(thread: &str, turn: &str, text: String) -> ServerNotification {
+        ServerNotification::ItemCompleted(codex_app_server_protocol::ItemCompletedNotification {
+            thread_id: thread.to_string(),
+            turn_id: turn.to_string(),
+            completed_at_ms: 0,
+            item: ThreadItem::AgentMessage {
+                id: "item-1".to_string(),
+                text,
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            },
+        })
+    }
+
+    let mut empty = output();
+    observe_for_test(
+        &mut empty,
+        complete_item("foreign", "turn-a", "wrong".into()),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut empty,
+        complete_item("thread-a", "foreign", "wrong".into()),
+    )
+    .unwrap();
+    assert!(empty.output.is_empty());
+    observe_for_test(
+        &mut empty,
+        complete_item("thread-a", "turn-a", "fresh context accepted".into()),
+    )
+    .unwrap();
+    assert_eq!(empty.output, "fresh context accepted");
+    assert!(!empty.terminal_observed);
+
+    let mut streamed = output();
+    observe_for_test(
+        &mut streamed,
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".into(),
+            turn_id: "turn-a".into(),
+            item_id: "item-1".into(),
+            delta: "streamed text".into(),
+        }),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut streamed,
+        complete_item("thread-a", "turn-a", "streamed text".into()),
+    )
+    .unwrap();
+    assert_eq!(streamed.output, "streamed text");
+    assert!(!streamed.terminal_observed);
+    assert!(
+        observe_for_test(
+            &mut output(),
+            complete_item("thread-a", "turn-a", "x".repeat(MAX_OUTPUT_BYTES + 1)),
+        )
+        .is_err(),
+    );
+}
+
+#[test]
+fn terminal_snapshot_supplies_full_assistant_text_if_no_item_deltas_arrived() {
+    let mut output = output();
+    let mut finished = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(completed) = &mut finished {
+        completed.turn.items.push(ThreadItem::AgentMessage {
+            id: "item-1".to_string(),
+            text: "snapshot assistant text".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, finished).unwrap());
+    assert_eq!(output.output, "snapshot assistant text");
+    assert!(output.terminal_observed);
 }
 
 #[test]

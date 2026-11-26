@@ -73,16 +73,17 @@ async fn wait_for_git_command_with_timeout_output(
 ) -> Option<Output> {
     #[cfg(unix)]
     let mut process_tree = process_tree;
+    #[cfg(windows)]
+    let _process_tree = process_tree;
 
     let result = timeout(timeout_duration, child.wait_with_output()).await;
 
     match result {
         Ok(Ok(output)) => {
-            #[cfg(windows)]
-            if let Some(job) = &process_tree.job {
-                job.preserve_descendants().ok()?;
-            }
-
+            // Even a wrapper that exits successfully may leave inherited Git
+            // descendants running. Keep the JobObject kill-on-close fence:
+            // successful output is returned, but orphan descendants are not
+            // detached from the bounded command lifetime.
             #[cfg(unix)]
             {
                 process_tree.armed = false;

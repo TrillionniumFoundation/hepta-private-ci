@@ -7,6 +7,7 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 mod neuron_feature;
+mod stem_feature_binding;
 
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
@@ -17,6 +18,14 @@ pub use neuron_feature::NeuronModelRuntimeTupleV1;
 pub use neuron_feature::build_neuron_feature_receipt_v1;
 pub use neuron_feature::neuron_feature_request_digest_v1;
 pub use neuron_feature::verify_neuron_feature_receipt_v1;
+pub use stem_feature_binding::BoundStemNeuronRequestV1;
+pub use stem_feature_binding::StemAccessContextV1;
+pub use stem_feature_binding::StemFeatureBindingError;
+pub use stem_feature_binding::StemFeatureRefV1;
+pub use stem_feature_binding::StemHeadBindingV1;
+pub use stem_feature_binding::bind_stem_feature_request_v1;
+pub use stem_feature_binding::stem_encoder_pipeline_digest_v1;
+pub use stem_feature_binding::stem_feature_vector_digest_v1;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
