@@ -588,10 +588,19 @@ async fn legacy_http_rejects_oversized_json_error_and_sse_responses() -> anyhow:
                         match response_kind {
                             "wrong-type" => ResponseTemplate::new(status)
                                 .set_body_raw(padding.as_str(), "text/plain"),
-                            "sse" => ResponseTemplate::new(status).set_body_raw(
-                                format!("event: message\ndata: {response}\n\n"),
-                                "text/event-stream",
-                            ),
+                            "sse" => {
+                                let trailing_response = json!({
+                                    "jsonrpc": "2.0",
+                                    "id": body["id"],
+                                    "result": {"tools": []},
+                                });
+                                ResponseTemplate::new(status).set_body_raw(
+                                    format!(
+                                        "event: message\ndata: {response}\n\nevent: message\ndata: {trailing_response}\n\n"
+                                    ),
+                                    "text/event-stream",
+                                )
+                            }
                             _ => ResponseTemplate::new(status).set_body_json(response),
                         }
                     }
@@ -607,11 +616,21 @@ async fn legacy_http_rejects_oversized_json_error_and_sse_responses() -> anyhow:
             .list_tools(/*params*/ None, Some(Duration::from_secs(15)))
             .await
             .expect_err("oversized legacy response must be rejected before parsing");
-        assert!(
-            format!("{error:#}")
-                .contains(&format!("MCP response body exceeds {maximum_bytes} bytes")),
-            "expected bounded {response_kind} response, got {error:#}"
-        );
+        if response_kind == "sse" {
+            // rmcp maps a failed response stream to this request's terminal
+            // transport error. A later valid frame must not revive the request.
+            assert_eq!(
+                error.to_string(),
+                "Transport closed",
+                "oversized legacy SSE must close its original request: {error:#}"
+            );
+        } else {
+            assert!(
+                format!("{error:#}")
+                    .contains(&format!("MCP response body exceeds {maximum_bytes} bytes")),
+                "expected bounded {response_kind} response, got {error:#}"
+            );
+        }
         client.shutdown().await;
     }
     Ok(())

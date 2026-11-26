@@ -9,6 +9,7 @@ use rmcp::model::ElicitResult;
 use rmcp::model::ElicitationAction;
 use rmcp::model::MetaObject;
 use rmcp::model::ProtocolVersion;
+use rmcp::model::RequestId;
 use rmcp::model::RequestMetaObject;
 use rmcp::model::RequestParamsMeta;
 use rmcp::model::ServerNotification;
@@ -87,9 +88,7 @@ impl ElicitationClientService {
         let request = restore_context_meta(request, meta);
         let callback = || async {
             let _pause = self.pause_state.enter();
-            (self.send_elicitation)(id, request)
-                .await
-                .map_err(|err| rmcp::ErrorData::internal_error(err.to_string(), None))
+            self.send_elicitation_response(id, request).await
         };
         if modern_session {
             owner.ok_or_else(inactive_owner)?.run(ct, callback).await
@@ -103,6 +102,54 @@ impl ElicitationClientService {
             }
         }
     }
+
+    async fn send_elicitation_response(
+        &self,
+        request_id: RequestId,
+        request: Elicitation,
+    ) -> Result<ElicitationResponse, rmcp::ErrorData> {
+        let form_schema = match &request {
+            Elicitation::Mcp(rmcp::model::ElicitRequestParams::FormElicitationParams {
+                requested_schema,
+                ..
+            }) => Some(requested_schema.clone()),
+            Elicitation::Mcp(_) | Elicitation::OpenAiForm { .. } => None,
+        };
+        let mut response = (self.send_elicitation)(request_id, request)
+            .await
+            .map_err(|err| rmcp::ErrorData::internal_error(err.to_string(), None))?;
+        if let Some(schema) = form_schema {
+            apply_form_defaults(&schema, &mut response)?;
+        }
+        Ok(response)
+    }
+}
+
+fn apply_form_defaults(
+    schema: &rmcp::model::ElicitationSchema,
+    response: &mut ElicitationResponse,
+) -> Result<(), rmcp::ErrorData> {
+    if !matches!(response.action, ElicitationAction::Accept) {
+        return Ok(());
+    }
+    let Some(Value::Object(content)) = response.content.as_mut() else {
+        return Ok(());
+    };
+    // SEP-1034 applies defaults to omitted form fields after the user accepts.
+    // An explicit value, including null, false, zero or an empty string, is
+    // never replaced. Declines, cancellations and other elicitation modes keep
+    // their original response contract.
+    for (name, property) in &schema.properties {
+        if content.contains_key(name) {
+            continue;
+        }
+        let property = serde_json::to_value(property)
+            .map_err(|err| rmcp::ErrorData::internal_error(err.to_string(), None))?;
+        if let Some(default) = property.get("default") {
+            content.insert(name.clone(), default.clone());
+        }
+    }
+    Ok(())
 }
 
 fn clone_send_elicitation(send_elicitation: Arc<SendElicitation>) -> SendElicitation {
@@ -513,6 +560,232 @@ mod tests {
         .expect_err("modern elicitation metadata must be an object");
 
         assert_eq!(error.code, rmcp::model::ErrorCode::INVALID_PARAMS);
+    }
+
+    async fn respond_to_defaults_fixture(
+        request: Elicitation,
+        response: ElicitationResponse,
+    ) -> ElicitationResponse {
+        let expected_request = request.clone();
+        let service = ElicitationClientService::new(
+            ClientConfig::default(),
+            Box::new(move |request_id, request| {
+                let expected_request = expected_request.clone();
+                let response = response.clone();
+                Box::pin(async move {
+                    assert_eq!(request_id, RequestId::Number(7));
+                    assert_eq!(request, expected_request);
+                    Ok(response)
+                })
+            }),
+            ElicitationPauseState::new(),
+        );
+        service
+            .send_elicitation_response(RequestId::Number(7), request)
+            .await
+            .expect("the accepted response should retain its contract")
+    }
+
+    fn defaults_form_request(properties: Value) -> Elicitation {
+        Elicitation::Mcp(
+            serde_json::from_value(json!({
+                "message": "Accept the defaults?",
+                "requestedSchema": {
+                    "type": "object",
+                    "properties": properties,
+                    "required": [],
+                },
+            }))
+            .expect("the legacy MCP form schema must deserialize"),
+        )
+    }
+
+    fn defaults_response(action: ElicitationAction, content: Option<Value>) -> ElicitationResponse {
+        ElicitationResponse {
+            action,
+            content,
+            meta: Some(json!({ "persist": "session", "fixture": "defaults" })),
+        }
+    }
+
+    #[tokio::test]
+    async fn accepted_mcp_form_materializes_all_omitted_primitive_defaults() {
+        let request = defaults_form_request(json!({
+            "name": {"type": "string", "default": "John Doe"},
+            "age": {"type": "integer", "default": 30},
+            "score": {"type": "number", "default": 95.5},
+            "status": {
+                "type": "string",
+                "enum": ["active", "inactive"],
+                "default": "active",
+            },
+            "verified": {"type": "boolean", "default": true},
+            "optional": {"type": "string"},
+        }));
+        let response = respond_to_defaults_fixture(
+            request,
+            defaults_response(ElicitationAction::Accept, Some(json!({}))),
+        )
+        .await;
+        assert_eq!(
+            response,
+            defaults_response(
+                ElicitationAction::Accept,
+                Some(json!({
+                    "name": "John Doe",
+                    "age": 30,
+                    "score": 95.5,
+                    "status": "active",
+                    "verified": true,
+                })),
+            )
+        );
+    }
+
+    #[tokio::test]
+    async fn accepted_mcp_form_preserves_explicit_values_and_fills_only_missing_fields() {
+        let request = defaults_form_request(json!({
+            "name": {"type": "string", "default": "default name"},
+            "age": {"type": "integer", "default": 30},
+            "score": {"type": "number", "default": 95.5},
+            "verified": {"type": "boolean", "default": true},
+            "null_value": {"type": "string", "default": "must not replace null"},
+            "missing": {"type": "string", "default": "added"},
+        }));
+        let response = respond_to_defaults_fixture(
+            request,
+            defaults_response(
+                ElicitationAction::Accept,
+                Some(json!({
+                    "name": "",
+                    "age": 0,
+                    "score": 0.0,
+                    "verified": false,
+                    "null_value": null,
+                    "unrelated": "preserved",
+                })),
+            ),
+        )
+        .await;
+        assert_eq!(
+            response,
+            defaults_response(
+                ElicitationAction::Accept,
+                Some(json!({
+                    "name": "",
+                    "age": 0,
+                    "score": 0.0,
+                    "verified": false,
+                    "null_value": null,
+                    "unrelated": "preserved",
+                    "missing": "added",
+                })),
+            )
+        );
+    }
+
+    #[tokio::test]
+    async fn accepted_mcp_form_preserves_absent_and_non_object_content() {
+        let request = defaults_form_request(json!({
+            "name": {"type": "string", "default": "John Doe"},
+        }));
+        for content in [
+            None,
+            Some(Value::Null),
+            Some(json!([])),
+            Some(json!("explicit")),
+            Some(json!(0)),
+        ] {
+            let expected = defaults_response(ElicitationAction::Accept, content);
+            let response = respond_to_defaults_fixture(request.clone(), expected.clone()).await;
+            assert_eq!(response, expected);
+        }
+    }
+
+    #[tokio::test]
+    async fn declined_and_cancelled_mcp_forms_do_not_materialize_defaults() {
+        let request = defaults_form_request(json!({
+            "name": {"type": "string", "default": "John Doe"},
+        }));
+        for action in [ElicitationAction::Decline, ElicitationAction::Cancel] {
+            for content in [None, Some(json!({}))] {
+                let expected = defaults_response(action.clone(), content);
+                let response = respond_to_defaults_fixture(request.clone(), expected.clone()).await;
+                assert_eq!(response, expected);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn non_mcp_form_responses_do_not_receive_defaults() {
+        let requests = [
+            Elicitation::OpenAiForm {
+                meta: None,
+                message: "OpenAI form".to_string(),
+                requested_schema: json!({
+                    "type": "object",
+                    "properties": {"name": {"type": "string", "default": "untouched"}},
+                }),
+            },
+            Elicitation::Mcp(
+                serde_json::from_value(json!({
+                    "mode": "url",
+                    "message": "Continue in the browser",
+                    "elicitationId": "url-defaults-fixture",
+                    "url": "https://example.invalid/continue",
+                }))
+                .expect("a URL elicitation must deserialize"),
+            ),
+        ];
+        for request in requests {
+            let expected = defaults_response(ElicitationAction::Accept, Some(json!({})));
+            let response = respond_to_defaults_fixture(request, expected.clone()).await;
+            assert_eq!(response, expected);
+        }
+    }
+
+    #[tokio::test]
+    async fn send_elicitation_response_preserves_user_errors() {
+        let service = ElicitationClientService::new(
+            ClientConfig::default(),
+            Box::new(|_, _| Box::pin(async { anyhow::bail!("user response failed") })),
+            ElicitationPauseState::new(),
+        );
+        let error = service
+            .send_elicitation_response(
+                RequestId::Number(7),
+                defaults_form_request(json!({
+                    "name": {"type": "string", "default": "must not become a response"},
+                })),
+            )
+            .await
+            .expect_err("a failed user response must remain a failure");
+        assert_eq!(error.code, rmcp::model::ErrorCode::INTERNAL_ERROR);
+        assert_eq!(error.message, "user response failed");
+    }
+
+    #[tokio::test]
+    async fn typed_and_legacy_wire_results_retain_materialized_defaults_and_meta() {
+        let response = respond_to_defaults_fixture(
+            defaults_form_request(json!({
+                "verified": {"type": "boolean", "default": true},
+            })),
+            defaults_response(ElicitationAction::Accept, Some(json!({}))),
+        )
+        .await;
+        let expected = json!({
+            "action": "accept",
+            "content": {"verified": true},
+            "_meta": {"persist": "session", "fixture": "defaults"},
+        });
+        let legacy = ClientResult::CustomResult(
+            elicitation_response_result(response.clone()).expect("legacy result must serialize"),
+        );
+        let typed = ClientResult::ElicitResult(
+            typed_elicitation_result(response).expect("typed result must serialize"),
+        );
+        assert_eq!(serde_json::to_value(legacy).expect("legacy JSON"), expected);
+        assert_eq!(serde_json::to_value(typed).expect("typed JSON"), expected);
     }
 
     fn form_request(meta: Option<RequestMetaObject>) -> ElicitRequestParams {

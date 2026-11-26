@@ -402,3 +402,111 @@ fn size_accounting_saturates_without_overflow() {
 
     assert_eq!((error.kind(), limit.failed), (ErrorKind::InvalidData, true));
 }
+
+#[tokio::test]
+async fn post_sse_bound_is_enforced_before_sdk_error_mapping() -> anyhow::Result<()> {
+    use anyhow::Context as _;
+    use futures::StreamExt;
+    use rmcp::model::ClientJsonRpcMessage;
+    use rmcp::transport::streamable_http_client::StreamableHttpPostResponse;
+    use serde_json::json;
+    use wiremock::Mock;
+    use wiremock::MockServer;
+    use wiremock::ResponseTemplate;
+    use wiremock::matchers::method;
+    use wiremock::matchers::path;
+
+    const MAXIMUM_EVENT_BYTES: usize = 64;
+    // "data: " plus its terminating newline consumes seven retained bytes.
+    for (padding_length, rejected) in [
+        (MAXIMUM_EVENT_BYTES - 7, false),
+        (MAXIMUM_EVENT_BYTES - 6, true),
+    ] {
+        let server = MockServer::start().await;
+        let padding = "x".repeat(padding_length);
+        let mut body = format!("data: {padding}\n\n");
+        if rejected {
+            body.push_str("data: accepted-after-overflow\n\n");
+        }
+        // The finite fixture also bounds the number of later parser items.
+        let maximum_followup_items = body.len();
+        Mock::given(method("POST"))
+            .and(path("/mcp"))
+            .respond_with(ResponseTemplate::new(200).set_body_raw(body, "text/event-stream"))
+            .expect(1)
+            .mount(&server)
+            .await;
+        let adapter = StreamableHttpClientAdapter::new(
+            Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
+                OutboundProxyPolicy::ReqwestDefault,
+            ))),
+            HeaderMap::new(),
+            /*auth_provider*/ None,
+            /*has_configured_headers*/ false,
+            StreamableHttpRedirectMode::Legacy,
+            Arc::new(Mutex::new(None)),
+        );
+        let message: ClientJsonRpcMessage = serde_json::from_value(json!({
+            "jsonrpc": "2.0",
+            "id": 17,
+            "method": "tools/list",
+            "params": {},
+        }))?;
+        let response = timeout(
+            Duration::from_secs(2),
+            adapter.post_message_with_max_sse_event_size(
+                format!("{}/mcp", server.uri()).into(),
+                message,
+                /*session_id*/ None,
+                /*auth_header*/ None,
+                HashMap::new(),
+                MAXIMUM_EVENT_BYTES,
+            ),
+        )
+        .await??;
+        let StreamableHttpPostResponse::Sse(mut stream, _) = response else {
+            anyhow::bail!("expected an SSE body from the original HTTP adapter");
+        };
+        let event = timeout(Duration::from_secs(2), stream.next())
+            .await?
+            .context("the original SSE parser must return a boundary result")?;
+        if rejected {
+            let error = event.expect_err("a one-byte overflow must fail before SDK mapping");
+            assert!(
+                error.to_string().contains(&format!(
+                    "MCP response body exceeds {MAXIMUM_EVENT_BYTES} bytes"
+                )),
+                "the adapter must retain its exact overflow cause: {error}"
+            );
+            timeout(Duration::from_secs(2), async {
+                for _ in 0..=maximum_followup_items {
+                    let Some(event) = stream.next().await else {
+                        return anyhow::Ok(());
+                    };
+                    let error = event
+                        .expect_err("a rejected SSE event must not expose any later valid frame");
+                    let error = error.to_string();
+                    assert!(
+                        error.contains(&format!(
+                            "MCP response body exceeds {MAXIMUM_EVENT_BYTES} bytes"
+                        )) || error.contains("oversized MCP SSE event was already rejected"),
+                        "later chunks must retain the original rejection: {error}"
+                    );
+                }
+                anyhow::bail!("the finite rejected SSE response must reach EOF")
+            })
+            .await??;
+        } else {
+            assert_eq!(event?.data.as_deref(), Some(padding.as_str()));
+            assert!(
+                timeout(Duration::from_secs(2), stream.next())
+                    .await?
+                    .is_none(),
+                "the exact-boundary response must end without a parser error"
+            );
+        }
+        drop(stream);
+        server.verify().await;
+    }
+    Ok(())
+}

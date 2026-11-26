@@ -71,7 +71,6 @@ const HTTP_MCP_SERVER_NAME: &str = "executor_http";
 const MCP_SERVER_NAME: &str = "executor_demo";
 const OAUTH_MCP_SERVER_NAME: &str = "executor_oauth";
 const PRE_REGISTERED_OAUTH_MCP_SERVER_NAME: &str = "executor_oauth_preregistered";
-const EXECUTOR_OAUTH_MCP_URL: &str = "http://oauth-only.invalid/oauth-mcp";
 const HOST_OAUTH_ACCESS_TOKEN: &str = "host-access-token";
 const EXECUTOR_OAUTH_ACCESS_TOKEN: &str = "executor-access-token";
 const EXECUTOR_ENV_NAME: &str = "MCP_EXECUTOR_MARKER";
@@ -545,8 +544,12 @@ async fn selected_executor_plugin_exposes_its_mcps_only_to_that_thread() -> Resu
     let responses_server = responses::start_mock_server().await;
     let http_listener = TcpListener::bind("127.0.0.1:0").await?;
     let http_addr = http_listener.local_addr()?;
+    // OAuth uses the explicitly configured local origin through the selected
+    // executor's restricted transport. Ordinary MCP traffic still uses its proxy.
+    let oauth_origin = format!("http://{http_addr}");
+    let oauth_mcp_url = format!("{oauth_origin}/oauth-mcp");
     let http_server_config = StreamableHttpServerConfig::default()
-        .with_allowed_hosts(["executor-only.invalid", "oauth-only.invalid"]);
+        .with_allowed_hosts(["executor-only.invalid".to_string(), http_addr.to_string()]);
     let http_mcp_service = StreamableHttpService::new(
         || Ok(ExecutorHttpMcpServer),
         Arc::new(LocalSessionManager::default()),
@@ -596,10 +599,10 @@ async fn selected_executor_plugin_exposes_its_mcps_only_to_that_thread() -> Resu
     let (registration_request_tx, mut registration_request_rx) = mpsc::unbounded_channel();
     let (token_request_tx, mut token_request_rx) = mpsc::unbounded_channel();
     let oauth_metadata = json!({
-        "issuer": EXECUTOR_OAUTH_MCP_URL,
-        "authorization_endpoint": "https://oauth-only.invalid/authorize",
-        "token_endpoint": "http://oauth-only.invalid/token",
-        "registration_endpoint": "http://oauth-only.invalid/register",
+        "issuer": oauth_mcp_url,
+        "authorization_endpoint": format!("{oauth_origin}/authorize"),
+        "token_endpoint": format!("{oauth_origin}/token"),
+        "registration_endpoint": format!("{oauth_origin}/register"),
         "authorization_response_iss_parameter_supported": true,
         "scopes_supported": ["read", "write"],
         "response_types_supported": ["code"],
@@ -667,12 +670,12 @@ async fn selected_executor_plugin_exposes_its_mcps_only_to_that_thread() -> Resu
         .with_provider_config("supports_websockets = false")
         .write(codex_home.path())?;
     let executor_config: codex_config::types::McpServerConfig = serde_json::from_value(json!({
-        "url": EXECUTOR_OAUTH_MCP_URL,
+        "url": oauth_mcp_url,
         "environment_id": EXECUTOR_ID,
     }))?;
     let host_oauth_credential = json!({
         "server_name": executor_config.oauth_credential_name(OAUTH_MCP_SERVER_NAME),
-        "server_url": EXECUTOR_OAUTH_MCP_URL,
+        "server_url": oauth_mcp_url,
         "client_id": "host-oauth-client",
         "access_token": HOST_OAUTH_ACCESS_TOKEN,
         "expires_at": null,
@@ -692,6 +695,9 @@ async fn selected_executor_plugin_exposes_its_mcps_only_to_that_thread() -> Resu
         .env(EXECUTOR_ENV_NAME, EXECUTOR_ENV_VALUE)
         .env(EXECUTOR_HTTP_AUTH_ENV_NAME, EXECUTOR_HTTP_AUTH_ENV_VALUE)
         .env("HTTP_PROXY", format!("http://{http_addr}"))
+        .env("http_proxy", format!("http://{http_addr}"))
+        .env("NO_PROXY", "localhost,127.0.0.1,::1")
+        .env("no_proxy", "localhost,127.0.0.1,::1")
         .spawn()?;
     let stdout = executor.stdout.take().expect("executor stdout is piped");
     let mut lines = BufReader::new(stdout).lines();
@@ -738,13 +744,13 @@ url = "{executor_url}"
                     "startup_timeout_sec": 10,
                 },
                 (OAUTH_MCP_SERVER_NAME): {
-                    "url": EXECUTOR_OAUTH_MCP_URL,
+                    "url": oauth_mcp_url,
                     "environment_id": "local",
                     "oauth": {"callbackPort": plugin_callback_port},
                     "startup_timeout_sec": 10,
                 },
                 (PRE_REGISTERED_OAUTH_MCP_SERVER_NAME): {
-                    "url": EXECUTOR_OAUTH_MCP_URL,
+                    "url": oauth_mcp_url,
                     "environment_id": "local",
                     "oauth": {
                         "clientId": "configured-client",
@@ -826,7 +832,7 @@ startup_timeout_sec = 10
         .query_pairs_mut()
         .append_pair("code", "configured-test-code")
         .append_pair("state", &parameters["state"])
-        .append_pair("iss", EXECUTOR_OAUTH_MCP_URL);
+        .append_pair("iss", &oauth_mcp_url);
     HttpClientBuilder::new()
         .build_direct()?
         .get(callback_url)
@@ -861,7 +867,7 @@ startup_timeout_sec = 10
     assert!(
         response
             .authorization_url
-            .starts_with("https://oauth-only.invalid/authorize?")
+            .starts_with(&format!("{oauth_origin}/authorize?"))
     );
     let authorization_url = Url::parse(&response.authorization_url)?;
     let client_id = authorization_url
@@ -890,7 +896,7 @@ startup_timeout_sec = 10
         .query_pairs_mut()
         .append_pair("code", "executor-test-code")
         .append_pair("state", &state)
-        .append_pair("iss", EXECUTOR_OAUTH_MCP_URL);
+        .append_pair("iss", &oauth_mcp_url);
     HttpClientBuilder::new()
         .build_direct()?
         .get(callback_url)

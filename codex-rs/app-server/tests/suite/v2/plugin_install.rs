@@ -1710,10 +1710,11 @@ async fn plugin_install_starts_mcp_oauth_with_formerly_disallowed_plugin_app() -
 }
 
 #[tokio::test]
-async fn plugin_install_starts_mcp_oauth_through_configured_http_proxy() -> Result<()> {
-    let proxy = MockServer::start().await;
-    let resource_url = "http://plugin-mcp.invalid";
-    let authorization_url = "http://plugin-oauth.invalid";
+async fn plugin_install_starts_mcp_oauth_for_configured_local_origin() -> Result<()> {
+    let resource = MockServer::start().await;
+    let proxy = UnexpectedOAuthProxy::start()?;
+    let resource_url = resource.uri();
+    let authorization_url = &resource_url;
     let resource_metadata_url = format!("{resource_url}/oauth-resource");
     let challenge = format!("Bearer resource_metadata=\"{resource_metadata_url}\"");
     Mock::given(method("GET"))
@@ -1721,31 +1722,32 @@ async fn plugin_install_starts_mcp_oauth_through_configured_http_proxy() -> Resu
         .respond_with(
             ResponseTemplate::new(401).insert_header("WWW-Authenticate", challenge.as_str()),
         )
-        .mount(&proxy)
+        .mount(&resource)
         .await;
     Mock::given(method("GET"))
         .and(path("/oauth-resource"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-            "resource": resource_url,
+            "resource": format!("{resource_url}/mcp"),
             "authorization_servers": [authorization_url],
         })))
-        .mount(&proxy)
+        .mount(&resource)
         .await;
     Mock::given(method("GET"))
         .and(path("/.well-known/oauth-authorization-server"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "issuer": authorization_url,
             "authorization_endpoint": format!("{authorization_url}/oauth/authorize"),
             "token_endpoint": format!("{authorization_url}/oauth/token"),
             "registration_endpoint": format!("{authorization_url}/oauth/register"),
             "response_types_supported": ["code"],
             "code_challenge_methods_supported": ["S256"],
         })))
-        .mount(&proxy)
+        .mount(&resource)
         .await;
     Mock::given(method("POST"))
         .and(path("/oauth/register"))
         .respond_with(ResponseTemplate::new(400))
-        .mount(&proxy)
+        .mount(&resource)
         .await;
 
     let plugin_callback_listener = TcpListener::bind("127.0.0.1:0").await?;
@@ -1784,7 +1786,7 @@ async fn plugin_install_starts_mcp_oauth_through_configured_http_proxy() -> Resu
     let marketplace_path =
         AbsolutePathBuf::try_from(repo_root.path().join(".agents/plugins/marketplace.json"))?;
 
-    let proxy_uri = proxy.uri();
+    let proxy_uri = proxy.uri().to_string();
     let mut mcp = TestAppServer::builder()
         .with_codex_home(codex_home.path())
         .with_env_overrides(&[
@@ -1794,8 +1796,8 @@ async fn plugin_install_starts_mcp_oauth_through_configured_http_proxy() -> Resu
             ("https_proxy", None),
             ("ALL_PROXY", None),
             ("all_proxy", None),
-            ("NO_PROXY", None),
-            ("no_proxy", None),
+            ("NO_PROXY", Some("localhost,127.0.0.1,::1")),
+            ("no_proxy", Some("localhost,127.0.0.1,::1")),
         ])
         .build_initialized_with_timeout(DEFAULT_TIMEOUT)
         .await?;
@@ -1811,14 +1813,17 @@ async fn plugin_install_starts_mcp_oauth_through_configured_http_proxy() -> Resu
     let _: PluginInstallResponse =
         timeout(DEFAULT_TIMEOUT, mcp.read_response(request_id)).await??;
     wait_for_remote_plugin_request_count(
-        &proxy,
+        &resource,
         "POST",
         "/oauth/register",
         /*expected_count*/ 1,
     )
     .await?;
 
-    let requests = proxy.received_requests().await.unwrap_or_default();
+    let requests = resource
+        .received_requests()
+        .await
+        .expect("configured resource requests");
     let resource_metadata_requested = requests
         .iter()
         .any(|request| request.url.path() == "/oauth-resource");
@@ -1839,6 +1844,7 @@ async fn plugin_install_starts_mcp_oauth_through_configured_http_proxy() -> Resu
             .and_then(axum::http::uri::Authority::port_u16),
         Some(plugin_callback_port)
     );
+    proxy.assert_unused()?;
     Ok(())
 }
 
@@ -3126,4 +3132,95 @@ fn remote_plugin_bundle_tar_gz_bytes_with_entries(
         tar.append_data(&mut header, path, contents)?;
     }
     Ok(tar.into_inner()?.finish()?)
+}
+
+#[must_use = "finish the proxy observation with assert_unused"]
+struct UnexpectedOAuthProxy {
+    uri: String,
+    stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    observer: Option<std::thread::JoinHandle<std::io::Result<Vec<String>>>>,
+}
+
+impl UnexpectedOAuthProxy {
+    fn start() -> Result<Self> {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+        listener.set_nonblocking(true)?;
+        let uri = format!("http://{}", listener.local_addr()?);
+        let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let observer_stop = std::sync::Arc::clone(&stop);
+        let observer = std::thread::spawn(move || -> std::io::Result<Vec<String>> {
+            let mut connections = Vec::new();
+            loop {
+                match listener.accept() {
+                    Ok((stream, peer)) => {
+                        // Observe at most one immediately available request-line prefix.
+                        // Never wait for request bytes or let unexpected traffic hang.
+                        stream.set_nonblocking(true)?;
+                        let mut bytes = [0_u8; 256];
+                        let prefix = match stream.peek(&mut bytes) {
+                            Ok(count) => format!(
+                                "first request-line prefix {:?}",
+                                String::from_utf8_lossy(&bytes[..count])
+                                    .lines()
+                                    .next()
+                                    .map(str::to_owned)
+                            ),
+                            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                                "no request bytes immediately available".to_string()
+                            }
+                            Err(error) => format!("request prefix peek failed: {error}"),
+                        };
+                        drop(stream);
+                        connections.push(format!("{peer}: {prefix}"));
+                        if connections.len() >= 16 {
+                            return Err(std::io::Error::other(format!(
+                                "unexpected OAuth proxy connection limit reached: {connections:?}"
+                            )));
+                        }
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        if observer_stop.load(std::sync::atomic::Ordering::Acquire) {
+                            return Ok(connections);
+                        }
+                        std::thread::sleep(std::time::Duration::from_millis(5));
+                    }
+                    Err(error) => return Err(error),
+                }
+            }
+        });
+        Ok(Self {
+            uri,
+            stop,
+            observer: Some(observer),
+        })
+    }
+
+    fn uri(&self) -> &str {
+        &self.uri
+    }
+
+    fn assert_unused(mut self) -> Result<()> {
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        let connections = self
+            .observer
+            .take()
+            .expect("proxy observer must be owned")
+            .join()
+            .expect("proxy observer must not panic")?;
+        assert!(
+            connections.is_empty(),
+            "the explicit direct route unexpectedly reached its configured proxy: {connections:?}"
+        );
+        Ok(())
+    }
+}
+
+impl Drop for UnexpectedOAuthProxy {
+    fn drop(&mut self) {
+        // Early test failures still close the listener and join the bounded observer.
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        if let Some(observer) = self.observer.take() {
+            let _ = observer.join();
+        }
+    }
 }

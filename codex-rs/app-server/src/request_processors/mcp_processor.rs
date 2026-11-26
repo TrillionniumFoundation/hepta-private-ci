@@ -205,7 +205,7 @@ impl McpRequestProcessor {
             resolve_oauth_scopes(scopes, server.scopes.clone(), discovered_scopes);
         let oauth_credential_name = server.oauth_credential_name(&name);
 
-        let handle = perform_oauth_login_return_url(
+        let handle = perform_oauth_login_return_url_with_protocol_mode(
             oauth_credential_name.as_ref(),
             &url,
             mcp_config.mcp_oauth_credentials_store_mode,
@@ -221,6 +221,7 @@ impl McpRequestProcessor {
             mcp_config.mcp_oauth_callback_url.as_deref(),
             http_client,
             redirect_mode,
+            mcp_config.protocol_mode,
         )
         .await
         .map_err(|err| internal_error(format!("failed to login to MCP server '{name}': {err}")))?;

@@ -1,0 +1,414 @@
+{
+  "schema": "root-hepta7114-partial-main-lock-reuse-acceptance-v1",
+  "status": "ORIGINAL_MAIN_LOCKS_AND_MAIN_GRAPH_ACCEPTED_FOR_EXACT_REUSE_ONLY",
+  "accepted": true,
+  "reviewer": "root",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "origin": {
+    "head": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
+    "tree": "73e1ccd4245498fb583326667884953dbdfccbf3",
+    "sole_parent": "7283cddbb2a3af8c728e9b696de3458acb649b92",
+    "run_id": 45738227995,
+    "attempt": 1,
+    "job_id": 139636557660,
+    "artifact_id": 15083760351,
+    "archive": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/original.zip",
+      "bytes": 8701664,
+      "sha256": "72ac667a262d873b00ac81334673d959f7db1b1aaf754561f10f0bd7f9447012"
+    },
+    "original_job_status": "failure",
+    "original_generation_status": "FAIL",
+    "original_failure_label": "default-lock-generate-offline-once",
+    "original_failure_returncode": 101,
+    "original_failure_stderr_sha256": "085d2702f03d35199d22c976b69101bc599ccd08b66dfd1ff48c67ac728440d2",
+    "created_at": "2026-11-26T01:48:32Z",
+    "started_at": "2026-11-26T02:57:12Z",
+    "completed_at": "2026-11-26T02:58:50Z"
+  },
+  "main_locks": {
+    "codex-rs/Cargo.lock": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/failed-partial-locks/codex-rs/Cargo.lock",
+      "bytes": 421756,
+      "sha256": "bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1"
+    },
+    "MODULE.bazel.lock": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/failed-partial-locks/MODULE.bazel.lock",
+      "bytes": 1792663,
+      "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
+    }
+  },
+  "main_metadata": {
+    "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/generate-18-main-locked-all-features-graph-once.stdout",
+    "bytes": 9322850,
+    "sha256": "837c6d8b6266dc1a495040b58d5d56e57bfffaf8c3c58f9f64cceb040db84e60",
+    "normalized_graph_sha256": "4daaf1ebecd76ee8cf4e202f55eec9c23ccdb1c4ad20d9dfd6ab7b86dae772c7",
+    "scope": "Original exact b4fa --locked --all-features graph, not a new default-feature or native observation",
+    "packages": 1525,
+    "resolve_nodes": 1525,
+    "workspace_members": 193,
+    "targets": 6033
+  },
+  "source_binding": {
+    "head": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
+    "tree": "73e1ccd4245498fb583326667884953dbdfccbf3",
+    "all_tracked_entries": 16106,
+    "original_source_before_after_copy_equal": true,
+    "original_published_mapping": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/sqlx-generation-final-v1/POSTIMAGE_MAPPING.json",
+      "bytes": 4225809,
+      "sha256": "93f2fb20a452346e9617d16d8a06ed12a438be1ae5ff9005ce6b7bbc3de952b4"
+    },
+    "root_actual_published_readback": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/ROOT_ACTUAL_PUBLISHED_READBACK_7114.json",
+      "bytes": 7193,
+      "sha256": "73d576d9dfed3ddee3899e7dbd937bca8d31c62fc794872cc04f58c5e77b1368"
+    }
+  },
+  "verified_changes": {
+    "lock_package_identity_count": 1525,
+    "external_versions_sources_checksums_and_all_other_lock_attributes_unchanged": true,
+    "only_lock_dependency_edges_removed": [
+      {
+        "added_dependencies": [],
+        "identity": [
+          "sqlx-core",
+          "0.9.1",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "removed_dependency": "chrono"
+      },
+      {
+        "added_dependencies": [],
+        "identity": [
+          "sqlx-mysql",
+          "0.9.1",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "removed_dependency": "chrono"
+      },
+      {
+        "added_dependencies": [],
+        "identity": [
+          "sqlx-postgres",
+          "0.9.1",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "removed_dependency": "chrono"
+      },
+      {
+        "added_dependencies": [],
+        "identity": [
+          "sqlx-sqlite",
+          "0.9.1",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "removed_dependency": "chrono"
+      }
+    ],
+    "graph_nodes_changed": 7,
+    "package_declarations_changed": 12,
+    "only_graph_changes": "SQLx chrono feature removed on seven SQLx nodes, four SQLx-to-Chrono typed edges removed; twelve inherited workspace SQLx declarations remove only the chrono feature",
+    "other_normalized_metadata_fields_identical": true,
+    "all_targets_identical": true,
+    "normalization": {
+      "identity": "Every package uses [name,version,source] for external packages; path packages use repository-relative Cargo.toml. No IDs are matched by name alone.",
+      "paths": "Only absolute package directory and absolute repository source root strings are renamed to <package-root>/<source-root>, longest root first. Declared paths and target src paths retain their relative suffixes.",
+      "ordering": "Node feature/dependency sets, typed edges and target arrays are sorted only for comparison. The actual package field records are retained in the full diff.",
+      "no_other_fields_removed": true,
+      "complete_pairs_compared": 1525
+    },
+    "bazel_byte_and_full_json_identity": true,
+    "chrono_direct_reverse_edges_before": 29,
+    "chrono_direct_reverse_edges_after": 25,
+    "remaining_workspace_edges": 21,
+    "remaining_external_families": [
+      "rmcp",
+      "oauth2",
+      "schemars",
+      "serde_with"
+    ]
+  },
+  "successful_original_commands": [
+    {
+      "label": "sqlx-lock-data-controls-once",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_hepta_sqlx_temporal_lock_contract_v1"
+      ],
+      "elapsed_seconds": 0.061262202000001764,
+      "execution": {
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "files": {
+        "generate-16-sqlx-lock-data-controls-once.stderr": {
+          "bytes": 2019,
+          "sha256": "c4aa0525877519c3ab55b770121f56eda95ecc3c8472b52f72a411a8f10c13bd"
+        },
+        "generate-16-sqlx-lock-data-controls-once.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "main-workspace-update-once",
+      "argv": [
+        "/home/runner/.cargo/bin/cargo",
+        "+1.96.0",
+        "update",
+        "--workspace",
+        "--manifest-path",
+        "/home/runner/work/_temp/sqlx-temporal-lock-b4fa4fdd1d05603c1a091930b70f83ec1af73797-45738227995-1/work/codex-rs/Cargo.toml"
+      ],
+      "elapsed_seconds": 6.731561280000001,
+      "execution": {
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "files": {
+        "generate-17-main-workspace-update-once.stderr": {
+          "bytes": 1489,
+          "sha256": "4405c97a46cf35ddea9b1a74af84786bb3a9faca0281b4bf84b4c34e9bfc5eb1"
+        },
+        "generate-17-main-workspace-update-once.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "label": "main-locked-all-features-graph-once",
+      "argv": [
+        "/home/runner/.cargo/bin/cargo",
+        "+1.96.0",
+        "metadata",
+        "--manifest-path",
+        "/home/runner/work/_temp/sqlx-temporal-lock-b4fa4fdd1d05603c1a091930b70f83ec1af73797-45738227995-1/work/codex-rs/Cargo.toml",
+        "--locked",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "elapsed_seconds": 9.789976044,
+      "execution": {
+        "log_bytes": 9322850,
+        "log_sha256": "837c6d8b6266dc1a495040b58d5d56e57bfffaf8c3c58f9f64cceb040db84e60",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "files": {
+        "generate-18-main-locked-all-features-graph-once.stderr": {
+          "bytes": 59985,
+          "sha256": "9899ba05f4a0a0788a891434e89fb6696ed5e10a1a49f6fef6daf19e2047931a"
+        },
+        "generate-18-main-locked-all-features-graph-once.stdout": {
+          "bytes": 9322850,
+          "sha256": "837c6d8b6266dc1a495040b58d5d56e57bfffaf8c3c58f9f64cceb040db84e60"
+        }
+      }
+    },
+    {
+      "label": "main-bazel-lock-update-once",
+      "argv": [
+        "/home/runner/.cargo/bin/just",
+        "bazel-lock-update"
+      ],
+      "elapsed_seconds": 21.459641410999993,
+      "execution": {
+        "log_bytes": 18,
+        "log_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "files": {
+        "generate-19-main-bazel-lock-update-once.stderr": {
+          "bytes": 3247,
+          "sha256": "4a769991fefa318ec12d7f386d28486c91e72c01f7fea5ea0f1113fb0276b3d8"
+        },
+        "generate-19-main-bazel-lock-update-once.stdout": {
+          "bytes": 18,
+          "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+        }
+      }
+    },
+    {
+      "label": "main-bazel-error-mode-once",
+      "argv": [
+        "/home/runner/work/_temp/sqlx-temporal-lock-b4fa4fdd1d05603c1a091930b70f83ec1af73797-45738227995-1/bin/bazel",
+        "mod",
+        "deps",
+        "--lockfile_mode=error"
+      ],
+      "elapsed_seconds": 3.021225126999994,
+      "execution": {
+        "log_bytes": 18,
+        "log_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "timed_out": false
+      },
+      "files": {
+        "generate-20-main-bazel-error-mode-once.stderr": {
+          "bytes": 947,
+          "sha256": "56b67880f79f0f9a4941eb9e0d03789a9c906eb3524d1455d93764a6c569ee80"
+        },
+        "generate-20-main-bazel-error-mode-once.stdout": {
+          "bytes": 18,
+          "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+        }
+      }
+    }
+  ],
+  "failure_preserved": {
+    "original_job_failed": true,
+    "default_empty_lock_resolution_failed_on_yanked_clipboard_win_5_4_1": true,
+    "default_fixture_lock_absent": true,
+    "compatibility_fixture_lock_absent": true,
+    "both_fixture_graphs_absent": true,
+    "native12_plus3_never_started": true,
+    "unexecuted_steps": [
+      "default locked metadata",
+      "compatibility lock generation",
+      "compatibility locked metadata",
+      "native 12+3"
+    ],
+    "failed_partial_evidence_not_reclassified_as_four_lock_success": true
+  },
+  "permitted_reuse": {
+    "publish_exact_main_cargo_lock_as_necessary_manifest_coherent_postimage": true,
+    "keep_exact_main_bazel_lock": true,
+    "create_only_fixture_seeds_from_exact_main_cargo_lock": true,
+    "reference_original_main_graph_and_successful_command_receipts": true,
+    "repeat_main_update_metadata_bazel_or_twelve_controls": false,
+    "source_manifest_equivalence_must_be_proved_for_later_source": true,
+    "repository_and_source_tree_must_be_rebound_for_new_native_work": true
+  },
+  "cost": {
+    "original_generation_seconds": 50.812052642000005,
+    "original_generation_cap_seconds": 900,
+    "remaining_generation_seconds": 849.187947358,
+    "original_generation_self_cpu_seconds": 6.824364,
+    "original_generation_reaped_children_cpu_seconds": 65.43951200000001,
+    "original_whole_at_generation_result_seconds": 79.047161147,
+    "original_whole_at_workflow_readback_seconds": 79.133119422,
+    "original_complete_job_seconds": 98,
+    "original_whole_job_cap_seconds": 1320,
+    "remaining_whole_job_seconds": 1222,
+    "original_queue_seconds": 4120,
+    "run_created_to_updated_seconds": 4219,
+    "all_intervals_nested_not_summed": true,
+    "queue_is_separate_from_runtime_budget": true,
+    "full_job_cpu_seconds": null,
+    "archive_acquisition_wall_seconds": 7.293639542069286,
+    "archive_acquisition_child_cpu_seconds": 0.145701,
+    "archive_acquisition_self_cpu_seconds": 0.14277399999999998,
+    "independent_data_reader_wall_seconds": 0.4389580830466002,
+    "independent_data_reader_cpu_seconds": 0.426798
+  },
+  "review_evidence": {
+    "independent_full_archive_and_locks": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/independent-review-v1/RESULT.json",
+      "bytes": 9336,
+      "sha256": "bb1b89210c26bc72a44ab867fd37ba5cff7115c97a84d9c9f9266a4396c95d0e"
+    },
+    "full_main_graph_diff": {
+      "bytes": 399084,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/independent-review-v1/FULL_MAIN_METADATA_DIFF.json",
+      "sha256": "e5bcce3919189eb9119ea0482b4ed9b742d419dad10796d21c77fd15c9d25432"
+    },
+    "complete_field_synopsis": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/independent-review-v1/COMPACT_MAIN_GRAPH_REVIEW.json",
+      "bytes": 14629,
+      "sha256": "2ffc8877954fbfb8f50d1c291e0bbcd873287b7e3da1adbfd6d313289c2b736e"
+    },
+    "original_generate_result": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/generate.RESULT.json",
+      "bytes": 47598,
+      "sha256": "18d92686bf03299aeab61903d2d8b552e0743080e95d9277eacef7d9c0bcff2e"
+    },
+    "archive_members": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/MEMBERS.json",
+      "bytes": 55688,
+      "sha256": "a04d4db30566dc742529b9bca10edeb9cfb23c6c7fe3bcbf9b34cb2b5aedf1f5"
+    },
+    "independent_reader_terminal": {
+      "at_unix_ms": 1795662570012,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a215d45f02-ffbe-434a",
+      "launch_nonce": "d56cbe7f3f588fb9ad17d85ef751957a",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 445,
+          "stored": 445
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "root_review_scope": "Root independently read original GitHub jobs/artifacts, full generation command receipt, immutable archive/lock/metadata pins, complete 7-node/12-declaration synopsis, source-readback and independent full-data proof. Full 177-member/1525-package/6033-target byte parsing was performed by the retained independent reader; Root did not repeat any resolver or test."
+  },
+  "qualification": {
+    "main_lock_reuse": true,
+    "four_locks": false,
+    "two_fixture_graphs": false,
+    "native12_plus3": false,
+    "new_native48": false,
+    "ordinary_locked_CI": false,
+    "advisory_closed": false,
+    "SDK_HTTP_modes": false,
+    "science": false,
+    "speed": false,
+    "adoption": false,
+    "final_use": false
+  },
+  "execution_authorization": false,
+  "separate_continuation_engineering_admission_required": true,
+  "frozen_E1_E6_training_spent_unchanged": 16,
+  "E6_compile_remaining_seconds_unchanged": 1.9960488015785813
+}

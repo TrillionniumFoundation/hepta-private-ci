@@ -72,11 +72,16 @@ pub(crate) fn timestamp(now: OffsetDateTime) -> String {
     )))]
     assert!(now.unix_timestamp() >= 0, "system time before Unix epoch");
 
-    now.to_offset(UtcOffset::UTC)
+    match now
+        .to_offset(UtcOffset::UTC)
         .format(time::macros::format_description!(
             "[year]-[month]-[day]T[hour]:[minute]:[second].[subsecond digits:3]Z"
-        ))
-        .expect("UTC timestamp contains every component required by the static format")
+        )) {
+        Ok(timestamp) => timestamp,
+        Err(error) => panic!(
+            "UTC timestamp contains every component required by the static format: {error:?}"
+        ),
+    }
 }
 
 #[cfg(test)]

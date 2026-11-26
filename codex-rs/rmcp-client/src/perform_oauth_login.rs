@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::string::String;
 use std::sync::Arc;
 use std::time::Duration;
+use std::time::Instant;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -12,6 +13,7 @@ use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use codex_exec_server::HttpClient;
 use rmcp::transport::AuthorizationManager;
 use rmcp::transport::AuthorizationSession;
+use rmcp::transport::auth::AuthorizationMetadata;
 use rmcp::transport::auth::OAuthClientConfig;
 use rmcp::transport::auth::OAuthHttpClient;
 use rmcp::transport::auth::OAuthState;
@@ -32,17 +34,23 @@ use crate::oauth::validate_authorization_server_endpoints;
 use crate::oauth_client_registration::McpOAuthClientRegistration;
 use crate::oauth_client_registration::PreparedOAuthLogin;
 use crate::oauth_client_registration::start_authorization as start_client_registration;
+use crate::oauth_client_registration::start_authorization_with_metadata as start_client_registration_with_metadata;
 use crate::oauth_http_client::OAuthHttpClientAdapter;
+use crate::oauth_reactive_discovery::resolve_metadata_with_mcp_challenge;
+use crate::protocol_mode::McpProtocolMode;
 use crate::save_oauth_tokens;
 use crate::utils::build_default_headers;
 use codex_config::types::AuthKeyringBackendKind;
 use codex_config::types::OAuthCredentialsStoreMode;
+
+const DEFAULT_OAUTH_TIMEOUT_SECS: i64 = 300;
 
 struct OAuthHttpContext {
     http_headers: Option<HashMap<String, String>>,
     env_http_headers: Option<HashMap<String, String>>,
     http_client: Arc<dyn HttpClient>,
     redirect_mode: StreamableHttpRedirectMode,
+    protocol_discovery: Option<(McpProtocolMode, Instant)>,
 }
 
 struct CallbackServerGuard {
@@ -181,6 +189,7 @@ async fn perform_oauth_login_with_browser_output(
         env_http_headers,
         http_client,
         redirect_mode,
+        protocol_discovery: None,
     };
     OauthLoginFlow::new(
         server_name,
@@ -225,6 +234,7 @@ pub async fn perform_oauth_login_return_url(
         env_http_headers,
         http_client,
         redirect_mode,
+        protocol_discovery: None,
     };
     let flow = OauthLoginFlow::new(
         server_name,
@@ -242,6 +252,67 @@ pub async fn perform_oauth_login_return_url(
         timeout_secs,
     )
     .await?;
+
+    let authorization_url = flow.authorization_url();
+    let completion = flow.spawn();
+
+    Ok(OauthLoginHandle::new(authorization_url, completion))
+}
+
+/// Explicit app-server login with its captured MCP protocol mode and one deadline.
+/// Ordinary metadata discovery is unchanged; a metadata-free legacy fallback can
+/// obtain a real MCP challenge through the same restricted HTTP capability.
+#[allow(clippy::too_many_arguments)]
+pub async fn perform_oauth_login_return_url_with_protocol_mode(
+    server_name: &str,
+    server_url: &str,
+    store_mode: OAuthCredentialsStoreMode,
+    keyring_backend_kind: AuthKeyringBackendKind,
+    http_headers: Option<HashMap<String, String>>,
+    env_http_headers: Option<HashMap<String, String>>,
+    scopes: &[String],
+    oauth_client_id: Option<&str>,
+    client_registration: McpOAuthClientRegistration,
+    oauth_resource: Option<&str>,
+    timeout_secs: Option<i64>,
+    callback_port: Option<u16>,
+    callback_url: Option<&str>,
+    http_client: Arc<dyn HttpClient>,
+    redirect_mode: StreamableHttpRedirectMode,
+    protocol_mode: McpProtocolMode,
+) -> Result<OauthLoginHandle> {
+    let login_deadline = Instant::now()
+        .checked_add(Duration::from_secs(
+            timeout_secs.unwrap_or(DEFAULT_OAUTH_TIMEOUT_SECS).max(1) as u64,
+        ))
+        .context("OAuth login deadline overflowed")?;
+    let http_context = OAuthHttpContext {
+        http_headers,
+        env_http_headers,
+        http_client,
+        redirect_mode,
+        protocol_discovery: Some((protocol_mode, login_deadline)),
+    };
+    let flow = tokio::time::timeout_at(
+        tokio::time::Instant::from_std(login_deadline),
+        OauthLoginFlow::new(
+            server_name,
+            server_url,
+            store_mode,
+            keyring_backend_kind,
+            http_context,
+            scopes,
+            oauth_client_id,
+            client_registration,
+            oauth_resource,
+            /*launch_browser*/ false,
+            callback_port,
+            callback_url,
+            timeout_secs,
+        ),
+    )
+    .await
+    .context("OAuth login timed out during discovery or registration")??;
 
     let authorization_url = flow.authorization_url();
     let completion = flow.spawn();
@@ -407,6 +478,7 @@ struct OauthLoginFlow {
     keyring_backend_kind: AuthKeyringBackendKind,
     launch_browser: bool,
     timeout: Duration,
+    login_deadline: Option<Instant>,
 }
 
 fn resolve_callback_port(callback_port: Option<u16>) -> Result<Option<u16>> {
@@ -513,8 +585,6 @@ impl OauthLoginFlow {
         callback_url: Option<&str>,
         timeout_secs: Option<i64>,
     ) -> Result<Self> {
-        const DEFAULT_OAUTH_TIMEOUT_SECS: i64 = 300;
-
         let bind_host = callback_bind_host(callback_url);
         let callback_port = resolve_callback_port(callback_port)?;
         let bind_addr = match callback_port {
@@ -540,6 +610,7 @@ impl OauthLoginFlow {
             env_http_headers,
             http_client,
             redirect_mode,
+            protocol_discovery,
         } = http_context;
         let has_configured_headers = http_headers
             .as_ref()
@@ -557,18 +628,58 @@ impl OauthLoginFlow {
         )?);
 
         let scope_refs: Vec<&str> = scopes.iter().map(String::as_str).collect();
+        let resolved_manager = if let Some((protocol_mode, login_deadline)) = protocol_discovery {
+            let mut manager = AuthorizationManager::new_with_oauth_http_client(
+                server_url,
+                oauth_http_client.clone(),
+            )
+            .await?;
+            manager.set_allow_missing_issuer(true);
+            let resolution = resolve_metadata_with_mcp_challenge(
+                &manager,
+                oauth_http_client.as_ref(),
+                server_url,
+                protocol_mode,
+                login_deadline,
+            )
+            .await?;
+            Some((manager, resolution.metadata))
+        } else {
+            None
+        };
         let PreparedOAuthLogin {
             oauth_state,
             authorization_server_issuer,
         } = if let Some(oauth_client_id) =
             oauth_client_id.filter(|client_id| !client_id.trim().is_empty())
         {
-            start_authorization(
-                server_url,
-                oauth_http_client,
+            if let Some((manager, metadata)) = resolved_manager {
+                start_authorization_with_metadata(
+                    manager,
+                    metadata,
+                    &scope_refs,
+                    &redirect_uri,
+                    oauth_client_id,
+                )
+                .await?
+            } else {
+                start_authorization(
+                    server_url,
+                    oauth_http_client,
+                    &scope_refs,
+                    &redirect_uri,
+                    oauth_client_id,
+                )
+                .await?
+            }
+        } else if let Some((manager, metadata)) = resolved_manager {
+            start_client_registration_with_metadata(
+                manager,
+                metadata,
                 &scope_refs,
                 &redirect_uri,
-                oauth_client_id,
+                &callback_id,
+                client_registration,
             )
             .await?
         } else {
@@ -602,6 +713,7 @@ impl OauthLoginFlow {
             keyring_backend_kind,
             launch_browser,
             timeout,
+            login_deadline: protocol_discovery.map(|(_, deadline)| deadline),
         })
     }
 
@@ -629,6 +741,7 @@ impl OauthLoginFlow {
             }
         }
 
+        let login_deadline = self.login_deadline;
         let result = async {
             let callback = timeout(self.timeout, &mut self.rx)
                 .await
@@ -673,8 +786,16 @@ impl OauthLoginFlow {
             )?;
 
             Ok(())
-        }
-        .await;
+        };
+        let result = match login_deadline {
+            Some(deadline) => {
+                tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), result)
+                    .await
+                    .context("OAuth login deadline expired")
+                    .and_then(|result| result)
+            }
+            None => result.await,
+        };
 
         drop(self.guard);
         result
@@ -711,6 +832,23 @@ async fn start_authorization(
         AuthorizationManager::new_with_oauth_http_client(server_url, http_client).await?;
     auth_manager.set_allow_missing_issuer(true);
     let metadata = auth_manager.resolve_metadata().await?.metadata;
+    start_authorization_with_metadata(
+        auth_manager,
+        metadata,
+        scopes,
+        redirect_uri,
+        oauth_client_id,
+    )
+    .await
+}
+
+async fn start_authorization_with_metadata(
+    mut auth_manager: AuthorizationManager,
+    metadata: AuthorizationMetadata,
+    scopes: &[&str],
+    redirect_uri: &str,
+    oauth_client_id: &str,
+) -> Result<PreparedOAuthLogin> {
     validate_authorization_server_endpoints(&metadata)?;
     let authorization_server_issuer = metadata.issuer.clone();
     auth_manager.set_metadata(metadata);
@@ -943,6 +1081,7 @@ mod tests {
                     OutboundProxyPolicy::ReqwestDefault,
                 ))),
                 redirect_mode: StreamableHttpRedirectMode::Legacy,
+                protocol_discovery: None,
             },
             &[],
             Some("test-client"),

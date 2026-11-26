@@ -32,6 +32,8 @@ const RESOURCE_USER_AGENT: &str = "resource-only-user-agent";
 const MCP_USER_AGENT: &str = concat!("codex-mcp-client/", env!("CARGO_PKG_VERSION"));
 // This is a test safety ceiling, not rmcp's private redirect limit.
 const MAX_METADATA_REDIRECT_REQUESTS: u64 = 100;
+// The pinned rmcp SDK rejects after ten same-origin discovery requests.
+const EXPECTED_METADATA_REDIRECT_REQUESTS: usize = 10;
 const REDIRECT_DISCOVERY_TEST_TIMEOUT: Duration = Duration::from_secs(5);
 
 type DiscoveryResult = anyhow::Result<Option<StreamableHttpOAuthDiscovery>>;
@@ -107,6 +109,7 @@ async fn assert_authorization_requests_exclude_resource_headers(
 
 fn assert_cross_origin_redirect_rejected(
     discovery: DiscoveryResult,
+    failed_url: &str,
     redirect_target: &str,
 ) -> anyhow::Result<()> {
     let error = discovery
@@ -115,9 +118,11 @@ fn assert_cross_origin_redirect_rejected(
     assert!(
         matches!(
             error.downcast_ref::<AuthError>(),
-            Some(AuthError::MetadataError(reason))
-                if reason.contains("OAuth discovery redirect to non-same-origin URL rejected")
-                    && reason.contains(redirect_target)
+            Some(AuthError::DiscoveryRequestFailed { url, source })
+                if url.as_str() == failed_url
+                    && source.to_string() == format!(
+                        "OAuth discovery redirect to non-same-origin URL rejected: {redirect_target}"
+                    )
         ),
         "expected the cross-origin redirect rejection for `{redirect_target}`: {error:#}",
     );
@@ -272,8 +277,13 @@ async fn assert_legacy_oauth_without_starting_an_mcp_session(
                 assert!(
                     matches!(
                         error.downcast_ref::<AuthError>(),
-                        Some(AuthError::MetadataError(reason))
-                            if reason.contains("issuer does not match authorization metadata origin")
+                        Some(AuthError::DiscoveryRequestFailed { url, source })
+                            if url.as_str() == format!(
+                                "{}/.well-known/oauth-authorization-server",
+                                authorization_server.uri()
+                            )
+                                && source.to_string()
+                                    == "OAuth authorization server issuer does not match authorization metadata origin"
                     ),
                     "expected the original authorization-server issuer to remain bound: {error:#}",
                 );
@@ -387,7 +397,17 @@ async fn legacy_oauth_discovery_rejects_cross_origin_authorization_metadata_redi
     )
     .await;
 
-    assert_cross_origin_redirect_rejected(discovery, &redirect_target.uri())?;
+    assert_cross_origin_redirect_rejected(
+        discovery,
+        &format!(
+            "{}/.well-known/oauth-authorization-server",
+            authorization_server.uri()
+        ),
+        &format!(
+            "{}/redirected-authorization-metadata",
+            redirect_target.uri()
+        ),
+    )?;
     assert!(
         redirect_target
             .received_requests()
@@ -476,10 +496,25 @@ async fn legacy_oauth_discovery_rejects_authorization_metadata_redirect_cycles()
     assert!(
         matches!(
             error.downcast_ref::<AuthError>(),
-            Some(AuthError::MetadataError(reason))
-                if reason.contains("OAuth discovery exceeded ") && reason.contains(" redirects")
+            Some(AuthError::DiscoveryRequestFailed { url, source })
+                if url.as_str() == format!(
+                    "{}/.well-known/oauth-authorization-server",
+                    authorization_server.uri()
+                )
+                    && source.to_string() == format!(
+                        "OAuth request exceeded {EXPECTED_METADATA_REDIRECT_REQUESTS} redirects"
+                    )
         ),
         "expected the SDK to report its bounded OAuth discovery redirect limit: {error:#}",
+    );
+    assert_eq!(
+        authorization_server
+            .received_requests()
+            .await
+            .context("authorization-server request recording should be enabled")?
+            .len(),
+        EXPECTED_METADATA_REDIRECT_REQUESTS,
+        "the bounded redirect failure must retain the exact observed request count"
     );
     authorization_server.verify().await;
     resource_server.verify().await;
@@ -534,7 +569,11 @@ async fn legacy_oauth_discovery_rejects_cross_origin_resource_metadata_redirects
     )
     .await;
 
-    assert_cross_origin_redirect_rejected(discovery, &redirect_target.uri())?;
+    assert_cross_origin_redirect_rejected(
+        discovery,
+        &resource_metadata_url,
+        &format!("{}/redirect-target", redirect_target.uri()),
+    )?;
     assert!(
         redirect_target
             .received_requests()

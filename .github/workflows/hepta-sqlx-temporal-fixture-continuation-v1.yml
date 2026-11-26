@@ -1,0 +1,138 @@
+name: SQLx unfinished fixture continuation
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-sqlx-temporal-fixture-continuation-v1.yml"
+      - "scripts/run_sqlx_temporal_fixture_continuation_v1.py"
+      - "scripts/hepta_sqlx_temporal_fixture_continuation_inputs_v1.json"
+      - "scripts/hepta_sqlx_temporal_fixture_continuation_contract_v1.py"
+      - "qa/b4-no-bypass/test_sqlx_temporal_fixture_continuation_v1.py"
+
+permissions:
+  contents: read
+
+jobs:
+  fixture-continuation:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-ci-coherent-continuation-20261126-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      LOCK_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      LOCK_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+      LOCK_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      LOCK_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+      LOCK_PR_DRAFT: ${{ github.event.pull_request.draft }}
+      LOCK_EVENT_ACTION: ${{ github.event.action }}
+    steps:
+      - name: Preserve one continuation identity before acquisition
+        id: job_scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, re, time
+          head = os.environ['LOCK_EXPECTED_HEAD']
+          run_id, attempt = os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT']
+          assert re.fullmatch(r'[0-9a-f]{40}', head) and run_id.isdigit() and attempt == '1'
+          stage = pathlib.Path(os.environ['RUNNER_TEMP']) / f'sqlx-fixture-continuation-{head}-{run_id}-{attempt}'
+          stage.mkdir()
+          evidence = stage / 'evidence'
+          evidence.mkdir()
+          record = {'head': head, 'run_id': run_id, 'run_attempt': attempt,
+                    'monotonic_seconds': time.monotonic(), 'unix_seconds': time.time(),
+                    'repository': os.environ['GITHUB_REPOSITORY'],
+                    'boot_id': pathlib.Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+                    'original_run_id': 45738227995, 'original_job_id': 139636557660,
+                    'original_generation_status': 'FAIL', 'original_complete_job_seconds': 98,
+                    'original_generation_seconds': 50.812052642000005,
+                    'original_queue_seconds': 4120, 'execution_admission_accepted': False,
+                    'old_E1_E6_budget_used': 0, 'automatic_retry': False}
+          with (evidence / 'pre-checkout.json').open('x') as stream:
+              stream.write(json.dumps(record, indent=2) + '\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write(f'LOCK_STAGE={stage}\n')
+          PY
+
+      - name: Acquire exact combined source and original b4fa parent
+        id: checkout
+        timeout-minutes: 1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.LOCK_EXPECTED_HEAD }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Admit only the remaining original allowance
+        id: begin
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          evidence = pathlib.Path(os.environ['LOCK_STAGE']) / 'evidence'
+          start = json.loads((evidence / 'pre-checkout.json').read_bytes())
+          start['checkout_elapsed_seconds'] = time.monotonic() - start['monotonic_seconds']
+          with (evidence / 'job-start.json').open('x') as stream:
+              stream.write(json.dumps(start, indent=2) + '\n')
+          PY
+          python3 scripts/run_sqlx_temporal_fixture_continuation_v1.py prepare-start
+
+      - name: Restore the pinned Rust toolchain
+        id: rust
+        if: steps.begin.outcome == 'success'
+        timeout-minutes: 1
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Retain actual Rust tool bytes and installation outcome
+        id: tools
+        if: always() && steps.begin.outcome == 'success'
+        timeout-minutes: 1
+        shell: bash
+        env:
+          LOCK_TOOL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 scripts/run_sqlx_temporal_fixture_continuation_v1.py prepare-finish
+
+      - name: Restore cache once and complete only two fixture locks and graphs
+        id: complete
+        if: steps.tools.outcome == 'success'
+        timeout-minutes: 14
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/run_sqlx_temporal_fixture_continuation_v1.py complete
+
+      - name: Verify original outcomes without granting native qualification
+        id: readback
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        shell: bash
+        env:
+          LOCK_ALL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 scripts/run_sqlx_temporal_fixture_continuation_v1.py readback
+
+      - name: Preserve original continuation logs and partial or candidate locks
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sqlx-fixture-continuation-${{ env.LOCK_EXPECTED_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.LOCK_STAGE }}/evidence/
+          if-no-files-found: error
+          retention-days: 30

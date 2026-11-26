@@ -74,15 +74,19 @@ async fn add_and_remove_server_updates_global_config() -> Result<()> {
 }
 
 #[tokio::test]
-async fn add_and_login_discover_oauth_through_configured_http_proxy() -> Result<()> {
+async fn add_and_login_discover_oauth_for_configured_local_origin() -> Result<()> {
     let codex_home = TempDir::new()?;
-    let proxy = MockServer::start().await;
-    let resource_url = "http://cli-mcp.invalid";
-    let challenge = "Bearer resource_metadata=\"http://cli-mcp.invalid/oauth-resource\"";
+    let resource = MockServer::start().await;
+    let proxy = UnexpectedOAuthProxy::start()?;
+    let resource_url = resource.uri();
+    let server_url = format!("{resource_url}/mcp");
+    let challenge = format!("Bearer resource_metadata=\"{resource_url}/oauth-resource\"");
     Mock::given(method("GET"))
         .and(path("/mcp"))
-        .respond_with(ResponseTemplate::new(401).insert_header("WWW-Authenticate", challenge))
-        .mount(&proxy)
+        .respond_with(
+            ResponseTemplate::new(401).insert_header("WWW-Authenticate", challenge.as_str()),
+        )
+        .mount(&resource)
         .await;
     Mock::given(method("GET"))
         .and(path("/oauth-resource"))
@@ -90,23 +94,24 @@ async fn add_and_login_discover_oauth_through_configured_http_proxy() -> Result<
             "resource": format!("{resource_url}/mcp"),
             "authorization_servers": [resource_url],
         })))
-        .mount(&proxy)
+        .mount(&resource)
         .await;
     Mock::given(method("GET"))
         .and(path("/.well-known/oauth-authorization-server"))
         .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "issuer": resource_url,
             "authorization_endpoint": format!("{resource_url}/oauth/authorize"),
             "token_endpoint": format!("{resource_url}/oauth/token"),
             "registration_endpoint": format!("{resource_url}/oauth/register"),
             "response_types_supported": ["code"],
             "code_challenge_methods_supported": ["S256"],
         })))
-        .mount(&proxy)
+        .mount(&resource)
         .await;
     Mock::given(method("POST"))
         .and(path("/oauth/register"))
         .respond_with(ResponseTemplate::new(400))
-        .mount(&proxy)
+        .mount(&resource)
         .await;
 
     let mut add = codex_command(codex_home.path())?;
@@ -116,8 +121,8 @@ async fn add_and_login_discover_oauth_through_configured_http_proxy() -> Result<
         .env_remove("https_proxy")
         .env_remove("ALL_PROXY")
         .env_remove("all_proxy")
-        .env_remove("NO_PROXY")
-        .env_remove("no_proxy")
+        .env("NO_PROXY", "localhost,127.0.0.1,::1")
+        .env("no_proxy", "localhost,127.0.0.1,::1")
         .args([
             "-c",
             "mcp_oauth_credentials_store=\"file\"",
@@ -125,7 +130,7 @@ async fn add_and_login_discover_oauth_through_configured_http_proxy() -> Result<
             "add",
             "oauth",
             "--url",
-            "http://cli-mcp.invalid/mcp",
+            server_url.as_str(),
         ]);
     let add_output = tokio::task::spawn_blocking(move || add.output()).await??;
     assert!(
@@ -161,8 +166,8 @@ async fn add_and_login_discover_oauth_through_configured_http_proxy() -> Result<
         .env_remove("https_proxy")
         .env_remove("ALL_PROXY")
         .env_remove("all_proxy")
-        .env_remove("NO_PROXY")
-        .env_remove("no_proxy")
+        .env("NO_PROXY", "localhost,127.0.0.1,::1")
+        .env("no_proxy", "localhost,127.0.0.1,::1")
         .args([
             "-c",
             "mcp_oauth_credentials_store=\"file\"",
@@ -176,10 +181,10 @@ async fn add_and_login_discover_oauth_through_configured_http_proxy() -> Result<
         "mock OAuth registration should terminate the explicit login"
     );
 
-    let requests = proxy
+    let requests = resource
         .received_requests()
         .await
-        .expect("mock proxy should record OAuth requests");
+        .expect("configured resource should record OAuth requests");
     let registrations: Vec<_> = requests
         .iter()
         .filter(|request| request.method == "POST" && request.url.path() == "/oauth/register")
@@ -192,6 +197,7 @@ async fn add_and_login_discover_oauth_through_configured_http_proxy() -> Result<
             .count(),
         1
     );
+    proxy.assert_unused()?;
     Ok(())
 }
 
@@ -424,4 +430,95 @@ async fn add_cant_add_command_and_url() -> Result<()> {
     assert!(servers.is_empty());
 
     Ok(())
+}
+
+#[must_use = "finish the proxy observation with assert_unused"]
+struct UnexpectedOAuthProxy {
+    uri: String,
+    stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    observer: Option<std::thread::JoinHandle<std::io::Result<Vec<String>>>>,
+}
+
+impl UnexpectedOAuthProxy {
+    fn start() -> Result<Self> {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+        listener.set_nonblocking(true)?;
+        let uri = format!("http://{}", listener.local_addr()?);
+        let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let observer_stop = std::sync::Arc::clone(&stop);
+        let observer = std::thread::spawn(move || -> std::io::Result<Vec<String>> {
+            let mut connections = Vec::new();
+            loop {
+                match listener.accept() {
+                    Ok((stream, peer)) => {
+                        // Observe at most one immediately available request-line prefix.
+                        // Never wait for request bytes or let unexpected traffic hang.
+                        stream.set_nonblocking(true)?;
+                        let mut bytes = [0_u8; 256];
+                        let prefix = match stream.peek(&mut bytes) {
+                            Ok(count) => format!(
+                                "first request-line prefix {:?}",
+                                String::from_utf8_lossy(&bytes[..count])
+                                    .lines()
+                                    .next()
+                                    .map(str::to_owned)
+                            ),
+                            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                                "no request bytes immediately available".to_string()
+                            }
+                            Err(error) => format!("request prefix peek failed: {error}"),
+                        };
+                        drop(stream);
+                        connections.push(format!("{peer}: {prefix}"));
+                        if connections.len() >= 16 {
+                            return Err(std::io::Error::other(format!(
+                                "unexpected OAuth proxy connection limit reached: {connections:?}"
+                            )));
+                        }
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        if observer_stop.load(std::sync::atomic::Ordering::Acquire) {
+                            return Ok(connections);
+                        }
+                        std::thread::sleep(std::time::Duration::from_millis(5));
+                    }
+                    Err(error) => return Err(error),
+                }
+            }
+        });
+        Ok(Self {
+            uri,
+            stop,
+            observer: Some(observer),
+        })
+    }
+
+    fn uri(&self) -> &str {
+        &self.uri
+    }
+
+    fn assert_unused(mut self) -> Result<()> {
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        let connections = self
+            .observer
+            .take()
+            .expect("proxy observer must be owned")
+            .join()
+            .expect("proxy observer must not panic")?;
+        assert!(
+            connections.is_empty(),
+            "the explicit direct route unexpectedly reached its configured proxy: {connections:?}"
+        );
+        Ok(())
+    }
+}
+
+impl Drop for UnexpectedOAuthProxy {
+    fn drop(&mut self) {
+        // Early test failures still close the listener and join the bounded observer.
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        if let Some(observer) = self.observer.take() {
+            let _ = observer.join();
+        }
+    }
 }

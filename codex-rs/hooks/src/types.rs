@@ -39,11 +39,13 @@ impl HookTimestamp {
         ))]
         {
             let millis = js_sys::Date::new_0().get_time() as i64;
-            Self::from_unix_timestamp(
+            match Self::from_unix_timestamp(
                 millis.div_euclid(1_000),
                 (millis.rem_euclid(1_000) as u32) * 1_000_000,
-            )
-            .expect("system time outside hook timestamp range")
+            ) {
+                Some(timestamp) => timestamp,
+                None => panic!("system time outside hook timestamp range"),
+            }
         }
     }
 
@@ -85,13 +87,18 @@ impl HookTimestamp {
         not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
     )))]
     fn from_native_clock(now: std::time::SystemTime) -> Self {
-        let elapsed = now
-            .duration_since(std::time::UNIX_EPOCH)
-            .expect("system time before Unix epoch");
-        let seconds =
-            i64::try_from(elapsed.as_secs()).expect("system time outside hook timestamp range");
-        Self::from_unix_timestamp(seconds, elapsed.subsec_nanos())
-            .expect("system time outside hook timestamp range")
+        let elapsed = match now.duration_since(std::time::UNIX_EPOCH) {
+            Ok(elapsed) => elapsed,
+            Err(error) => panic!("system time before Unix epoch: {error:?}"),
+        };
+        let seconds = match i64::try_from(elapsed.as_secs()) {
+            Ok(seconds) => seconds,
+            Err(error) => panic!("system time outside hook timestamp range: {error:?}"),
+        };
+        match Self::from_unix_timestamp(seconds, elapsed.subsec_nanos()) {
+            Some(timestamp) => timestamp,
+            None => panic!("system time outside hook timestamp range"),
+        }
     }
 }
 

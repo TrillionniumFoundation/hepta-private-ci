@@ -5,6 +5,7 @@ use anyhow::bail;
 use rmcp::transport::AuthorizationManager;
 use rmcp::transport::AuthorizationRequest;
 use rmcp::transport::AuthorizationSession;
+use rmcp::transport::auth::AuthorizationMetadata;
 use rmcp::transport::auth::OAuthHttpClient;
 use rmcp::transport::auth::OAuthState;
 use url::Url;
@@ -41,6 +42,25 @@ pub(crate) async fn start_authorization(
         AuthorizationManager::new_with_oauth_http_client(server_url, http_client).await?;
     auth_manager.set_allow_missing_issuer(true);
     let metadata = auth_manager.resolve_metadata().await?.metadata;
+    start_authorization_with_metadata(
+        auth_manager,
+        metadata,
+        scopes,
+        redirect_uri,
+        callback_id,
+        client_registration,
+    )
+    .await
+}
+
+pub(crate) async fn start_authorization_with_metadata(
+    mut auth_manager: AuthorizationManager,
+    metadata: AuthorizationMetadata,
+    scopes: &[&str],
+    redirect_uri: &str,
+    callback_id: &str,
+    client_registration: McpOAuthClientRegistration,
+) -> Result<PreparedOAuthLogin> {
     validate_authorization_server_endpoints(&metadata)?;
     let authorization_server_issuer = metadata.issuer.clone();
 
