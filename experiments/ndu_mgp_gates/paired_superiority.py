@@ -164,7 +164,8 @@ def evaluate(study: Mapping):
     # Proxy MACs, arbitrary budget tokens, or resource estimates cannot be
     # substituted for the preregistered measured physical total-cost unit.
     _need(cost_units in ("measured_cpu_seconds", "measured_wall_seconds",
-                         "measured_gpu_seconds", "measured_energy_joules"),
+                         "measured_gpu_seconds", "measured_energy_joules",
+                         "measured_device_joules"),
           "unsupported physical cost unit (proxy operations are not measured cost)")
     # One protected world in the entire experiment is not a meaningful
     # protected-task cohort. Require a preregistered minimum of genuinely
@@ -397,6 +398,7 @@ def evaluate(study: Mapping):
                "ndu_protected_source_equal_quality_by_seed": protected_quality_by_seed,
                "ndu_protected_source_equal_completion_by_seed": protected_completion_by_seed,
                "draws_per_world": draws,
+               "cost_units": cost_units,
                "registered_hard_world_cost_limit": hard_cost_limit,
                "overbudget_episodes_by_arm": {name: int(budget_overruns[k].sum())
                                                for k, name in enumerate(ARMS)},

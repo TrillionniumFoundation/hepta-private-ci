@@ -567,11 +567,22 @@ class PairedEvidenceTests(unittest.TestCase):
         self.assertFalse(rec['comparison']['free_controller']['gates']['protected_task_no_regression'])
 
 
-    def test_proxy_mac_not_accepted_as_measured_total_cost(self):
-        d = study_fixture()
-        d['protocol']['cost_units'] = 'synthetic_mac_proxy'
-        with self.assertRaisesRegex(EvidenceGap, 'physical cost unit'):
-            evaluate(d)
+    def test_proxy_cost_units_are_not_accepted_as_measured_total_cost(self):
+        for unit in ('synthetic_mac_proxy', 'estimated_MAC', 'proxy_token_units',
+                     'budget_units', 'FLOPs', '', None):
+            with self.subTest(unit=unit):
+                data = study_fixture()
+                data['protocol']['cost_units'] = unit
+                with self.assertRaisesRegex(EvidenceGap, 'physical cost unit'):
+                    evaluate(data)
+
+    def test_advisory_receipt_preserves_registered_physical_cost_unit(self):
+        data = study_fixture()
+        data['protocol']['cost_units'] = 'measured_device_joules'
+        receipt = evaluate(data)
+        self.assertEqual(receipt['cost_units'], 'measured_device_joules')
+        self.assertEqual(receipt['status'], 'HOLD_NO_GO')
+        self.assertEqual(receipt['authority'], 'DENY_ALL')
 
 
     def test_nonhex_identity_digest_rejected(self):
