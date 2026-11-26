@@ -1,0 +1,33 @@
+{
+  "actual_changed_source_paths": [
+    "apps/hepta-native/resources/NATIVE-DEPENDENCIES.json",
+    "codex-rs/third_party/serde-saphyr-2.0.0/HEPTA_PATCH.md",
+    "codex-rs/third_party/serde-saphyr-2.0.0/SOURCE_WHITESPACE_20261126.json",
+    "codex-rs/third_party/starlark-0.14.2-blake3-backport/HEPTA_PATCH.md",
+    "codex-rs/third_party/starlark-0.14.2-blake3-backport/SOURCE_WHITESPACE_20261126.json"
+  ],
+  "already_present_rust_source_paths": [
+    "codex-rs/third_party/serde-saphyr-2.0.0/tests/test_suite/y_M9B4.rs",
+    "codex-rs/third_party/starlark-0.14.2-blake3-backport/src/values/layout/heap/send.rs"
+  ],
+  "archive": {
+    "bytes": 351912,
+    "git_blob": "19609ee1a9f9e5d392b4c478788a4f34c49c39bf",
+    "path": "VENDOR_WHITESPACE_12.tar.xz",
+    "sha256": "929645cc71a0e667a288fcbebd8a358a8b745876413fabdaf068279a30809dd2"
+  },
+  "archive_members": 178,
+  "manifest_sha256": "f13afbd79f49e59271a397279082144e7c2d1e71fef723dd703e0d00b5996276",
+  "ordered_parts": [
+    "VENDOR_WHITESPACE_12.tar.xz"
+  ],
+  "preparation_base_commit": "4ffa56f6d0be94e68d23d1bfe72aa2cbfd50d479",
+  "preparation_status": "FORMATTED_SCOPED_WHITESPACE_PASS_NO_RUNTIME_QUALIFICATION",
+  "publication_base_commit": "6ca37caad90259aaad76c89d4f6a5a64715ab041",
+  "raw_inputs": 174,
+  "runtime_qualification": false,
+  "schema": "hepta.vendor-whitespace-publication-index.v1",
+  "scientific_and_production_hold_unchanged": true,
+  "verification": "Join ordered_parts; verify archive bytes/SHA; read MANIFEST.json and verify every member.",
+  "whole_repository_whitespace_gate_closed": false
+}

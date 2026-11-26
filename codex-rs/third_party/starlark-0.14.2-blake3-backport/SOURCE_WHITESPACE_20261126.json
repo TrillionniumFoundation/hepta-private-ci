@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.vendor.source-whitespace.v1",
+  "status": "STATIC_SOURCE_CANDIDATE_NOT_EXECUTED",
+  "date": "2026-11-26",
+  "base_commit": "4ffa56f6d0be94e68d23d1bfe72aa2cbfd50d479",
+  "review_record": {
+    "name": "LEARNING_VENDOR_3_STATIC_REVIEW.json",
+    "bytes": 84748,
+    "sha256": "ee954c899f856b139ded7f530e14e495b779ee07bebaa988b1773c2fd1b80a62"
+  },
+  "execution": {
+    "host_programs": 0,
+    "formatters": 0,
+    "rust_or_yaml_parsers": 0,
+    "compilations": 0,
+    "tests": 0,
+    "models": 0,
+    "optimizer_calls": 0,
+    "ci_dispatches": 0,
+    "github_mutations": 0
+  },
+  "windows_qualified": false,
+  "native_qualified": false,
+  "historical_results_transferred": false,
+  "crate": "starlark-0.14.2-blake3-backport",
+  "source": {
+    "path": "src/values/layout/heap/send.rs",
+    "original": {
+      "bytes": 7536,
+      "sha256": "c152ca6a1845f4ea3a292788370537944407e8fec2a4a174a7388feb3de378d5",
+      "git_blob": "e5f854500fafb4941592d2c2c55e18a9fb1d8033"
+    },
+    "candidate": {
+      "bytes": 7534,
+      "sha256": "87edd8be8be3a065d405157a16d4fdd9b7577220a9e8c1afd6eab696de52420f",
+      "git_blob": "d148aa155e34e14f308cba103de61bf820a4d8a5"
+    }
+  },
+  "change": {
+    "original_line": 56,
+    "operation": "Remove exactly two trailing ASCII spaces from the empty /// documentation separator.",
+    "all_other_source_bytes_equal": true,
+    "dependency_or_runtime_code_changes": false
+  },
+  "documentation": {
+    "path": "HEPTA_PATCH.md",
+    "original": {
+      "bytes": 2106,
+      "sha256": "dedae948d5c8e83e5e20ed457b73b0945dd131e5c18686c9ad3b9373e744d7a8",
+      "git_blob": "e4e05244b0defcc4139b2ede50076cf4dcde5da3"
+    },
+    "candidate": {
+      "bytes": 3222,
+      "sha256": "8718e57db2d35ef725f6dff4cf191a0e1b5a1e625c59b27429ca0cd354159a81",
+      "git_blob": "69cffb50d078d8613f39b62edc89618bda8860d5"
+    },
+    "operation": "Append only; original document bytes retained as an exact prefix."
+  },
+  "retained_original_registry_checksum": "9062e866918dc4c9701c98ac99f7f4fa9e4b3b4edce306e147393bc75458c4fc",
+  "retained_upstream_import_commit": "d6ee1aed27d4ad3dac96a7ee015fedcaae2d9bab",
+  "historical_78_file_receipt": {
+    "path": "HEPTA-FORMATTING-PROVENANCE.json",
+    "sha256": "7dd371301a5fbadffa9960c33330ba85a25299d2fc7bd358795c8c0597ee3d8a",
+    "target_was_not_one_of_the_78_entries": true,
+    "rewritten": false
+  },
+  "retained_patch_archives": [
+    {
+      "path": "HEPTA-BLAKE3.patch.evidence.gz",
+      "bytes": 268,
+      "sha256": "88c8206401f9b196c6ca1cd8ba90690e637ab36c7d5ff534aec6a22c51aac0be"
+    },
+    {
+      "path": "HEPTA-formatting.patch.evidence.gz",
+      "bytes": 929,
+      "sha256": "755c5c0ed3bcaef8fdec79f96d27732f0d1f6d37ffb765cab11bc400e6720202"
+    },
+    {
+      "path": "HEPTA-maintenance.patch.evidence.gz",
+      "bytes": 2418,
+      "sha256": "ea6ba6ca2a2f07350fc8820f56dd3bb3bd030d523bcd7c60d20d8a7f3f2c3274"
+    }
+  ],
+  "scope": "New source-only provenance. Original registry/import/patch/formatting/maintenance records and frozen archives are not modified; no prior runtime result qualifies this source candidate."
+}

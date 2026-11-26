@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.vendor.source-whitespace.v1",
+  "status": "STATIC_SOURCE_CANDIDATE_NOT_EXECUTED",
+  "date": "2026-11-26",
+  "base_commit": "4ffa56f6d0be94e68d23d1bfe72aa2cbfd50d479",
+  "review_record": {
+    "name": "LEARNING_VENDOR_3_STATIC_REVIEW.json",
+    "bytes": 84748,
+    "sha256": "ee954c899f856b139ded7f530e14e495b779ee07bebaa988b1773c2fd1b80a62"
+  },
+  "execution": {
+    "host_programs": 0,
+    "formatters": 0,
+    "rust_or_yaml_parsers": 0,
+    "compilations": 0,
+    "tests": 0,
+    "models": 0,
+    "optimizer_calls": 0,
+    "ci_dispatches": 0,
+    "github_mutations": 0
+  },
+  "windows_qualified": false,
+  "native_qualified": false,
+  "historical_results_transferred": false,
+  "crate": "serde-saphyr-2.0.0",
+  "source": {
+    "path": "tests/test_suite/y_M9B4.rs",
+    "original": {
+      "bytes": 255,
+      "sha256": "e0672636a0eb25c2f3907313bb45bd2b917944824225611b6bf86ab0934033c1",
+      "git_blob": "0b8018767c721f513f02417fa761f538e63c3e7c"
+    },
+    "candidate": {
+      "bytes": 258,
+      "sha256": "4bba4836e0c7941f6276657531f092eeca89aba7c37b5a0847949e55230f259e",
+      "git_blob": "c2d5616e253976c0f00cc1d4d900c5e59d892266"
+    }
+  },
+  "change": {
+    "operation": "Replace only the raw Rust YAML literal with an ordinary escaped Rust literal encoding the same bytes.",
+    "escaped_rust_literal": "\"|\\n literal\\n \\ttext\\n\\n\\n\"",
+    "fixture_bytes": 20,
+    "fixture_hex": "7c0a206c69746572616c0a2009746578740a0a0a",
+    "terminal_lf_bytes": 3,
+    "space_before_tab_retained": true,
+    "all_other_source_bytes_equal": true,
+    "expected_assertion_bytes_equal": true,
+    "test_not_skipped_or_renamed": true,
+    "static_correspondence_only": true
+  },
+  "documentation": {
+    "path": "HEPTA_PATCH.md",
+    "original": {
+      "bytes": 3525,
+      "sha256": "5ff4cbbbc8384a48a2c01dc59c1d733f349cf14c189133e8cc66592d2cfb3382",
+      "git_blob": "1f4f322efa2e3f7e98d09cda35545725f879edd1"
+    },
+    "candidate": {
+      "bytes": 4944,
+      "sha256": "5e4c498d1b6913a687721427aab6e42ee367e607bd6c8171fc580cb71ef9f5c0",
+      "git_blob": "514be856183564942791dfbfb82dc30384208af5"
+    },
+    "operation": "Append only; original document bytes retained as an exact prefix."
+  },
+  "retained_original_archive": {
+    "url": "https://static.crates.io/crates/serde-saphyr/serde-saphyr-2.0.0.crate",
+    "sha256": "a253edfdea34032da21af84e16fcc94f4c7a6ba237f9f3bc2dbf43cea8535c44",
+    "source": "Existing HEPTA_PATCH.md; archive not re-downloaded in this bounded review."
+  },
+  "prior_five_fixture_evidence": {
+    "document_original_git_blob": "1f4f322efa2e3f7e98d09cda35545725f879edd1",
+    "document_original_sha256": "5ff4cbbbc8384a48a2c01dc59c1d733f349cf14c189133e8cc66592d2cfb3382",
+    "preserved_verbatim": true,
+    "extended_to_this_sixth_candidate": false
+  },
+  "scope": "Source encoding only. The original fixture data remains 20 bytes. No Rust/YAML parser, test, native or Windows execution occurred, and historical five-fixture success is not transferred."
+}

@@ -52,3 +52,29 @@ repository's `just test` entrypoint and the existing compatibility target cache.
 This is bounded compatibility evidence. It does not claim equivalence for every
 YAML grammar or target type. Full consumer regressions, coherent Cargo/Bazel locks,
 and the unchanged dependency scan remain separate promotion gates.
+
+## Separate M9B4 source-encoding candidate (2026-11-26)
+
+This separate candidate starts from repository commit
+`4ffa56f6d0be94e68d23d1bfe72aa2cbfd50d479`. In
+`tests/test_suite/y_M9B4.rs`, only the raw-string representation of the YAML
+input is replaced by the ordinary escaped Rust literal
+`"|\n literal\n \ttext\n\n\n"`.
+
+The input remains exactly 20 bytes, including its space before the tab and all
+three terminal LF bytes. The test name, `#[test]`, parser call, failure message,
+and expected-output assertion are unchanged. The test is neither skipped nor
+renamed, and its integration-target and feature definitions remain unchanged.
+`SOURCE_WHITESPACE_20261126.json` binds the original and candidate identities
+and records the static byte correspondence.
+
+This is a new sixth source-encoding candidate, separate from the historical
+five-fixture compilation statement above. That earlier evidence is preserved
+verbatim and does not establish an execution of M9B4 at this new source identity.
+The original crate archive checksum, license, compatibility implementation,
+and all earlier receipts remain unchanged.
+
+Preparation of this candidate performed no host program, formatter, Rust or YAML
+parser, compilation, test, model, optimizer, or CI execution. It establishes no
+new Windows or native qualification; an actual targeted M9B4 verification would
+require its own separately authorized, exact-source receipt.

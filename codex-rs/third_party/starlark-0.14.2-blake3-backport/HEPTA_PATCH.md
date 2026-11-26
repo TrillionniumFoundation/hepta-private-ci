@@ -23,3 +23,23 @@ layout, trailing punctuation, single-expression block layout and same-order
 derive grouping. Existing minimal dependency patches, upstream README files
 and license bytes are retained. This record does not claim a new runtime test
 result or a successful full-repository formatting check.
+
+## Separate source whitespace record (2026-11-26)
+
+This separate candidate starts from repository commit
+`4ffa56f6d0be94e68d23d1bfe72aa2cbfd50d479`. It removes exactly the two
+trailing spaces on the otherwise empty `///` separator at line 56 of
+`src/values/layout/heap/send.rs`; every other byte of that source is retained.
+`SOURCE_WHITESPACE_20261126.json` records the original and candidate identities.
+
+This source is not one of the 78 entries in the historical formatting receipt
+above. The original registry checksum, upstream import identity, dependency
+manifests, old formatting and maintenance records, and all three retained
+`*.patch.evidence.gz` archives remain unchanged. This new record does not
+rewrite or extend the old 78-file execution or formatting record.
+
+Preparation of this candidate performed no host program, formatter, compilation,
+test, model, optimizer, or CI execution. It establishes no new Starlark,
+execpolicy, Windows, or native qualification; earlier results are not transferred
+to this candidate. Any subsequent formatting or native verification needs its
+own exact-source receipt.
