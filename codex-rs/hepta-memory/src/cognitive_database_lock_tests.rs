@@ -64,7 +64,6 @@ async fn existing_main_validation_preserves_live_sqlite_posix_locks() {
         "raw close must demonstrably lose locks"
     );
     control.close().await;
-    drop(control);
 
     let temp = tempfile::tempdir().expect("fixture");
     let root = temp.path().canonicalize().expect("canonical fixture");
@@ -89,13 +88,11 @@ async fn existing_main_validation_preserves_live_sqlite_posix_locks() {
         expected
     );
     second.close().await;
-    drop(second);
     assert!(
         main_lock_is_held(first.path()),
         "SQLite-owned close must retain first pool locks"
     );
     first.close().await;
-    drop(first);
 }
 
 #[tokio::test]
@@ -143,6 +140,5 @@ async fn competing_first_opens_keep_private_consistent_state_or_fail_closed() {
     }
     for store in stores {
         store.close().await;
-        drop(store);
     }
 }

@@ -1667,8 +1667,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
     {
         use std::os::unix::fs::MetadataExt;
         let metadata = fs::metadata(&canonical).map_err(unavailable)?;
-        // SAFETY: geteuid has no inputs and does not dereference memory.
-        let owner = unsafe { libc::geteuid() };
+        let owner = rustix::process::geteuid().as_raw();
         if !metadata.is_file()
             || metadata.uid() != owner
             || metadata.nlink() != 1

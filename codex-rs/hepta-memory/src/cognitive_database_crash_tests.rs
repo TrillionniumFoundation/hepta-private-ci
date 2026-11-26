@@ -106,7 +106,6 @@ async fn recovery_child() {
                 &serde_json::to_vec(&rows).expect("encode"),
             );
             store.close().await;
-            drop(store);
         }
         "verify-write" => {
             let store = CognitiveStore::open(&layout(&root))
@@ -124,7 +123,6 @@ async fn recovery_child() {
             );
             assert_eq!(snapshot(&store).await, rows);
             store.close().await;
-            drop(store);
             write_receipt(&root, "verified.json", b"{\"verified\":true}\n");
         }
         _ => panic!("unknown child phase"),
