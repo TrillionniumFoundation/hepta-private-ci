@@ -55,6 +55,10 @@ WORKFLOW_REFERENCE_SCRIPTS = (
 WORKFLOW_REFERENCE_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
+WORKFLOW_LOCAL_PREFIX_RE = re.compile(
+    r"""(?:^|(?<=[\s"'`(<\[{]))(?P<prefix>(?:[A-Za-z0-9_-][A-Za-z0-9_.-]*/)+)\Z""",
+    re.ASCII,
+)
 WORKFLOW_REPOSITORY_PREFIX_RE = re.compile(
     r"""(?:^|(?<=[\s"'`(<\[{]))"""
     r"(?:"
@@ -206,14 +210,22 @@ def verify_exact_workflow_references() -> None:
         except (OSError, UnicodeDecodeError):
             continue
         for match in WORKFLOW_REFERENCE_RE.finditer(text):
-            prefix = WORKFLOW_REPOSITORY_PREFIX_RE.search(text, 0, match.start())
-            if prefix is not None:
-                repository = prefix.group("repository") or prefix.group(
-                    "url_repository"
-                )
-                if repository.casefold().removesuffix(".git") != REPO.casefold():
-                    continue
             workflow = match.group("path")
+            local = WORKFLOW_LOCAL_PREFIX_RE.search(text, 0, match.start())
+            directory = local.group("prefix") if local else ""
+            # Vendored source paths name real local workflows. An embedded
+            # evidence path such as source/.github/... still refers to the
+            # original root file and is not a second active checkout.
+            if directory.startswith(("codex-rs/third_party/", "vendor/")):
+                workflow = directory + workflow
+            else:
+                prefix = WORKFLOW_REPOSITORY_PREFIX_RE.search(text, 0, match.start())
+                if prefix is not None:
+                    repository = prefix.group("repository") or prefix.group(
+                        "url_repository"
+                    )
+                    if repository.casefold().removesuffix(".git") != REPO.casefold():
+                        continue
             if not (ROOT / workflow).is_file():
                 line = text.count("\n", 0, match.start()) + 1
                 missing.append(f"{path.relative_to(ROOT)}:{line}: {workflow}")
