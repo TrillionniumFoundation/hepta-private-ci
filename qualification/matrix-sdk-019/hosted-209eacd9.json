@@ -1,0 +1,8 @@
+{
+  "head": "209eacd902cb93b8bd94f21814e5c9342f215422",
+  "crypto_migration": {"run_id": 36994502715, "job_id": 110798003714, "passed": 1, "skipped": 0, "source_generated_sdk": "0.18.0", "destination_sdk": "0.19.1"},
+  "matrix_source_regressions": {"run_id": 36994502577, "job_id": 110798003392, "passed": 137, "skipped": 0},
+  "matrix_pr_base_regressions": {"run_id": 36994502577, "job_id": 110798003015, "passed": 137, "skipped": 0},
+  "synapse_protocol": {"run_id": 36994502715, "job_id": 110798003436, "state": "failed before server readiness", "cause": "generator/server UID mismatch made the synthetic signing key unreadable", "artifact_id": 11221675195},
+  "not_claimed": ["current-main regression", "paired installed-host acceptance", "whole-repository evidence closure"]
+}
