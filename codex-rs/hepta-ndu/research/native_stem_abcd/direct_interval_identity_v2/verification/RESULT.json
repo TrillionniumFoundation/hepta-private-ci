@@ -1,0 +1,75 @@
+{
+  "all_source_bytes_unchanged": true,
+  "checks": [
+    {
+      "argv": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/alex/hepta-hcsn-fixes-20261126-0198a7/source/qualification/pft_six_experiments_20261125/peer_linearization_v4",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_test_methods": 10,
+      "logs": {
+        "peer.stderr": {
+          "bytes": 1673,
+          "sha256": "7920cdb63578e8fb4ee82ab50905245b68569101d663970f796ab819a4bafdf3"
+        },
+        "peer.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "name": "peer",
+      "observed_test_methods": 10,
+      "passed": true,
+      "timed_out": false,
+      "wall_s": 0.16711833700537682
+    },
+    {
+      "argv": [
+        "/home/alex/pft-six-actual-hcsn-20261125/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/alex/hepta-hcsn-fixes-20261126-0198a7/source/codex-rs/hepta-ndu/research/native_stem_abcd/direct_interval_identity_v2",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "expected_test_methods": 9,
+      "logs": {
+        "r20_identity_v2.stderr": {
+          "bytes": 1464,
+          "sha256": "d9e86005e78eb7c6bc7fc2e77a31667daea752a79894c31a8190bb9612aa0b9a"
+        },
+        "r20_identity_v2.stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "name": "r20_identity_v2",
+      "observed_test_methods": 9,
+      "passed": true,
+      "timed_out": false,
+      "wall_s": 0.1666944259777665
+    }
+  ],
+  "finished_utc": "2026-11-26T06:39:28.147262+00:00",
+  "historical_E1_E6_trials_added": 0,
+  "neural_model_loads": 0,
+  "production_adoption": false,
+  "schema": "hepta.hcsn.root-bounded-regression-result.v1",
+  "source_files_checked": 44,
+  "status": "PASSED_BOUNDED_REGRESSION",
+  "training_updates": 0
+}
