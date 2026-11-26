@@ -97,6 +97,20 @@ impl ExtensionEventSink for RecordingEventSink {
     fn emit_warning(&self, _warning: ExtensionWarning) {}
 }
 
+struct QueueChangeSink {
+    changes: tokio::sync::broadcast::Sender<ThreadId>,
+}
+
+impl ExtensionEventSink for QueueChangeSink {
+    fn emit(&self, event: Event) {
+        if let EventMsg::ThreadQueueChanged(change) = event.msg {
+            let _ = self.changes.send(change.thread_id);
+        }
+    }
+
+    fn emit_warning(&self, _warning: ExtensionWarning) {}
+}
+
 #[derive(Default)]
 struct InstalledQueue {
     service: OnceLock<Arc<QueuedItemService>>,
@@ -2234,7 +2248,15 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
         .build_with_auto_env(&server)
         .await?;
     let thread_id = test.session_configured.thread_id;
-    let queue = install_registered_queue(&test, installed.as_ref())?;
+    let (queue_changes_tx, _) = tokio::sync::broadcast::channel(/*capacity*/ 32);
+    let queue = Arc::new(QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Arc::downgrade(&test.thread_manager),
+        Arc::new(QueueChangeSink {
+            changes: queue_changes_tx.clone(),
+        }),
+    ));
+    assert!(installed.service.set(Arc::clone(&queue)).is_ok());
     let independent_thread = test
         .thread_manager
         .start_thread(StartThreadOptions::new(test.config.clone()))
@@ -2307,6 +2329,7 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
         .enqueue(thread_id, user_input("queued before ordinary resume"))
         .await?;
     tokio::time::sleep(Duration::from_secs(/*secs*/ 11)).await;
+    let mut queue_changes = queue_changes_tx.subscribe();
     let resumed = test
         .thread_manager
         .resume_thread_from_rollout(
@@ -2317,12 +2340,25 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
             Default::default(),
         )
         .await?;
-    wait_for_event_with_timeout(
-        resumed.thread.as_ref(),
-        |event| matches!(event, EventMsg::TurnComplete(_)),
-        Duration::from_secs(/*secs*/ 25),
-    )
-    .await;
+    // Core completion and queue persistence are separate asynchronous steps.
+    // Reuse the original 25-second value as a stricter, shared total deadline.
+    // Only existing queue change events trigger another state observation;
+    // this does not wake it.
+    let completion_deadline = tokio::time::Instant::now() + Duration::from_secs(/*secs*/ 25);
+    tokio::time::timeout_at(completion_deadline, async {
+        wait_for_event_with_timeout(
+            resumed.thread.as_ref(),
+            |event| matches!(event, EventMsg::TurnComplete(_)),
+            Duration::from_secs(/*secs*/ 25),
+        )
+        .await;
+        while !queue.list(thread_id).await?.is_empty() {
+            while queue_changes.recv().await? != thread_id {}
+        }
+        anyhow::Ok(())
+    })
+    .await
+    .context("resumed turn and queue persistence exceeded the shared 25-second deadline")??;
     assert!(queue.list(thread_id).await?.is_empty());
 
     let prompts = model_responses
