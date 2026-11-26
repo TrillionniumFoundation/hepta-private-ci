@@ -27,15 +27,21 @@ CREMA-D 的 180 个真实视听片段来自 15 位演员，每人说两句话、
 
 ## 核验与复现
 
-在本目录执行以下命令，从原逐片概率核对指标、封存权重和进程退出码。核验本身只需要 Python 和 NumPy。
+在本目录执行以下命令。六个 ZIP 各自可独立解压，分别保存 QVI 编码器、可学习与固定阈值对照、传统编码器、条件读出、物理编辑、数据凭证与父模型封存。`SHA256SUMS` 核对各包和成员清单，`MEMBER_SHA256SUMS` 逐一核对 339 个原始运行文件的相对路径与文件内容。复算使用 Python 和 NumPy。
 
 ```sh
-mkdir -p extracted
-(cd evidence && cat av-records.part-* > av-records.tgz && sha256sum -c SHA256SUMS)
-tar -xzf evidence/av-records.tgz -C extracted
-python summarize.py extracted recomputed.json
-cmp evidence/summary.json recomputed.json
+evidence_dir="$PWD/evidence"
+run_dir="$(mktemp -d)"
+(cd "$evidence_dir" && sha256sum -c SHA256SUMS)
+for archive in "$evidence_dir"/*.zip; do
+    python -m zipfile -e "$archive" "$run_dir"
+done
+(cd "$run_dir" && sha256sum -c "$evidence_dir/MEMBER_SHA256SUMS")
+python summarize.py "$run_dir" "$run_dir/recomputed.json"
+cmp "$evidence_dir/summary.json" "$run_dir/recomputed.json"
 ```
+
+最初传输的 `av-records.tgz` 由七个分片重组，SHA-256 为 `7e92ef71713db8bb2782605a60f535043e828a9736f8f468019137c8475bec01`。六个 ZIP 中的每个原始文件均与该历史传输包逐字节比对通过。
 
 审阅原始训练时，results 包含 33 个权重、训练日志、耗时、预测和统一封存；readouts 包含 24 个候选头、训练选择、逐片预测和统一封存；phys 包含 12 个完整参数快照、候选轨迹、开发选择、确认结果与逐片预测。data/data_receipt.json 提供 180 个源文件摘要。各子任务共享测试集，统计单位为演员。
 
