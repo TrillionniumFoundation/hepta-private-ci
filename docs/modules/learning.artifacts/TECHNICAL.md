@@ -84,6 +84,18 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 Persist immutable base/organ/cell parameter bundles with complete tensor inventories and compatibility/deletion lineage. Preserve scalar ParameterProposalV2 semantics; larger updates require a versioned artifact-reference adapter. Reference-aware GC must retain shared bases still in use; the registry neither trains nor selects its own artifacts.
 
+The first source-backed contract for this boundary is `CellParameterBundleV1`,
+owned by `learning.artifacts` in
+`codex-rs/hepta-learning-artifacts/src/cell_parameter_bundle.rs` with its CAS
+owner in `cell_parameter_bundle_owner.rs`. It binds one
+shared CAS base, cloned or reinitialized adapter/head references, an exact
+parent predecessor, child identity/generation/scope/lineage and a complete
+CAS-artifact manifest. `CellParameterBundleOwnerV1` appends only with a
+compare-and-swap head, returns replayable deny-all receipts, and performs
+rollback by publishing a fresh generation that references the old bundle. It
+does not select, activate or mutate runtime topology; topology proposal and
+canary remain owned by `learning.plasticity`.
+
 Bind circuit routing/termination policy to compatible cell, definition and state versions. TaskFlow continues to own immutable operational definitions; artifact storage is not a second body/run registry. See the
 [Neural Circuit execution contract](../automation.taskflow/TECHNICAL.md#41-neural-circuit-target-and-legacy-boundary).
 
@@ -92,8 +104,8 @@ Required targeted tests: base replacement, adapter shape/order mismatch, revoked
 The shared contract and record design are in
 [DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
 [organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
-This target does not change the current native implementation, source status or
-product/activation evidence recorded below. No existing wire version is redefined.
+This contract stage does not activate the current runtime, change product
+composition or grant activation evidence. No existing wire version is redefined.
 
 ### Capacity, depth and learning evidence target
 
@@ -118,6 +130,7 @@ Produced contracts:
 - `DomainRead::learning_artifact_registryV1`
 - `DomainRead::operator_sensor_core_registryV1`
 - `LearningArtifactManifestV1`
+- `CellParameterBundleV1`
 - `ModulePort::learning.artifacts::intuition.policy`
 - `ModulePort::learning.artifacts::learning.eval`
 - `ModulePort::learning.artifacts::learning.operator`
