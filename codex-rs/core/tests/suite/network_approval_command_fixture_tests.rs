@@ -159,8 +159,17 @@ pub(super) async fn mount_command_followups(
             let (output_id, output) =
                 request_output(request, call_id).expect("matched current network command output");
             let response_id = format!("response-after-{output_id}");
-            let progress = command_progress(&output, &output_id, call_id, expected)
-                .expect("expected a live process or the specified terminal network outcome");
+            let progress =
+                command_progress(&output, &output_id, call_id, expected).unwrap_or_else(|| {
+                    let output_prefix: String = output.chars().take(1_024).collect();
+                    let output_id_prefix: String = output_id.chars().take(80).collect();
+                    panic!(
+                        "expected a live process or the specified terminal network outcome; \
+                         expected={expected:?}; output_id_prefix={output_id_prefix:?}; \
+                         output_bytes={}; output_prefix={output_prefix:?}",
+                        output.len()
+                    );
+                });
             let item = if let CommandProgress::Running(session_id) = progress {
                 let body: Value = serde_json::from_slice(
                     &decoded_request_body(request).expect("decoded parent request"),
