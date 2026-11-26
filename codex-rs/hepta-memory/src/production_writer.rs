@@ -57,6 +57,9 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_reconciliation_cursor.rs"]
+mod reconciliation_cursor;
+
 #[path = "production_terminal_journal.rs"]
 mod terminal_journal;
 
@@ -1067,6 +1070,23 @@ impl ProductionDurableWriter {
     where
         T: FinalUseProductionOutboxTarget + ?Sized,
     {
+        self.reconcile_target_batch_with_cursor(
+            target,
+            limit,
+            &reconciliation_cursor::ReconciliationCursor::default(),
+        )
+        .await
+    }
+
+    async fn reconcile_target_batch_with_cursor<T>(
+        &self,
+        target: &T,
+        limit: usize,
+        cursor: &reconciliation_cursor::ReconciliationCursor,
+    ) -> Result<usize, ProductionWriterError>
+    where
+        T: FinalUseProductionOutboxTarget + ?Sized,
+    {
         self.verify_authority().await?;
         if !(1..=256).contains(&limit) {
             return Err(ProductionWriterError::Invalid(
@@ -1075,7 +1095,7 @@ impl ProductionDurableWriter {
         }
         if target.destination_id() != crate::HOS2_DESTINATION_V1 {
             return self
-                .reconcile_target_batch_with_owner(target, limit, /*hos2_owner*/ None)
+                .reconcile_target_batch_with_owner(target, limit, cursor, /*hos2_owner*/ None)
                 .await;
         }
         // The retained writer already excludes another process. Its clones
@@ -1085,7 +1105,7 @@ impl ProductionDurableWriter {
             return Ok(0);
         };
         let result = self
-            .reconcile_target_batch_with_owner(target, limit, Some(&mut owner))
+            .reconcile_target_batch_with_owner(target, limit, cursor, Some(&mut owner))
             .await;
         owner.complete();
         result
@@ -1095,37 +1115,23 @@ impl ProductionDurableWriter {
         &self,
         target: &T,
         limit: usize,
+        cursor: &reconciliation_cursor::ReconciliationCursor,
         mut hos2_owner: Option<&mut Hos2OwnerUse<'_>>,
     ) -> Result<usize, ProductionWriterError>
     where
         T: FinalUseProductionOutboxTarget + ?Sized,
     {
-        let operation_ids = sqlx::query_scalar::<_, String>(
-            "SELECT o.operation_id
-             FROM cognitive_operation_ledger o
-             WHERE o.lease_id = ? AND o.destination_id = ?
-               AND (
-                   SELECT e.event_kind
-                   FROM cognitive_local_events e
-                   WHERE e.lease_id = o.lease_id
-                     AND e.occurrence_key = o.operation_id
-                   ORDER BY e.event_sequence DESC
-                   LIMIT 1
-               ) IN ('indeterminate', 'reconcile_still_indeterminate')
-             ORDER BY o.prepared_at_unix_seconds, o.operation_id
-             LIMIT ?",
-        )
-        .bind(self.lease_id())
-        .bind(target.destination_id())
-        .bind(i64::try_from(limit).map_err(|_| {
-            ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
-        })?)
-        .fetch_all(self.store.observation_pool())
-        .await
-        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
-
+        let mut observed = std::collections::BTreeSet::new();
         let mut reconciled = 0_usize;
-        for operation_id in operation_ids {
+        for _ in 0..limit {
+            let Some(operation_id) = cursor.reserve_next(self, target.destination_id()).await?
+            else {
+                break;
+            };
+            // A short eligible cycle must not repeat an observation in this pass.
+            if !observed.insert(operation_id.clone()) {
+                break;
+            }
             let request = self
                 .reconciliation_request(&operation_id, target.destination_id())
                 .await?;
@@ -2805,6 +2811,7 @@ impl ProductionOutboxDispatcher {
 pub struct ProductionFinalUseOutboxDispatcher {
     final_use: FinalUseAuthority,
     target: Arc<dyn FinalUseProductionOutboxTarget>,
+    reconciliation_cursor: Arc<reconciliation_cursor::ReconciliationCursor>,
 }
 
 impl fmt::Debug for ProductionFinalUseOutboxDispatcher {
@@ -2821,7 +2828,11 @@ impl ProductionFinalUseOutboxDispatcher {
         final_use: FinalUseAuthority,
         target: Arc<dyn FinalUseProductionOutboxTarget>,
     ) -> Self {
-        Self { final_use, target }
+        Self {
+            final_use,
+            target,
+            reconciliation_cursor: Arc::default(),
+        }
     }
 
     pub fn destination_id(&self) -> &str {
@@ -2854,7 +2865,11 @@ impl ProductionFinalUseOutboxDispatcher {
         limit: usize,
     ) -> Result<usize, ProductionWriterError> {
         writer
-            .reconcile_target_batch(self.target.as_ref(), limit)
+            .reconcile_target_batch_with_cursor(
+                self.target.as_ref(),
+                limit,
+                &self.reconciliation_cursor,
+            )
             .await
     }
 }
