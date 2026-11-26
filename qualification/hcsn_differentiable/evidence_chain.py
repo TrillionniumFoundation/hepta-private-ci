@@ -25,6 +25,8 @@ import zlib
 _ARCHIVED_PATCHES = frozenset(
     {
         "qualification/hcsn_differentiable/evidence/localization-v2-20261108/math/stable-intervals.patch",
+        "qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/preparation/v4/DIFF-v3-to-v4.patch",
+        "qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/documentation-review/CURRENT.diff",
         "qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/program/DIFF-v2-to-v3.patch",
         "qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/supervisor/program/DIFF-v2-to-v3.patch",
     }
