@@ -1,6 +1,10 @@
 use crate::StreamTextChunk;
 use crate::StreamTextParser;
 
+#[cfg(feature = "hia-native")]
+#[path = "hia_native_inline_hidden_tag.rs"]
+mod hia_native;
+
 /// One hidden inline tag extracted by [`InlineHiddenTagParser`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ExtractedInlineTag<T> {
@@ -69,6 +73,7 @@ where
         }
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn find_next_open(&self) -> Option<(usize, usize)> {
         self.specs
             .iter()
@@ -87,6 +92,7 @@ where
             .map(|(pos, _len, idx)| (pos, idx))
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn max_open_prefix_suffix_len(&self) -> usize {
         self.specs
             .iter()
@@ -95,12 +101,14 @@ where
             .map_or(0, std::convert::identity)
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn push_visible_prefix(out: &mut StreamTextChunk<ExtractedInlineTag<T>>, pending: &str) {
         if !pending.is_empty() {
             out.visible_text.push_str(pending);
         }
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn drain_visible_to_suffix_match(
         &mut self,
         out: &mut StreamTextChunk<ExtractedInlineTag<T>>,
@@ -121,6 +129,12 @@ where
 {
     type Extracted = ExtractedInlineTag<T>;
 
+    #[cfg(feature = "hia-native")]
+    fn push_str(&mut self, chunk: &str) -> StreamTextChunk<Self::Extracted> {
+        hia_native::push(self, chunk)
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     fn push_str(&mut self, chunk: &str) -> StreamTextChunk<Self::Extracted> {
         self.pending.push_str(chunk);
         let mut out = StreamTextChunk::default();
@@ -173,6 +187,12 @@ where
         out
     }
 
+    #[cfg(feature = "hia-native")]
+    fn finish(&mut self) -> StreamTextChunk<Self::Extracted> {
+        hia_native::finish(self)
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     fn finish(&mut self) -> StreamTextChunk<Self::Extracted> {
         let mut out = StreamTextChunk::default();
 
@@ -197,6 +217,7 @@ where
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn longest_suffix_prefix_len(s: &str, needle: &str) -> usize {
     let max = s.len().min(needle.len().saturating_sub(1));
     for k in (1..=max).rev() {
