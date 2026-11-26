@@ -1,0 +1,206 @@
+name: SQLx four-lock generation (bounded first attempt)
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-sqlx-temporal-lock-candidate-v1.yml"
+      - "scripts/run_sqlx_temporal_lock_scope_v1.py"
+      - "scripts/hepta_sqlx_temporal_lock_inputs_v1.json"
+      - "scripts/hepta_sqlx_temporal_lock_contract_v1.py"
+      - "scripts/test_hepta_sqlx_temporal_lock_contract_v1.py"
+
+permissions:
+  contents: read
+
+jobs:
+  lock-candidate:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-sqlx-temporal-locks-20261126-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      LOCK_EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      LOCK_HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+      LOCK_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+      LOCK_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+      LOCK_PR_DRAFT: ${{ github.event.pull_request.draft }}
+      LOCK_EVENT_ACTION: ${{ github.event.action }}
+    steps:
+      - name: Retain this one job identity before source acquisition
+        id: job_scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          head = os.environ['LOCK_EXPECTED_HEAD']
+          run_id, attempt = os.environ['GITHUB_RUN_ID'], os.environ['GITHUB_RUN_ATTEMPT']
+          stage = pathlib.Path(os.environ['RUNNER_TEMP']) / f'sqlx-temporal-lock-{head}-{run_id}-{attempt}'
+          stage.mkdir()
+          evidence = stage / 'evidence'
+          evidence.mkdir()
+          record = {'head': head, 'run_id': run_id, 'run_attempt': attempt,
+                    'monotonic_seconds': time.monotonic(), 'unix_seconds': time.time(),
+                    'repository': os.environ['GITHUB_REPOSITORY'],
+                    'source_ceilings_seconds': {'checkout': 120, 'tools': 180, 'generation': 900, 'job': 1320},
+                    'boot_id': pathlib.Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+                    'budget_accepted': False,
+                    'no_old_host_or_scientific_budget_reset': True}
+          with (evidence / 'pre-checkout.json').open('x') as stream:
+              stream.write(json.dumps(record, indent=2) + '\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write(f'LOCK_STAGE={stage}\n')
+          PY
+
+      - name: Check out the exact source and its one accepted parent
+        id: checkout
+        timeout-minutes: 2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.LOCK_EXPECTED_HEAD }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind approved combined inputs and start tool preparation
+        id: begin
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          evidence = pathlib.Path(os.environ['LOCK_STAGE']) / 'evidence'
+          start = json.loads((evidence / 'pre-checkout.json').read_bytes())
+          start['checkout_elapsed_seconds'] = time.monotonic() - start['monotonic_seconds']
+          start['checkout_succeeded'] = True
+          with (evidence / 'job-start.json').open('x') as stream:
+              stream.write(json.dumps(start, indent=2) + '\n')
+          PY
+          python3 scripts/run_sqlx_temporal_lock_scope_v1.py prepare-start
+
+      - name: Install the exact original Rust toolchain
+        id: rust
+        if: steps.begin.outcome == 'success'
+        timeout-minutes: 1
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+
+      - name: Install the exact original just version
+        id: just
+        if: steps.rust.outcome == 'success'
+        timeout-minutes: 1
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Retain tool outcomes and verify the official Bazel payload once
+        id: tools
+        if: always() && steps.begin.outcome == 'success'
+        timeout-minutes: 3
+        shell: bash
+        env:
+          LOCK_TOOL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 scripts/run_sqlx_temporal_lock_scope_v1.py prepare-finish
+
+      - name: Generate four locks and two isolated graphs exactly once
+        id: generate
+        if: steps.tools.outcome == 'success'
+        timeout-minutes: 16
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/run_sqlx_temporal_lock_scope_v1.py generate
+
+      - name: Require actual terminal observations without granting qualification
+        id: readback
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        shell: bash
+        env:
+          LOCK_ALL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, time
+          evidence = pathlib.Path(os.environ['LOCK_STAGE']) / 'evidence'
+          steps = json.loads(os.environ['LOCK_ALL_STEPS'])
+          start = json.loads((evidence / 'pre-checkout.json').read_bytes())
+          import hashlib
+          record = {
+              'status': 'FAIL', 'head': os.environ['LOCK_EXPECTED_HEAD'], 'steps': steps,
+              'whole_job_elapsed_seconds_so_far': time.monotonic() - start['monotonic_seconds'],
+              'root_lock_acceptance': None, 'accepted_fixture_graphs': None,
+              'original_complete_job_and_upload_logs_required': True,
+              'all_package_and_crate_fact_delta_review_pending': True,
+              'native_12_plus_3_qualified': False, 'advisory_qualified': False,
+              'adoption_or_use_qualified': False, 'production_activation': False,
+              'old_E1_E6_budget_used': 0, 'automatic_retry': False,
+          }
+          valid = False
+          try:
+              spec = json.loads(pathlib.Path('scripts/hepta_sqlx_temporal_lock_inputs_v1.json').read_bytes())
+              required = ('job_scope', 'checkout', 'begin', 'rust', 'just', 'tools', 'generate')
+              passed = all(steps.get(name, {}).get('outcome') == 'success' for name in required)
+              actual = json.loads((evidence / 'generate.RESULT.json').read_bytes())
+              locks = {'codex-rs/Cargo.lock', 'MODULE.bazel.lock',
+                       'qualification/sqlx_temporal_default_v1/Cargo.lock',
+                       'qualification/sqlx_temporal_explicit_chrono_v1/Cargo.lock'}
+              valid = bool(
+                  passed and spec['activated'] is True
+                  and actual['status'] == 'GENERATED_FOUR_LOCK_CANDIDATE_REQUIRES_ROOT_REVIEW'
+                  and actual['source']['head'] == os.environ['LOCK_EXPECTED_HEAD']
+                  and actual['source']['parent'] == spec['accepted_baseline']['head']
+                  and actual['source']['parent_tree'] == spec['accepted_baseline']['tree']
+                  and actual['original_checkout_unchanged'] is True
+                  and actual['elapsed_seconds'] <= spec['budget']['generation_seconds']
+                  and record['whole_job_elapsed_seconds_so_far'] <= spec['budget']['whole_job_seconds']
+                  and set(actual['lock_postimages']) == locks
+                  and set(actual['fixture_graphs']) == {'default', 'compatibility'}
+                  and actual['synthetic_lock_contract_control_count'] == 12
+                  and actual['synthetic_controls_executions'] == 1
+                  and actual['main_workspace_update_attempts'] == 1
+                  and actual['main_bazel_update_attempts'] == 1
+                  and actual['fixture_generate_attempts'] == {'default': 1, 'compatibility': 1}
+                  and actual['retry_attempts'] == 0
+                  and actual['unapproved_registry_version_or_checksum_drift'] is False
+                  and actual['bazel_crate_fact_requires_independent_root_review'] is True
+                  and actual['root_lock_acceptance'] is None
+                  and actual['accepted_fixture_graphs'] is None
+                  and actual['native_12_plus_3_execution_count'] == 0
+                  and actual['native_compatibility_qualification'] is False
+                  and actual['advisory_qualification'] is False
+                  and actual['production_activation'] is False
+              )
+              record['generation_result_sha256'] = hashlib.sha256(
+                  (evidence / 'generate.RESULT.json').read_bytes()).hexdigest()
+          except Exception as error:
+              record['error'] = type(error).__name__ + ': ' + str(error)
+          record['status'] = 'FOUR_LOCK_CANDIDATE_REQUIRES_ROOT_REVIEW' if valid else 'FAIL'
+          with (evidence / 'workflow-readback.json').open('x') as stream:
+              json.dump(record, stream, indent=2)
+              stream.write('\n')
+          if not valid:
+              raise SystemExit('The original four-lock/two-graph generation did not succeed.')
+          print('Four exact lock candidates and two observed graphs retained; independent Root review remains required.')
+          PY
+
+      - name: Retain original logs, failed attempts and four-lock postimages
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sqlx-temporal-four-lock-candidate-${{ env.LOCK_EXPECTED_HEAD }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.LOCK_STAGE }}/evidence/
+          if-no-files-found: error
+          retention-days: 30

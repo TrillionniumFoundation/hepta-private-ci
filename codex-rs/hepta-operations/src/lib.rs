@@ -7,6 +7,18 @@
 //! reconciliation. Destination owners can use `DestinationDedupeStore` against
 //! their own migrated SQLite pool so dedupe and domain mutation share one
 //! transaction.
+//!
+//! # Caller-selected SQLx temporal codecs
+//!
+//! Caller-owned pools and the transaction returned by
+//! `DestinationApplyTransaction::transaction` retain their original SQLx types
+//! and atomic commit boundary. This workspace no longer requests the optional
+//! SQLx Chrono codec feature implicitly. Callers requiring those implementations
+//! must explicitly request the upstream feature, retaining Chrono in their own
+//! graph, or migrate their own schema and values with an explicit codec contract.
+//! Existing operation timestamps remain integer milliseconds; this change does
+//! not substitute a different codec, open a second transaction, or weaken a
+//! recovery, identity, or commit fence.
 
 #![forbid(unsafe_code)]
 
