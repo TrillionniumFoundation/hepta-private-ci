@@ -4,15 +4,15 @@
 
 #![forbid(unsafe_code)]
 
-/// Versioned production-control contracts and cryptographic evidence verifiers.
-pub mod control_contract;
-/// Crash-safe checkpoint and content-addressed archive generation store.
-pub mod journal_generation;
 /// Reusable state machine; does not install a second runtime owner.
 pub mod cell_batch;
 pub mod cell_worker;
+/// Versioned production-control contracts and cryptographic evidence verifiers.
+pub mod control_contract;
 pub mod durable_control;
 mod generation_step;
+/// Crash-safe checkpoint and content-addressed archive generation store.
+pub mod journal_generation;
 pub mod microbatch;
 mod neuron_feature;
 pub mod scoped_cache;

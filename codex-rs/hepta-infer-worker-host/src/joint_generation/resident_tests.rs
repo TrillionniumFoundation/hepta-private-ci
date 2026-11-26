@@ -83,7 +83,12 @@ fn resident_shares_assets_and_encoding_without_sharing_cell_state() -> Result<()
     let mut output = Vec::new();
     serve(Cursor::new(input), &mut output)?;
     let mut output = Cursor::new(output);
-    for expected in [a, advanced, fixture.run(&[], &[], init(/*seed*/ 23))?, committed] {
+    for expected in [
+        a,
+        advanced,
+        fixture.run(&[], &[], init(/*seed*/ 23))?,
+        committed,
+    ] {
         assert_same_content(
             &read_frame(&mut output)?.ok_or("missing response")?,
             expected,
@@ -96,7 +101,13 @@ fn resident_shares_assets_and_encoding_without_sharing_cell_state() -> Result<()
 #[test]
 fn resident_refuses_asset_replacement_and_missing_initial_assets() -> Result<()> {
     let fixture = Fixture::new()?;
-    let request = request(&fixture.weights, &fixture.public, &[], &[], init(/*seed*/ 17));
+    let request = request(
+        &fixture.weights,
+        &fixture.public,
+        &[],
+        &[],
+        init(/*seed*/ 17),
+    );
     let mut input = framed(&request);
     input.extend(framed(&request));
     let mut output = Vec::new();
@@ -143,7 +154,10 @@ fn resident_preserves_observed_owner_budget_planning_and_private_text_state() ->
     use crate::test_support::request_observed;
 
     let fixture = observed_fixture(observed_weights())?;
-    let omitted = Fixture { weights: Vec::new(), public: Vec::new() };
+    let omitted = Fixture {
+        weights: Vec::new(),
+        public: Vec::new(),
+    };
     let owner = OwnerContext {
         required_mask: 8,
         optional_mask: 1,
@@ -153,31 +167,63 @@ fn resident_preserves_observed_owner_budget_planning_and_private_text_state() ->
     };
     let first = request_observed(&fixture, &[], &[], init(/*seed*/ 17), &owner);
     let initial = crate::proposal::propose(&first)?;
-    let commit = Command::Commit { modality: 3, units: 7 };
+    let commit = Command::Commit {
+        modality: 3,
+        units: 7,
+    };
     let partial = crate::proposal::propose(&request_observed(
-        &fixture, &initial.state, &[], commit, &owner,
+        &fixture,
+        &initial.state,
+        &[],
+        commit,
+        &owner,
     ))?;
     let mut other = owner.clone();
     other.task_digest = [8; 32];
     let second = crate::proposal::propose(&request_observed(
-        &fixture, &[], &[], init(/*seed*/ 23), &other,
+        &fixture,
+        &[],
+        &[],
+        init(/*seed*/ 23),
+        &other,
     ))?;
     let planned = crate::proposal::propose(&request_observed(
-        &fixture, &partial.state, &partial.delta, Command::Auto(999_000), &owner,
+        &fixture,
+        &partial.state,
+        &partial.delta,
+        Command::Auto(999_000),
+        &owner,
     ))?;
     let mut input = framed(&first);
     input.extend(framed(&request_observed(
-        &omitted, &initial.state, &[], commit, &owner,
+        &omitted,
+        &initial.state,
+        &[],
+        commit,
+        &owner,
     )));
-    input.extend(framed(&request_observed(&omitted, &[], &[], init(/*seed*/ 23), &other)));
     input.extend(framed(&request_observed(
-        &omitted, &partial.state, &partial.delta, Command::Auto(999_000), &owner,
+        &omitted,
+        &[],
+        &[],
+        init(/*seed*/ 23),
+        &other,
+    )));
+    input.extend(framed(&request_observed(
+        &omitted,
+        &partial.state,
+        &partial.delta,
+        Command::Auto(999_000),
+        &owner,
     )));
     let mut output = Vec::new();
     serve(Cursor::new(input), &mut output)?;
     let mut output = Cursor::new(output);
     for expected in [initial, partial, second, planned] {
-        assert_same_content(&read_frame(&mut output)?.ok_or("missing response")?, expected)?;
+        assert_same_content(
+            &read_frame(&mut output)?.ok_or("missing response")?,
+            expected,
+        )?;
     }
     assert!(read_frame(&mut output)?.is_none());
 
@@ -194,11 +240,18 @@ fn resident_preserves_observed_owner_budget_planning_and_private_text_state() ->
                 changed.optional_mask = 8;
                 Command::Advance(0)
             }
-            _ => Command::Commit { modality: 1, units: 1 },
+            _ => Command::Commit {
+                modality: 1,
+                units: 1,
+            },
         };
         let mut input = framed(&first);
         input.extend(framed(&request_observed(
-            &omitted, &initial.state, &[], command, &changed,
+            &omitted,
+            &initial.state,
+            &[],
+            command,
+            &changed,
         )));
         let mut output = Vec::new();
         assert!(serve(Cursor::new(input), &mut output).is_err());
