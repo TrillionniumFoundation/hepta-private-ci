@@ -5,6 +5,7 @@ use anyhow::Result;
 use anyhow::ensure;
 use serde_json::Value;
 use serde_json::json;
+use std::ffi::c_void;
 use std::io::Write;
 use std::mem::offset_of;
 use std::os::windows::io::AsRawHandle;
@@ -34,6 +35,8 @@ use windows_sys::Win32::System::Threading::OpenThreadToken;
 
 #[path = "token_delete_product_facts_tests.rs"]
 mod facts;
+#[path = "token_delete_parent_sd_tests.rs"]
+mod parent_sd;
 use facts::Descriptor;
 use facts::MAX_BYTES;
 use facts::MAX_ENTRIES;
@@ -41,7 +44,7 @@ use facts::TokenFacts;
 
 const LOG_BYTES: usize = 16 * 1024;
 
-fn access_check(descriptor: &Descriptor, token: HANDLE, requested: u32) -> Result<Value> {
+fn access_check(descriptor: *mut c_void, token: HANDLE, requested: u32) -> Result<Value> {
     let mapping = GENERIC_MAPPING {
         GenericRead: FILE_GENERIC_READ,
         GenericWrite: FILE_GENERIC_WRITE,
@@ -53,7 +56,7 @@ fn access_check(descriptor: &Descriptor, token: HANDLE, requested: u32) -> Resul
     let (mut granted, mut allowed) = (0, 0);
     let success = unsafe {
         AccessCheck(
-            descriptor.pointer,
+            descriptor,
             token,
             requested,
             &mapping,
@@ -218,9 +221,16 @@ impl Observer {
                 } else {
                     &self.target
                 };
-                let row = access_check(descriptor, token.as_raw_handle() as _, requested)?;
+                let row = access_check(descriptor.pointer, token.as_raw_handle() as _, requested)?;
                 self.emit(json!({"kind": "access", "phase": phase, "object": object, "requested": requested,
                     "descriptor_source": "pre_action_memory", "result": row}));
+            }
+            if phase == "before" {
+                parent_sd::observe(
+                    &self.parent,
+                    token.as_raw_handle() as _,
+                    &self.expected_caps,
+                );
             }
             Ok(facts)
         })();
