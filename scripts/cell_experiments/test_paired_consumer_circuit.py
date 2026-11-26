@@ -17,8 +17,13 @@ def registered_fixture(root):
     for arm in ("parent", "candidate"):
         bundle = req[arm]
         bundle["consumer_cell_training_receipts"] = {
-            key: data.digest(adoption.read_json(root / model["runtime"]["adapter_directory"] / "TRAINING.json"))
-            for key, model in bundle["models"].items() if model["runtime"].get("adapter_directory")
+            key: data.digest(
+                adoption.read_json(
+                    root / model["runtime"]["adapter_directory"] / "TRAINING.json"
+                )
+            )
+            for key, model in bundle["models"].items()
+            if model["runtime"].get("adapter_directory")
         }
     req["candidate"]["parent"] = data.digest(req["parent"])
     # This is a new enrollment and a new freeze over the added source bindings.
@@ -44,7 +49,9 @@ def exercise(destination=None):
         if destination:
             shutil.copyfile(case.route, destination / "request-fixture-event.json")
         run = case.local("run", td, delivery, *launch)
-        case.assertEqual(case.local("verify-request", td, *launch)["run_receipt"], run["run_receipt"])
+        case.assertEqual(
+            case.local("verify-request", td, *launch)["run_receipt"], run["run_receipt"]
+        )
         op = case.home / case.admission / "consumer" / run["operation"]
         pred = adoption.read_json(op / "worker-output.json")["prediction"]
         trace = pred["circuit_trace"]
@@ -53,7 +60,10 @@ def exercise(destination=None):
         case.assertEqual(trace["graph"]["edges"], ["answer"])
         case.assertEqual(trace["cost"]["model_calls"], 2)
         case.assertEqual(trace["cost"]["verifier_calls"], 0)
-        case.assertEqual(nodes[1]["request"]["messages"][-1], {"role": "tool", "content": nodes[0]["output"]["answer"]})
+        case.assertEqual(
+            nodes[1]["request"]["messages"][-1],
+            {"role": "tool", "content": nodes[0]["output"]["answer"]},
+        )
         case.assertEqual(nodes[1]["output"]["answer"], pred["answer"])
         case.assertEqual((op / "answer.utf8").read_bytes(), b"1")
         for damage in ("route", "edge", "output", "slot"):
@@ -66,7 +76,9 @@ def exercise(destination=None):
             elif damage == "output":
                 altered["nodes"][1]["output"]["output_ids"] = [0]
             else:
-                altered["nodes"][0]["output"]["loaded_model_digest"] = data.digest(released["parent"])
+                altered["nodes"][0]["output"]["loaded_model_digest"] = data.digest(
+                    released["parent"]
+                )
             with case.assertRaises(ValueError):
                 paired_consumer_run.inspect(released, task, case.models, wrong)
         material = b"fictional circuit downstream acceptance"
@@ -83,15 +95,28 @@ def exercise(destination=None):
         case.assertEqual(result["evidence_scope"], "engineering_fixture")
         if destination:
             shutil.copytree(case.root, destination / "original")
-            test_paired_consumer.put(destination / "SUMMARY.json", dict(
-                scope="engineering_fixture", real_participants=0, payments=0, admission=case.admission,
-                run=run, report=result, checked_distinct_prior_inputs=["train", "1", "keep", "later"],
-                rejected_corruption=["route", "edge", "output", "slot"], cold_circuit_nodes=len(nodes)))
+            test_paired_consumer.put(
+                destination / "SUMMARY.json",
+                dict(
+                    scope="engineering_fixture",
+                    real_participants=0,
+                    payments=0,
+                    admission=case.admission,
+                    run=run,
+                    report=result,
+                    checked_distinct_prior_inputs=["train", "1", "keep", "later"],
+                    rejected_corruption=["route", "edge", "output", "slot"],
+                    cold_circuit_nodes=len(nodes),
+                ),
+            )
     finally:
         case.doCleanups()
 
 
-@unittest.skipUnless(sys.platform == "linux" and test_paired_consumer.NUMERICAL, "Linux coding CPU profile required")
+@unittest.skipUnless(
+    sys.platform == "linux" and test_paired_consumer.NUMERICAL,
+    "Linux coding CPU profile required",
+)
 class SubsequentCircuitTests(unittest.TestCase):
     def test_real_fitted_route_relay_and_signed_fixture_readback(self):
         exercise()
