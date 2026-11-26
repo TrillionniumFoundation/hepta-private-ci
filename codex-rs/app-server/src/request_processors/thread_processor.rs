@@ -5188,6 +5188,7 @@ impl ThreadRequestProcessor {
                 Some(PersistedResumeSettings {
                     approval_policy: snapshot.approval_policy,
                     approvals_reviewer: Some(snapshot.approvals_reviewer),
+                    runtime_permission_profile: snapshot.active_permission_profile.clone(),
                     active_permission_profile: snapshot.active_permission_profile,
                     runtime_cwd: Some(snapshot.environments.legacy_fallback_cwd),
                     runtime_workspace_roots: Some(snapshot.workspace_roots),
