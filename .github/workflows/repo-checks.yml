@@ -110,6 +110,17 @@ jobs:
       - uses: ./.github/actions/setup-ci
 
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt
+
+      - name: Test scoped formatting on the native host
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustfmt --version
+          cargo fmt --version
+          python -m unittest discover -v -s scripts -p 'test_hepta_format_scope.py'
+          python -m unittest discover -v -s scripts -p 'test_format_rustfmt.py'
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
