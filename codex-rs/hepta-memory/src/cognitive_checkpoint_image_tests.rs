@@ -16,7 +16,11 @@ use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;
 
 fn material_directory(temp: &tempfile::TempDir) -> PathBuf {
-    let directory = temp.path().join("independent-material");
+    let directory = temp
+        .path()
+        .canonicalize()
+        .expect("canonical temporary fixture directory")
+        .join("independent-material");
     std::fs::create_dir(&directory).unwrap();
     std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700)).unwrap();
     directory
