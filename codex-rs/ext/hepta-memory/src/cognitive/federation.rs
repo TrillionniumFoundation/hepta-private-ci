@@ -1214,7 +1214,14 @@ mod tests {
         let temp = tempfile::tempdir().expect("tempdir");
         let fleet_root = temp.path().join("fleet");
         std::fs::create_dir_all(&fleet_root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();
+        // The production cognitive store rejects noncanonical paths (including
+        // Windows path namespace aliases). The fixture must open the same
+        // canonical absolute root that a real Owner receives; do not relax
+        // CognitiveStore's symlink/redirection admission checks.
+        let canonical_fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
+        let fleet = HeptaFleetRoot::parse(canonical_fleet_root)
+            .expect("fleet")
+            .layout();
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
         let owner_layout = fleet.agent(&owner_id);
@@ -1260,7 +1267,19 @@ mod tests {
             .expect("memory");
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
-        let workspace = workspace.canonicalize().expect("canonical workspace");
+        let canonical_workspace = workspace.canonicalize().expect("canonical workspace");
+        // The provider sees a PathUri-decoded host path, not the raw
+        // Windows verbatim (\\\\?\\) canonicalization spelling. Bind the
+        // federated grant to that exact same physical workspace identity,
+        // preserving the scope digest through the URI boundary on Windows.
+        let workspace_uri = PathUri::from_host_native_path(&canonical_workspace)
+            .expect("canonical workspace URI");
+        let workspace = workspace_uri.to_path_buf();
+        assert!(workspace.is_absolute() && workspace.is_dir());
+        assert_eq!(
+            workspace.canonicalize().expect("round-trip canonical workspace"),
+            canonical_workspace
+        );
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1313,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri.clone(),
                     is_primary: true,
                 }],
             },
