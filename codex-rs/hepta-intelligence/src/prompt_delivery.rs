@@ -297,6 +297,7 @@ impl fmt::Display for PromptRegistryCompilationErrorV2 {
 
 impl std::error::Error for PromptRegistryCompilationErrorV2 {}
 
-#[cfg(test)]
+// These integration fixtures open the Unix durable prompt registry backend.
+#[cfg(all(test, unix))]
 #[path = "prompt_delivery_tests.rs"]
 pub(crate) mod tests;

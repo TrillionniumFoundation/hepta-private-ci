@@ -23,8 +23,10 @@ use super::assess_g5_challenge;
 use super::prepare_g5_challenge;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
-use crate::durable::write_private_new;
+use crate::test_support::SigningMode;
 use crate::test_support::private_tempdir;
+use crate::test_support::unsigned_ssh_public_key;
+use crate::test_support::write_private_fixture;
 use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
@@ -140,7 +142,7 @@ fn expiry_is_half_open_and_never_creates_acceptance() {
 
 #[test]
 fn independently_signed_challenge_is_verified_but_not_accepted() {
-    let fixture = TrustFixture::new(false);
+    let fixture = TrustFixture::new_signed();
     let challenge_path = fixture.root.join("g5-challenge.json");
     prepare_g5_challenge(G5PrepareRequest {
         challenge_path: &challenge_path,
@@ -218,14 +220,14 @@ fn policy_and_revocation_files_must_be_canonical() {
     let mut fixture = TrustFixture::new(false);
     let policy_bytes = std::fs::read(&fixture.policy).expect("read policy");
     std::fs::remove_file(&fixture.policy).expect("remove policy");
-    write_private_new(
+    write_private_fixture(
         &fixture.policy,
         br#"{"trust_root_id":"root","trust_root_revision":1,"schema":"hepta_g5_operator_trust_policy_v1","schema_version":1,"trust_policy_scope":"g5_head_scoped_ed25519_external_policy_with_explicit_revocation_v1","principal":"operator@example","key_fingerprint":"SHA256:bad","allowed_signers_sha256":"bad","maximum_lifetime_seconds":120,"revocation_owner":"security@example","revocation_revision":1,"revocation_sha256":"bad"}"#,
     )
     .expect("write malformed policy");
     assert!(fixture.try_inputs().is_err());
     std::fs::remove_file(&fixture.policy).expect("remove malformed policy");
-    write_private_new(&fixture.policy, &policy_bytes).expect("restore policy");
+    write_private_fixture(&fixture.policy, &policy_bytes).expect("restore policy");
     fixture.rewrite_policy_and_revocation();
 }
 
@@ -253,6 +255,11 @@ fn read_assessment(path: &Path) -> (G5Assessment, Vec<u8>) {
     (value, bytes)
 }
 
+enum RevocationMode {
+    Active,
+    Revoked,
+}
+
 struct TrustFixture {
     _temporary: TempDir,
     allowed_signers: PathBuf,
@@ -267,39 +274,59 @@ struct TrustFixture {
 
 impl TrustFixture {
     fn new(revoked: bool) -> Self {
+        let revocation_mode = if revoked {
+            RevocationMode::Revoked
+        } else {
+            RevocationMode::Active
+        };
+        Self::with_signing(revocation_mode, SigningMode::Unsigned)
+    }
+
+    fn new_signed() -> Self {
+        Self::with_signing(RevocationMode::Active, SigningMode::OpenSsh)
+    }
+
+    fn with_signing(revocation_mode: RevocationMode, signing: SigningMode) -> Self {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
         let key = root.join("operator-key");
-        let status = Command::new("/usr/bin/ssh-keygen")
-            .args(["-q", "-t", "ed25519", "-N", "", "-f"])
-            .arg(&key)
-            .status()
-            .expect("start test key generation");
-        assert!(status.success());
-        let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
+        let (public, fingerprint) = match signing {
+            SigningMode::OpenSsh => {
+                let status = Command::new("/usr/bin/ssh-keygen")
+                    .args(["-q", "-t", "ed25519", "-N", "", "-f"])
+                    .arg(&key)
+                    .status()
+                    .expect("start test key generation");
+                assert!(status.success());
+                let public =
+                    std::fs::read_to_string(key.with_extension("pub")).expect("public key");
+                let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+                    .args(["-E", "sha256", "-lf"])
+                    .arg(key.with_extension("pub"))
+                    .output()
+                    .expect("compute fingerprint");
+                assert!(fingerprint_output.status.success());
+                let fingerprint = String::from_utf8_lossy(&fingerprint_output.stdout)
+                    .split_ascii_whitespace()
+                    .nth(1)
+                    .expect("fingerprint field")
+                    .to_string();
+                (public, fingerprint)
+            }
+            SigningMode::Unsigned => unsigned_ssh_public_key(),
+        };
         let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
         let allowed_signers = root.join("allowed_signers");
-        write_private_new(
+        write_private_fixture(
             &allowed_signers,
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
-            .args(["-E", "sha256", "-lf"])
-            .arg(key.with_extension("pub"))
-            .output()
-            .expect("compute fingerprint");
-        assert!(fingerprint_output.status.success());
-        let fingerprint = String::from_utf8_lossy(&fingerprint_output.stdout)
-            .split_ascii_whitespace()
-            .nth(1)
-            .expect("fingerprint field")
-            .to_string();
         let revocation = G5RevocationState {
             effective_at_unix_seconds: 1,
             revoked_challenge_sha256: Vec::new(),
-            revoked_key_fingerprints: if revoked {
+            revoked_key_fingerprints: if matches!(revocation_mode, RevocationMode::Revoked) {
                 vec![fingerprint.clone()]
             } else {
                 Default::default()
@@ -312,7 +339,7 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let revocation_path = root.join("revocations.json");
-        write_private_new(&revocation_path, &canonical_json(&revocation).unwrap()).unwrap();
+        write_private_fixture(&revocation_path, &canonical_json(&revocation).unwrap()).unwrap();
         let policy_value = G5TrustPolicy {
             allowed_signers_sha256: sha256(&std::fs::read(&allowed_signers).unwrap()),
             key_fingerprint: fingerprint,
@@ -328,7 +355,7 @@ impl TrustFixture {
             trust_root_revision: 1,
         };
         let policy = root.join("trust-policy.json");
-        write_private_new(&policy, &canonical_json(&policy_value).unwrap()).unwrap();
+        write_private_fixture(&policy, &canonical_json(&policy_value).unwrap()).unwrap();
         let policy_sha256 = sha256(&std::fs::read(&policy).unwrap());
         Self {
             _temporary: temporary,
@@ -360,11 +387,11 @@ impl TrustFixture {
     fn rewrite_policy_and_revocation(&mut self) {
         let revocation_bytes = canonical_json(&self.revocation).expect("canonical revocation");
         std::fs::remove_file(&self.revocation_path).expect("replace revocation");
-        write_private_new(&self.revocation_path, &revocation_bytes).expect("write revocation");
+        write_private_fixture(&self.revocation_path, &revocation_bytes).expect("write revocation");
         self.policy_value.revocation_sha256 = sha256(&revocation_bytes);
         let policy_bytes = canonical_json(&self.policy_value).expect("canonical policy");
         std::fs::remove_file(&self.policy).expect("replace policy");
-        write_private_new(&self.policy, &policy_bytes).expect("write policy");
+        write_private_fixture(&self.policy, &policy_bytes).expect("write policy");
         self.policy_sha256 = sha256(&policy_bytes);
     }
 

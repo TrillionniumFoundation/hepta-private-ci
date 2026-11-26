@@ -971,6 +971,17 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // Remove later owner tables before the dispatch table that the timer drain
+    // trigger references; reopening must recreate them through real migrations.
+    for statement in [
+        "DROP TABLE automation_timer_lifecycle",
+        "DROP TABLE destination_operation_dedupe",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("drop post-v1 owner table");
+    }
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await

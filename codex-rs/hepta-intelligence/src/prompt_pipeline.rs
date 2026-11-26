@@ -699,6 +699,7 @@ fn ensure_exercisable(decision: PromptExerciseActionV1) -> Result<(), PromptPipe
     }
 }
 
-#[cfg(test)]
+// These integration fixtures open the Unix durable prompt registry backend.
+#[cfg(all(test, unix))]
 #[path = "prompt_pipeline_tests.rs"]
 mod tests;
