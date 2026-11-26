@@ -1,0 +1,23 @@
+{
+  "scope": "V6 stdlib archive identity bridge only",
+  "started_at": "2026-11-26T08:35:36.406608+00:00",
+  "model_loads": 0,
+  "model_forwards": 0,
+  "numerical_solves": 0,
+  "test_executions": 1,
+  "retries": 0,
+  "source_pins": {
+    "evidence_bridge.py": "63deede42f92cc0ef31852bc2ceaf0d83d7c2d0cdf7e48a4810713298abb8658",
+    "evidence_bridge_tests.py": "38f58955096f5c6bbeb3ef9a941c12799a0863663aec0c93256410755c156053"
+  },
+  "local_attempt": "CreateProcess rejected by disconnected exec-server; no process created",
+  "completed_at": "2026-11-26T08:35:36.445937+00:00",
+  "exit_code": 0,
+  "source_unchanged": true,
+  "status": "PASSED",
+  "archive_status": "PASSED_BOUNDED",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "df013b98244668209d0825054399db5c2c003e0ef9b71f900322dc1d4570b16e",
+  "test_count_expected": 16,
+  "test_summary": "test_caller_authority_cannot_create_an_admission (__main__.EvidenceBridgeTests) ... ok\ntest_candidate_state_splice_is_rejected_by_links (__main__.EvidenceBridgeTests) ... ok\ntest_changed_candidate_is_rejected (__main__.EvidenceBridgeTests) ... ok\ntest_complete_archive_has_only_bounded_identity_pass (__main__.EvidenceBridgeTests) ... ok\ntest_duplicate_nonfinite_and_overlarge_json_are_rejected (__main__.EvidenceBridgeTests) ... ok\ntest_inputs_are_not_modified (__main__.EvidenceBridgeTests) ... ok\ntest_json_reencoding_is_not_the_exact_retained_record (__main__.EvidenceBridgeTests) ... ok\ntest_missing_and_corrupted_is_rejected_not_merely_incomplete (__main__.EvidenceBridgeTests) ... ok\ntest_missing_role_is_insufficient (__main__.EvidenceBridgeTests) ... ok\ntest_no_model_framework_imported (__main__.EvidenceBridgeTests) ... ok\ntest_old_central_candidate_cannot_inherit_this_archive (__main__.EvidenceBridgeTests) ... ok\ntest_original_failure_cannot_be_upgraded (__main__.EvidenceBridgeTests) ... ok\ntest_peer_receipt_splice_is_rejected (__main__.EvidenceBridgeTests) ... ok\ntest_same_fixture_cannot_be_promoted_to_independent_use (__main__.EvidenceBridgeTests) ... ok\ntest_source_and_protocol_splices_are_rejected_by_links (__main__.EvidenceBridgeTests) ... ok\ntest_task_splice_is_rejected_by_links (__main__.EvidenceBridgeTests) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.004s\n\nOK\n"
+}

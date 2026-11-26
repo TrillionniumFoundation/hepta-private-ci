@@ -1,0 +1,83 @@
+{
+  "authority_interface": {
+    "caller_flags_attestations_and_signatures_accepted": false,
+    "existing_blocker": "ORIGINAL_TURN_VERIFIER_REQUIRED",
+    "existing_entry": "adoption_closure_v2.native_adapter.authorize_owner",
+    "reviewed_native_adapter_commit": "25c2cb2b60446a5f7692945bd154b0d8deb485f3",
+    "reviewed_native_adapter_sha256": "d007443ba27a6bebedda23b2eb8ff48a5315f624207682816952bcf2b0858c6b",
+    "reviewed_paired_loader_commit": "477afcddffa755164469618ace9f4737bd4dd681",
+    "reviewed_paired_loader_sha256": "0deff557af7e021639ad80736540336fdf5c4922d2f985d01ee4e9e2bc968655",
+    "scope": "this_bridge_and_the_exact_reviewed_sources_only",
+    "verifier_adapter_available": false
+  },
+  "candidate_sha256": "981304e53920d71cf95672df6317a4f81b0aff4f7b380f6d3bdd8b3e4033ee1c",
+  "model_binaries_deserialized": false,
+  "model_calls": 0,
+  "original_failed_result_sha256": "15fbd987921708767c8143185c0a98a5caeb50e9984b4a88bc629fbf81af4105",
+  "original_turn_authorization_verified": false,
+  "production_authorization_available": false,
+  "protocol_chronology_authenticated": false,
+  "provenance_authenticated": false,
+  "quadratic_solves": 0,
+  "record_sha256": {
+    "ai395": "e0162d942f24408bd76f7f24a858331fc84fb3bc281c2a19df439c30dfb8a356",
+    "candidate": "981304e53920d71cf95672df6317a4f81b0aff4f7b380f6d3bdd8b3e4033ee1c",
+    "cold": "7aa229753977326011de4242cea6b199e44d08234fb19247413cd0a777b09e73",
+    "cold_protocol": "3263d42459d60c58a18ff405d66283a513336efef19dbe274b9e7ea61d08efa9",
+    "common": "cf04461f394e123ccb9599b094ec2f0b150aa087fe11e4aa39d5dd4c44de0f10",
+    "edit": "48f77b6bb044ba1266cffa88dda7874667cb8c50db0d1013f3360cc1ab1712ee",
+    "evidence": "2ec033151588182806c0f611d4899596f399471b287ae0efb82dbdac9e10a1ff",
+    "numeric": "f420307fb6cb4864c693ee06017291d7a37a0c80b19146db181a47b2071eeac6",
+    "pocket4": "403db5c9eac0937da94875f4c458120771977a8a9264bae23f2202c880c4b468",
+    "population": "e65eca5f1f4c4a7e72e185daa3d4cfb742441a2b1a3c29a61b51a3d691373706",
+    "profile": "3c628f2e9eac40fa51e0087a7bd9ab86fb9bc8a37c8120cd50641aa7f1ca904f",
+    "task": "295be5f5733e4ea076a1e46221ee52c2663c96dbfd15727d4bdb3ac4ffae921e",
+    "trial": "b4f8b194bbdbfd82854156c6a3f06946965bcc8eaa9d6beee13e1e4f754a2421",
+    "trial_protocol": "5bd634bd0bf5e06b0f947f24b7c7ca1afaec15c60d2ed140c9d2ea8617970b52"
+  },
+  "recorded_model_state_sha256": "15ad379aa068a2917692d0334b1f0b5e8641a6c995bd87a0199842d93516d59c",
+  "schema": "hepta.pft.v5-evidence-bridge.v1",
+  "scientific_claims": {
+    "independent_A_to_B_to_cold_reuse": {
+      "evidence_scope": "these_14_V5_archive_files_only",
+      "existing_intake_roles": [
+        "a_failure",
+        "a_success",
+        "a_train_consent",
+        "a_enrollment",
+        "b_evaluate_consent",
+        "b_enrollment",
+        "b_future",
+        "b_use_first",
+        "b_use_again"
+      ],
+      "later_separately_admitted_evidence_assessed": false,
+      "reasons": [
+        "original_owner_authority_missing",
+        "independent_B_arrival_missing",
+        "SmallHCSN_native_profile_not_admitted",
+        "two_authorized_B_uses_missing",
+        "same_engineering_fixture_is_not_new_task_gain"
+      ],
+      "status": "INSUFFICIENT"
+    },
+    "old_capability_retention": {
+      "evidence_scope": "these_14_V5_archive_files_only",
+      "existing_intake_roles": [
+        "keep"
+      ],
+      "later_separately_admitted_evidence_assessed": false,
+      "reasons": [
+        "independently_frozen_keep_panel_missing",
+        "paired_old_task_results_missing",
+        "parent_restoration_is_not_candidate_retention"
+      ],
+      "status": "INSUFFICIENT"
+    }
+  },
+  "scope": "retained_archive_identity_linkage_only",
+  "source_binding_sha256": "3146e2c56757ff7c818670aa3a9c229b26271c7336d573b1692b91ac8e7a00e9",
+  "source_files_reexecuted": false,
+  "status": "PASSED_BOUNDED",
+  "training_updates": 0
+}
