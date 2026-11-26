@@ -599,6 +599,8 @@ fn parse_host_port_fallback(input: &str, default_port: u16) -> Result<SocketAddr
     })
 }
 
+impl rama_core::extensions::Extension for NetworkMode {}
+
 #[cfg(test)]
 mod tests {
     use super::*;

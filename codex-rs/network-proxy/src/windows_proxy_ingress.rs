@@ -59,8 +59,8 @@ impl Service<TcpStream> for IngressDispatcher {
     type Error = BoxError;
 
     async fn serve(&self, stream: TcpStream) -> Result<(), BoxError> {
-        let local_addr = stream.local_addr()?;
-        let peer_addr = stream.peer_addr()?;
+        let local_addr = stream.local_addr()?.into();
+        let peer_addr = stream.peer_addr()?.into();
         let restricting_sids = restricting_sids_for_tcp_connection(local_addr, peer_addr)?;
         let route = {
             let routes = self
@@ -136,10 +136,15 @@ impl WindowsProxyIngress {
         let http_addr = listeners.http_addr()?;
         let socks_addr = listeners.socks_addr(requested_socks_addr)?;
         let (http_listener, socks_listener) = listeners.into_listeners();
-        let http_listener =
-            TcpListener::try_from(http_listener).context("convert shared HTTP ingress listener")?;
+        let http_listener = TcpListener::try_from_std_tcp_listener(
+            http_listener,
+            rama_core::rt::Executor::default(),
+        )
+        .context("convert shared HTTP ingress listener")?;
         let socks_listener = socks_listener
-            .map(TcpListener::try_from)
+            .map(|listener| {
+                TcpListener::try_from_std_tcp_listener(listener, rama_core::rt::Executor::default())
+            })
             .transpose()
             .context("convert shared SOCKS5 ingress listener")?;
         let runtime =
@@ -255,7 +260,7 @@ impl WindowsProxyIngress {
             .context("read shared managed Windows SOCKS5 ingress address")?;
         let listener = {
             let _runtime = self.runtime.enter();
-            TcpListener::try_from(listener)
+            TcpListener::try_from_std_tcp_listener(listener, rama_core::rt::Executor::default())
         }
         .context("convert shared SOCKS5 ingress listener")?;
         let task = spawn_socks_listener(&self.runtime, &self.routes, listener, addr);

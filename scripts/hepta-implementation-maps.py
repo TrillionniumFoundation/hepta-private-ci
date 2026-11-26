@@ -540,7 +540,9 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
-        "laneId": lanes[mid],
+        # V8 lane membership is historical coordination, not a second module
+        # registry. New native owners may have no historical implementation lane.
+        "laneId": lanes.get(mid),
         "module": mid,
         "owner": module["owner"],
         "deputy": module["deputy"],
@@ -703,7 +705,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
             "sourceBase": source_base,
-            "laneId": row.get("laneId") or lanes[module["id"]],
+            "laneId": row.get("laneId") or lanes.get(module["id"]),
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
             "deputy": row.get("deputy", module["deputy"]),

@@ -16,10 +16,14 @@ pub mod authority_trust;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
+pub mod chat_transport;
 mod final_use;
 mod final_use_control;
+mod final_use_port;
 mod identity;
 mod memory;
+pub mod native_chat_bridge_wire;
+pub mod native_gateway;
 mod provider;
 mod provider_effect;
 mod qualification_receipt;
@@ -313,3 +317,16 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+pub use final_use_port::MODEL_ISSUER_MAX_REQUEST_BYTES;
+pub use final_use_port::MODEL_ISSUER_MAX_RESPONSE_BYTES;
+pub use final_use_port::MODEL_ISSUER_OPERATION;
+pub use final_use_port::MODEL_ISSUER_SCHEMA_VERSION;
+pub use final_use_port::ModelIssuerRequest;
+pub use final_use_port::ModelIssuerResponse;
+
+pub use final_use_port::MODEL_TRUST_CAS;
+pub use final_use_port::MODEL_TRUST_LOAD;
+pub use final_use_port::ModelIssuerProcessIdentity;
+pub use final_use_port::ModelTrustRequest;
+pub use final_use_port::ModelTrustResponse;

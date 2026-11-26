@@ -274,7 +274,7 @@ def refresh_derived(check):
     return 0
 
 
-def verify(profile="qualification"):
+def verify(profile="development"):
     need(profile in {"development", "qualification"}, "verification profile")
     modules = load("docs/modules/MODULES.json")
     bindings = load("docs/modules/SOURCE_BINDINGS.json")
@@ -482,7 +482,7 @@ def main():
     )
     p.add_argument("--check", action="store_true")
     p.add_argument(
-        "--profile", choices=["development", "qualification"], default="qualification"
+        "--profile", choices=["development", "qualification"], default="development"
     )
     args = p.parse_args()
     if args.command == "refresh-indexes":

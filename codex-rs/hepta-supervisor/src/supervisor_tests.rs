@@ -46,6 +46,9 @@ use crate::driver::SpawnedProcess;
 const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 
+#[path = "tick_registry_observation_tests.rs"]
+mod tick_registry_observation_tests;
+
 struct TestFleet {
     _temp: TempDir,
     registry: FleetRegistry,
@@ -134,13 +137,6 @@ fn fake_program(relative: &str) -> PathBuf {
 
 fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
-}
-
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
 }
 
 fn config() -> SupervisorConfig {
@@ -620,7 +616,7 @@ fn recovery_reuses_restart_claim_persisted_before_exit_finalize() -> Result<(), 
         .cloned()
         .expect("registered agent");
     let claim = crate::restart_budget::claim_restart(
-        record.layout.run_root(),
+        record.layout.owner_run_root(),
         config().restart_max_attempts,
         config().restart_window,
         config().restart_backoff_base,
@@ -732,15 +728,26 @@ fn flapping_running_agent_stops_after_restart_budget_is_exhausted() -> Result<()
 
     control.set_exit(&fleet.first);
     let exhausted = supervisor.tick(now);
-    assert_eq!(exhausted.faults.len(), 1);
-    assert_eq!(exhausted.faults[0].agent_id, fleet.first);
-    assert!(exhausted.faults[0].message.contains("restart budget"));
+    // A bounded policy stop has its own typed observation. Storage/driver
+    // failures remain TickReport faults; exhaustion must not hide its reason.
+    assert_eq!(exhausted, TickReport::default());
     let stopped = supervisor
         .snapshot(&fleet.first)
         .expect("exhausted snapshot");
     assert!(!stopped.active);
     assert!(!stopped.restart_pending);
     assert_eq!(stopped.restart_attempt, 3);
+    assert_eq!(
+        stopped
+            .events
+            .iter()
+            .filter(|event| matches!(
+                event.kind,
+                SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+            ))
+            .count(),
+        1
+    );
     assert_eq!(control.spawn_count(&fleet.first), 4);
 
     assert_eq!(
@@ -767,20 +774,18 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
 
-    let record = fleet
-        .registry
-        .load()?
-        .agent(&fleet.first)
-        .expect("registered agent")
-        .clone();
-    let first_claim = crate::restart_budget::claim_restart(
-        record.layout.run_root(),
-        config().restart_max_attempts,
-        config().restart_window,
-        config().restart_backoff_base,
-    )
-    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    assert_eq!(first_claim.attempt, 1);
+    // Persist the actual predecessor exit and a fresh replacement identity.
+    // A budget-only legacy record cannot prove that a live predecessor is a
+    // replacement, even if its health probe succeeds after recovery.
+    supervisor.restart(&fleet.first, now)?;
+    control.set_drained(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    control.set_healthy(&fleet.first);
     drop(supervisor);
 
     let (mut recovered, report) =
@@ -1072,7 +1077,7 @@ fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(),
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed intent");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued intent");
     fleet.registry.revoke_release(&fleet.first, &release_id)?;
 
@@ -1229,8 +1234,11 @@ fn recovery_terminalizes_unsigned_target_from_exact_release_state_cas()
     .expect("prepared transaction")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::TargetStarting)
     .expect("target starting");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write transaction");
 
     fleet.registry.compare_and_set_release_state(
         &fleet.first,
@@ -1247,7 +1255,7 @@ fn recovery_terminalizes_unsigned_target_from_exact_release_state_cas()
     )?;
     assert_eq!(report, TickReport::default());
     let transaction =
-        crate::release_transaction::read_release_transaction(record.layout.run_root())
+        crate::release_transaction::read_release_transaction(record.layout.owner_run_root())
             .expect("read release transaction")
             .expect("release transaction");
     assert_eq!(
@@ -1325,8 +1333,11 @@ fn recovery_required_unsigned_source_is_terminalized_as_aborted() -> Result<(), 
     .expect("prepared transaction")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::RecoveryRequired)
     .expect("recovery required");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write recovery transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write recovery transaction");
 
     let (_recovered, report) = Supervisor::recover(
         fleet.registry,
@@ -1336,7 +1347,7 @@ fn recovery_required_unsigned_source_is_terminalized_as_aborted() -> Result<(), 
     )?;
     assert_eq!(report, TickReport::default());
     let transaction =
-        crate::release_transaction::read_release_transaction(record.layout.run_root())
+        crate::release_transaction::read_release_transaction(record.layout.owner_run_root())
             .expect("read release transaction")
             .expect("release transaction");
     assert_eq!(
@@ -1607,6 +1618,8 @@ fn paired_companions_stop_before_agent_restart_and_fail_independently()
     assert_eq!(control.counts(&fleet.first), (1, 1, 0));
     control.set_exit(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
@@ -1659,8 +1672,15 @@ fn ready_paired_supervisor(
         AgentRelease::try_from(fleet.registry.resolve_release(&fleet.second, &release_id)?)?;
     let control = FakeControl::default();
     let now = Instant::now();
-    let (mut supervisor, report) =
-        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let (mut supervisor, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        control.driver(),
+        SupervisorConfig {
+            stop_grace: Duration::from_secs(60),
+            ..config()
+        },
+        now,
+    )?;
     assert_eq!(report, TickReport::default());
     supervisor.start_release(&fleet.first, first_release, now)?;
     supervisor.start_release(&fleet.second, second_release, now)?;
@@ -1741,8 +1761,8 @@ fn kill_supersedes_inflight_paired_restart_without_replacement() -> Result<(), S
         .position(|event| event.kind == SupervisorEventKind::KillRequested)
         .expect("agent kill event");
     assert!(
-        matrix_kill < agent_kill,
-        "Matrix must be killed before agentd"
+        agent_kill < matrix_kill,
+        "emergency main termination cannot wait behind a failing companion signal"
     );
 
     control.set_exit(&fleet.first);
@@ -1789,6 +1809,17 @@ fn stale_deferred_drain_is_generation_fenced_from_replacement_starting()
             .restart_pending
     );
     let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert!(
+        !supervisor
+            .snapshot(&fleet.first)
+            .expect("predecessor gone")
+            .active
+    );
+    // The still-owned old Matrix must exit before a replacement main can start.
+    control.set_matrix_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(supervisor.tick(now), TickReport::default());
     let replacement = supervisor
         .snapshot(&fleet.first)
@@ -1937,7 +1968,7 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("synthetic unresolved intent");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("persist unresolved intent");
 
     let (recovered, report) = Supervisor::recover(
@@ -1949,7 +1980,7 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     assert_eq!(report, TickReport::default());
     assert!(recovered.production_recovery_required(&fleet.first)?);
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read unresolved intent")
             .expect("intent remains durable")
             .status,
@@ -2005,7 +2036,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed intent");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued intent");
 
     let transaction = crate::release_transaction::DurableReleaseTransaction::new(
@@ -2032,8 +2063,11 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
     .expect("bind grant")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::Committed)
     .expect("terminal release transaction");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write terminal transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write terminal transaction");
 
     let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
@@ -2051,7 +2085,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
         crate::ProductionMutationStatus::Committed
     );
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read reconciled intent")
             .expect("intent")
             .status,
@@ -2106,7 +2140,7 @@ fn recovery_reconciles_terminal_signed_rollback_to_target() -> Result<(), Superv
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed rollback");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued rollback intent");
 
     let transaction = crate::release_transaction::DurableReleaseTransaction::new(
@@ -2133,8 +2167,11 @@ fn recovery_reconciles_terminal_signed_rollback_to_target() -> Result<(), Superv
     .expect("bind rollback grant")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
     .expect("terminal rollback transaction");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write terminal rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write terminal rollback transaction");
 
     let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
@@ -2152,7 +2189,7 @@ fn recovery_reconciles_terminal_signed_rollback_to_target() -> Result<(), Superv
         crate::ProductionMutationStatus::RolledBack
     );
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read reconciled rollback intent")
             .expect("rollback intent")
             .status,
@@ -2205,7 +2242,7 @@ fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source() -> Result<(
         crate::signed_intent::SignedIntentStatus::Queued,
     )
     .expect("queued signed upgrade");
-    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+    crate::signed_intent::write_intent(record.layout.owner_run_root(), &intent)
         .expect("write queued upgrade intent");
 
     let transaction = crate::release_transaction::DurableReleaseTransaction::new(
@@ -2232,8 +2269,11 @@ fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source() -> Result<(
     .expect("bind upgrade grant")
     .with_phase(crate::release_transaction::ReleaseTransactionPhase::RolledBack)
     .expect("automatic rollback transaction");
-    crate::release_transaction::write_release_transaction(record.layout.run_root(), &transaction)
-        .expect("write automatic rollback transaction");
+    crate::release_transaction::write_release_transaction(
+        record.layout.owner_run_root(),
+        &transaction,
+    )
+    .expect("write automatic rollback transaction");
 
     let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
@@ -2251,7 +2291,7 @@ fn recovery_reconciles_signed_upgrade_automatic_rollback_to_source() -> Result<(
         crate::ProductionMutationStatus::RolledBack
     );
     assert_eq!(
-        crate::signed_intent::read_intent(record.layout.run_root())
+        crate::signed_intent::read_intent(record.layout.owner_run_root())
             .expect("read reconciled upgrade intent")
             .expect("upgrade intent")
             .status,
@@ -2300,3 +2340,18 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[path = "matrix_restart_recovery_tests.rs"]
+mod matrix_restart_recovery_tests;
+
+#[path = "signed_restart_recovery_tests.rs"]
+mod signed_restart_recovery_tests;
+
+#[path = "supervisor_metadata_tests.rs"]
+mod metadata_tests;
+
+#[path = "catalog_final_use_tests.rs"]
+mod catalog_final_use_tests;
+
+#[path = "release_publication_retry_tests.rs"]
+mod release_publication_retry_tests;

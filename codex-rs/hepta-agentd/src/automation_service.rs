@@ -8,10 +8,11 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_automation::TimerPhase;
-use codex_hepta_types::Generation;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::AutomationStore;
+use codex_hepta_agent_components::automation::AutomationTurnQueue;
+use codex_hepta_agent_components::automation::TimerPhase;
+use codex_hepta_agent_components::types::Generation;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -22,12 +23,14 @@ use crate::RuntimeTasks;
 /// Construct one real scheduler through the same versioned lifecycle used by
 /// other admitted optional services. Validation never starts a task. Callers
 /// retain the Agent writer lock; no additional authority is issued here.
-pub(crate) async fn spawn_automation_service(
+pub(crate) async fn spawn_automation_service<Q: AutomationTurnQueue + 'static>(
     tasks: &mut RuntimeTasks,
     store: Option<AutomationStore>,
     state: Arc<AgentdState>,
     identity: AgentdIdentity,
+    queue: Arc<Q>,
     host_cancellation: CancellationToken,
+    generation: Generation,
 ) -> Result<(), AgentdError> {
     if state.identity() != &identity
         || store
@@ -65,12 +68,12 @@ pub(crate) async fn spawn_automation_service(
             // Unpublish the live task route without deleting the durable owner
             // or its historical task/dedupe records. Do not resume, hand off,
             // mint a new generation, or advertise an idle worker as active.
-            state.mark_automation_unavailable()?;
+            state.retain_automation_for_drain()?;
             return Ok(());
         }
     }
-    let generation = Generation::new(identity.spawn_generation)
-        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    // Startup has bound either the host generation or a Supervisor-selected
+    // generation to this compiled image. No dynamic plugin is loaded.
     // This is the trusted compiled-in owner, not independently selected plugin
     // code. Bind its host generation without manufacturing a runtime-module
     // selection from manifest values. Dynamic replacement still requires the
@@ -90,6 +93,7 @@ pub(crate) async fn spawn_automation_service(
             match store {
                 Some(store) => {
                     super::run_automation_scheduler(
+                        queue,
                         store,
                         Arc::clone(&state),
                         identity,
@@ -139,7 +143,7 @@ pub(crate) async fn spawn_automation_service(
             // Remove the product attachment only after drain. Quarantine keeps
             // its module writer reservation: task retirement alone must not
             // authorize a replacement module or a second durable writer.
-            retirement_state.mark_automation_unavailable()
+            retirement_state.retain_automation_for_drain()
         },
     )
 }

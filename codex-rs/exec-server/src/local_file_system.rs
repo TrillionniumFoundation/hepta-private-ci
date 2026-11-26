@@ -3,9 +3,9 @@ use codex_file_system::MAX_WALK_DIRECTORIES;
 use codex_file_system::MAX_WALK_ENTRIES;
 use codex_file_system::MAX_WALK_RESPONSE_BYTES;
 use codex_file_system::WALK_RESPONSE_ITEM_OVERHEAD_BYTES;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 use codex_protocol::models::PermissionProfile;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 use codex_protocol::permissions::ReadDenyMatcher;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
@@ -144,14 +144,10 @@ impl LocalFileSystem {
         file_system.read_file(path, options, sandbox).await
     }
 
-    /// Performs the bounded skill/resource read on a Darwin stable handle.
-    ///
-    /// The generic `ExecutorFileSystem` fallback is intentionally stream-based,
-    /// which is sufficient for ordinary sandbox reads but cannot establish the
-    /// pathname/inode provenance required by an authorized read.  On macOS we
-    /// therefore keep the operation local and fail closed unless the kernel
-    /// probe proves both `O_NOFOLLOW_ANY` and Darwin `O_UNIQUE` semantics.
-    #[cfg(target_os = "macos")]
+    /// Reads through the platform's original authorized stable file handle.
+    /// Linux retains the sandbox helper's opened descriptor; Darwin verifies
+    /// the final pathname/inode using its probed unique-open semantics.
+    #[cfg(any(target_os = "macos", target_os = "linux"))]
     async fn read_file_bounded_authorized(
         &self,
         path: &PathUri,
@@ -168,17 +164,31 @@ impl LocalFileSystem {
         let native_path = path
             .to_abs_path()
             .map_err(|_| authorized_read_error(io::ErrorKind::InvalidInput))?;
-        let original_file = regular_file::open(native_path.as_path())
-            .await
-            .map_err(redact_file_access_error)?;
-        let original_identity = unique_file_identity(&original_file).await?;
-        let final_path = stable_file_path(&original_file)?;
-        authorize_stable_file_path(final_path.as_path(), sandbox)?;
-        let mut file =
-            secure_reopen_matching_identity(final_path.as_path(), original_identity).await?;
-        file.seek(std::io::SeekFrom::Start(0))
-            .await
-            .map_err(redact_file_access_error)?;
+        #[cfg(target_os = "macos")]
+        let file = {
+            let original_file = regular_file::open(native_path.as_path())
+                .await
+                .map_err(redact_file_access_error)?;
+            let original_identity = unique_file_identity(&original_file).await?;
+            let final_path = stable_file_path(&original_file)?;
+            authorize_stable_file_path(final_path.as_path(), sandbox)?;
+            let mut file =
+                secure_reopen_matching_identity(final_path.as_path(), original_identity).await?;
+            file.seek(std::io::SeekFrom::Start(0))
+                .await
+                .map_err(redact_file_access_error)?;
+            file
+        };
+        #[cfg(target_os = "linux")]
+        let file = {
+            // Reject lexical out-of-scope requests without disclosing their
+            // existence. The sandbox helper still authorizes the actual open
+            // and transfers that same descriptor, never a replacement path.
+            authorize_stable_file_path(native_path.as_path(), sandbox)?;
+            self.open_file_for_read(path, Some(sandbox))
+                .await
+                .map_err(redact_file_access_error)?
+        };
 
         let mut bytes = Vec::with_capacity(max_bytes.min(FILE_READ_CHUNK_SIZE));
         let mut limited = file.take(read_limit);
@@ -298,7 +308,7 @@ impl ExecutorFileSystem for LocalFileSystem {
         Box::pin(LocalFileSystem::read_file(self, path, options, sandbox))
     }
 
-    #[cfg(target_os = "macos")]
+    #[cfg(any(target_os = "macos", target_os = "linux"))]
     fn read_file_bounded_authorized<'a>(
         &'a self,
         path: &'a PathUri,
@@ -1235,7 +1245,7 @@ fn reject_platform_sandbox_context(sandbox: Option<&FileSystemSandboxContext>) -
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 fn authorized_read_limit(max_bytes: usize) -> io::Result<u64> {
     max_bytes
         .checked_add(1)
@@ -1375,12 +1385,17 @@ pub(crate) fn stable_handle_authorized_read_available() -> bool {
     *STABLE_HANDLE_AUTHORIZED_READ_AVAILABLE
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "linux")]
+pub(crate) fn stable_handle_authorized_read_available() -> bool {
+    crate::sandboxed_file_open::stable_handle_authorized_read_available()
+}
+
+#[cfg(not(any(target_os = "macos", target_os = "linux")))]
 pub(crate) fn stable_handle_authorized_read_available() -> bool {
     false
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 fn authorize_stable_file_path(
     final_path: &Path,
     sandbox: &FileSystemSandboxContext,
@@ -1455,7 +1470,7 @@ fn stable_file_path_from_raw_fd(fd: std::os::fd::RawFd) -> io::Result<AbsolutePa
         .map_err(|_| authorized_read_error(io::ErrorKind::PermissionDenied))
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 fn redact_file_access_error(error: io::Error) -> io::Error {
     if error.kind() == io::ErrorKind::NotFound {
         authorized_read_error(io::ErrorKind::NotFound)
@@ -1464,7 +1479,7 @@ fn redact_file_access_error(error: io::Error) -> io::Error {
     }
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 fn authorized_read_error(kind: io::ErrorKind) -> io::Error {
     let message = match kind {
         io::ErrorKind::NotFound => "No such file or directory",

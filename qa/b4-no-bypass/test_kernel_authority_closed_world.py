@@ -80,7 +80,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 functions.add(function.group(1))
         return functions
 
-    def test_every_public_authority_free_function_is_explicitly_classified(self) -> None:
+    def test_every_public_authority_free_function_is_explicitly_classified(
+        self,
+    ) -> None:
         data = self.data()
         rows = data.get("freeFunctions")
         self.assertIsInstance(rows, list)
@@ -92,7 +94,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             assert isinstance(row, dict)
             source_path = str(row["sourcePath"])
             self.assertNotIn(
-                source_path, seen_paths, f"duplicate free-function policy: {source_path}"
+                source_path,
+                seen_paths,
+                f"duplicate free-function policy: {source_path}",
             )
             seen_paths.add(source_path)
             privileged = row.get("privilegedFunctions")
@@ -131,7 +135,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             self.assertIsInstance(row, dict)
             assert isinstance(row, dict)
             type_name = str(row["typeName"])
-            self.assertNotIn(type_name, seen_types, f"duplicate type policy: {type_name}")
+            self.assertNotIn(
+                type_name, seen_types, f"duplicate type policy: {type_name}"
+            )
             seen_types.add(type_name)
             privileged = row.get("privilegedMethods")
             non_privileged = row.get("nonPrivilegedMethods")
@@ -151,14 +157,27 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     boundary_ids,
                     f"{type_name}::{method}: missing canonical privileged boundary",
                 )
-            observed = self.public_methods(str(row["sourcePath"]), type_name)
+            source_paths = row.get("sourcePaths", [row["sourcePath"]])
+            self.assertIsInstance(source_paths, list)
+            self.assertTrue(source_paths)
+            self.assertEqual(len(source_paths), len(set(source_paths)))
+            self.assertIn(row["sourcePath"], source_paths)
+            observed: set[str] = set()
+            for source_path in source_paths:
+                methods = self.public_methods(str(source_path), type_name)
+                self.assertFalse(
+                    observed & methods, "duplicate public method declaration"
+                )
+                observed.update(methods)
             self.assertEqual(
                 observed,
                 privileged_methods | non_privileged_methods,
                 f"{type_name}: public method classification drifted",
             )
 
-    def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(self) -> None:
+    def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(
+        self,
+    ) -> None:
         data = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))
         declared_rows = data.get("boundary")
         self.assertIsInstance(declared_rows, list)

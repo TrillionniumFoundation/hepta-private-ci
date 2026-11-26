@@ -4,8 +4,8 @@
   "module": "learning.plasticity",
   "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "c40ed3d9fe909d9979b93251c006ad32704e5be3",
+    "tree": "04214f0313436ee9eb4f0790958b32b82cae4a7a"
   },
   "current": {
     "sourceRootPresent": true,
@@ -127,7 +127,7 @@
       "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
       "tests": [
-        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_queue_tests.rs::runtime_queue_capacity_is_bounded",
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
       ]
     },

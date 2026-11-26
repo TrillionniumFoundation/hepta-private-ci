@@ -373,82 +373,7 @@ impl DurableTopologyProposalRegistryV1 {
         expected_predecessor_frame_digest: Digest32,
         record: GovernedTopologyProposalV1,
     ) -> Result<DurableTopologyAppendReceiptV1, DurableTopologyRegistryErrorV1> {
-        if self.poisoned {
-            return Err(DurableTopologyRegistryErrorV1::Poisoned);
-        }
-        let verified = admit_governed_topology_v1(
-            record.proposal.clone(),
-            record.handoffs.clone(),
-            record.source_authentication_digest,
-            record.evaluation_authentication_digest,
-        )?;
-        if verified != record {
-            return Err(DurableTopologyRegistryErrorV1::Corrupt);
-        }
-        if let Some(slot) = self.by_id.get(&record.proposal.proposal_id)
-            && let Some(existing) = self.by_slot.get(slot)
-            && existing == &record
-        {
-            let mut receipt = self
-                .receipts
-                .get(&record.proposal.proposal_id)
-                .cloned()
-                .ok_or(DurableTopologyRegistryErrorV1::Corrupt)?;
-            receipt.disposition = AppendDisposition::Unchanged;
-            return Ok(receipt);
-        }
-        let current = self.frame_digests.last().copied().unwrap_or(Digest32::ZERO);
-        if current != expected_predecessor_frame_digest {
-            return Err(DurableTopologyRegistryErrorV1::Conflict);
-        }
-        if self.frame_digests.len() >= self.maximum_records {
-            return Err(DurableTopologyRegistryErrorV1::Capacity);
-        }
-
-        let mut candidate_slots = self.by_slot.clone();
-        let mut candidate_ids = self.by_id.clone();
-        insert_maps(
-            &mut candidate_slots,
-            &mut candidate_ids,
-            record.clone(),
-            self.maximum_records,
-        )?;
-
-        let sequence = self.frame_digests.len() as u64 + 1;
-        let (frame, frame_digest) =
-            encode_frame(sequence, expected_predecessor_frame_digest, &record)?;
-        let offset = self.file.metadata()?.len();
-        let next = offset
-            .checked_add(4 + frame.len() as u64)
-            .ok_or(DurableTopologyRegistryErrorV1::Capacity)?;
-        if next > MAX_FILE_BYTES {
-            return Err(DurableTopologyRegistryErrorV1::Capacity);
-        }
-
-        self.poisoned = true;
-        self.file.seek(SeekFrom::End(0))?;
-        self.file
-            .write_all(&(frame.len() as u32).to_be_bytes())
-            .and_then(|_| self.file.write_all(&frame))
-            .and_then(|_| self.file.sync_data())
-            .map_err(|_| DurableTopologyRegistryErrorV1::Indeterminate)?;
-        let receipt = DurableTopologyAppendReceiptV1 {
-            sequence,
-            proposal_id: record.proposal.proposal_id.clone(),
-            proposal_digest: record.proposal.proposal_digest,
-            admission_digest: record.admission_digest,
-            frame_digest,
-            predecessor_frame_digest: expected_predecessor_frame_digest,
-            disposition: AppendDisposition::Inserted,
-            authority: AuthorityPosture::DENY_ALL,
-        };
-        self.by_slot = candidate_slots;
-        self.by_id = candidate_ids;
-        self.receipts
-            .insert(receipt.proposal_id.clone(), receipt.clone());
-        self.frame_digests.push(frame_digest);
-        self.poisoned = false;
-        Ok(receipt)
+        self.append_after_admission(expected_predecessor_frame_digest, record, || Ok(()))
     }
 
     pub fn current_anchor(
@@ -947,6 +872,9 @@ impl<'a> Reader<'a> {
 
 #[cfg(test)]
 mod tests {
+    #[path = "topology_registry_final_gate_tests.rs"]
+    mod final_gate_tests;
+
     use super::*;
     use crate::ProposalWindowV2;
     use crate::TopologyChangeV2;
@@ -1151,3 +1079,6 @@ mod tests {
         assert_eq!(reopened.record_count(), Ok(2));
     }
 }
+
+#[path = "topology_registry_append.rs"]
+mod append;

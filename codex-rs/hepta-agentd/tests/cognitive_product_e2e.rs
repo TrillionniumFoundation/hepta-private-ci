@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::path::Path;
@@ -30,24 +31,24 @@ use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput as V2UserInput;
+use codex_hepta_agent_components::automation::AutomationSchedule;
+use codex_hepta_agent_components::automation::AutomationTaskDraft;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::ForgetMemoryDraft;
+use codex_hepta_agent_components::memory::H7TrajectoryEventKind;
+use codex_hepta_agent_components::memory::LedgerSourceKind;
+use codex_hepta_agent_components::memory::MemoryDraft;
+use codex_hepta_agent_components::memory::MemoryLifecycleState;
+use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+use codex_hepta_agent_components::memory::MemoryVerification;
+use codex_hepta_agent_components::memory::SourceDraft;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::MemoryFederationCapabilityState;
 use codex_hepta_agentd::MemoryFederationScopeKind;
-use codex_hepta_automation::AutomationSchedule;
-use codex_hepta_automation::AutomationTaskDraft;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::ForgetMemoryDraft;
-use codex_hepta_memory::H7TrajectoryEventKind;
-use codex_hepta_memory::LedgerSourceKind;
-use codex_hepta_memory::MemoryDraft;
-use codex_hepta_memory::MemoryLifecycleState;
-use codex_hepta_memory::MemoryRevisionDraft;
-use codex_hepta_memory::MemoryVerification;
-use codex_hepta_memory::SourceDraft;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
@@ -65,6 +66,9 @@ use wiremock::matchers::method;
 use wiremock::matchers::path;
 
 mod support;
+
+#[path = "support/automation_evolution.rs"]
+mod automation_evolution;
 
 use support::fleet::AgentFixture;
 use support::fleet::FleetHarness;
@@ -692,7 +696,8 @@ async fn real_agentd_final_use_revalidation_rejects_concurrent_tombstone() -> Re
     store
         .forget_memory(
             &CognitiveAccess::agent_private(agent.agent_id.clone()),
-            &codex_hepta_memory::StableMemoryId::parse(memory_id).map_err(anyhow::Error::msg)?,
+            &codex_hepta_agent_components::memory::StableMemoryId::parse(memory_id)
+                .map_err(anyhow::Error::msg)?,
             1,
             &ForgetMemoryDraft {
                 scope: CognitiveScope::AgentPrivate,
@@ -785,7 +790,7 @@ async fn real_agentd_local_memory_review_hides_host_tombstone_after_reopen() -> 
     let forgotten = store
         .forget_memory(
             &CognitiveAccess::agent_private(agent.agent_id.clone()),
-            &codex_hepta_memory::StableMemoryId::parse(memory_id.clone())
+            &codex_hepta_agent_components::memory::StableMemoryId::parse(memory_id.clone())
                 .map_err(anyhow::Error::msg)?,
             1,
             &ForgetMemoryDraft {
@@ -2237,7 +2242,7 @@ async fn read_h7_trajectory_for_turn(
     store: &CognitiveStore,
     agent: &AgentFixture,
     turn_id: &str,
-) -> Result<Option<codex_hepta_memory::H7TrajectoryRead>> {
+) -> Result<Option<codex_hepta_agent_components::memory::H7TrajectoryRead>> {
     let database_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
     let sqlite_home = AbsolutePathBuf::from_absolute_path(agent.layout.cognitive_root())?;
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -2445,7 +2450,11 @@ async fn seed_verified_agent_memory_with_receipt(
     agent: &AgentFixture,
     stable_key: &str,
     content: &str,
-) -> Result<(String, String, codex_hepta_memory::SourceRevisionId)> {
+) -> Result<(
+    String,
+    String,
+    codex_hepta_agent_components::memory::SourceRevisionId,
+)> {
     let store = CognitiveStore::open(&agent.layout).await?;
     ensure!(store.owner_agent_id() == &agent.agent_id);
     let access = CognitiveAccess::agent_private(agent.agent_id.clone());

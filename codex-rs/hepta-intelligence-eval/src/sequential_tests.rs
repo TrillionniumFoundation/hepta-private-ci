@@ -349,6 +349,109 @@ fn exact_depth_ess_floor_cannot_be_weakened_by_q32_rounding()
 }
 
 #[test]
+fn depth_ess_certifies_original_ratios_and_preserves_exact_equal_encodings()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut p = plan();
+    p.estimand.horizon = 1;
+    p.minimum_trajectories = 400;
+    p.minimum_depth_ess = FixedQ32::from_raw(400 << 32);
+    let mut rows: Vec<_> = (0..400)
+        .map(|index| {
+            let mut row = trajectory(&format!("true-depth-ratio-{index}"));
+            row.steps.truncate(1);
+            row.steps[0].boundary = TrajectoryBoundary::Terminal;
+            row
+        })
+        .collect();
+    for (index, row) in rows.iter_mut().enumerate() {
+        let behavior = if index % 2 == 0 { 3 << 30 } else { 3 << 29 };
+        let evaluation = if index % 2 == 0 { 1 << 31 } else { 1 << 30 };
+        set_step_propensities(&mut row.steps[0], behavior, evaluation)?;
+    }
+    assert_eq!(
+        estimate_sequential(&p, &rows)?.depth_support[0].effective_sample_size,
+        p.minimum_depth_ess
+    );
+    set_step_propensities(
+        &mut rows[0].steps[0],
+        /*behavior*/ (3 << 30) + 1,
+        /*evaluation*/ (1 << 31) + 1,
+    )?;
+    assert_eq!(
+        estimate_sequential(&p, &rows),
+        Err(SequentialError::InsufficientEvidence(
+            SequentialEvidenceGap::DepthSupport
+        ))
+    );
+    p.minimum_depth_ess = FixedQ32::from_raw((400 << 32) - 1);
+    assert_eq!(
+        estimate_sequential(&p, &rows),
+        Err(SequentialError::InsufficientEvidence(
+            SequentialEvidenceGap::NumericalSupportGap
+        ))
+    );
+    p.minimum_depth_ess = FixedQ32::from_raw(399 << 32);
+    assert_eq!(
+        estimate_sequential(&p, &rows)?.depth_support[0]
+            .effective_sample_size
+            .raw(),
+        400 << 32
+    );
+    Ok(())
+}
+
+fn set_step_propensities(
+    step: &mut TrajectoryStep,
+    behavior: u64,
+    evaluation: u64,
+) -> Result<(), Box<dyn std::error::Error>> {
+    step.actions[0].behavior_probability = ProbabilityQ32::from_raw(behavior)?;
+    step.actions[0].evaluation_probability = ProbabilityQ32::from_raw(evaluation)?;
+    step.actions[1].behavior_probability =
+        ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - behavior)?;
+    step.actions[1].evaluation_probability =
+        ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() - evaluation)?;
+    Ok(())
+}
+
+#[test]
+fn cumulative_support_retains_outward_uncertainty_instead_of_admitting_nearest_ess()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut p = plan();
+    p.minimum_depth_ess = FixedQ32::from_raw((2 << 32) - 1);
+    let mut rows = vec![trajectory("prefix-a"), trajectory("prefix-b")];
+    // The first-depth true ratios agree, but rounded prefix envelopes widen.
+    // A one-unit propensity change at depth one is unresolved near ESS=2.
+    for row in &mut rows {
+        set_step_propensities(
+            &mut row.steps[0],
+            /*behavior*/ 3 << 30,
+            /*evaluation*/ 1 << 31,
+        )?;
+        set_step_propensities(
+            &mut row.steps[1],
+            /*behavior*/ 3 << 30,
+            /*evaluation*/ 1 << 31,
+        )?;
+    }
+    assert!(estimate_sequential(&p, &rows).is_ok());
+    set_step_propensities(
+        &mut rows[0].steps[1],
+        /*behavior*/ (3 << 30) + 1,
+        /*evaluation*/ (1 << 31) + 1,
+    )?;
+    assert_eq!(
+        estimate_sequential(&p, &rows),
+        Err(SequentialError::InsufficientEvidence(
+            SequentialEvidenceGap::NumericalSupportGap
+        ))
+    );
+    p.minimum_depth_ess = FixedQ32::ONE;
+    assert!(estimate_sequential(&p, &rows).is_ok());
+    Ok(())
+}
+
+#[test]
 fn tiny_cumulative_weights_keep_q64_ess_and_underflow_is_explicit() {
     let mut p = plan();
     p.estimand.horizon = 1;
@@ -417,6 +520,40 @@ fn horizon_and_cumulative_limits_are_enforced() {
             SequentialEvidenceGap::WeightLimit
         ))
     );
+}
+
+#[test]
+fn original_propensity_ratios_enforce_the_cumulative_ceiling_before_rounding() {
+    for (horizon, ceiling) in [(1, q(5, 4)), (2, q(5, 2))] {
+        let mut p = plan();
+        p.estimand.horizon = horizon;
+        p.maximum_cumulative_ratio = ceiling;
+        let mut row = trajectory("cumulative-rounding-boundary");
+        row.steps.truncate(usize::from(horizon));
+        row.steps.last_mut().expect("last step").boundary = TrajectoryBoundary::Terminal;
+        let actions = &mut row.steps[0].actions;
+        // The true first ratio exceeds 1.25, but its nearest Q32 value is
+        // exactly 1.25. The second ratio is exactly two, so the true product
+        // also exceeds 2.5 while both rounded point products meet the ceiling.
+        actions[0].behavior_probability =
+            ProbabilityQ32::from_raw((3 * SCALE / 4 - 1) as u64).expect("behavior");
+        actions[0].evaluation_probability =
+            ProbabilityQ32::from_raw((15 * SCALE / 16 - 1) as u64).expect("evaluation");
+        actions[1].behavior_probability = ProbabilityQ32::from_raw(
+            ProbabilityQ32::ONE.raw() - actions[0].behavior_probability.raw(),
+        )
+        .expect("behavior complement");
+        actions[1].evaluation_probability = ProbabilityQ32::from_raw(
+            ProbabilityQ32::ONE.raw() - actions[0].evaluation_probability.raw(),
+        )
+        .expect("evaluation complement");
+        assert_eq!(
+            estimate_sequential(&p, &[row]),
+            Err(SequentialError::InsufficientEvidence(
+                SequentialEvidenceGap::WeightLimit
+            ))
+        );
+    }
 }
 
 #[test]

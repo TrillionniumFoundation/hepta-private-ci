@@ -1,0 +1,16 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-private-state"
+version.workspace = true
+
+[lib]
+name = "codex_hepta_private_state"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[target.'cfg(windows)'.dependencies]
+codex-utils-private-state = { workspace = true }

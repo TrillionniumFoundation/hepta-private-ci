@@ -1,0 +1,46 @@
+schema = "hepta.module-manifest.v1"
+order = 29
+id = "learning.operator"
+plane = "qualification"
+kind = "trainer"
+lifecycle = "target"
+state = "stateful_shadow"
+architectureRole = "slow_learner"
+writes = []
+uses = ["platform.types", "learning.ledger", "learning.artifacts", "kernel.evidence"]
+owner = "learning-platform"
+deputy = "qualification-plane"
+denies = ["online_current_artifact_mutation", "production_write"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-bellman-operator"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
+technicalDocument = "docs/modules/learning.operator/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-bellman-operator"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-bellman-operator"
+compileLayer = 4
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-operator-acceptance"
+compileLayer = 0
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

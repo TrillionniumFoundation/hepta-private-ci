@@ -166,15 +166,48 @@ Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new 
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
+### Durable runtime-module transactions
+
+`DurableRuntimeModuleSupervisorV1` exposes the existing selected topology
+admission, grouped canary, retirement-readiness, final publication and withdrawal
+transitions through the same checkpoint owner and sidecar lock. Per-member
+promotion stays non-serving until the complete selected topology is ready.
+Withdrawal releases pending work but retains generation and anti-resurrection
+fences; it is not cancellation or settlement of a physical worker.
+
+A failed state publication poisons that owner handle. The first operation returns
+the publication error; subsequent mutation, `topology()` and `checkpoint()` return
+`RecoveryRequired`. Those getters now return `Result`. A rename may have taken
+effect before directory sync fails, so continuing from the old memory snapshot
+would risk overwriting a newer durable generation. Drop and reopen the existing
+owner under its lock and reconcile actual domain state before further action.
+Semantic rejection before persistence does not poison acknowledged state.
+
+The product-derived integration fixture covers reopen after selection, canary,
+per-member readiness, group publication and withdrawal. Its independent-role keys
+and future-window metrics are fixtures, not deployed acceptance or measured
+learning benefit. The daemon's selected-topology-to-actual-module-instance path,
+real stateful multi-module handoff and target-host power-loss qualification remain
+separate implementation and qualification work; opening this store is not proof
+that those paths are complete.
+
 ## 8. Failure semantics, recovery and rollback
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
-Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
+Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A successful automatic claim emits `AutomaticRestartQueued { attempt }` using the durable attempt identity. Reaching the attempt ceiling emits `AutomaticRestartBudgetExhausted { attempts }`, does not schedule another automatic start, and does not report a storage/driver failure in `TickReport`. Actual persistence and driver failures remain faults. Reopening supervisord must preserve the consumed budget rather than revive an exhausted Agent. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
+
+Main-process claims and Matrix companion windows are independent projections of the same restart journal, not competing writers. Recovery restores the Matrix projection before adoption can schedule another attempt; it never copies an empty companion main-window field over the canonical main claim. For the same release, consumed Matrix attempts survive reopen and retain bounded backoff. Because the legacy companion journal has no persisted retry deadline, recovery conservatively waits one complete backoff rather than accelerating a retry. A missing or revoked release does not erase its durable history.
 
 Rollback and automatic rollback are fresh admissions. Immediately before process start the supervisor re-resolves the release through Fleet, so revoked or no-longer-allowed releases fail closed, then compares current manifest/program digests and the complete allow/revoke admission frontier against the durable transaction. A changed policy frontier is not silently accepted because the predecessor was valid earlier.
 
 Ambiguous signed transitions become `recovery_required`. Supervisord remains reachable for read-only transaction/status queries and the signed recovery ceremony, but reports not-ready and rejects ordinary mutation of that Agent except emergency kill. Recovery may become `committed` or `rolled_back` only when an independently signed decision binds the grant, intent digest, transaction digest, observed immutable release bytes, current lifecycle generation and current daemon authority epoch; the current Fleet admission frontier is revalidated once more before terminalization.
+
+Paired-process qualification runs the `paired_process_product` integration suite through `just test --locked --cargo-profile dev-small -p codex-hepta-supervisor --test paired_process_product --retries 0 --test-threads=1`. The existing small-development profile removes debug-symbol copying/hash amplification; it does not replace executable-byte identity, durable writes, exact process adoption, crash isolation or the default bounded test deadline. The fixture treats a cancelled probe connection as no response, rejects malformed nonempty requests, and requires a Matrix-only crash to preserve the paired Agentd PID. Its cleanup watchdog checks the latest post-tick exit observation; that convergence check is not an exit-latency measurement. A small-profile result must be labelled separately from the ordinary debug-binary workload.
+
+The recovered signed-intent fence is enforced again at the actual process-start entry, including direct `start`, `start_release` and `restart` callers. A pending automatic restart is suspended while that Agent requires signed recovery; it neither starts a replacement nor consumes/completes the durable pending attempt. Normal ticks still observe exiting processes and service emergency cleanup. Reopening again preserves both quarantine and the pending attempt; the fence is derived from the existing signed intent rather than a second mutable flag.
+
+A retained `aborted` signed intent is terminal and must not become `recovery_required` on another reopen. The legacy `hepta-supervisor-intent-recovery abort` command now fails explicitly: an unsigned exact-digest marker identifies a record but cannot resolve an ambiguous signed effect. Existing marker readers remain for historical inspection; current recovery still requires the independently signed ceremony described above.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 

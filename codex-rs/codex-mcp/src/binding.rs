@@ -118,6 +118,15 @@ impl McpBinding {
             .cloned()
     }
 
+    /// Binds an explicitly configured hook to a permitted tool, including tools
+    /// hidden from the model. The captured client, configuration and catalog
+    /// revision still govern execution; model calls retain their visibility gate.
+    pub fn prepare_configured_call(&self, server: &str, tool: &str) -> Option<PreparedMcpCall> {
+        self.calls
+            .get(&(server.to_string(), tool.to_string()))
+            .cloned()
+    }
+
     pub fn has_servers(&self) -> bool {
         self.connections.has_servers()
     }

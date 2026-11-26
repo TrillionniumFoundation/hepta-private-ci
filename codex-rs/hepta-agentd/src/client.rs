@@ -45,12 +45,39 @@ use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
+#[path = "client_automation_listing.rs"]
+mod automation_listing;
+
+#[path = "client_canary_operation_receipt.rs"]
+#[cfg(feature = "server")]
+mod canary_operation_receipt;
+
+#[path = "client_native_model_receipt.rs"]
+mod native_model_receipt;
+#[cfg(feature = "server")]
+#[path = "client_parameter_admission.rs"]
+mod parameter_admission;
+#[cfg(feature = "server")]
+#[path = "client_plasticity_observation.rs"]
+mod plasticity_observation;
+#[cfg(feature = "server")]
+#[path = "client_prepared_generation.rs"]
+mod prepared_generation;
+#[cfg(feature = "server")]
+#[path = "client_self_iteration_round.rs"]
+mod self_iteration_round;
+
+#[path = "client_secrets.rs"]
+mod secrets;
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,
     spawn_generation: u64,
     next_request_id: AtomicU64,
     timeout: Duration,
+    #[cfg(unix)]
+    expected_peer: Option<(u32, u32)>,
 }
 
 impl AgentdClient {
@@ -71,7 +98,22 @@ impl AgentdClient {
             spawn_generation,
             next_request_id: AtomicU64::new(1),
             timeout: Duration::from_secs(2),
+            #[cfg(unix)]
+            expected_peer: None,
         })
+    }
+
+    /// Explicit trusted installation binding; peer identity is checked before
+    /// every control request, independently of JSON identity fields.
+    #[cfg(unix)]
+    pub fn with_peer_process(mut self, uid: u32, pid: u32) -> Result<Self, AgentdError> {
+        if uid == 0 || pid == 0 {
+            return Err(AgentdError::Invalid(
+                "Agent peer requires a non-root UID and live PID".into(),
+            ));
+        }
+        self.expected_peer = Some((uid, pid));
+        Ok(self)
     }
 
     pub async fn capabilities(&self) -> Result<AgentdCapabilitySet, AgentdError> {
@@ -380,6 +422,80 @@ impl AgentdClient {
         }
     }
 
+    pub async fn run_mark_dispatched_bound(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_commitment_digest: String,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_mark_dispatched_bound(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_commitment_digest,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_abort_before_effect(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        self.run_abort_before_effect_with_generation(
+            run_id,
+            expected_revision,
+            dispatch_binding_digest,
+            abort_nonce_hex,
+            proof_digest,
+            reason,
+        )
+        .await
+        .map(|(_, receipt)| receipt)
+    }
+
+    /// Pair the original abort acknowledgement with its current lifecycle
+    /// generation without changing the bound process or the abort protocol.
+    pub async fn run_abort_before_effect_with_generation(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
+    ) -> Result<(u64, AgentRunReceipt), AgentdError> {
+        let response = self
+            .send(AgentdRequest::run_abort_before_effect(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                abort_nonce_hex,
+                proof_digest,
+                reason,
+            ))
+            .await?;
+        match response.payload {
+            AgentdPayload::RunReceipt(receipt) => Ok((response.current_generation, receipt)),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn run_cancel(
         &self,
         run_id: String,
@@ -427,16 +543,26 @@ impl AgentdClient {
     }
 
     pub async fn run_status(&self, run_id: String) -> Result<Option<AgentRunReceipt>, AgentdError> {
-        match self
+        self.run_status_with_generation(run_id)
+            .await
+            .map(|(_, run)| run)
+    }
+
+    /// Observe the current lifecycle generation and original run in the same
+    /// response. The client remains bound to its separate process generation.
+    pub async fn run_status_with_generation(
+        &self,
+        run_id: String,
+    ) -> Result<(u64, Option<AgentRunReceipt>), AgentdError> {
+        let response = self
             .send(AgentdRequest::run_status(
                 self.request_id(),
                 self.spawn_generation,
                 run_id,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::RunStatus { run } => Ok(run),
+            .await?;
+        match response.payload {
+            AgentdPayload::RunStatus { run } => Ok((response.current_generation, run)),
             payload => unexpected(payload),
         }
     }
@@ -584,21 +710,6 @@ impl AgentdClient {
         }
     }
 
-    pub async fn automation_list(&self, limit: u16) -> Result<Vec<AutomationTask>, AgentdError> {
-        match self
-            .send(AgentdRequest::automation_list(
-                self.request_id(),
-                self.spawn_generation,
-                limit,
-            ))
-            .await?
-            .payload
-        {
-            AgentdPayload::AutomationTasks { tasks } => Ok(tasks),
-            payload => unexpected(payload),
-        }
-    }
-
     pub async fn automation_cancel(
         &self,
         task_id: AutomationTaskId,
@@ -717,10 +828,17 @@ impl AgentdClient {
 
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
+        #[cfg(feature = "server")]
+        let response_limit = crate::canary_operation_receipt::response_limit(&request.method);
+        #[cfg(not(feature = "server"))]
+        let response_limit = MAX_CONTROL_FRAME_BYTES;
+        let mut stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
-        let (reader, mut writer) = tokio::io::split(stream);
+        #[cfg(unix)]
+        if let Some((uid, pid)) = self.expected_peer {
+            stream.ensure_peer_process(uid, pid)?;
+        }
         let mut bytes = serde_json::to_vec(&request)?;
         bytes.push(b'\n');
         if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
@@ -728,16 +846,21 @@ impl AgentdClient {
                 "agentd request exceeded frame bound".to_string(),
             ));
         }
-        timeout(self.timeout, writer.write_all(&bytes))
+        timeout(self.timeout, stream.write_all(&bytes))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
-        let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
-        if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
-        {
+        let count = {
+            let mut reader = BufReader::new(&mut stream).take(response_limit + 1);
+            timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
+                .await
+                .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??
+        };
+        #[cfg(unix)]
+        if let Some((uid, pid)) = self.expected_peer {
+            stream.ensure_peer_process(uid, pid)?;
+        }
+        if count == 0 || count as u64 > response_limit || !response_bytes.ends_with(b"\n") {
             return Err(AgentdError::Protocol(
                 "agentd returned an invalid bounded response frame".to_string(),
             ));
@@ -765,7 +888,7 @@ impl AgentdClient {
     }
 }
 
-fn encode_hex(bytes: &[u8]) -> String {
+pub(crate) fn encode_hex(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len().saturating_mul(2));
     for byte in bytes {
@@ -785,3 +908,21 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
         ))),
     }
 }
+
+#[cfg(test)]
+#[path = "client_transport_tests.rs"]
+mod transport_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "client_peer_tests.rs"]
+mod peer_process_tests;
+
+#[cfg(feature = "server")]
+#[path = "client_parameter_context_refresh.rs"]
+mod parameter_context_refresh;
+#[cfg(feature = "server")]
+#[path = "client_parameter_preparation.rs"]
+mod parameter_preparation;
+#[cfg(feature = "server")]
+#[path = "client_parameter_protected_preparation.rs"]
+mod parameter_protected_preparation;

@@ -218,3 +218,121 @@ fn executed_tool_call_recorder_bounds_retained_history_and_reports_omissions() {
     assert!(omitted_calls > 0);
     assert_eq!(metadata.len() as u64 + omitted_calls, 512);
 }
+
+#[test]
+fn namespaced_custom_attempt_metadata_survives_prompt_replay_with_escaped_argument_bound() {
+    let recorder = ExecutedToolCallRecorder::default();
+    let namespace = "test_namespace::";
+    let tool_name = "unsupported_tool";
+    let input = "\"payload\"";
+    let escaped_input = "\\".repeat(4_096);
+    for (id, name, input) in [
+        (
+            "namespaced",
+            codex_tools::ToolName::namespaced(namespace, tool_name),
+            input,
+        ),
+        (
+            "escaped",
+            codex_tools::ToolName::namespaced(namespace, tool_name),
+            escaped_input.as_str(),
+        ),
+        (
+            "direct-exec",
+            codex_tools::ToolName::plain(codex_code_mode::PUBLIC_TOOL_NAME),
+            input,
+        ),
+    ] {
+        recorder.record_tool_call(
+            &ToolCall {
+                tool_name: name,
+                call_id: id.to_string(),
+                payload: ToolPayload::Custom {
+                    input: input.to_string(),
+                },
+                encrypted_function_args: None,
+            },
+            &ToolCallSource::Direct,
+            ToolMode::Direct,
+        );
+    }
+    let history = ["namespaced", "escaped", "direct-exec"].map(|id| {
+        serde_json::from_value::<ResponseItem>(json!({
+            "type": "custom_tool_call_output", "call_id": id,
+            "output": "unsupported custom tool call",
+        }))
+        .expect("original output item")
+    });
+    let expected = [
+        json!([{ "name": format!("{namespace}__{tool_name}"), "arguments": input }]),
+        json!([{ "name": format!("{namespace}__{tool_name}"), "arguments": {
+            "_codex_executed_tool_call_truncated": {
+                "original_bytes": serde_json::to_vec(&escaped_input).expect("escaped JSON").len(),
+                "max_bytes": 8 * 1024,
+            },
+        }}]),
+        json!([{ "name": codex_code_mode::PUBLIC_TOOL_NAME, "arguments": input }]),
+    ];
+    for _ in 0..3 {
+        let mut prompt = history.clone();
+        assert!(recorder.attach_pending_to_prompt(&mut prompt, &mut HashMap::new()));
+        for (item, expected) in prompt.iter().zip(&expected) {
+            assert_eq!(
+                serde_json::to_value(item).expect("actual prompt item")["internal_chat_message_metadata_passthrough"]
+                    ["executed_tool_calls"],
+                *expected
+            );
+        }
+        assert!(
+            history
+                .iter()
+                .all(|item| item.executed_tool_call_metadata().is_none()),
+            "original durable outputs must remain untouched by prompt decoration"
+        );
+    }
+}
+
+#[test]
+fn failed_nested_attempt_metadata_attaches_to_exact_cell_output_and_replays() {
+    let recorder = ExecutedToolCallRecorder::default();
+    let cell = CellId::new("failed-nested-cell".to_string());
+    recorder.register_cell(&cell, "outer-exec");
+    // The original pipeline records the attempted call before handler validation fails.
+    recorder.record_tool_call(
+        &ToolCall {
+            tool_name: codex_tools::ToolName::plain("exec_command"),
+            call_id: "failed-nested-call".to_string(),
+            payload: ToolPayload::Function {
+                arguments: "{}".to_string(),
+            },
+            encrypted_function_args: None,
+        },
+        &ToolCallSource::CodeMode {
+            cell_id: cell.to_string(),
+            runtime_tool_call_id: "nested-runtime-id".to_string(),
+        },
+        ToolMode::CodeMode,
+    );
+    let history = ["foreign-output", "outer-exec"].map(|id| {
+        serde_json::from_value::<ResponseItem>(json!({
+            "type": "custom_tool_call_output", "call_id": id,
+            "output": "caught: missing command",
+        }))
+        .expect("original output item")
+    });
+    for _ in 0..2 {
+        let mut prompt = history.clone();
+        assert!(recorder.attach_pending_to_prompt(&mut prompt, &mut HashMap::new()));
+        assert!(prompt[0].executed_tool_call_metadata().is_none());
+        assert_eq!(
+            serde_json::to_value(&prompt[1]).expect("actual prompt item")["internal_chat_message_metadata_passthrough"]
+                ["executed_tool_calls"],
+            json!([{ "name": "exec_command", "arguments": {} }])
+        );
+        assert!(
+            history
+                .iter()
+                .all(|item| item.executed_tool_call_metadata().is_none())
+        );
+    }
+}

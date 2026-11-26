@@ -1,0 +1,50 @@
+schema = "hepta.module-manifest.v1"
+order = 9
+id = "auth.authbus"
+plane = "domain"
+kind = "service"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "immutable_kernel"
+writes = ["auth_policy", "quota_registry", "quota_reservation"]
+uses = ["kernel.authority", "kernel.operations"]
+owner = "identity-access"
+deputy = "security-authority"
+denies = ["provider_call", "openbao_mutation_without_grant", "learned_authority"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-authbus", "codex-rs/hepta-authbus-p1-3-qualification"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "AUTHBUS-P1.3-V12"
+technicalDocument = "docs/modules/auth.authbus/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-authbus"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "codex-rs/hepta-authbus-p1-3-qualification"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-authbus"
+compileLayer = 1
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-authbus-p1-3-qualification"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

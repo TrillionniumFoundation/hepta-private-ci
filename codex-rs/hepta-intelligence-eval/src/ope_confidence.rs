@@ -287,7 +287,7 @@ fn cluster_estimate_receipt_seal(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn radius(
+pub(crate) fn radius(
     range: u128,
     log_upper: u128,
     sum_squares: u128,

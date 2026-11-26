@@ -1,0 +1,567 @@
+//! Explicit root-owned local resource authority and native containment.
+//! This owner issues only resource leases, never model or acceptance grants.
+
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::Duration;
+
+use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::authority_lease::AuthorityLease;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
+use codex_hepta_fleet::AllocationGrant;
+use codex_hepta_fleet::DurableFleetStore;
+use codex_hepta_fleet::FleetAuthorityPort;
+use codex_hepta_fleet::FleetExecutionContextV1;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::LaunchDigestDomain;
+use codex_hepta_fleet::LocalCapacityObserver;
+use codex_hepta_fleet::LocalCapacityObserverConfig;
+use codex_hepta_fleet::ResourceVectorV1;
+use serde::Deserialize;
+use tokio::runtime::Handle;
+use tokio_util::sync::CancellationToken;
+
+use crate::ProcessDriverError;
+use crate::SpawnSpec;
+
+#[path = "local_fleet_containment.rs"]
+mod containment;
+#[path = "local_fleet_environment.rs"]
+mod environment;
+#[path = "local_fleet_gateway_peer.rs"]
+mod gateway_peer;
+#[path = "local_fleet_maintenance.rs"]
+mod maintenance;
+#[path = "local_fleet_no_effect.rs"]
+mod no_effect;
+pub use gateway_peer::RootGatewayPeerV1;
+
+#[path = "local_fleet_resource_observer.rs"]
+mod resource_observer;
+#[path = "local_fleet_runtime.rs"]
+mod runtime;
+#[path = "local_fleet_trust.rs"]
+mod trust;
+pub(crate) use containment::PreparedExecution;
+pub use resource_observer::LocalFleetResourceObservationV1;
+pub use resource_observer::observe_local_fleet_resources;
+pub use resource_observer::observe_local_fleet_resources_for_program;
+
+#[derive(Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Policy {
+    pub version: u32,
+    pub workload_uid: u32,
+    pub workload_gid: u32,
+    #[serde(default)]
+    pub agent_workload_uids: Option<crate::workload_principal::AgentWorkloadUids>,
+    pub cgroup_root: String,
+    pub resource_authority_frontier: PathBuf,
+    pub process_thread_reserve: u64,
+    pub matrix_resources: ResourceVectorV1,
+    #[serde(default)]
+    pub self_iteration_config_directory: Option<PathBuf>,
+    #[serde(default)]
+    pub observer_principal: Option<crate::daemon::observer::Principal>,
+    #[serde(default)]
+    pub controller_principal: Option<crate::controller_peer::ControllerPrincipal>,
+}
+
+pub struct LocalFleetHost {
+    store: DurableFleetStore,
+    registry: FleetRegistry,
+    authority: AuthorityLeaseRegistry,
+    observer: LocalCapacityObserver,
+    runtime: Handle,
+    clock: Arc<trust::HostClock>,
+    launch_gate: Arc<tokio::sync::Mutex<()>>,
+    launch_environment: environment::LaunchEnvironment,
+    pub(crate) policy: Policy,
+}
+
+impl LocalFleetHost {
+    /// Open a root-protected, explicit policy before any workload can spawn.
+    pub async fn open(
+        policy_path: &Path,
+        registry: FleetRegistry,
+    ) -> Result<Arc<Self>, ProcessDriverError> {
+        let bytes = trust::read_root_file(policy_path, 64 * 1024)?;
+        let policy: Policy = serde_json::from_slice(&bytes)?;
+        if unsafe { libc::geteuid() } != 0
+            || policy.version != 1
+            || policy.workload_uid == 0
+            || policy.workload_gid == 0
+            || !(32..=1024).contains(&policy.process_thread_reserve)
+        {
+            return Err(ProcessDriverError::new(
+                "local host requires root and a bounded non-root workload policy",
+            ));
+        }
+        if let Some(directory) = &policy.self_iteration_config_directory {
+            trust::validate_root_directory(directory)?;
+        }
+        crate::workload_principal::validate(
+            policy.workload_uid,
+            policy.workload_gid,
+            policy.agent_workload_uids.as_ref(),
+        )
+        .map_err(host_error)?;
+        policy.validate_controller_isolation()?;
+        if let Some(principal) = policy.observer_principal
+            && (principal.uid == 0 || principal.gid == 0)
+        {
+            return Err(ProcessDriverError::new(
+                "local observer requires an explicitly enrolled non-root principal",
+            ));
+        }
+        containment::prepare_base(&policy)?;
+        containment::protect_registry(&registry, &policy)?;
+        let clock = Arc::new(trust::HostClock::new()?);
+        let store = DurableFleetStore::open_with_clock(
+            registry
+                .layout()
+                .state_root()
+                .join("fleet-resources.sqlite3")
+                .as_path(),
+            clock.clone(),
+        )
+        .await
+        .map_err(host_error)?;
+        let mut config = LocalCapacityObserverConfig::for_local_supervisor(
+            registry.layout().fleet_root().as_path(),
+            1,
+        )
+        .map_err(host_error)?;
+        config.generation = store
+            .register_local_boot(&config.host_id)
+            .await
+            .map_err(host_error)?;
+        let observer = LocalCapacityObserver::new(config).map_err(host_error)?;
+        let frontier = Arc::new(trust::RootResourceFrontier::open(
+            &policy.resource_authority_frontier,
+        )?);
+        let authority = AuthorityLeaseRegistry::open_state_dir_with_trust(
+            &registry.layout().state_root().join("resource-authority"),
+            "local-supervisor-resources".into(),
+            clock.clone(),
+            frontier,
+        )
+        .map_err(host_error)?;
+        let host = Arc::new(Self {
+            store,
+            registry,
+            authority,
+            observer,
+            runtime: Handle::current(),
+            clock,
+            launch_gate: Arc::new(tokio::sync::Mutex::new(())),
+            launch_environment: environment::LaunchEnvironment::capture(),
+            policy,
+        });
+        host.maintain().await?;
+        Ok(host)
+    }
+
+    pub(crate) fn prepare_registration(
+        &self,
+        record: &codex_hepta_fleet::AgentRecord,
+    ) -> Result<(), ProcessDriverError> {
+        self.launch_environment
+            .resolve(&self.policy, &record.manifest.agent_id)?;
+        containment::prepare_workload(&record.layout, &self.policy)
+    }
+
+    pub(crate) fn prepare_agent(
+        &self,
+        spec: &SpawnSpec,
+    ) -> Result<containment::PreparedExecution, ProcessDriverError> {
+        self.run(async {
+            let launch = Arc::clone(&self.launch_gate).lock_owned().await;
+            let record = self
+                .registry
+                .load_agent(&spec.agent_id)
+                .map_err(host_error)?;
+            containment::prepare_workload(&record.layout, &self.policy)?;
+            let environment = self
+                .launch_environment
+                .resolve(&self.policy, &spec.agent_id)?;
+            let budget = &record.manifest.resources;
+            let resources = ResourceVectorV1 {
+                cpu_millis: u64::from(budget.max_concurrent_turns) * 1000,
+                memory_bytes: u64::from(budget.memory_limit_mib) * 1024 * 1024,
+                accelerator_millis: 0,
+                concurrent_turns: u64::from(budget.max_concurrent_turns),
+                tool_processes: u64::from(budget.max_tool_processes),
+                turn_queue_slots: u64::from(budget.turn_queue_capacity),
+            };
+            // Actual installed program bytes and the complete immutable launch
+            // configuration determine the digest; no request digest is trusted.
+            let mut digest = self
+                .registry
+                .launch_digest_prefix(&spec.command.program, LaunchDigestDomain::Agent)
+                .map_err(host_error)?;
+            digest.update(serde_json::to_vec(&record.manifest)?);
+            if self.policy.agent_workload_uids.is_some() {
+                digest.update(b"hepta.host-workload-principal.v1");
+                digest.update(self.policy.workload_uid_for(&spec.agent_id)?.to_be_bytes());
+                digest.update(self.policy.workload_gid.to_be_bytes());
+            }
+            digest.update(spec.generation.to_be_bytes());
+            for (name, value) in &environment {
+                for bytes in [name.as_encoded_bytes(), value.as_encoded_bytes()] {
+                    digest.update((bytes.len() as u64).to_be_bytes());
+                    digest.update(bytes);
+                }
+            }
+            for arg in &spec.command.args {
+                let bytes = arg.as_encoded_bytes();
+                digest.update((bytes.len() as u64).to_be_bytes());
+                digest.update(bytes);
+            }
+            let verified_program = digest.commit().map_err(host_error)?;
+            let mut prepared = self
+                .prepare(&spec.agent_id, "main", resources, &verified_program)
+                .await?;
+            prepared.launch = Some(launch);
+            prepared.verified_program = Some(verified_program);
+            prepared.environment = environment;
+            Ok(prepared)
+        })?
+    }
+
+    pub(crate) fn prepare_matrix(
+        &self,
+        spec: &crate::MatrixSpawnSpec,
+    ) -> Result<containment::PreparedExecution, ProcessDriverError> {
+        self.run(async {
+            let launch = Arc::clone(&self.launch_gate).lock_owned().await;
+            let record = self
+                .registry
+                .load_agent(&spec.agent_id)
+                .map_err(host_error)?;
+            containment::prepare_workload(&record.layout, &self.policy)?;
+            let mut digest = self
+                .registry
+                .launch_digest_prefix(&spec.command.program, LaunchDigestDomain::Matrix)
+                .map_err(host_error)?;
+            digest.update(serde_json::to_vec(&record.manifest)?);
+            if self.policy.agent_workload_uids.is_some() {
+                digest.update(b"hepta.host-workload-principal.v1");
+                digest.update(self.policy.workload_uid_for(&spec.agent_id)?.to_be_bytes());
+                digest.update(self.policy.workload_gid.to_be_bytes());
+            }
+            digest.update(spec.binding_digest.as_str());
+            digest.update(spec.agent_generation.to_be_bytes());
+            digest.update(spec.plane_epoch.to_be_bytes());
+            digest.update(spec.process_incarnation.as_bytes());
+            for arg in &spec.command.args {
+                let bytes = arg.as_encoded_bytes();
+                digest.update((bytes.len() as u64).to_be_bytes());
+                digest.update(bytes);
+            }
+            let verified_program = digest.commit().map_err(host_error)?;
+            let mut prepared = self
+                .prepare(
+                    &spec.agent_id,
+                    "matrix",
+                    self.policy.matrix_resources,
+                    &verified_program,
+                )
+                .await?;
+            prepared.launch = Some(launch);
+            prepared.verified_program = Some(verified_program);
+            Ok(prepared)
+        })?
+    }
+
+    async fn prepare(
+        &self,
+        agent: &AgentId,
+        kind: &str,
+        resources: ResourceVectorV1,
+        program: &codex_hepta_fleet::VerifiedLaunchProgram,
+    ) -> Result<containment::PreparedExecution, ProcessDriverError> {
+        let manifest_digest = hex_digest(program.digest());
+        self.roll_resource_epoch_if_needed()?;
+        let principal = if kind == "main" {
+            agent.to_string()
+        } else {
+            format!("matrix:{agent}")
+        };
+        if self
+            .store
+            .active_execution_for_principal(&principal)
+            .await
+            .map_err(host_error)?
+            .is_some()
+        {
+            return Err(ProcessDriverError::new(
+                "principal still owns a durable execution hold",
+            ));
+        }
+        let (observation, _) = self
+            .store
+            .refresh_local_capacity(&self.observer)
+            .await
+            .map_err(host_error)?;
+        let execution_id = uuid::Uuid::new_v4().to_string();
+        let prepared =
+            containment::create_execution(&self.policy, agent, kind, &execution_id, resources)?;
+        let grant = AllocationGrant {
+            allocation_id: execution_id.clone(),
+            request_id: format!("spawn:{execution_id}"),
+            principal_id: principal.clone(),
+            host_id: observation.host.host_id.clone(),
+            failure_domain_id: observation.host.failure_domain_id,
+            host_generation: observation.host.generation,
+            authority_epoch: self
+                .authority
+                .frontier()
+                .map_err(host_error)?
+                .authority_epoch,
+            lease_generation: 1,
+            expires_at_ms: observation.host.valid_until_ms,
+            resources,
+            semantic_digest: manifest_digest.clone(),
+            revoked: false,
+        };
+        self.authorize(
+            &grant.allocation_id,
+            FleetAuthorityPort::binding_for_issue(&grant).map_err(host_error)?,
+            grant.expires_at_ms,
+        )?;
+        let port = FleetAuthorityPort::new(self.authority.verifier());
+        self.store
+            .issue_authorized(&port, &grant.allocation_id, 1, grant.clone())
+            .await
+            .map_err(host_error)?;
+        let context = FleetExecutionContextV1 {
+            execution_id: execution_id.clone(),
+            allocation_id: grant.allocation_id,
+            principal_id: principal,
+            host_id: grant.host_id,
+            host_generation: grant.host_generation,
+            lease_generation: 1,
+            manifest_digest,
+            resources,
+            containment: prepared.relative.clone(),
+        };
+        self.store
+            .prepare_local_verified_execution(&context, program)
+            .await
+            .map_err(host_error)?;
+        Ok(prepared)
+    }
+
+    fn authorize(
+        &self,
+        id: &str,
+        binding: codex_hepta_contracts::authority_lease::AuthorityLeaseBinding,
+        expires_at_ms: u64,
+    ) -> Result<u64, ProcessDriverError> {
+        use codex_hepta_contracts::AuthorityClock;
+        let current = self.authority.read_lease(id).map_err(host_error)?;
+        let previous = current.as_ref().map_or(0, |lease| lease.lease.revision);
+        let epoch = self
+            .authority
+            .frontier()
+            .map_err(host_error)?
+            .authority_epoch;
+        let lease = AuthorityLease {
+            schema_version: 1,
+            lease_id: id.into(),
+            authority_epoch: epoch,
+            revision: previous + 1,
+            binding,
+            issued_at_unix_ms: self.clock.now_unix_ms().map_err(host_error)?,
+            expires_at_unix_ms: expires_at_ms,
+        };
+        self.authority
+            .put_lease(lease, previous)
+            .map_err(host_error)?;
+        Ok(previous + 1)
+    }
+
+    pub(crate) fn bind(
+        &self,
+        execution: &containment::PreparedExecution,
+        pid: u32,
+    ) -> Result<(), ProcessDriverError> {
+        self.run(self.store.bind_local_process(&execution.id, pid))?
+            .map_err(host_error)
+    }
+
+    pub(crate) fn constrain(
+        &self,
+        command: &mut std::process::Command,
+        prepared: &PreparedExecution,
+    ) -> Result<(), ProcessDriverError> {
+        if let Some(program) = &prepared.verified_program {
+            if program.program() != Path::new(command.get_program()) {
+                return Err(ProcessDriverError::new(
+                    "prepared launch program differs from command",
+                ));
+            }
+            // The actual FD remains open until spawn completes. Any genuine
+            // change after durable preparation rejects spawn and retains the
+            // existing hold/recovery obligation; it is never fake NoEffect.
+            program.verify_current().map_err(host_error)?;
+        }
+        // Keep the owner's explicit per-agent launch fields, then discard all
+        // inherited variables. Loader and language runtime injection variables
+        // cannot cross the root-to-workload boundary through the environment.
+        let explicit: Vec<_> = command
+            .get_envs()
+            .filter_map(|(name, value)| value.map(|value| (name.to_owned(), value.to_owned())))
+            .collect();
+        command
+            .env_clear()
+            .env("PATH", "/usr/bin:/bin")
+            .env("LANG", "C.UTF-8")
+            .envs(
+                prepared
+                    .environment
+                    .iter()
+                    .map(|(name, value)| (name, value)),
+            )
+            .envs(explicit);
+        containment::constrain(command, prepared, &self.policy);
+        Ok(())
+    }
+
+    pub(crate) fn recover_execution(
+        &self,
+        principal: &str,
+        pid: u32,
+    ) -> Result<String, ProcessDriverError> {
+        self.run(async {
+            let hold = self
+                .store
+                .active_execution_for_principal(principal)
+                .await
+                .map_err(host_error)?
+                .ok_or_else(|| {
+                    ProcessDriverError::new("live process has no durable resource hold")
+                })?;
+            self.store
+                .verify_local_process(&hold.context.execution_id, pid)
+                .await
+                .map_err(host_error)?;
+            Ok(hold.context.execution_id)
+        })?
+    }
+
+    pub(crate) fn request_stop(&self, id: &str) -> Result<(), ProcessDriverError> {
+        self.run(self.store.request_local_stop(id))?
+            .map(|_| ())
+            .map_err(host_error)
+    }
+
+    pub(crate) fn kill(&self, id: &str) -> Result<(), ProcessDriverError> {
+        self.run(self.store.kill_local_containment(id))?
+            .map_err(host_error)
+    }
+
+    pub(crate) fn finish_exit(&self, id: &str) -> Result<bool, ProcessDriverError> {
+        self.run(async {
+            match self.store.confirm_local_exit(id).await {
+                Ok(()) => {
+                    if let Some(hold) = self.store.execution_hold(id).await.map_err(host_error)? {
+                        match containment::remove_empty_execution(&hold.context.containment) {
+                            Ok(()) => {}
+                            Err(error) => {
+                                eprintln!("could not remove retired execution cgroup: {error}")
+                            }
+                        }
+                    }
+                    Ok(true)
+                }
+                Err(codex_hepta_fleet::DurableFleetError::Conflict(_)) => {
+                    self.store
+                        .kill_local_containment(id)
+                        .await
+                        .map_err(host_error)?;
+                    Ok(false)
+                }
+                Err(error) => Err(host_error(error)),
+            }
+        })?
+    }
+
+    pub(crate) fn validate_retirement(&self, agent: &AgentId) -> Result<(), ProcessDriverError> {
+        self.run(async {
+            for principal in [agent.to_string(), format!("matrix:{agent}")] {
+                if self
+                    .store
+                    .active_execution_for_principal(&principal)
+                    .await
+                    .map_err(host_error)?
+                    .is_some()
+                {
+                    return Err(ProcessDriverError::new(
+                        "agent still owns a durable resource hold",
+                    ));
+                }
+            }
+            Ok(())
+        })?
+    }
+}
+
+fn host_error(error: impl std::fmt::Display) -> ProcessDriverError {
+    ProcessDriverError::new(error.to_string())
+}
+fn hex_digest(bytes: impl AsRef<[u8]>) -> String {
+    bytes
+        .as_ref()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
+}
+
+impl Policy {
+    pub(crate) fn workload_uid_for(&self, agent: &AgentId) -> Result<u32, ProcessDriverError> {
+        crate::workload_principal::uid_for(
+            self.workload_uid,
+            self.agent_workload_uids.as_ref(),
+            agent,
+        )
+        .map_err(host_error)
+    }
+
+    pub(crate) fn workload_uids(&self) -> std::collections::BTreeSet<u32> {
+        crate::workload_principal::enrolled_uids(
+            self.workload_uid,
+            self.agent_workload_uids.as_ref(),
+        )
+    }
+
+    fn validate_controller_isolation(&self) -> Result<(), ProcessDriverError> {
+        let uids = self.workload_uids();
+        if let Some(principal) = &self.controller_principal
+            && (uids.contains(&principal.uid)
+                || principal.gid == self.workload_gid
+                || uids.contains(&principal.desktop_uid)
+                || principal.desktop_uid == 0)
+        {
+            return Err(ProcessDriverError::new(
+                "lifecycle control requires separate workload, gateway and desktop credential principals",
+            ));
+        }
+        if self.agent_workload_uids.is_some()
+            && self
+                .observer_principal
+                .is_some_and(|principal| uids.contains(&principal.uid))
+        {
+            return Err(ProcessDriverError::new(
+                "isolated Agents must not share the observer desktop identity",
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+#[path = "local_controller_policy_tests.rs"]
+mod controller_policy_tests;

@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 33
+id = "automation.taskflow"
+plane = "domain"
+kind = "service"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "execution_plant"
+writes = ["automation_schedule", "automation_occurrence"]
+uses = ["runtime.codex", "kernel.operations"]
+owner = "automation-platform"
+deputy = "agent-runtime"
+denies = ["direct_session_store_write", "blind_effect_retry"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-automation"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "TASKFLOW-1-EXECUTION-BOUNDARY"
+technicalDocument = "docs/modules/automation.taskflow/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-automation"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-automation"
+compileLayer = 2
+ciGroups = ["effects", "lifecycle"]

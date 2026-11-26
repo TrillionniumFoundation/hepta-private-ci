@@ -1,10 +1,19 @@
 #![forbid(unsafe_code)]
+#![cfg_attr(
+    test,
+    allow(
+        clippy::expect_used,
+        reason = "deterministic unit fixtures use immediate setup assertions; production builds keep expect_used denied"
+    )
+)]
 
 pub use codex_hepta_memory_federation::FederatedCoverageV2;
 pub use codex_hepta_memory_federation::FederatedFailureCoverageV2;
 
 mod cognitive_compact;
 mod cognitive_federation;
+mod cognitive_federation_maintenance;
+mod cognitive_federation_pool;
 mod cognitive_intelligence_writer;
 mod cognitive_kg_store;
 mod cognitive_memory_store;
@@ -132,12 +141,21 @@ pub use cognitive_retrieval::RevalidationStatus;
 pub use cognitive_retrieval::SourceCitationRecord;
 pub use cognitive_retrieval::SourceRevalidationBinding;
 pub use cognitive_retrieval_adapter::OwnerRetrievalExecutionV1;
+pub use cognitive_retrieval_adapter::OwnerRetrievalExecutionV2;
 pub use cognitive_retrieval_adapter::RetrievalExecutionContextV1;
 pub use cognitive_retrieval_adapter::execute_owner_observation;
+pub use cognitive_retrieval_adapter::execute_owner_observation_controlled;
+pub use cognitive_retrieval_adapter::execute_owner_observation_v2_controlled;
 pub use cognitive_retrieval_adapter::sqlite_owner_cue_profile_digest;
 pub use cognitive_retrieval_adapter::sqlite_owner_retrieval_policy_v1;
 pub use cognitive_runtime::CognitiveRuntime;
 pub use cognitive_runtime::CognitiveUnavailableReason;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_ATTEMPT_CONCURRENCY;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_DISCOVERY_CONCURRENCY;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_REVALIDATION_CONCURRENCY;
+pub use cognitive_runtime::MAX_PRODUCT_FEDERATION_TOTAL_BUDGET;
+pub use cognitive_runtime::MemoryFederationHostProfile;
 pub use cognitive_store::CognitiveRecoveryAnchor;
 pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;

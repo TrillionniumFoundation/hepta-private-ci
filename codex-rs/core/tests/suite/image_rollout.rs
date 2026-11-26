@@ -384,8 +384,14 @@ async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::R
     .await;
 
     let request = resumed_mock.single_request();
-    assert!(request.has_content_kinds(&["images.resize_notice"]));
-    assert!(request.has_content_kinds(&["user.image"]));
+    super::durable_metadata::assert_content_kinds(
+        &resumed.codex,
+        &request,
+        &["images.resize_notice"],
+    )
+    .await?;
+    super::durable_metadata::assert_content_kinds(&resumed.codex, &request, &["user.image"])
+        .await?;
     let input = request.input();
     let image_message_indices = input
         .iter()

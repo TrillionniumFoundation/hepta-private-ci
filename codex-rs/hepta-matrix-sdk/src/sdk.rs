@@ -430,7 +430,9 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
             .map(|error| classify_http_status(error.status_code.as_u16()))
             .unwrap_or(MatrixTransportError::Permanent),
         HttpError::Cached(error) => classify_http_error(error),
-        HttpError::IntoHttp(_) | HttpError::RefreshToken(_) => MatrixTransportError::Permanent,
+        HttpError::IntoHttp(_)
+        | HttpError::RefreshToken(_)
+        | HttpError::TlsCertificateVerificationRequired => MatrixTransportError::Permanent,
         #[cfg(target_os = "android")]
         HttpError::VerifierBuilder(_) => MatrixTransportError::Permanent,
     }

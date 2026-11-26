@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 4
+id = "kernel.evidence"
+plane = "qualification"
+kind = "evidence"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "authoritative_store"
+writes = ["qualification_evidence"]
+uses = ["platform.types"]
+owner = "qualification-plane"
+deputy = "security-authority"
+denies = ["runtime_effect", "promotion_authority", "self_issued_independent_review"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-evidence"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.9-EXTERNAL-GATES"
+technicalDocument = "docs/modules/kernel.evidence/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-evidence"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-evidence"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

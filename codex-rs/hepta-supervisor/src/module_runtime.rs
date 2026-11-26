@@ -29,7 +29,7 @@ use crate::WriterHandoffCheckpointV1;
 // proposal consumes no module candidate slots but still occupies host memory.
 const MAX_PENDING_TOPOLOGIES: usize = 128;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
     selections: BTreeMap<(StableId, Generation), Digest32>,
@@ -37,6 +37,13 @@ pub struct RuntimeModuleSupervisorV1 {
     pending_promotions: BTreeMap<(Digest32, StableId), RuntimeModulePromotionWitnessV1>,
     retirement_ready: BTreeMap<(StableId, Generation), Digest32>,
 }
+
+#[path = "module_runtime_checkpoint.rs"]
+mod checkpoint;
+pub use checkpoint::RuntimeModulePendingPromotionCheckpointV1;
+pub use checkpoint::RuntimeModuleRetirementCheckpointV1;
+pub use checkpoint::RuntimeModuleSelectionCheckpointV1;
+pub use checkpoint::RuntimeModuleSupervisorCheckpointV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RuntimeModuleInitializationWitnessV1 {
@@ -84,6 +91,8 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     TopologyDependencyCycle(StableId),
     InvalidInitializationWitness,
     InvalidRetirementWitness,
+    CheckpointInvalid,
+    CheckpointDuplicate,
 }
 
 impl std::fmt::Display for RuntimeModuleSupervisorErrorV1 {
@@ -515,7 +524,7 @@ impl RuntimeModuleSupervisorV1 {
     }
 
     #[cfg(test)]
-    fn register_shadow_for_test(
+    pub(crate) fn register_shadow_for_test(
         &mut self,
         abi: RuntimeModuleAbiV1,
         selection_digest: Digest32,
@@ -528,6 +537,28 @@ impl RuntimeModuleSupervisorV1 {
             .insert((module_id, generation), selection_digest);
         self.prune_lifecycle_metadata();
         Ok(())
+    }
+
+    /// Test-only publication seam for the durable process-loss regression.
+    #[cfg(test)]
+    pub(crate) fn rollback_to_predecessor_for_test(
+        &mut self,
+        module_id: &StableId,
+        active_generation: Generation,
+        rollback_generation: Generation,
+        regression_evidence_digest: Digest32,
+    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
+        let mut staged = self.registry.clone();
+        let snapshot = staged.rollback_active_to_predecessor_content(
+            module_id,
+            active_generation,
+            rollback_generation,
+            regression_evidence_digest,
+        )?;
+        validate_runtime_dependency_graph(&snapshot)?;
+        self.registry = staged;
+        self.prune_lifecycle_metadata();
+        Ok(snapshot)
     }
 
     pub fn enter_canary(
@@ -854,6 +885,23 @@ impl RuntimeModuleSupervisorV1 {
             .ok_or(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
     }
 
+    /// A selected reservation can remain after its serving route is removed.
+    /// Read adapters must not relabel quiescing/quarantined owners as absent.
+    pub(crate) fn selected_module_phase(
+        &self,
+        module_id: &StableId,
+    ) -> Result<Option<RuntimeModuleLifecycleV1>, RuntimeModuleSupervisorErrorV1> {
+        self.registry
+            .active_generation(module_id)
+            .map(|generation| {
+                self.registry
+                    .record(module_id, generation)
+                    .map(|record| record.lifecycle)
+                    .ok_or(RuntimeModuleRegistryError::UnknownCandidate.into())
+            })
+            .transpose()
+    }
+
     pub fn topology(&self) -> RuntimeTopologySnapshotV1 {
         self.registry.snapshot()
     }
@@ -1058,3 +1106,7 @@ mod tests {
 #[cfg(test)]
 #[path = "module_runtime_safety_tests.rs"]
 mod safety_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_observation_safety_tests.rs"]
+mod observation_safety_tests;

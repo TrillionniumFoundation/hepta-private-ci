@@ -108,7 +108,7 @@ pub fn retrieval_assignment_event_with_delivery_policy(
 
     let legal_candidate_indices = indices_for(&observation.legal_candidates, &index)?;
     let selected_candidate_indices = indices_for(&observation.selected_candidates, &index)?;
-    let delivered_candidate_indices = indices_for(delivered_candidates, &index)?;
+    let delivered_candidate_indices = ordered_indices_for(delivered_candidates, &index)?;
     let selected = selected_candidate_indices
         .iter()
         .copied()
@@ -172,6 +172,30 @@ fn indices_for(
         .collect::<Result<Vec<_>, _>>()?;
     values.sort_unstable();
     if values.windows(2).any(|pair| pair[0] == pair[1]) {
+        return Err(RetrievalAssignmentBridgeError::DuplicateCandidate);
+    }
+    Ok(values)
+}
+
+fn ordered_indices_for(
+    candidates: &[RetrievalCandidateIdentityV1],
+    index: &BTreeMap<Digest32, u32>,
+) -> Result<Vec<u32>, RetrievalAssignmentBridgeError> {
+    let values = candidates
+        .iter()
+        .map(candidate_identity_digest)
+        .map(|digest| {
+            index
+                .get(&digest)
+                .copied()
+                .ok_or(RetrievalAssignmentBridgeError::CandidateOutsideEnumeration)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let unique = values
+        .iter()
+        .copied()
+        .collect::<std::collections::BTreeSet<_>>();
+    if unique.len() != values.len() {
         return Err(RetrievalAssignmentBridgeError::DuplicateCandidate);
     }
     Ok(values)

@@ -581,6 +581,36 @@ impl FinalUseRevocationFeedVerifier {
         })
     }
 
+    /// Authenticate freshness of the exact already durable head. This does not
+    /// change revocations, replay nonces or the external CAS frontier. A caller
+    /// must still use `apply` for any different head and enforce the returned
+    /// expiry at its first-effect boundary.
+    pub fn authenticate_current_head(
+        &self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseRevocationUpdate,
+        now_unix_ms: u64,
+    ) -> Result<FinalUseRevocationReceipt, FinalUseControlError> {
+        let key_id = self.verify_signed(signed, now_unix_ms)?.to_owned();
+        if authority
+            .revocation_head()
+            .map_err(FinalUseControlError::Authority)?
+            != signed.update.head
+        {
+            return Err(FinalUseControlError::Authority(
+                FinalUseError::StaleRevocationHead,
+            ));
+        }
+        Ok(FinalUseRevocationReceipt {
+            distributor_id: self.distributor_id.clone(),
+            trust_key_id: key_id,
+            authority_epoch: signed.update.head.authority_epoch,
+            revision: signed.update.head.revision,
+            update_sha256: revocation_update_digest(&signed.update)?,
+            valid_until_unix_ms: signed.update.expires_at_unix_ms,
+        })
+    }
+
     fn verify_signed<'a>(
         &'a self,
         signed: &SignedFinalUseRevocationUpdate,
@@ -685,7 +715,7 @@ mod tests {
     use std::time::UNIX_EPOCH;
 
     #[allow(clippy::unwrap_used)]
-    fn fixture() -> (
+    pub(super) fn fixture() -> (
         FinalUseAuthority,
         SignedFinalUseGrant,
         tempfile::TempDir,
@@ -1178,3 +1208,7 @@ mod tests {
         assert!(authority.claim(&grant, &grant.grant.binding).is_ok());
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "final_use_current_head_tests.rs"]
+mod current_head_tests;

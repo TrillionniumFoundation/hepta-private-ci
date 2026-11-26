@@ -10,7 +10,6 @@ use codex_config::NoopThreadConfigLoader;
 use codex_core::config::Config;
 pub use codex_core::config::ThreadStoreConfig;
 use codex_core::resolve_installation_id;
-use codex_login::AuthManager;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_cli::CliConfigOverrides;
 use std::collections::HashMap;
@@ -20,6 +19,7 @@ use std::io::Result as IoResult;
 use std::num::NonZeroUsize;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::OnceLock;
 use std::sync::RwLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
@@ -108,11 +108,16 @@ mod config_manager;
 mod config_manager_service;
 mod connection_cleanup;
 mod connection_rpc_gate;
+mod credential_profile;
 mod current_time;
 mod dynamic_tools;
 mod effective_plugin_change;
 mod error_code;
 mod extensions;
+mod historical_observation;
+pub use historical_observation::QueueHistoricalObservation;
+pub use historical_observation::QueueHistoricalOutcome;
+pub use historical_observation::QueueHistoricalTerminal;
 mod external_agent_migration;
 mod external_auth;
 mod filters;
@@ -215,12 +220,14 @@ enum ShutdownSignal {
 ///
 /// The handle closes new RPC admission, exposes the exact running assistant-turn
 /// count already maintained by App Server, and becomes drained only after the
-/// graceful shutdown state machine has observed zero running turns.
+/// graceful shutdown state machine has observed zero running turns and joined
+/// the original request/thread-start tasks and thread writers.
 #[derive(Clone)]
 pub struct AppServerDrainHandle {
     request: CancellationToken,
     running_turns: Arc<AtomicUsize>,
     drained: Arc<AtomicBool>,
+    historical_owner: Arc<OnceLock<historical_observation::HistoricalObservationOwner>>,
 }
 
 impl AppServerDrainHandle {
@@ -229,6 +236,7 @@ impl AppServerDrainHandle {
             request: CancellationToken::new(),
             running_turns: Arc::new(AtomicUsize::new(0)),
             drained: Arc::new(AtomicBool::new(false)),
+            historical_owner: Arc::new(OnceLock::new()),
         }
     }
 
@@ -530,6 +538,9 @@ pub struct AppServerRuntimeOptions {
     /// state boundary can pin the fully resolved SQLite root so user, managed,
     /// or environment configuration cannot redirect durable state elsewhere.
     pub required_sqlite_home: Option<AbsolutePathBuf>,
+    /// Trusted startup-only credential storage. Requests cannot select or mutate
+    /// this profile. None retains ordinary runtime-private authentication.
+    pub credential_profile_home: Option<AbsolutePathBuf>,
     /// Optional exact thread-store mode required by the embedding runtime.
     ///
     /// Ordinary Codex leaves this unset. Embedders whose durable queue is part
@@ -541,10 +552,10 @@ pub struct AppServerRuntimeOptions {
     /// Plain Codex and the Hepta live shell pass `Absent`. A workspace agent
     /// hands in `Available` or a sanitized `Unavailable`; extensions must
     /// never infer store ownership from environment variables.
-    pub hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime,
+    pub hepta_cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime,
     /// Opaque production cognitive mutation capability supplied by the owning runtime.
     pub hepta_cognitive_production_mutation:
-        Option<Arc<dyn codex_hepta_memory::ProductionCognitiveMutation>>,
+        Option<Arc<dyn codex_hepta_app_bridge::memory::ProductionCognitiveMutation>>,
     /// Explicit local-development-only turn lifecycle journal capability.
     /// This is false by default and is never inferred from environment or
     /// feature flags.
@@ -552,7 +563,8 @@ pub struct AppServerRuntimeOptions {
     /// Explicit qualification-only policy for the host-owned witness seam.
     /// `None` keeps ordinary Codex and production-facing embeddings caller
     /// zero; a value is accepted only when its closed-world policy validates.
-    pub hepta_local_development_policy: Option<codex_hepta_memory::LocalDevelopmentLifecyclePolicy>,
+    pub hepta_local_development_policy:
+        Option<codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy>,
     /// Explicit qualification-only gate for the host-owned Agent-local turn
     /// writer.  This is false for ordinary Codex and production-facing
     /// embeddings; it is never inferred from a CognitiveRuntime or config.
@@ -561,11 +573,12 @@ pub struct AppServerRuntimeOptions {
     /// The capability is inert unless the explicit qualification gate, a
     /// validated local policy, and an available CognitiveRuntime all hold.
     pub hepta_qualification_turn_writer:
-        Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+        Option<codex_hepta_app_bridge::memory_extension::QualificationTurnWriterHost>,
     /// Optional source-bound prompt runtime capability. Ordinary Codex keeps
     /// this absent; only an embedding that already owns an exercise-bound
     /// attachment may install the runtime.codex delivery bridge.
-    pub hepta_prompt_runtime_host: Option<codex_hepta_prompt_extension::PromptRuntimeHost>,
+    pub hepta_prompt_runtime_host:
+        Option<codex_hepta_app_bridge::prompt_extension::PromptRuntimeHost>,
     /// Embedding-owned feature states applied after ordinary config layers
     /// and per-request overrides. Empty for ordinary Codex runtimes; a local
     /// embedding can use this to keep a capability boundary fail-closed.
@@ -589,6 +602,10 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
             .field("graceful_drain", &self.graceful_drain.is_some())
             .field("turn_queue_capacity", &self.turn_queue_capacity)
             .field("required_sqlite_home", &self.required_sqlite_home)
+            .field(
+                "credential_profile_home",
+                &self.credential_profile_home.is_some(),
+            )
             .field(
                 "required_thread_store_mode",
                 &self.required_thread_store_mode,
@@ -636,6 +653,7 @@ impl PartialEq for AppServerRuntimeOptions {
             }
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
+            && self.credential_profile_home == other.credential_profile_home
             && self.required_thread_store_mode == other.required_thread_store_mode
             && self.hepta_cognitive_runtime == other.hepta_cognitive_runtime
             && match (
@@ -668,8 +686,9 @@ impl Default for AppServerRuntimeOptions {
             graceful_drain: None,
             turn_queue_capacity: None,
             required_sqlite_home: None,
+            credential_profile_home: None,
             required_thread_store_mode: None,
-            hepta_cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Absent,
+            hepta_cognitive_runtime: codex_hepta_app_bridge::memory::CognitiveRuntime::Absent,
             hepta_cognitive_production_mutation: None,
             hepta_local_turn_lifecycle_enabled: false,
             hepta_local_development_policy: None,
@@ -735,10 +754,12 @@ pub async fn run_main_with_transport_options(
         .await
     {
         Ok(config) => {
-            let auth_manager =
-                AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false)
-                    .await
-                    .map_err(std::io::Error::other)?;
+            let auth_manager = credential_profile::auth_manager_for_runtime(
+                &config,
+                runtime_options.credential_profile_home.as_ref(),
+            )
+            .await
+            .map_err(std::io::Error::other)?;
             config_manager.replace_cloud_config_bundle_loader(
                 auth_manager,
                 config.chatgpt_base_url.clone(),
@@ -1004,10 +1025,12 @@ pub async fn run_main_with_transport_options(
     }
     drop(unix_socket_startup_lock);
 
-    let auth_manager =
-        AuthManager::shared_from_config(&config, /*enable_codex_api_key_env*/ false)
-            .await
-            .map_err(std::io::Error::other)?;
+    let auth_manager = credential_profile::auth_manager_for_runtime(
+        &config,
+        runtime_options.credential_profile_home.as_ref(),
+    )
+    .await
+    .map_err(std::io::Error::other)?;
 
     let remote_control_enabled = remote_control_policy == RemoteControlPolicy::Allowed
         && remote_control_explicitly_requested
@@ -1162,12 +1185,14 @@ pub async fn run_main_with_transport_options(
             config_warnings,
             session_source,
             auth_manager,
+            auth_profile_owned_by_host: runtime_options.credential_profile_home.is_some(),
             installation_id,
             code_mode_session_provider,
             rpc_transport: analytics_rpc_transport(&transport),
             remote_control_handle: Some(remote_control_handle.clone()),
             plugin_startup_tasks: runtime_options.plugin_startup_tasks,
             turn_queue_capacity: runtime_options.turn_queue_capacity,
+            graceful_drain: graceful_drain.clone(),
             hepta: HeptaExtensionBindings {
                 cognitive_runtime: runtime_options.hepta_cognitive_runtime.clone(),
                 cognitive_production_mutation: runtime_options
@@ -1207,9 +1232,6 @@ pub async fn run_main_with_transport_options(
                     let _ = outbound_control_tx
                         .send(OutboundControlEvent::DisconnectAll)
                         .await;
-                    if let Some(handle) = graceful_drain.as_ref() {
-                        handle.mark_drained();
-                    }
                     break "shutdown_requested";
                 }
 
@@ -1465,8 +1487,14 @@ pub async fn run_main_with_transport_options(
                 ))
                 .await;
                 connection_cleanup_tasks.drain().await;
-                processor.drain_background_tasks().await;
-                processor.shutdown_threads().await;
+                let background_joined = processor.drain_background_tasks().await;
+                let threads_joined = processor.shutdown_threads().await;
+                if background_joined
+                    && threads_joined
+                    && let Some(handle) = graceful_drain.as_ref()
+                {
+                    handle.mark_drained();
+                }
             } else {
                 connection_cleanup_tasks.abort();
             }
@@ -1780,8 +1808,9 @@ mod tests {
             .expect_err("legacy bool must not bypass the policy gate");
         assert_eq!(ErrorKind::PermissionDenied, error.kind());
 
-        options.hepta_local_development_policy =
-            Some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only());
+        options.hepta_local_development_policy = Some(
+            codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy::qualification_only(),
+        );
         options.hepta_local_turn_lifecycle_enabled = false;
         validate_hepta_local_lifecycle_runtime_options(&options)
             .expect("canonical local policy remains valid when callback is disabled");
@@ -1796,7 +1825,8 @@ mod tests {
 
     #[test]
     fn invalid_local_policy_fails_before_app_server_startup() {
-        let mut policy = codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only();
+        let mut policy =
+            codex_hepta_app_bridge::memory::LocalDevelopmentLifecyclePolicy::qualification_only();
         policy.external_effects = true;
         let options = AppServerRuntimeOptions {
             hepta_local_development_policy: Some(policy),

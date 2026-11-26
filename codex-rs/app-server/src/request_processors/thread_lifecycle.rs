@@ -4,6 +4,10 @@ use codex_app_server_protocol::ThreadQueueChangedNotification;
 use codex_extension_api::ThreadIdleCause;
 use codex_protocol::config_types::MultiAgentMode;
 
+#[cfg(test)]
+#[path = "ephemeral_retention_lifecycle_tests.rs"]
+mod ephemeral_retention_lifecycle_tests;
+
 pub(super) const THREAD_UNLOADING_DELAY: Duration = Duration::from_secs(30 * 60);
 
 #[derive(Clone)]
@@ -26,12 +30,15 @@ struct UnloadingState {
     has_subscribers: (bool, Instant),
     thread_status_rx: watch::Receiver<ThreadStatus>,
     is_active: (bool, Instant),
+    retained_runtime_rx: watch::Receiver<Option<std::sync::Weak<CodexThread>>>,
+    runtime: std::sync::Weak<CodexThread>,
 }
 
 impl UnloadingState {
     async fn new(
         listener_task_context: &ListenerTaskContext,
         thread_id: ThreadId,
+        runtime: &Arc<CodexThread>,
         delay: Duration,
     ) -> Option<Self> {
         let has_subscribers_rx = listener_task_context
@@ -47,16 +54,30 @@ impl UnloadingState {
             matches!(*thread_status_rx.borrow(), ThreadStatus::Active { .. }),
             Instant::now(),
         );
+        let retained_runtime_rx = listener_task_context
+            .thread_state_manager
+            .subscribe_to_ephemeral_retention(thread_id)
+            .await?;
         Some(Self {
             delay,
             has_subscribers_rx,
             has_subscribers,
             thread_status_rx,
             is_active,
+            retained_runtime_rx,
+            runtime: Arc::downgrade(runtime),
         })
     }
 
     fn unloading_target(&self) -> Option<Instant> {
+        if self
+            .retained_runtime_rx
+            .borrow()
+            .as_ref()
+            .is_some_and(|retained| retained.ptr_eq(&self.runtime))
+        {
+            return None;
+        }
         match (self.has_subscribers, self.is_active) {
             ((false, has_no_subscribers_since), (false, is_inactive_since)) => {
                 Some(std::cmp::max(has_no_subscribers_since, is_inactive_since) + self.delay)
@@ -118,6 +139,11 @@ impl UnloadingState {
                         return false;
                     }
                     self.sync_receiver_values();
+                },
+                changed = self.retained_runtime_rx.changed() => {
+                    if changed.is_err() {
+                        return false;
+                    }
                 },
             }
         }
@@ -224,6 +250,7 @@ pub(super) async fn ensure_listener_task_running(
     let Some(mut unloading_state) = UnloadingState::new(
         &listener_task_context,
         conversation_id,
+        &conversation,
         THREAD_UNLOADING_DELAY,
     )
     .await

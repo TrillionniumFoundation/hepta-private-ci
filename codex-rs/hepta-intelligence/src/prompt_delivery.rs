@@ -14,6 +14,7 @@ use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
+use codex_hepta_context_compiler::ExactTokenizerV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
@@ -150,6 +151,7 @@ pub fn compile_prompt_registry_v2(
     portfolio: &SelectedPromptPortfolioV1,
     exercise_request: &PromptExerciseRequestV1,
     request: PromptRegistryCompilationRequestV2,
+    tokenizer: &impl ExactTokenizerV2,
 ) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
     if request.registry_model_tuple != portfolio.model_tuple
         || request.now_unix_ms != exercise_request.now_unix_ms
@@ -178,6 +180,7 @@ pub fn compile_prompt_registry_v2(
                 reason_digest: portfolio.receipt.receipt_digest,
             }],
         },
+        tokenizer,
     )
     .map_err(PromptRegistryCompilationErrorV2::Pipeline)?;
     let by_id = prepared
@@ -209,6 +212,7 @@ pub fn compile_prompt_registry_v2(
             serialized_payload: serialized_payload.clone(),
             attachment_id: request.attachment_id,
         },
+        tokenizer,
     )
     .map_err(PromptRegistryCompilationErrorV2::Pipeline)?;
     let snapshot = registry

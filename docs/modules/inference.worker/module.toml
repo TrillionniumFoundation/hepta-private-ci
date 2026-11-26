@@ -1,0 +1,43 @@
+schema = "hepta.module-manifest.v1"
+order = 12
+id = "inference.worker"
+plane = "adapter"
+kind = "worker"
+lifecycle = "target"
+state = "ephemeral_isolated"
+architectureRole = "checked_adapter"
+writes = []
+uses = ["inference.control", "kernel.authority", "channel.matrix", "runtime.supervisor"]
+owner = "inference-platform"
+deputy = "security-authority"
+denies = ["grant_issuance", "fleet_mutation"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-infer-worker-host"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "INFER-V4-T4"
+technicalDocument = "docs/modules/inference.worker/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-infer-worker-host"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-infer-worker-host"
+# Product composition consumes the layer-8 chat transport; adapter owners
+# and all authority/store packages remain strictly below this host.
+compileLayer = 9
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

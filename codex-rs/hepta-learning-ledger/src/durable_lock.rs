@@ -12,6 +12,17 @@ use crate::DurableLedgerError;
 pub(crate) struct LockedFile(File);
 
 impl LockedFile {
+    pub(crate) fn acquire_shared(file: File) -> Result<Self, DurableLedgerError> {
+        if !file.metadata()?.is_file() {
+            return Err(DurableLedgerError::NotRegular);
+        }
+        match file.try_lock_shared() {
+            Ok(()) => Ok(Self(file)),
+            Err(TryLockError::WouldBlock) => Err(DurableLedgerError::Busy),
+            Err(TryLockError::Error(error)) => Err(error.into()),
+        }
+    }
+
     pub(crate) fn acquire(file: File) -> Result<Self, DurableLedgerError> {
         if !file.metadata()?.is_file() {
             return Err(DurableLedgerError::NotRegular);

@@ -1,0 +1,4 @@
+# The native application is a separate Cargo graph. Workspace-only package
+# selectors are deliberately not applied here; every native test still runs.
+[profile.local]
+retries = 0

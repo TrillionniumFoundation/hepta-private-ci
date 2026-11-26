@@ -32,6 +32,7 @@ pub use errors::GitToolingError;
 pub use fsmonitor::FsmonitorOverride;
 pub use fsmonitor::FsmonitorProbeRunner;
 pub use fsmonitor::detect_fsmonitor_override;
+pub use git_process::run_git_command_with_timeout_output_checked;
 pub use info::CommitLogEntry;
 pub use info::GitDiffToRemote;
 pub use info::GitInfo;

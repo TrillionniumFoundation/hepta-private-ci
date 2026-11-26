@@ -769,7 +769,7 @@ fn frozen_plan_receipt_seal(receipt: &CrossFoldPlanReceiptV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn validate_frozen_plan_receipt_integrity(
+pub(crate) fn validate_frozen_plan_receipt_integrity(
     receipt: &CrossFoldPlanReceiptV1,
 ) -> Result<(), EvaluationClosureError> {
     if receipt.receipt_seal != frozen_plan_receipt_seal(receipt) {

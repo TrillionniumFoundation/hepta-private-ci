@@ -5,6 +5,14 @@ name = "codex-hepta-infer-worker-host"
 version.workspace = true
 publish = false
 
+[features]
+default = []
+agentd-host = ["codex-hepta-agentd/server", "codex-hepta-agentd/production-cognitive-write", "dep:anyhow", "dep:codex-hepta-neuron", "dep:codex-hepta-agent-components"]
+test-support = []
+native-chat-bridge = ["dep:anyhow", "dep:codex-hepta-fleet", "dep:codex-hepta-matrixd", "dep:codex-hepta-paths", "dep:codex-hepta-supervisor", "codex-hepta-supervisor/local-host"]
+fixed-initial-cpu-host = ["agentd-host", "codex-hepta-agent-components/fixed-eval-host"]
+root-frozen-generator = ["native-chat-bridge", "fixed-initial-cpu-host", "codex-hepta-supervisor/local-model-relay"]
+
 [lib]
 name = "codex_hepta_infer_worker_host"
 path = "src/lib.rs"
@@ -14,13 +22,18 @@ doctest = false
 workspace = true
 
 [dependencies]
+anyhow = { workspace = true, optional = true }
+codex-hepta-agent-components = { workspace = true, optional = true }
+codex-hepta-neuron = { path = "../hepta-neuron", optional = true }
 codex-hepta-types = { path = "../hepta-types" }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
-codex-hepta-agentd = { workspace = true }
+codex-hepta-agentd = { path = "../hepta-agentd", default-features = false }
 codex-hepta-codex-adapter = { path = "../hepta-codex-adapter" }
 codex-hepta-contracts = { workspace = true }
+codex-state = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
+ed25519-dalek = { workspace = true }
 libc = { workspace = true }
 rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
@@ -29,10 +42,59 @@ tokio = { workspace = true, features = ["io-std", "io-util", "macros", "net", "r
 tokio-util = { workspace = true }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 sha2 = { workspace = true }
+sqlx = { workspace = true }
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
+codex-hepta-agentd = { workspace = true }
+futures = { workspace = true }
+pretty_assertions = { workspace = true }
+rand = { workspace = true }
+tokio-tungstenite = { workspace = true }
+
 core_test_support = { workspace = true }
 
-ed25519-dalek = { workspace = true }
 tempfile = { workspace = true }
 codex-app-server-client = { workspace = true, features = ["test-support"] }
+
+[[bin]]
+name = "hepta-cpu-neuron-score"
+path = "src/bin/hepta-cpu-neuron-score.rs"
+test = false
+
+[[bin]]
+name = "hepta-evolving-agentd"
+path = "src/bin/hepta-evolving-agentd.rs"
+required-features = ["agentd-host"]
+test = false
+
+[[bin]]
+name = "hepta-initial-cpu-anchor"
+path = "src/bin/hepta-initial-cpu-anchor.rs"
+required-features = ["fixed-initial-cpu-host"]
+test = false
+
+[target.'cfg(target_os = "linux")'.dependencies]
+codex-hepta-fleet = { workspace = true, optional = true }
+codex-hepta-matrixd = { path = "../hepta-matrixd", optional = true }
+codex-hepta-paths = { workspace = true, optional = true }
+codex-hepta-supervisor = { workspace = true, optional = true }
+
+[[bin]]
+name = "hepta-native-chat-bridge"
+path = "src/bin/hepta-native-chat-bridge.rs"
+required-features = ["native-chat-bridge"]
+test = false
+
+# One actual enrolled G executable combines finite original owner purposes.
+[[bin]]
+name = "hepta-native-role-generator"
+path = "src/bin/hepta-native-role-generator.rs"
+required-features = ["fixed-initial-cpu-host"]
+test = false
+
+[[bin]]
+name = "hepta-native-role-observer"
+path = "src/bin/hepta-native-role-observer.rs"
+required-features = ["fixed-initial-cpu-host"]
+test = false

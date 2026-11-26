@@ -57,6 +57,8 @@ tokio = { workspace = true, features = [
 tokio-util = { workspace = true, features = ["rt"] }
 
 [dev-dependencies]
+futures = { workspace = true }
+tokio-tungstenite = { workspace = true }
 anyhow = { workspace = true }
 app_test_support = { workspace = true }
 codex-hepta-paths = { workspace = true }
@@ -75,3 +77,8 @@ tokio = { workspace = true, features = [
 ] }
 url = { workspace = true }
 wiremock = { workspace = true }
+
+[[bin]]
+name = "hepta-agent-chat-host"
+path = "src/bin/hepta-agent-chat-host.rs"
+test = false

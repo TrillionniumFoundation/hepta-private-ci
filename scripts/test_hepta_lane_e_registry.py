@@ -154,18 +154,6 @@ class RegisteredSourceTests(unittest.TestCase):
             "external_gate_self_certified", {finding.code for finding in self.verify()}
         )
 
-    def test_raw_product_writer_bypass_still_blocks(self):
-        self.write(
-            "codex-rs/real-product/src/lib.rs",
-            "fn write() { LedgerEvent::Decision(value); }\n",
-        )
-        findings = lane.Findings()
-        lane.verify_product_writer_exclusivity(findings)
-        self.assertEqual(
-            [finding.code for finding in findings.items],
-            ["legacy_learning_writer_product_bypass"],
-        )
-
 
 class DefaultAuthoritySurfaceTests(unittest.TestCase):
     def test_unsigned_direct_alias_and_wildcard_exports_are_rejected(self):

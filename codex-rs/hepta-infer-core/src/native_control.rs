@@ -4,6 +4,7 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -45,6 +46,48 @@ pub enum NativeBoundaryStatus {
     Quarantined,
     #[default]
     Indeterminate,
+}
+
+/// Logical Agentd terminal state derived from the runtime boundary, never from
+/// provider completion alone.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NativeTerminalPublicationPhase {
+    Succeeded,
+    Failed,
+    Cancelled,
+    Indeterminate,
+}
+
+/// Agentd owner identity pinned into the same local dispatch transition that
+/// issues the one-shot pre-effect proof.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeTerminalOwnerBinding {
+    pub run_id: String,
+    pub owner_dispatch_revision: u64,
+    pub context_digest: String,
+    pub envelope_digest: String,
+}
+
+/// Durable outbox entry produced atomically with a local observation.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeTerminalPublication {
+    pub owner: NativeTerminalOwnerBinding,
+    pub phase: NativeTerminalPublicationPhase,
+    pub terminal_observed: bool,
+    pub publication_digest: String,
+    pub attempts: u32,
+    pub last_error_digest: Option<String>,
+    pub acknowledged_revision: Option<u64>,
+}
+
+impl NativeTerminalPublication {
+    #[must_use]
+    pub fn pending(&self) -> bool {
+        self.acknowledged_revision.is_none()
+    }
 }
 
 /// Provider terminality and the owner's authority observation are independent.
@@ -104,6 +147,7 @@ impl NativeRunOutput {
 pub enum NativeReservationState {
     Reserved,
     Dispatching,
+    AbortPending,
     Running,
     Cancelling,
     Indeterminate,
@@ -171,11 +215,77 @@ pub struct NativeDispatch {
 pub struct NativePreEffectAbortToken {
     request_id: String,
     dispatch_revision: u64,
+    abort_nonce: [u8; 32],
 }
 
 impl std::fmt::Debug for NativePreEffectAbortToken {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         formatter.write_str("NativePreEffectAbortToken([LOCAL ONLY])")
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativePreEffectAbortRecord {
+    pub owner_run_id: String,
+    pub owner_dispatch_revision: u64,
+    pub dispatch_binding_digest: String,
+    pub commitment_digest: String,
+    pub abort_nonce_hex: String,
+    pub proof_digest: String,
+    pub reason: String,
+}
+
+impl NativePreEffectAbortToken {
+    pub fn commitment_digest(
+        &self,
+        owner_run_id: &str,
+        dispatch_binding_digest: &str,
+    ) -> Result<String, Error> {
+        validate_identity(owner_run_id, "native abort owner run")?;
+        validate_digest(dispatch_binding_digest, "native abort dispatch binding")?;
+        Ok(pre_effect_abort_digest(
+            b"hepta.runtime.codex.pre-effect-abort.commitment.v1",
+            owner_run_id,
+            dispatch_binding_digest,
+            &self.abort_nonce,
+            None,
+        ))
+    }
+
+    fn proof_record(
+        &self,
+        owner_run_id: String,
+        owner_dispatch_revision: u64,
+        dispatch_binding_digest: String,
+        reason: String,
+    ) -> Result<NativePreEffectAbortRecord, Error> {
+        validate_identity(&owner_run_id, "native abort owner run")?;
+        validate_digest(&dispatch_binding_digest, "native abort dispatch binding")?;
+        if owner_dispatch_revision == 0
+            || reason.trim().is_empty()
+            || reason.len() > 512
+            || reason.as_bytes().contains(&0)
+        {
+            return Err(Error::InvalidIdentity("native pre-effect abort"));
+        }
+        let commitment_digest = self.commitment_digest(&owner_run_id, &dispatch_binding_digest)?;
+        let proof_digest = pre_effect_abort_digest(
+            b"hepta.runtime.codex.pre-effect-abort.proof.v1",
+            &owner_run_id,
+            &dispatch_binding_digest,
+            &self.abort_nonce,
+            Some(&reason),
+        );
+        Ok(NativePreEffectAbortRecord {
+            owner_run_id,
+            owner_dispatch_revision,
+            dispatch_binding_digest,
+            commitment_digest,
+            abort_nonce_hex: encode_abort_nonce(&self.abort_nonce),
+            proof_digest,
+            reason,
+        })
     }
 }
 
@@ -211,19 +321,33 @@ pub struct NativeRunRecord {
     /// to have observed a provider terminal event or zero token consumption.
     pub pre_dispatch_stop: Option<String>,
     #[serde(default)]
+    pub pre_effect_abort: Option<NativePreEffectAbortRecord>,
+    #[serde(default)]
     pub dispatch_rejection: Option<NativeDispatchRejection>,
+    #[serde(default)]
+    pub terminal_owner: Option<NativeTerminalOwnerBinding>,
+    #[serde(default)]
+    pub terminal_publication: Option<NativeTerminalPublication>,
     pub observation: Option<NativeRunOutput>,
 }
 
 #[derive(Clone, Debug, Default)]
 pub(super) struct NativeJournal {
-    maximum_in_flight: Option<usize>,
+    pub(super) maximum_in_flight: Option<usize>,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
+    pub(super) compaction_pending: bool,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-enum Event {
+pub(super) enum Event {
+    CapacityPinned {
+        maximum_in_flight: usize,
+    },
+    Archive {
+        request_id: String,
+        record_sha256: String,
+    },
     Reserve {
         request: NativeRequest,
         maximum_in_flight: usize,
@@ -231,6 +355,8 @@ enum Event {
     Dispatch {
         request_id: String,
         dispatch: NativeDispatch,
+        #[serde(default)]
+        terminal_owner: Option<NativeTerminalOwnerBinding>,
     },
     Started {
         request_id: String,
@@ -251,10 +377,49 @@ enum Event {
         request_id: String,
         reason: String,
     },
+    PrepareAbortBeforeEffect {
+        request_id: String,
+        abort: NativePreEffectAbortRecord,
+    },
+    ConfirmAbortBeforeEffect {
+        request_id: String,
+        proof_digest: String,
+    },
     Observe {
         request_id: String,
         output: NativeRunOutput,
     },
+    TerminalPublicationFailed {
+        request_id: String,
+        publication_digest: String,
+        error_digest: String,
+    },
+    TerminalPublicationAcknowledged {
+        request_id: String,
+        publication_digest: String,
+        owner_revision: u64,
+    },
+}
+
+impl Event {
+    pub(super) fn request_id(&self) -> Option<&str> {
+        match self {
+            Self::CapacityPinned { .. } => None,
+            Self::Reserve { request, .. } => Some(&request.request_id),
+            Self::Archive { request_id, .. }
+            | Self::Dispatch { request_id, .. }
+            | Self::Started { request_id, .. }
+            | Self::RejectBeforeStart { request_id, .. }
+            | Self::Cancel { request_id }
+            | Self::Stop { request_id, .. }
+            | Self::AbortBeforeEffect { request_id, .. }
+            | Self::PrepareAbortBeforeEffect { request_id, .. }
+            | Self::ConfirmAbortBeforeEffect { request_id, .. }
+            | Self::Observe { request_id, .. }
+            | Self::TerminalPublicationFailed { request_id, .. }
+            | Self::TerminalPublicationAcknowledged { request_id, .. } => Some(request_id),
+        }
+    }
 }
 
 impl DurableInferenceControl {
@@ -283,6 +448,11 @@ impl DurableInferenceControl {
         {
             return Err(Error::Conflict);
         }
+        if self.features.records.contains_key(&request.request_id)
+            || super::feature::archive_store::lookup(&self.path, &request.request_id)?.is_some()
+        {
+            return Err(Error::Conflict);
+        }
         if let Some(record) = self.native.records.get(&request.request_id) {
             return if record.request == request {
                 Ok(record.clone())
@@ -290,7 +460,16 @@ impl DurableInferenceControl {
                 Err(Error::Conflict)
             };
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if let Some(record) = super::archive_store::lookup(&self.path, &request.request_id)? {
+            return if record.request == request {
+                Ok(record)
+            } else {
+                Err(Error::Conflict)
+            };
+        }
+        if self.records.len() + self.native.records.len() + self.features.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         self.ensure_native_dispatch_space()?;
@@ -316,6 +495,7 @@ impl DurableInferenceControl {
             Event::Dispatch {
                 request_id: request_id.to_string(),
                 dispatch,
+                terminal_owner: None,
             },
         )
     }
@@ -327,12 +507,48 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
-        let record = self.dispatch_native(request_id, dispatch)?;
+        self.dispatch_native_with_optional_terminal_owner(request_id, dispatch, None)
+    }
+
+    /// Atomically persists the local physical dispatch and the exact Agentd
+    /// owner that must receive every later logical terminal publication.
+    pub fn dispatch_native_with_pre_effect_abort_bound(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+        terminal_owner: NativeTerminalOwnerBinding,
+    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        validate_terminal_owner_binding(&terminal_owner)?;
+        self.dispatch_native_with_optional_terminal_owner(
+            request_id,
+            dispatch,
+            Some(terminal_owner),
+        )
+    }
+
+    fn dispatch_native_with_optional_terminal_owner(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+        terminal_owner: Option<NativeTerminalOwnerBinding>,
+    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        self.ensure_native_dispatch_space()?;
+        let record = self.commit_native(
+            request_id,
+            Event::Dispatch {
+                request_id: request_id.to_string(),
+                dispatch,
+                terminal_owner,
+            },
+        )?;
+        // Generated for each live process; never a source-embedded cryptographic value.
+        let abort_nonce: [u8; 32] = rand::random();
         Ok((
             record.clone(),
             NativePreEffectAbortToken {
                 request_id: request_id.to_string(),
                 dispatch_revision: record.revision,
+                abort_nonce,
             },
         ))
     }
@@ -364,6 +580,62 @@ impl DurableInferenceControl {
             Event::AbortBeforeEffect {
                 request_id: token.request_id.clone(),
                 reason,
+            },
+        )
+    }
+
+    /// Durably commit that this process will not cross the external effect
+    /// boundary, while retaining the slot until Agentd acknowledges the same
+    /// exact abort proof. Recovery can replay this owner reconciliation safely.
+    pub fn prepare_native_abort_before_effect(
+        &mut self,
+        token: NativePreEffectAbortToken,
+        owner_run_id: String,
+        owner_dispatch_revision: u64,
+        dispatch_binding_digest: String,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(&token.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching
+            || record.revision != token.dispatch_revision
+            || record.turn_id.is_some()
+            || record.observation.is_some()
+            || record.dispatch_rejection.is_some()
+            || record.cancel_requested
+            || record.pre_effect_abort.is_some()
+        {
+            return Err(Error::InvalidTransition);
+        }
+        let abort = token.proof_record(
+            owner_run_id,
+            owner_dispatch_revision,
+            dispatch_binding_digest,
+            reason,
+        )?;
+        self.commit_native(
+            &token.request_id,
+            Event::PrepareAbortBeforeEffect {
+                request_id: token.request_id.clone(),
+                abort,
+            },
+        )
+    }
+
+    pub fn confirm_native_abort_before_effect(
+        &mut self,
+        request_id: &str,
+        proof_digest: &str,
+    ) -> Result<NativeRunRecord, Error> {
+        validate_digest(proof_digest, "native pre-effect abort proof")?;
+        self.commit_native(
+            request_id,
+            Event::ConfirmAbortBeforeEffect {
+                request_id: request_id.to_string(),
+                proof_digest: proof_digest.to_string(),
             },
         )
     }
@@ -467,8 +739,108 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Record one failed Agentd publication attempt without changing the
+    /// logical terminal intent. The pending entry remains recoverable.
+    pub fn record_native_terminal_publication_failure(
+        &mut self,
+        request_id: &str,
+        publication_digest: &str,
+        error_digest: &str,
+    ) -> Result<NativeRunRecord, Error> {
+        validate_digest(publication_digest, "native terminal publication")?;
+        validate_digest(error_digest, "native terminal publication error")?;
+        self.commit_native(
+            request_id,
+            Event::TerminalPublicationFailed {
+                request_id: request_id.to_string(),
+                publication_digest: publication_digest.to_string(),
+                error_digest: error_digest.to_string(),
+            },
+        )
+    }
+
+    /// Acknowledge only the exact pending publication and exact owner revision.
+    pub fn acknowledge_native_terminal_publication(
+        &mut self,
+        request_id: &str,
+        publication_digest: &str,
+        owner_revision: u64,
+    ) -> Result<NativeRunRecord, Error> {
+        validate_digest(publication_digest, "native terminal publication")?;
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let publication = record
+            .terminal_publication
+            .as_ref()
+            .ok_or(Error::InvalidTransition)?;
+        if publication.publication_digest != publication_digest {
+            return Err(Error::Conflict);
+        }
+        if publication.acknowledged_revision == Some(owner_revision) {
+            return Ok(record.clone());
+        }
+        self.commit_native(
+            request_id,
+            Event::TerminalPublicationAcknowledged {
+                request_id: request_id.to_string(),
+                publication_digest: publication_digest.to_string(),
+                owner_revision,
+            },
+        )
+    }
+
+    /// Borrow a resident record. Archived immutable receipts are available
+    /// through `native_record_resolved`, which explicitly reports storage errors.
     pub fn native_record(&self, request_id: &str) -> Option<&NativeRunRecord> {
         self.native.records.get(request_id)
+    }
+
+    /// Select one pending owner acknowledgement after the cursor, wrapping once.
+    /// No token is recreated and unresolved records retain their local slot.
+    pub fn next_native_owner_reconciliation(
+        &self,
+        after_request_id: &str,
+    ) -> Option<NativeRunRecord> {
+        self.native
+            .records
+            .range::<str, _>((
+                std::ops::Bound::Excluded(after_request_id),
+                std::ops::Bound::Unbounded,
+            ))
+            .chain(self.native.records.range::<str, _>((
+                std::ops::Bound::Unbounded,
+                std::ops::Bound::Included(after_request_id),
+            )))
+            .map(|(_, record)| record)
+            .find(|record| {
+                record.state == NativeReservationState::AbortPending
+                    || record
+                        .terminal_publication
+                        .as_ref()
+                        .is_some_and(NativeTerminalPublication::pending)
+            })
+            .cloned()
+    }
+
+    pub(super) fn commit_native_archive(
+        &mut self,
+        request_id: &str,
+        record_sha256: String,
+    ) -> Result<(), Error> {
+        let event = Event::Archive {
+            request_id: request_id.to_string(),
+            record_sha256,
+        };
+        let mut next = self.native.clone();
+        next.apply(event.clone())?;
+        let json = serde_json::to_string(&event)
+            .map_err(|_| Error::CorruptJournal("native archive event encode"))?;
+        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
+        self.native = next;
+        Ok(())
     }
 
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
@@ -505,6 +877,37 @@ impl NativeJournal {
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
+        let event = match event {
+            Event::CapacityPinned { maximum_in_flight } => {
+                if !(1..=256).contains(&maximum_in_flight)
+                    || self
+                        .maximum_in_flight
+                        .is_some_and(|limit| limit != maximum_in_flight)
+                {
+                    return Err(Error::Conflict);
+                }
+                self.maximum_in_flight = Some(maximum_in_flight);
+                return Ok(());
+            }
+            Event::Archive {
+                request_id,
+                record_sha256,
+            } => {
+                let record = self
+                    .records
+                    .get(&request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if !super::archive::eligible(record)
+                    || super::archive_store::record_digest(record)? != record_sha256
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                self.records.remove(&request_id);
+                self.compaction_pending = true;
+                return Ok(());
+            }
+            event => event,
+        };
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -549,26 +952,41 @@ impl NativeJournal {
                     turn_id: None,
                     cancel_requested: false,
                     pre_dispatch_stop: None,
+                    pre_effect_abort: None,
                     dispatch_rejection: None,
+                    terminal_owner: None,
+                    terminal_publication: None,
                     observation: None,
                 },
             );
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::CapacityPinned { .. } | Event::Archive { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
             | Event::RejectBeforeStart { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::AbortBeforeEffect { request_id, .. }
-            | Event::Observe { request_id, .. } => request_id,
+            | Event::PrepareAbortBeforeEffect { request_id, .. }
+            | Event::ConfirmAbortBeforeEffect { request_id, .. }
+            | Event::Observe { request_id, .. }
+            | Event::TerminalPublicationFailed { request_id, .. }
+            | Event::TerminalPublicationAcknowledged { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
-            Event::Dispatch { dispatch, .. } => {
+            Event::Reserve { .. } | Event::CapacityPinned { .. } | Event::Archive { .. } => {
+                return Err(Error::InvalidTransition);
+            }
+            Event::Dispatch {
+                dispatch,
+                terminal_owner,
+                ..
+            } => {
                 if record.state != NativeReservationState::Reserved {
                     return Err(Error::InvalidTransition);
                 }
@@ -661,7 +1079,11 @@ impl NativeJournal {
                 if let Some(digest) = &dispatch.codex_authority_witness_sha256 {
                     validate_digest(digest, "native codex authority witness")?;
                 }
+                if let Some(owner) = terminal_owner.as_ref() {
+                    validate_terminal_owner_binding(owner)?;
+                }
                 record.dispatch = Some(dispatch);
+                record.terminal_owner = terminal_owner;
                 record.state = NativeReservationState::Dispatching;
             }
             Event::Started { turn_id, .. } => {
@@ -708,7 +1130,12 @@ impl NativeJournal {
                     return Err(Error::InvalidTransition);
                 }
                 record.cancel_requested = true;
-                record.state = NativeReservationState::Cancelling;
+                // A proven unsent dispatch still needs its original cross-owner
+                // abort acknowledgement. Cancellation cannot turn that proof
+                // into an ordinary execution observation or make it unrecoverable.
+                if record.state != NativeReservationState::AbortPending {
+                    record.state = NativeReservationState::Cancelling;
+                }
             }
             Event::Stop { reason, .. } => {
                 if record.state != NativeReservationState::Reserved
@@ -727,6 +1154,7 @@ impl NativeJournal {
                     || record.observation.is_some()
                     || record.dispatch_rejection.is_some()
                     || record.cancel_requested
+                    || record.pre_effect_abort.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {
@@ -735,11 +1163,123 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
+            Event::PrepareAbortBeforeEffect { abort, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.dispatch_rejection.is_some()
+                    || record.cancel_requested
+                    || record.pre_effect_abort.is_some()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_identity(&abort.owner_run_id, "native abort owner run")?;
+                validate_digest(
+                    &abort.dispatch_binding_digest,
+                    "native abort dispatch binding",
+                )?;
+                validate_digest(&abort.commitment_digest, "native abort commitment")?;
+                validate_digest(&abort.proof_digest, "native abort proof")?;
+                if abort.owner_dispatch_revision == 0
+                    || abort.abort_nonce_hex.len() != 64
+                    || !abort
+                        .abort_nonce_hex
+                        .bytes()
+                        .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+                    || abort.reason.trim().is_empty()
+                    || abort.reason.len() > 512
+                    || abort.reason.as_bytes().contains(&0)
+                {
+                    return Err(Error::InvalidIdentity("native pre-effect abort"));
+                }
+                let nonce = decode_abort_nonce(&abort.abort_nonce_hex)?;
+                if pre_effect_abort_digest(
+                    b"hepta.runtime.codex.pre-effect-abort.commitment.v1",
+                    &abort.owner_run_id,
+                    &abort.dispatch_binding_digest,
+                    &nonce,
+                    None,
+                ) != abort.commitment_digest
+                    || pre_effect_abort_digest(
+                        b"hepta.runtime.codex.pre-effect-abort.proof.v1",
+                        &abort.owner_run_id,
+                        &abort.dispatch_binding_digest,
+                        &nonce,
+                        Some(&abort.reason),
+                    ) != abort.proof_digest
+                {
+                    return Err(Error::Conflict);
+                }
+                record.pre_effect_abort = Some(abort);
+                record.state = NativeReservationState::AbortPending;
+            }
+            Event::ConfirmAbortBeforeEffect { proof_digest, .. } => {
+                if record.state != NativeReservationState::AbortPending
+                    || record
+                        .pre_effect_abort
+                        .as_ref()
+                        .is_none_or(|abort| abort.proof_digest != proof_digest)
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.pre_dispatch_stop = record
+                    .pre_effect_abort
+                    .as_ref()
+                    .map(|abort| abort.reason.clone());
+                record.state = NativeReservationState::Released;
+            }
             Event::Observe { output, .. } => {
-                if record.dispatch_rejection.is_some() {
+                if record.dispatch_rejection.is_some() || record.pre_effect_abort.is_some() {
                     return Err(Error::InvalidTransition);
                 }
                 apply_observation(record, output)?;
+            }
+            Event::TerminalPublicationFailed {
+                publication_digest,
+                error_digest,
+                ..
+            } => {
+                validate_digest(&publication_digest, "native terminal publication")?;
+                validate_digest(&error_digest, "native terminal publication error")?;
+                let publication = record
+                    .terminal_publication
+                    .as_mut()
+                    .ok_or(Error::InvalidTransition)?;
+                if publication.publication_digest != publication_digest
+                    || publication.acknowledged_revision.is_some()
+                {
+                    return Err(Error::Conflict);
+                }
+                publication.attempts = publication
+                    .attempts
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                publication.last_error_digest = Some(error_digest);
+            }
+            Event::TerminalPublicationAcknowledged {
+                publication_digest,
+                owner_revision,
+                ..
+            } => {
+                validate_digest(&publication_digest, "native terminal publication")?;
+                let publication = record
+                    .terminal_publication
+                    .as_mut()
+                    .ok_or(Error::InvalidTransition)?;
+                if publication.publication_digest != publication_digest
+                    || publication.acknowledged_revision.is_some()
+                    || owner_revision < publication.owner.owner_dispatch_revision
+                {
+                    return Err(Error::Conflict);
+                }
+                publication.attempts = publication
+                    .attempts
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                publication.last_error_digest = None;
+                publication.acknowledged_revision = Some(owner_revision);
             }
         }
         record.revision = record
@@ -747,6 +1287,64 @@ impl NativeJournal {
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(())
+    }
+}
+
+fn pre_effect_abort_digest(
+    domain: &[u8],
+    owner_run_id: &str,
+    dispatch_binding_digest: &str,
+    nonce: &[u8; 32],
+    reason: Option<&str>,
+) -> String {
+    let mut bytes = Vec::new();
+    push_abort_part(&mut bytes, domain);
+    push_abort_part(&mut bytes, owner_run_id.as_bytes());
+    push_abort_part(&mut bytes, dispatch_binding_digest.as_bytes());
+    push_abort_part(&mut bytes, nonce);
+    if let Some(reason) = reason {
+        push_abort_part(&mut bytes, reason.as_bytes());
+    }
+    Digest32::of_bytes(&bytes).to_string()
+}
+
+fn push_abort_part(output: &mut Vec<u8>, value: &[u8]) {
+    const { assert!(usize::BITS <= u64::BITS) };
+    let length = value.len() as u64;
+    output.extend_from_slice(&length.to_be_bytes());
+    output.extend_from_slice(value);
+}
+
+fn encode_abort_nonce(nonce: &[u8; 32]) -> String {
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut output = String::with_capacity(64);
+    for byte in nonce {
+        output.push(char::from(HEX[usize::from(byte >> 4)]));
+        output.push(char::from(HEX[usize::from(byte & 0x0f)]));
+    }
+    output
+}
+
+fn decode_abort_nonce(value: &str) -> Result<[u8; 32], Error> {
+    if value.len() != 64 {
+        return Err(Error::InvalidIdentity("native abort nonce"));
+    }
+    let mut decoded = Vec::with_capacity(32);
+    for pair in value.as_bytes().chunks_exact(2) {
+        let high = abort_hex_nibble(pair[0]).ok_or(Error::InvalidIdentity("native abort nonce"))?;
+        let low = abort_hex_nibble(pair[1]).ok_or(Error::InvalidIdentity("native abort nonce"))?;
+        decoded.push((high << 4) | low);
+    }
+    decoded
+        .try_into()
+        .map_err(|_| Error::InvalidIdentity("native abort nonce"))
+}
+
+fn abort_hex_nibble(value: u8) -> Option<u8> {
+    match value {
+        b'0'..=b'9' => Some(value - b'0'),
+        b'a'..=b'f' => Some(value - b'a' + 10),
+        _ => None,
     }
 }
 
@@ -843,13 +1441,77 @@ fn apply_observation(
         validate_identity(&output.turn_id, "native turn")?;
         record.turn_id = Some(output.turn_id.clone());
     }
+    let publication = derive_terminal_publication(record.terminal_owner.as_ref(), &output)?;
     record.state = if output.terminal_observed {
         NativeReservationState::Released
     } else {
         NativeReservationState::Indeterminate
     };
     record.observation = Some(output);
+    record.terminal_publication = publication;
     Ok(())
+}
+
+fn validate_terminal_owner_binding(owner: &NativeTerminalOwnerBinding) -> Result<(), Error> {
+    validate_identity(&owner.run_id, "native terminal owner run")?;
+    validate_digest(&owner.context_digest, "native terminal owner context")?;
+    validate_digest(&owner.envelope_digest, "native terminal owner envelope")?;
+    if owner.owner_dispatch_revision == 0 {
+        return Err(Error::InvalidIdentity("native terminal owner revision"));
+    }
+    Ok(())
+}
+
+fn derive_terminal_publication(
+    owner: Option<&NativeTerminalOwnerBinding>,
+    output: &NativeRunOutput,
+) -> Result<Option<NativeTerminalPublication>, Error> {
+    let Some(owner) = owner else {
+        return Ok(None);
+    };
+    validate_terminal_owner_binding(owner)?;
+    let (phase, terminal_observed) = if output.succeeded() {
+        (NativeTerminalPublicationPhase::Succeeded, true)
+    } else {
+        match output.boundary_status {
+            NativeBoundaryStatus::Failed
+                if output.terminal_observed && output.status == NativeRunStatus::Failed =>
+            {
+                (NativeTerminalPublicationPhase::Failed, true)
+            }
+            NativeBoundaryStatus::Interrupted | NativeBoundaryStatus::Cancelled
+                if output.terminal_observed && output.status == NativeRunStatus::Interrupted =>
+            {
+                (NativeTerminalPublicationPhase::Cancelled, true)
+            }
+            NativeBoundaryStatus::Succeeded
+            | NativeBoundaryStatus::Failed
+            | NativeBoundaryStatus::Interrupted
+            | NativeBoundaryStatus::Cancelled
+            | NativeBoundaryStatus::TimedOut
+            | NativeBoundaryStatus::Quarantined
+            | NativeBoundaryStatus::Indeterminate => {
+                (NativeTerminalPublicationPhase::Indeterminate, false)
+            }
+        }
+    };
+    let bytes = serde_json::to_vec(&(
+        "hepta.runtime.codex.terminal-publication.v1",
+        owner,
+        phase,
+        terminal_observed,
+        output,
+    ))
+    .map_err(|_| Error::CorruptJournal("native terminal publication encode"))?;
+    Ok(Some(NativeTerminalPublication {
+        owner: owner.clone(),
+        phase,
+        terminal_observed,
+        publication_digest: Digest32::of_bytes(&bytes).to_string(),
+        attempts: 0,
+        last_error_digest: None,
+        acknowledged_revision: None,
+    }))
 }
 
 #[cfg(test)]

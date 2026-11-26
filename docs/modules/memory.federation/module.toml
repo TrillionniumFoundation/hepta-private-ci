@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 25
+id = "memory.federation"
+plane = "adapter"
+kind = "service"
+lifecycle = "target"
+state = "read_only_remote"
+architectureRole = "checked_adapter"
+writes = []
+uses = ["cognitive.read", "kernel.authority"]
+owner = "cognitive-platform"
+deputy = "security-authority"
+denies = ["write_authority", "blind_retry"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-memory-federation"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "MEM-3-FEDERATION"
+technicalDocument = "docs/modules/memory.federation/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-memory-federation"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-memory-federation"
+compileLayer = 1
+ciGroups = ["learning", "lifecycle"]

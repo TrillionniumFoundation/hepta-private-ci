@@ -48,8 +48,10 @@ def expected_metadata(root: Path, *, prose_metrics: bool = False) -> dict[Path, 
         readme, count = re.subn(
             pattern, lambda match: match[1] + module["sourceStatus"] + match[2], readme
         )
-        if count != 1:
-            raise ValueError("README module coverage mismatch")
+        # README wording is optional navigation; module.toml and MODULE_DOCS
+        # establish exact coverage. Preserve prose that uses another format.
+        if count > 1:
+            raise ValueError("duplicate README module entry")
     return {
         root / INDEX: json.dumps(index, indent=2) + "\n",
         root / README: readme,

@@ -478,13 +478,13 @@ mod tests {
     use crate::ParameterMutationSurfaceV1;
     use crate::build_parameter_mutation_policy_v1;
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value).unwrap_or_else(|error| panic!("id {value}: {error}"))
     }
-    fn digest(value: &[u8]) -> Digest32 {
+    pub(super) fn digest(value: &[u8]) -> Digest32 {
         Digest32::of_bytes(value)
     }
-    fn profile() -> ParameterGeneratorProfileV3 {
+    pub(super) fn profile() -> ParameterGeneratorProfileV3 {
         ParameterGeneratorProfileV3 {
             selected_artifact_digest: digest(b"artifact"),
             window: ProposalWindowV2 {
@@ -636,3 +636,7 @@ mod tests {
         ));
     }
 }
+
+#[cfg(test)]
+#[path = "parameter_role_material_tests.rs"]
+mod role_materials;

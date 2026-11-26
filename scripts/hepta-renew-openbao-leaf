@@ -1,0 +1,253 @@
+#!/usr/bin/python3 -I
+"""Renew a local OpenBao leaf in place under the existing pinned Root CA."""
+
+import argparse
+from contextlib import contextmanager
+from datetime import datetime, timedelta, timezone
+import fcntl
+import hashlib
+import ipaddress
+import json
+import os
+from pathlib import Path
+import pwd
+import re
+import socket
+import ssl
+import stat
+import subprocess
+import tempfile
+import time
+import urllib.request
+
+from cryptography import x509
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.x509.oid import ExtendedKeyUsageOID
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def utc_time(certificate, name):
+    current = getattr(certificate, name + "_utc", None)
+    return current if current is not None else getattr(certificate, name).replace(tzinfo=timezone.utc)
+
+
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate configuration field")
+        result[key] = value
+    return result
+
+
+def stable(info):
+    return (info.st_dev, info.st_ino, info.st_uid, info.st_gid, info.st_mode,
+            info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+
+@contextmanager
+def protected_file(path, uid=0, private=False):
+    path = Path(path)
+    if not path.is_absolute() or path != Path(os.path.normpath(path)):
+        raise ValueError("absolute canonical path required")
+    for parent in path.parents:
+        info = parent.lstat()
+        if not stat.S_ISDIR(info.st_mode) or info.st_uid not in (0, uid) or info.st_mode & 0o022:
+            raise ValueError("unprotected file ancestor")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
+    try:
+        info = os.fstat(fd)
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != uid or info.st_nlink != 1
+                or info.st_mode & 0o022 or info.st_size > 65536
+                or (private and stat.S_IMODE(info.st_mode) != 0o600)):
+            raise ValueError("unprotected bounded file")
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        data = os.read(fd, 65537)
+        if len(data) > 65536 or stable(info) != stable(os.fstat(fd)) or stable(info) != stable(path.lstat()):
+            raise ValueError("file changed during read")
+        yield data, info
+    finally:
+        os.close(fd)
+
+
+def validate_leaf(ca, leaf):
+    public = lambda key: key.public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
+    if (not ca.extensions.get_extension_for_class(x509.BasicConstraints).value.ca
+            or leaf.extensions.get_extension_for_class(x509.BasicConstraints).value.ca
+            or public(ca.public_key()) == public(leaf.public_key())):
+        raise ValueError("distinct original CA and leaf key bindings required")
+    leaf.verify_directly_issued_by(ca)
+    sans = leaf.extensions.get_extension_for_class(x509.SubjectAlternativeName).value
+    if set(sans) != {x509.IPAddress(ipaddress.ip_address("127.0.0.1")), x509.DNSName("localhost")}:
+        raise ValueError("exact local listener SAN required")
+    if list(leaf.extensions.get_extension_for_class(x509.ExtendedKeyUsage).value) != [ExtendedKeyUsageOID.SERVER_AUTH]:
+        raise ValueError("server-only leaf required")
+
+
+def renewed_certificate(ca_bytes, ca_key_bytes, leaf_bytes, leaf_key_bytes, now, valid_days):
+    ca = x509.load_pem_x509_certificate(ca_bytes)
+    leaf = x509.load_pem_x509_certificate(leaf_bytes)
+    validate_leaf(ca, leaf)
+    ca_key = serialization.load_pem_private_key(ca_key_bytes, password=None)
+    leaf_key = serialization.load_pem_private_key(leaf_key_bytes, password=None)
+    public = lambda key: key.public_bytes(serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo)
+    if (not isinstance(ca_key, rsa.RSAPrivateKey) or ca_key.key_size < 3072
+            or not isinstance(leaf_key, rsa.RSAPrivateKey) or leaf_key.key_size < 3072
+            or public(ca_key.public_key()) != public(ca.public_key())
+            or public(leaf_key.public_key()) != public(leaf.public_key())):
+        raise ValueError("original CA and leaf key bindings required")
+    end = min(now + timedelta(days=valid_days), utc_time(ca, "not_valid_after") - timedelta(hours=1))
+    if now < utc_time(ca, "not_valid_before") or end <= now + timedelta(days=1):
+        raise ValueError("existing pinned CA requires operator replacement")
+    builder = (x509.CertificateBuilder().subject_name(leaf.subject).issuer_name(ca.subject)
+               .public_key(leaf_key.public_key()).serial_number(x509.random_serial_number())
+               .not_valid_before(max(now - timedelta(minutes=1), utc_time(ca, "not_valid_before")))
+               .not_valid_after(end))
+    for extension in leaf.extensions:
+        builder = builder.add_extension(extension.value, extension.critical)
+    renewed = builder.sign(ca_key, hashes.SHA256())
+    renewed.verify_directly_issued_by(ca)
+    return renewed.public_bytes(serialization.Encoding.PEM)
+
+
+def replace_certificate(path, data, uid, gid):
+    path = Path(path)
+    fd, temporary = tempfile.mkstemp(prefix=".hepta-leaf-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fchown(stream.fileno(), uid, gid)
+            os.fchmod(stream.fileno(), 0o600)
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+        parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            os.fsync(parent)
+        finally:
+            os.close(parent)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def command(args):
+    if args[0] != "systemctl":
+        raise ValueError("only fixed service control is supported")
+    args = ["/usr/bin/systemctl", *args[1:]]
+    result = subprocess.run(args, capture_output=True, timeout=10, check=True)
+    return result.stdout.decode().strip()
+
+
+class ListenerNotCurrent(ValueError):
+    """The durable certificate is valid but not yet loaded by the listener."""
+
+
+def observe(config, cert_bytes, ca_bytes):
+    # OpenBao reloads the startup paths on HUP; this helper never changes them.
+    context = ssl.create_default_context(cadata=ca_bytes.decode())
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    with socket.create_connection(("127.0.0.1", config["port"]), timeout=3) as raw:
+        with context.wrap_socket(raw, server_hostname="127.0.0.1") as connection:
+            expected = x509.load_pem_x509_certificate(cert_bytes).public_bytes(serialization.Encoding.DER)
+            if connection.getpeercert(binary_form=True) != expected:
+                raise ListenerNotCurrent("actual listener has not loaded the exact leaf")
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=context))
+    with opener.open(f'https://127.0.0.1:{config["port"]}/v1/sys/health', timeout=3) as response:
+        health = json.load(response)
+    if not health["initialized"] or health["sealed"] or health["standby"]:
+        raise ValueError("original provider is not active and unsealed")
+
+
+def reload_exact(config, cert_bytes, ca_bytes, pid):
+    command(["systemctl", "kill", "--kill-whom=main", "--signal=HUP", config["service"]])
+    deadline = time.monotonic() + 15
+    while True:
+        try:
+            observe(config, cert_bytes, ca_bytes)
+            break
+        except (OSError, ListenerNotCurrent):
+            if time.monotonic() >= deadline:
+                raise
+            time.sleep(0.1)
+    if command(["systemctl", "show", config["service"], "-p", "MainPID", "--value"]) != pid:
+        raise ValueError("provider process changed during reload")
+
+
+def renew(config):
+    fields = {"schema", "service", "provider_uid", "provider_gid", "port", "provider_config",
+              "provider_config_sha256", "leaf_cert", "leaf_key", "ca_cert", "ca_signing_key",
+              "ca_sha256", "renew_before_days", "valid_days"}
+    if (set(config) != fields or config["schema"] != "hepta.openbao.pinned-leaf-renewal.v1"
+            or not re.fullmatch(r"hepta-openbao-[a-z0-9-]+\.service", config["service"])
+            or type(config["provider_uid"]) is not int or config["provider_uid"] <= 0
+            or type(config["provider_gid"]) is not int or config["provider_gid"] <= 0
+            or type(config["port"]) is not int or not 1024 <= config["port"] <= 65535
+            or type(config["renew_before_days"]) is not int or type(config["valid_days"]) is not int
+            or not 1 <= config["renew_before_days"] < config["valid_days"] <= 90):
+        raise ValueError("unsupported fixed local provider policy")
+    uid, gid = config["provider_uid"], config["provider_gid"]
+    user = command(["systemctl", "show", config["service"], "-p", "User", "--value"])
+    account = pwd.getpwnam(user)
+    if account.pw_uid != uid or account.pw_gid != gid:
+        raise ValueError("actual service user differs from enrolled provider")
+    pid_args = ["systemctl", "show", config["service"], "-p", "MainPID", "--value"]
+    pid = command(pid_args)
+    if not pid.isdigit() or int(pid) == 0:
+        raise ValueError("original provider is not running")
+    with protected_file(config["provider_config"]) as (hcl, _), protected_file(config["ca_cert"], private=True) as (ca, _):
+        if sha(hcl) != config["provider_config_sha256"] or sha(ca) != config["ca_sha256"]:
+            raise ValueError("original provider configuration or CA pin changed")
+        for field, path in [("tls_cert_file", config["leaf_cert"]), ("tls_key_file", config["leaf_key"])]:
+            if re.findall(r'(?m)^\s*' + field + r'\s*=\s*"([^"]+)"\s*$', hcl.decode()) != [path]:
+                raise ValueError("original startup TLS path changed")
+        with protected_file(config["leaf_cert"], uid, private=True) as (old, old_info):
+            if old_info.st_gid != gid:
+                raise ValueError("original leaf group differs from provider policy")
+            now = datetime.now(timezone.utc)
+            leaf = x509.load_pem_x509_certificate(old)
+            validate_leaf(x509.load_pem_x509_certificate(ca), leaf)
+            if utc_time(leaf, "not_valid_before") > now:
+                raise ValueError("host clock precedes existing leaf")
+            if utc_time(leaf, "not_valid_after") > now:
+                try:
+                    observe(config, old, ca)
+                except ListenerNotCurrent:
+                    # Recover a previous atomic replacement interrupted before
+                    # HUP without issuing another certificate or changing keys.
+                    reload_exact(config, old, ca, pid)
+            if utc_time(leaf, "not_valid_after") - now > timedelta(days=config["renew_before_days"]):
+                return {"state": "current", "service": config["service"], "pid": int(pid), "leaf_sha256": sha(old)}
+            with protected_file(config["leaf_key"], uid, private=True) as (key, key_info), protected_file(config["ca_signing_key"], private=True) as (ca_key, _):
+                if key_info.st_gid != gid:
+                    raise ValueError("original leaf key group differs from provider policy")
+                fresh = renewed_certificate(ca, ca_key, old, key, now, config["valid_days"])
+                if stable(Path(config["leaf_cert"]).lstat()) != stable(old_info) or stable(Path(config["leaf_key"]).lstat()) != stable(key_info):
+                    raise ValueError("original leaf files changed before replacement")
+                replace_certificate(config["leaf_cert"], fresh, uid, gid)
+            try:
+                reload_exact(config, fresh, ca, pid)
+            except Exception:
+                replace_certificate(config["leaf_cert"], old, uid, gid)
+                command(["systemctl", "kill", "--kill-whom=main", "--signal=HUP", config["service"]])
+                raise
+    return {"state": "renewed", "service": config["service"], "pid": int(pid), "leaf_sha256": sha(fresh), "ca_sha256": sha(ca)}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, required=True)
+    args = parser.parse_args()
+    if os.geteuid() != 0:
+        raise ValueError("Root operator service required")
+    with protected_file(args.config) as (data, _):
+        config = json.loads(data, object_pairs_hook=unique_object)
+        print(json.dumps(renew(config), sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

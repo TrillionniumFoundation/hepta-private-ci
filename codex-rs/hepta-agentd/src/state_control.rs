@@ -3,19 +3,19 @@
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::TaskFlowStepObservation;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::CognitiveStoreError;
-use codex_hepta_memory::FederationCapabilityId;
-use codex_hepta_memory::FederationCapabilityState;
-use codex_hepta_memory::FederationCapabilityStatus;
-use codex_hepta_memory::FederationGrantRequest;
-use codex_hepta_memory::FederationGrantScope;
-use codex_hepta_memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
-use codex_hepta_memory::workspace_binding_digest;
+use codex_hepta_agent_components::automation::AutomationError;
+use codex_hepta_agent_components::automation::TaskFlowStepObservation;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::CognitiveStoreError;
+use codex_hepta_agent_components::memory::FederationCapabilityId;
+use codex_hepta_agent_components::memory::FederationCapabilityState;
+use codex_hepta_agent_components::memory::FederationCapabilityStatus;
+use codex_hepta_agent_components::memory::FederationGrantRequest;
+use codex_hepta_agent_components::memory::FederationGrantScope;
+use codex_hepta_agent_components::memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
+use codex_hepta_agent_components::memory::workspace_binding_digest;
 
 use crate::AgentdError;
 use crate::AgentdPayload;
@@ -29,6 +29,9 @@ use crate::cognitive_context::CognitiveContextError;
 use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
+
+#[path = "live_run_admission.rs"]
+mod live_run_admission;
 
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
@@ -77,13 +80,80 @@ impl AgentdState {
                 runtime.fenced,
             )
         };
-        let automation = self.automation.lock().map_err(poisoned_state)?.clone();
+        let automation = self
+            .automation
+            .lock()
+            .map_err(poisoned_state)?
+            .serving()
+            .cloned();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         // Automation remains an explicitly optional plane and therefore does
         // not gate core Agent readiness. The required cognitive owner is
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::SelfIterationCurrentRound => {
+                self.self_iteration_current_round().await?
+            }
+            crate::AgentdMethod::PrepareParameterInputFromContextV2 {
+                round_hex,
+                context_source,
+                context_digest,
+                search_source,
+                search_digest,
+            } => {
+                self.prepare_parameter_input_from_context_payload(
+                    round_hex,
+                    context_source,
+                    context_digest,
+                    search_source,
+                    search_digest,
+                )
+                .await?
+            }
+            crate::AgentdMethod::RefreshParameterInputContextV2 {
+                round_hex,
+                context_source,
+                context_digest,
+            } => {
+                self.refresh_parameter_input_context_payload(
+                    round_hex,
+                    context_source,
+                    context_digest,
+                )
+                .await?
+            }
+            crate::AgentdMethod::PrepareParameterInputV1 {
+                round_hex,
+                search_source,
+                search_digest,
+            } => {
+                self.prepare_parameter_input_payload(round_hex, search_source, search_digest)
+                    .await?
+            }
+            crate::AgentdMethod::ResolveParameterAdmissionV1 { query } => {
+                self.resolve_parameter_admission(query).await?
+            }
+            crate::AgentdMethod::PreparedGenerationV2 {
+                generation,
+                configuration_digest,
+                body_digest,
+            } => self.prepared_generation(generation, configuration_digest, body_digest)?,
+            crate::AgentdMethod::PlasticityCompletedProposal { proposal_id } => {
+                self.plasticity_completed_proposal(proposal_id).await?
+            }
+            crate::AgentdMethod::SelfIterationRoundStatus {
+                goal_id,
+                canonical_policy_digest,
+            } => {
+                self.self_iteration_round_status(goal_id, canonical_policy_digest)
+                    .await?
+            }
+            method @ (crate::AgentdMethod::SecretsConsumeOriginal { .. }
+            | crate::AgentdMethod::SecretsOriginalStatus { .. }
+            | crate::AgentdMethod::SecretsRecoverOriginal { .. }) => {
+                self.secrets_original(method).await?
+            }
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
@@ -93,6 +163,20 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
+                capabilities.push(
+                    crate::AgentdCapability::new(
+                        crate::AGENTD_CAPABILITY_AUTOMATION_LIST_PAGE_V1,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Protocol)?,
+                );
+                if self.secrets_capability_available() {
+                    capabilities.push(
+                        crate::AgentdCapability::new("secrets.original_kv_v2", 1, 0)
+                            .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.automation_effect_host().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new(
@@ -179,9 +263,7 @@ impl AgentdState {
                 required_ports_ready,
                 admission_open,
             }),
-            crate::AgentdMethod::Drain => {
-                AgentdPayload::Drain(self.request_drain(automation.as_ref()).await?)
-            }
+            crate::AgentdMethod::Drain => AgentdPayload::Drain(self.request_drain().await?),
             crate::AgentdMethod::SessionIngress => {
                 if lifecycle != AgentLifecycle::Running
                     || !app_server_ready
@@ -269,7 +351,7 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
+                let result = crate::cognitive_context::read_with_retrieval_executor(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
@@ -279,6 +361,7 @@ impl AgentdState {
                     self.cognitive_retrieval_context.get(),
                     self.cognitive_retrieval_learning.get(),
                     Some(request_id),
+                    &self.retrieval_executor,
                 )
                 .await;
                 self.refresh_generation()?;
@@ -349,7 +432,7 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let result = crate::cognitive_context::revalidate_with_retrieval_context(
+                let result = crate::cognitive_context::revalidate_with_retrieval_executor(
                     store.as_ref(),
                     &self.identity.agent_id,
                     &snapshot_digest,
@@ -360,6 +443,7 @@ impl AgentdState {
                     self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
                     self.cognitive_retrieval_context.get(),
+                    &self.retrieval_executor,
                 )
                 .await;
                 self.refresh_generation()?;
@@ -432,55 +516,116 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::RunStart { snapshot } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                require_current_run_identity(
-                    &self.identity,
-                    current_generation,
-                    snapshot.generation,
-                    &snapshot.fence_digest,
-                )?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .start_run(now_ms()?, internal_run_snapshot(snapshot))
-                    .map_err(run_error)?;
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    require_current_run_identity(
+                        &self.identity,
+                        generation,
+                        snapshot.generation,
+                        &snapshot.fence_digest,
+                    )?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .start_run(now_ms()?, internal_run_snapshot(snapshot))
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunAttachContext {
                 expected_revision,
                 attachment,
             } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                require_current_run_identity(
-                    &self.identity,
-                    current_generation,
-                    attachment.generation,
-                    &attachment.fence_digest,
-                )?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .attach_context(
-                        now_ms()?,
-                        expected_revision,
-                        internal_context_attachment(attachment),
-                    )
-                    .map_err(run_error)?;
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    require_current_run_identity(
+                        &self.identity,
+                        generation,
+                        attachment.generation,
+                        &attachment.fence_digest,
+                    )?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .attach_context(
+                            now_ms()?,
+                            expected_revision,
+                            internal_context_attachment(attachment),
+                        )
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunMarkDispatched {
                 run_id,
                 expected_revision,
             } => {
-                require_run_admission_ready(lifecycle, app_server_ready, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .mark_dispatched(now_ms()?, &run_id, expected_revision)
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    live_run_admission::require_current_dispatch(self, runs, &run_id, generation)?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .mark_dispatched(now_ms()?, &run_id, expected_revision)
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunMarkDispatchedBound {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_commitment_digest,
+            } => {
+                let receipt = self.with_live_run_admission(|runs, generation| {
+                    live_run_admission::require_current_dispatch(self, runs, &run_id, generation)?;
+                    let mut candidate = runs.clone();
+                    let receipt = candidate
+                        .mark_dispatched_bound(
+                            now_ms()?,
+                            &run_id,
+                            expected_revision,
+                            dispatch_binding_digest,
+                            pre_effect_abort_commitment_digest,
+                        )
+                        .map_err(run_error)?;
+                    if !receipt.idempotent {
+                        runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                    }
+                    Ok(receipt)
+                })?;
+                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
+            }
+            crate::AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                abort_nonce_hex,
+                proof_digest,
+                reason,
+            } => {
+                require_run_reconciliation_ready(lifecycle, fenced)?;
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
+                    .abort_before_effect(
+                        &run_id,
+                        expected_revision,
+                        &dispatch_binding_digest,
+                        &abort_nonce_hex,
+                        &proof_digest,
+                        &reason,
+                    )
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunCancel {
@@ -489,12 +634,14 @@ impl AgentdState {
                 reason,
             } => {
                 require_run_reconciliation_ready(lifecycle, fenced)?;
-                let (disposition, receipt) = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let (disposition, receipt) = candidate
                     .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunCancellation(crate::AgentRunCancellation {
                     disposition: wire_cancellation_disposition(disposition),
                     receipt: wire_run_receipt(receipt),
@@ -507,10 +654,9 @@ impl AgentdState {
                 terminal_observed,
             } => {
                 require_run_reconciliation_ready(lifecycle, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
                     .observe_terminal(
                         &run_id,
                         expected_revision,
@@ -518,6 +664,9 @@ impl AgentdState {
                         terminal_observed,
                     )
                     .map_err(run_error)?;
+                if !receipt.idempotent {
+                    runs.publish_candidate(candidate, ()).map_err(run_error)?;
+                }
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunStatus { run_id } => {
@@ -530,17 +679,23 @@ impl AgentdState {
                     .map(wire_run_receipt);
                 AgentdPayload::RunStatus { run }
             }
+            crate::AgentdMethod::CanaryOperationReceipt { query } => {
+                self.canary_operation_receipt(query)?
+            }
+            crate::AgentdMethod::NativeModelReceipt { request_id } => {
+                self.native_model_receipt(request_id).await?
+            }
             crate::AgentdMethod::RunReleaseClosed {
                 run_id,
                 expected_revision,
             } => {
                 require_run_reconciliation_ready(lifecycle, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                let receipt = candidate
                     .remove_closed_run(&run_id, expected_revision)
                     .map_err(run_error)?;
+                runs.publish_candidate(candidate, ()).map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::AutomationCreate { draft } => {
@@ -616,8 +771,10 @@ impl AgentdState {
                     );
                 };
                 let wire_payload = decode_effect_wire_hex(&wire_payload_hex)?;
+                let reservation = self.reserve_automation_effect_worker()?;
                 let receipt = host
-                    .execute(
+                    .execute_reserved(
+                        reservation,
                         store,
                         &intent,
                         &wire_payload,
@@ -657,8 +814,9 @@ impl AgentdState {
                         automation_effect_unavailable(),
                     );
                 };
+                let reservation = self.reserve_automation_effect_worker()?;
                 let result = host
-                    .reconcile(store, &run_id, &step_id, attempt, now_ms()?)
+                    .reconcile_reserved(reservation, store, &run_id, &step_id, attempt, now_ms()?)
                     .await?;
                 self.fence_after_durable_change()?;
                 let snapshot = match result {
@@ -703,6 +861,35 @@ impl AgentdState {
                         .automation_result(store.list_tasks(usize::from(limit)).await, |tasks| {
                             AgentdPayload::AutomationTasks { tasks }
                         })?,
+                    None => automation_unavailable(),
+                }
+            }
+            crate::AgentdMethod::AutomationListPageV1 { limit, after } => {
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
+                if !(1..=256).contains(&limit) {
+                    return Err(AgentdError::Invalid(
+                        "automation list limit must be between 1 and 256".to_string(),
+                    ));
+                }
+                match automation {
+                    Some(store) => self.automation_result(
+                        store
+                            .list_task_page_v1(
+                                usize::from(limit),
+                                after,
+                                crate::MAX_AUTOMATION_LIST_PAGE_BYTES,
+                            )
+                            .await,
+                        AgentdPayload::AutomationTasksPageV1,
+                    )?,
                     None => automation_unavailable(),
                 }
             }
@@ -780,14 +967,9 @@ impl AgentdState {
                         "memory federation consumer must be another registered AgentId".to_string(),
                     ));
                 }
-                let snapshot = self.registry.load()?;
-                let consumer = snapshot.agent(&consumer_agent_id).ok_or_else(|| {
-                    AgentdError::Invalid(format!(
-                        "memory federation consumer {consumer_agent_id} is not registered"
-                    ))
-                })?;
+                let consumer = self.registry.load_agent_manifest(&consumer_agent_id)?;
                 let consumer_workspace_sha256 =
-                    workspace_binding_digest(consumer.manifest.workspace.as_path());
+                    workspace_binding_digest(consumer.workspace.as_path());
                 let (owner_access, owner_scope) = match owner_scope {
                     crate::MemoryFederationScopeKind::AgentPrivate => (
                         CognitiveAccess::agent_private(self.identity.agent_id.clone()),
@@ -1073,7 +1255,7 @@ fn automation_effect_unavailable() -> AgentdPayload {
 }
 
 fn effect_snapshot(
-    receipt: codex_hepta_automation::TaskFlowStepReceipt,
+    receipt: codex_hepta_agent_components::automation::TaskFlowStepReceipt,
 ) -> Result<crate::AutomationEffectSnapshot, AgentdError> {
     let observation = match receipt.observation {
         Some(TaskFlowStepObservation::Succeeded) => crate::AutomationEffectObservation::Succeeded,
@@ -1169,7 +1351,7 @@ fn require_cognitive_control_ready(
 }
 
 fn owner_access_for_scope(
-    owner_agent_id: &codex_hepta_contracts::AgentId,
+    owner_agent_id: &codex_hepta_agent_components::contracts::AgentId,
     owner_workspace: &std::path::Path,
     scope: &CognitiveScope,
 ) -> Result<CognitiveAccess, AgentdError> {
@@ -1219,20 +1401,6 @@ fn federation_snapshot(
     })
 }
 
-fn require_run_admission_ready(
-    lifecycle: AgentLifecycle,
-    app_server_ready: bool,
-    fenced: bool,
-) -> Result<(), AgentdError> {
-    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
-        Ok(())
-    } else {
-        Err(AgentdError::Protocol(
-            "run admission is unavailable until this Agent generation is ready".to_string(),
-        ))
-    }
-}
-
 fn require_run_reconciliation_ready(
     lifecycle: AgentLifecycle,
     fenced: bool,
@@ -1266,7 +1434,7 @@ fn require_current_run_identity(
     material.extend_from_slice(identity.agent_id.as_str().as_bytes());
     material.extend_from_slice(&identity.spawn_generation.to_be_bytes());
     material.extend_from_slice(&current_generation.to_be_bytes());
-    let expected = codex_hepta_contracts::Sha256Digest::for_bytes(&material);
+    let expected = codex_hepta_agent_components::contracts::Sha256Digest::for_bytes(&material);
     if fence_digest != expected.as_str() {
         return Err(AgentdError::GenerationFenced(
             "run fence digest does not match the current Agent generation".to_string(),
@@ -1310,6 +1478,7 @@ fn internal_run_phase(value: crate::AgentRunPhase) -> crate::RunPhase {
         crate::AgentRunPhase::Admitted => crate::RunPhase::Admitted,
         crate::AgentRunPhase::ContextAttached => crate::RunPhase::ContextAttached,
         crate::AgentRunPhase::Dispatched => crate::RunPhase::Dispatched,
+        crate::AgentRunPhase::AbortedBeforeEffect => crate::RunPhase::AbortedBeforeEffect,
         crate::AgentRunPhase::Cancelling => crate::RunPhase::Cancelling,
         crate::AgentRunPhase::Cancelled => crate::RunPhase::Cancelled,
         crate::AgentRunPhase::Succeeded => crate::RunPhase::Succeeded,
@@ -1323,6 +1492,7 @@ fn wire_run_phase(value: crate::RunPhase) -> crate::AgentRunPhase {
         crate::RunPhase::Admitted => crate::AgentRunPhase::Admitted,
         crate::RunPhase::ContextAttached => crate::AgentRunPhase::ContextAttached,
         crate::RunPhase::Dispatched => crate::AgentRunPhase::Dispatched,
+        crate::RunPhase::AbortedBeforeEffect => crate::AgentRunPhase::AbortedBeforeEffect,
         crate::RunPhase::Cancelling => crate::AgentRunPhase::Cancelling,
         crate::RunPhase::Cancelled => crate::AgentRunPhase::Cancelled,
         crate::RunPhase::Succeeded => crate::AgentRunPhase::Succeeded,
@@ -1342,6 +1512,9 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
         generation: value.generation,
         fence_digest: value.fence_digest,
         deadline_ms: value.deadline_ms,
+        dispatch_binding_digest: value.dispatch_binding_digest,
+        pre_effect_abort_commitment_digest: value.pre_effect_abort_commitment_digest,
+        pre_effect_abort_proof_digest: value.pre_effect_abort_proof_digest,
         cancel_reason: value.cancel_reason,
         cancel_ack_deadline_ms: value.cancel_ack_deadline_ms,
         terminal_observed: value.terminal_observed,

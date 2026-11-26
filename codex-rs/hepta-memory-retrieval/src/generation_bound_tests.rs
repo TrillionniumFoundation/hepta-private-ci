@@ -159,9 +159,23 @@ fn high_risk_contradiction_forces_abstention() {
     let policy = policy();
     let group = digest("contradiction-group");
     let mut first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
-    first.contradiction_group_digest = Some(group);
+    first.contradiction_group_digest = Some(
+        crate::ContradictionEvidenceV2::new(
+            group,
+            cue.snapshot_key.vector_digest,
+            crate::PropositionPolarityV2::Affirmed,
+        )
+        .expect("affirmed proposition"),
+    );
     let mut second = candidate(record(2), RetrievalChannelV1::Entity, 1);
-    second.contradiction_group_digest = Some(group);
+    second.contradiction_group_digest = Some(
+        crate::ContradictionEvidenceV2::new(
+            group,
+            cue.snapshot_key.vector_digest,
+            crate::PropositionPolarityV2::Denied,
+        )
+        .expect("denied proposition"),
+    );
     let packet = recall(&cue, &policy, vec![first, second])
         .unwrap_or_else(|error| panic!("valid abstention: {error}"));
     assert_eq!(
@@ -567,6 +581,41 @@ fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
         adapt_generation_bound_recall_to_canonical_shadow_v1(&legacy, wrong_selection),
         Err(RecallErrorV1::CanonicalAdapter(
             "missing exact canonical binding for legacy selection"
+        ))
+    );
+}
+
+#[test]
+fn recomputed_public_receipts_bound_nested_evidence_and_policy_omissions() {
+    let candidates = vec![
+        candidate(record(1), RetrievalChannelV1::Lexical, 1),
+        candidate(record(1), RetrievalChannelV1::Entity, 1),
+    ];
+    let original = build_candidate_union(&cue(), &policy(), candidates.clone()).expect("union");
+    let mut union = original.clone();
+    union.omitted_by_channel_limits = 512;
+    union.union_digest = union.compute_union_digest();
+    assert_eq!(union.validate(), Err(RecallErrorV1::CandidateLimitExceeded));
+    let mut supports = vec![
+        digest("support:1"),
+        digest("support:2"),
+        digest("support:3"),
+    ];
+    supports.sort();
+    let mut union = original;
+    union.entries[0].support_digests = supports.clone();
+    union.union_digest = union.compute_union_digest();
+    assert_eq!(
+        union.validate(),
+        Err(RecallErrorV1::InvalidUnionEntry("memory:1".to_string()))
+    );
+    let mut packet = recall(&cue(), &policy(), candidates).expect("recall");
+    packet.selections[0].support_digests = supports;
+    packet.packet_digest = packet.compute_packet_digest();
+    assert_eq!(
+        packet.validate(),
+        Err(RecallErrorV1::InvalidRecallSelection(
+            "memory:1".to_string()
         ))
     );
 }

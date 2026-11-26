@@ -299,6 +299,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     if request.run.request_digest.is_zero() {
         return Err(E::Binding("empty request"));
     }
+    ledger.ensure_current_trust(now).map_err(E::Ledger)?;
     let snapshot_digest = request.run.snapshot.digest().map_err(E::Pipeline)?;
     verify_dataset_snapshot_receipt_v3(request.dataset, now).map_err(E::Dataset)?;
     let qualification = request.qualification;

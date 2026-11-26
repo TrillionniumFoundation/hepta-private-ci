@@ -50,6 +50,9 @@ use super::thread_processor::THREAD_LIST_DEFAULT_LIMIT;
 use super::thread_processor::THREAD_LIST_MAX_LIMIT;
 use super::turn_processor::validate_user_input_image_urls;
 
+#[path = "thread_queue_observation.rs"]
+mod observation;
+
 const DIRECT_INPUT_TO_UNLOADED_SUBAGENT_ERROR: &str =
     "direct app-server input is not allowed for unloaded spawned sub-agents";
 
@@ -58,6 +61,7 @@ pub(crate) struct ThreadQueueRequestProcessor {
     thread_store: Arc<dyn ThreadStore>,
     outgoing: Arc<OutgoingMessageSender>,
     service: Option<Arc<QueuedItemService>>,
+    state_db: Option<codex_rollout::StateDbHandle>,
 }
 
 impl ThreadQueueRequestProcessor {
@@ -66,12 +70,14 @@ impl ThreadQueueRequestProcessor {
         thread_store: Arc<dyn ThreadStore>,
         outgoing: Arc<OutgoingMessageSender>,
         service: Option<Arc<QueuedItemService>>,
+        state_db: Option<codex_rollout::StateDbHandle>,
     ) -> Self {
         Self {
             thread_manager,
             thread_store,
             outgoing,
             service,
+            state_db,
         }
     }
 

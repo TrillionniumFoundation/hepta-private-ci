@@ -5,22 +5,45 @@ name = "codex-hepta-supervisor"
 version.workspace = true
 publish = false
 
+[package.metadata.cargo-shear]
+# v1.11.2 does not normalize the absolute ../ reference in hepta-fleetctl's
+# #[path] module. The binary compiles this file; only the orphan diagnostic is
+# suppressed, while imports still participate in dependency checking.
+ignored-paths = ["src/fleet_cli.rs"]
+
 [lib]
 name = "codex_hepta_supervisor"
 path = "src/lib.rs"
-doctest = true
+doctest = false
 
 [features]
 default = []
-# Offline/shadow harness API; never enabled by a product dependency.
+local-host = ["codex-hepta-fleet/durable-store"]
+# Offline/shadow harness API and deterministic durability fault points; never
+# enabled by a product dependency.
 qualification = []
-# Explicit build opt-in for externally authorized mutation; default daemons
-# remain lifecycle-only and keep signed mutation admission fail-closed.
+# Deprecated compatibility name for the daemon verifier gate. New product
+# manifests must request `production-verifier` explicitly.
 production-authority = []
+# Public-key verification and signed mutation admission for hepta-supervisord.
+# This feature never enables private-key loaders or signer binaries.
+production-verifier = ["production-authority"]
+# Offline key-custody and signer tools. This implies the verifier types because
+# requests and receipts are checked with the same canonical contracts.
+offline-authority-tools = ["production-verifier"]
+# Explicit root-owned ordinary model issuer; never independent qualification.
+local-model-authority = ["codex-hepta-fleet/durable-store"]
+# Credential custody and HTTP streaming remain inside the ordinary model owner.
+local-model-relay = ["local-model-authority", "dep:codex-login", "dep:codex-http-client", "dep:http", "dep:zstd"]
 
 [[bin]]
 name = "hepta-supervisord"
 path = "src/main.rs"
+test = false
+
+[[bin]]
+name = "hepta-fleetctl"
+path = "src/bin/hepta-fleetctl.rs"
 test = false
 
 [[bin]]
@@ -29,28 +52,45 @@ path = "src/bin/hepta-supervisor-intent-recovery.rs"
 test = false
 
 [[bin]]
+name = "hepta-supervisor-recovery-diagnose"
+path = "src/bin/hepta-supervisor-recovery-diagnose.rs"
+test = false
+
+[[bin]]
+name = "hepta-supervisor-authority-bundle"
+path = "src/bin/hepta-supervisor-authority-bundle.rs"
+test = false
+required-features = ["offline-authority-tools"]
+
+[[bin]]
 name = "hepta-authority-signer"
 path = "src/bin/hepta-authority-signer.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
 
 [[bin]]
 name = "hepta-final-use-signer"
 path = "src/bin/hepta-final-use-signer.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
 
 [[bin]]
 name = "hepta-final-use-approver"
 path = "src/bin/hepta-final-use-approver.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
 
 [[bin]]
 name = "hepta-final-use-revocation-signer"
 path = "src/bin/hepta-final-use-revocation-signer.rs"
 test = false
-required-features = ["production-authority"]
+required-features = ["offline-authority-tools"]
+
+[[bin]]
+name = "hepta-model-authority"
+path = "src/bin/hepta-model-authority.rs"
+test = false
+required-features = ["local-model-authority"]
 
 [lints]
 workspace = true
@@ -68,12 +108,16 @@ codex-hepta-matrix-protocol = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-hepta-types = { workspace = true }
 codex-uds = { workspace = true }
+codex-login = { workspace = true, optional = true }
+codex-http-client = { workspace = true, optional = true }
 constant_time_eq = { workspace = true }
 ed25519-dalek = { workspace = true }
 libc = { workspace = true }
 rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+http = { workspace = true, optional = true }
+zstd = { workspace = true, optional = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = [
@@ -90,6 +134,8 @@ uuid = { workspace = true, features = ["v4"] }
 zeroize = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-fleet = { workspace = true, features = ["durable-store"] }
+codex-utils-cargo-bin = { workspace = true }
 jsonschema = { version = "=0.33.0", default-features = false }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }

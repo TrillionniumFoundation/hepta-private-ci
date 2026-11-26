@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "deterministic test fixtures require successful setup; a setup error must fail the test immediately"
+)]
+
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 

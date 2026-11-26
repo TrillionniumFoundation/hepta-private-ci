@@ -1125,6 +1125,8 @@ ON CONFLICT(id) DO UPDATE SET
             .seal_thread_queues_for_deletion(thread_ids)
             .await?;
 
+        self.tombstone_thread_creations(thread_ids).await?;
+
         let thread_id_strings = thread_ids
             .iter()
             .map(ThreadId::to_string)

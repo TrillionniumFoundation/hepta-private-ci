@@ -9,6 +9,36 @@ from scripts.hepta_ci_scope import GROUPS, changed_paths, select
 
 
 class ScopeTests(unittest.TestCase):
+    def test_shared_git_object_reader_keeps_full_repository_coverage(self):
+        selected = select(["scripts/hepta_ci_git_objects.py"])
+        self.assertTrue(selected["full_repo"])
+        self.assertTrue(selected["native"])
+        self.assertTrue(selected["derived"])
+
+    def test_native_desktop_uses_its_own_cargo_boundary(self):
+        scope = select(["apps/hepta-native/src/retirement_rebuild.rs"])
+        self.assertTrue(scope["native_desktop"])
+        self.assertFalse(scope["native"])
+        self.assertFalse(scope["full_repo"])
+        self.assertFalse(
+            select(["docs/modules/desktop/TECHNICAL.md"])["native_desktop"]
+        )
+        self.assertFalse(
+            select(["codex-rs/hepta-supervisor/src/runtime.rs"])["native_desktop"]
+        )
+
+    def test_native_desktop_shared_contract_and_build_changes_keep_coverage(self):
+        for path in [
+            "codex-rs/hepta-contracts/src/lib.rs",
+            "codex-rs/hepta-private-state/src/lib.rs",
+            "codex-rs/keyring-store/src/lib.rs",
+            "codex-rs/utils/private-state/src/lib.rs",
+            "codex-rs/Cargo.lock",
+            "justfile",
+        ]:
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["native_desktop"])
+
     def test_repository_policy_regressions_keep_their_python_scope(self):
         paths = [
             "scripts/hepta_repository_controls.py",

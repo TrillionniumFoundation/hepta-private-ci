@@ -1,9 +1,10 @@
 #[cfg(target_os = "linux")]
 use std::fs::File;
 use std::io::Write;
+use std::time::Instant;
 
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::StableId;
 
 use super::RuntimeExecutableIdentity;
 use super::RuntimeExecutableOrigin;
@@ -76,8 +77,12 @@ fn empty_or_oversized_images_never_produce_a_manifest_fallback() {
 
 #[test]
 fn process_observation_caches_actual_executable_bytes() {
+    let started = Instant::now();
     let first = RuntimeExecutableIdentity::observe_current().expect("current process image");
+    let first_read_us = started.elapsed().as_micros();
+    let cached_started = Instant::now();
     let second = RuntimeExecutableIdentity::observe_current().expect("cached observation");
+    let cached_us = cached_started.elapsed().as_micros();
     assert!(std::ptr::eq(first, second));
     assert!(!first.artifact_digest().is_zero());
     assert!(first.bytes() > 0);
@@ -91,4 +96,13 @@ fn process_observation_caches_actual_executable_bytes() {
         .expect("actual image bytes");
         assert_eq!(first.artifact_digest(), actual);
     }
+    println!(
+        "{}",
+        serde_json::json!({
+            "executable_bytes": first.bytes(),
+            "first_read_us": first_read_us,
+            "cached_read_us": cached_us,
+            "complete_identity_check_us": started.elapsed().as_micros(),
+        })
+    );
 }

@@ -84,3 +84,41 @@ fn duplicate_sample_fails() {
         .push(value.dataset.transitions[0].clone());
     assert!(matches!(train(value), Err(Error::DuplicateSample(_))));
 }
+
+#[test]
+fn target_builder_uses_signed_nearest_ties_even_like_reference() {
+    let mut value = request();
+    value.dataset.transitions.truncate(1);
+    value.dataset.transitions[0].reward = FixedQ32::ZERO;
+    for (continuation, expected) in [(1, 0), (3, 2), (5, 2), (-1, 0), (-3, -2), (-5, -2)] {
+        value.dataset.transitions[0].next_value = FixedQ32::from_raw(continuation);
+        let artifact = must(build_targets(value.clone()));
+        assert_eq!(
+            artifact.targets,
+            vec![BellmanTarget {
+                sample_id: id("b"),
+                target: FixedQ32::from_raw(expected),
+            }]
+        );
+        let reference = must(evaluate_bellman_reference(BellmanReferencePlanV1 {
+            plan_id: id("reference"),
+            objective_digest: value.dataset.objective_digest,
+            sensor_core_digest: Digest32::of_bytes(b"sensor-core"),
+            gamma: value.gamma,
+            sensor_ids: vec![id("s")],
+            action_ids: vec![id("a"), id("b")],
+            cells: ["a", "b"]
+                .into_iter()
+                .map(|action| BellmanReferenceCellV1 {
+                    sensor_id: id("s"),
+                    action_id: id(action),
+                    reward: FixedQ32::ZERO,
+                    continuation_value: FixedQ32::from_raw(continuation),
+                    terminal: false,
+                    evidence_digest: Digest32::of_bytes(action.as_bytes()),
+                })
+                .collect(),
+        }));
+        assert_eq!(artifact.targets[0].target, reference.targets[0].target);
+    }
+}

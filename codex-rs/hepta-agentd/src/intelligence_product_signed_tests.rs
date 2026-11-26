@@ -1,10 +1,10 @@
 use super::*;
 use crate::intelligence_product::evaluation_tests::evidence_fixture;
-use codex_hepta_intelligence::build_legal_candidates;
+use codex_hepta_agent_components::intelligence::build_legal_candidates;
 
-fn signed_fixture() -> (
+pub(super) fn signed_fixture() -> (
     Fixture,
-    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+    codex_hepta_agent_components::learning_ledger::ActivatedLearningTrustV1,
 ) {
     let mut value = fixture();
     let key = SigningKey::from_bytes(&[47; 32]);
@@ -53,6 +53,7 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
         .expect("runner")
         .with_evaluation_trust(trust)
         .expect("host-root trust");
+    let inherited = value.inputs.run_identity.clone().expect("durable identity");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, value.request, value.inputs)
@@ -65,6 +66,20 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
     else {
         panic!("expected the signed existing path to reach ready");
     };
+    assert_eq!(
+        prepared.run_snapshot(),
+        crate::AgentRunSnapshot {
+            run_id: inherited.run_id.to_string(),
+            request_digest: inherited.request_digest.to_string(),
+            objective_digest: inherited.objective_digest.to_string(),
+            body_digest: inherited.body_digest.to_string(),
+            artifact_set_digest: inherited.artifact_set_digest.to_string(),
+            authority_epoch: inherited.authority_epoch,
+            generation: inherited.generation,
+            fence_digest: inherited.fence_digest.to_string(),
+            deadline_ms: inherited.deadline_ms,
+        }
+    );
     assert!(!prepared.envelope.evaluation_receipt_digest.is_zero());
     assert!(!prepared.envelope.authority.grants_any());
     assert_eq!(run_receipt.run_id, prepared.run_snapshot().run_id);

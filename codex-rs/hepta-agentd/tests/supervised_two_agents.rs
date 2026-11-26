@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::path::Path;
@@ -8,19 +9,19 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
 use anyhow::ensure;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::LedgerSourceKind;
-use codex_hepta_memory::MemoryDraft;
-use codex_hepta_memory::MemoryLifecycleState;
-use codex_hepta_memory::MemoryRevisionDraft;
-use codex_hepta_memory::MemoryRevisionRecord;
-use codex_hepta_memory::MemoryVerification;
-use codex_hepta_memory::RetrievalRequest;
-use codex_hepta_memory::SourceDraft;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::LedgerSourceKind;
+use codex_hepta_agent_components::memory::MemoryDraft;
+use codex_hepta_agent_components::memory::MemoryLifecycleState;
+use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+use codex_hepta_agent_components::memory::MemoryRevisionRecord;
+use codex_hepta_agent_components::memory::MemoryVerification;
+use codex_hepta_agent_components::memory::RetrievalRequest;
+use codex_hepta_agent_components::memory::SourceDraft;
 
 mod support;
 
@@ -156,7 +157,7 @@ async fn two_supervised_real_agentd_processes_are_fault_isolated() -> Result<()>
 }
 
 async fn remember_agent_fact(
-    layout: &codex_hepta_paths::HeptaAgentLayout,
+    layout: &codex_hepta_agent_components::paths::HeptaAgentLayout,
     agent_id: &AgentId,
     content: &str,
 ) -> Result<(CognitiveStore, CognitiveAccess, MemoryRevisionRecord)> {

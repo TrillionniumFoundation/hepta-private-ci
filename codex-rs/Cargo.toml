@@ -44,54 +44,7 @@ members = [
     "core-plugins",
     "diagnostics",
     "hooks",
-    "hepta-agent-protocol",
-    "hepta-agentd",
-    "hepta-automation",
-    "hepta-contracts",
-    "hepta-evidence",
-    "hepta-authbus",
-    "hepta-authbus-p1-3-qualification",
-    "hepta-bao-adapter",
-    "hepta-codex-adapter",
-    "hepta-cognitive-read",
-    "hepta-cognitive-store",
-    "hepta-cognitive-types",
-    "hepta-compact-engine",
-    "hepta-context-compiler",
-    "hepta-control-plane",
-    "hepta-infer-core",
-    "hepta-inferd",
-    "hepta-intelligence",
-    "hepta-kg",
-    "hepta-memory-federation",
-    "hepta-memory-retrieval",
-    "hepta-bellman-operator",
-    "hepta-infer-worker-host",
-    "hepta-intelligence-eval",
-    "hepta-intuition",
-    "hepta-neuron",
-    "hepta-plasticity",
-    "hepta-prompt-optimizer",
-    "hepta-prompt-registry",
-    "hepta-learning-artifacts",
-    "hepta-learning-ledger",
-    "hepta-ndu",
-    "hepta-objective",
-    "hepta-fleet",
-    "hepta-matrix-store",
-    "hepta-matrix-sdk",
-    "hepta-supervisor",
-    "hepta-memory",
-    "hepta-operations",
-    "hepta-types",
-    "hepta-wire",
-    "hepta-matrix-protocol",
-    "hepta-matrixd",
-    "hepta-native-gateway",
-    "hepta-operator-acceptance",
-    "hepta-paths",
-    "hepta-runtime",
-    "hepta-shadow-qualification",
+    "hepta-*",
     "history",
     "http-client",
     "secrets",
@@ -172,6 +125,7 @@ members = [
     "utils/oss",
     "utils/output-truncation",
     "utils/path-utils",
+    "utils/private-state",
     "utils/plugins",
     "utils/fuzzy-match",
     "utils/stream-parser",
@@ -231,6 +185,10 @@ codex-code-mode-runtime = { path = "code-mode-runtime" }
 codex-home = { path = "codex-home" }
 codex-http-client = { path = "http-client" }
 codex-hepta-agent-protocol = { path = "hepta-agent-protocol" }
+codex-hepta-agentd-core = { path = "hepta-agentd-core" }
+codex-hepta-agent-components = { path = "hepta-agent-components" }
+codex-hepta-app-bridge = { path = "hepta-app-bridge" }
+codex-hepta-app-host = { path = "hepta-app-host" }
 codex-hepta-agentd = { path = "hepta-agentd" }
 codex-hepta-automation = { path = "hepta-automation" }
 codex-hepta-operations = { path = "hepta-operations" }
@@ -245,6 +203,7 @@ codex-hepta-memory = { path = "hepta-memory" }
 codex-hepta-types = { path = "hepta-types" }
 codex-hepta-matrix-protocol = { path = "hepta-matrix-protocol" }
 codex-hepta-native-gateway = { path = "hepta-native-gateway" }
+codex-utils-private-state = { path = "utils/private-state" }
 codex-hepta-paths = { path = "hepta-paths" }
 codex-hepta-runtime = { path = "hepta-runtime" }
 codex-websocket-client = { path = "websocket-client" }
@@ -408,10 +367,11 @@ eventsource-stream = "0.2.3"
 flate2 = "1.1.8"
 futures = { version = "0.3", default-features = false }
 gethostname = "1.1.0"
-gix = { version = "0.81.0", default-features = false, features = ["sha1"] }
+gix = { version = "0.84.0", default-features = false, features = ["sha1"] }
 glob = "0.3"
 globset = "0.4"
 hmac = "0.12.1"
+getrandom = "0.4.3"
 http = "1.3.1"
 httpdate = "1.0.3"
 iana-time-zone = "0.1.64"
@@ -426,7 +386,7 @@ insta = "1.46.3"
 inventory = "0.3.19"
 itertools = "0.14.0"
 jsonptr = { version = "0.7.1", default-features = false }
-jsonwebtoken = "9.3.1"
+jsonwebtoken = { version = "10.3.0", features = ["aws_lc_rs"] }
 keyring = { version = "3.6", default-features = false }
 landlock = "0.4.4"
 lazy_static = "1"
@@ -437,7 +397,7 @@ libsqlite3-sys = { version = "0.37", default-features = false }
 log = "0.4"
 lru = "0.18.2"
 maplit = "1.0.2"
-matrix-sdk = { version = "0.18.0", default-features = false, features = ["e2e-encryption", "sqlite"] }
+matrix-sdk = { version = "=0.19.0", default-features = false, features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }
 memchr = "2.7.6"
 mime_guess = "2.0.5"
 multimap = "0.10.0"
@@ -445,11 +405,11 @@ notify = "8.2.0"
 nucleo = { git = "https://github.com/helix-editor/nucleo.git", rev = "4253de9faabb4e5c6d81d946a5e35a90f87347ee" }
 once_cell = "1.20.2"
 openssl-sys = "*"
-opentelemetry = "0.31.0"
-opentelemetry-appender-tracing = "0.31.0"
-opentelemetry-otlp = "0.31.0"
-opentelemetry-semantic-conventions = "0.31.0"
-opentelemetry_sdk = "0.31.0"
+opentelemetry = "0.32.0"
+opentelemetry-appender-tracing = "0.32.0"
+opentelemetry-otlp = "0.32.0"
+opentelemetry-semantic-conventions = "0.32.0"
+opentelemetry_sdk = "0.32.1"
 os_info = "3.12.0"
 owo-colors = "4.3.0"
 pathdiff = "0.2"
@@ -489,7 +449,7 @@ serde = { version = "1", features = ["rc"] }
 serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
-serde_with = "3.17"
+serde_with = "3.21.0"
 serde_yaml = "0.9"
 serial_test = "3.2.0"
 sha1 = "0.10.6"
@@ -524,7 +484,7 @@ supports-color = "3.0.2"
 syntect = "5"
 sys-locale = "0.3.2"
 system-configuration = "0.7"
-tar = { version = "=0.4.45", default-features = false }
+tar = { version = "=0.4.46", default-features = false }
 tempfile = "3.23.0"
 test-log = "0.2.19"
 textwrap = "0.16.2"
@@ -544,7 +504,7 @@ toml = "0.9.5"
 toml_edit = "0.24.0"
 tracing = "0.1.44"
 tracing-appender = "0.2.3"
-tracing-opentelemetry = "0.32.0"
+tracing-opentelemetry = "0.33.0"
 tracing-subscriber = "0.3.22"
 tracing-test = "0.2.5"
 tonic = { version = "0.14.3", default-features = false, features = ["channel", "codegen"] }
@@ -631,11 +591,29 @@ ignored = [
 # across local dev builds.
 debug = "limited"
 
+# Identity checks stream the real executable, including large debug binaries.
+# Optimize only the hash implementation instead of skipping bytes, substituting
+# a manifest digest, or relaxing the normal test deadline. Test/ci-test inherit
+# this override; debug assertions and overflow checks remain enabled.
+[profile.dev.package.sha2]
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0
 debug = "none"
 strip = "symbols"
+
+# Ordinary product executables retain all runtime assertions and overflow
+# checks. Optimize their actual dependency closure without a whole-program LTO
+# cost on every product change; ordinary --lib development keeps dev-small.
+[profile.hepta-product]
+inherits = "dev-small"
+opt-level = 2
+debug-assertions = true
+overflow-checks = true
+lto = "off"
+codegen-units = 4
 
 [profile.release]
 lto = "thin"
@@ -661,15 +639,22 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
-# Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
-# bitmap import and patched chunk dependency without changing their public API.
-imbl = { path = "third_party/imbl-6.1.0" }
-# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9
-# deliberately uses libsqlite3-sys 0.37 for the WAL-reset corruption fix, and
-# Cargo permits only one native SQLite `links` crate in a graph. The vendored
-# crate is upstream matrix-sdk-sqlite 0.18.0 with only its rusqlite constraint
-# advanced to 0.39, which uses the already-selected libsqlite3-sys 0.37.
-matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
+# Retain the released policy evaluator and admit the compatible BLAKE3 1.8
+# required by Matrix store encryption. Upstream main already uses this family.
+starlark = { path = "third_party/starlark-0.14.2" }
+# Matrix crypto 0.19.1 requires time ^0.3.55; retain the official Rama 0.3
+# code while relaxing only its older exact time constraint to that compatible
+# release. Remove once upstream accepts the same semver-compatible time family.
+rama-crypto = { path = "third_party/rama-crypto-0.3.0" }
+# The official Matrix SDK 0.19.0 fixes RUSTSEC-2026-0318. Its only local
+# patch replaces the unmaintained anymap2 (RUSTSEC-2026-0319) with anymap3
+# under the existing import name, with the necessary public CloneAny API and
+# explicit std feature adaptation. Remove when upstream migrates.
+matrix-sdk = { path = "third_party/matrix-sdk-0.19.0" }
+# SQLx 0.9 and rusqlite 0.39 share libsqlite3-sys 0.37, including the WAL
+# corruption fix. Keep the official 0.19.0 SQLite backend on that same
+# native library; only its rusqlite version constraint differs upstream.
+matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.0" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }

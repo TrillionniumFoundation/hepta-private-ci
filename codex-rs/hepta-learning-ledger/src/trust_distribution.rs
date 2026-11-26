@@ -63,6 +63,10 @@ pub struct ActivatedLearningTrustV1 {
     distribution_id: StableId,
     generation: u64,
     effective_at: u64,
+    activated_at: u64,
+    issued_at: u64,
+    expires_at: u64,
+    root_revoked_at: Option<u64>,
     distribution_digest: Digest32,
     verifier: LearningEvidenceVerifierV1,
 }
@@ -94,6 +98,26 @@ impl ActivatedLearningTrustV1 {
     }
 
     #[must_use]
+    pub const fn expires_at(&self) -> u64 {
+        self.expires_at
+    }
+
+    /// Recheck the originally root-authenticated distribution at final use.
+    /// The host must still refresh this object to observe later rotations.
+    pub fn revalidate_at(&self, now: u64) -> Result<(), LearningTrustDistributionError> {
+        if now < self.activated_at || now < self.issued_at || now < self.effective_at {
+            return Err(LearningTrustDistributionError::ClockRegression);
+        }
+        if now >= self.expires_at {
+            return Err(LearningTrustDistributionError::DistributionWindow);
+        }
+        if self.root_revoked_at.is_some_and(|at| now >= at) {
+            return Err(LearningTrustDistributionError::InvalidRoot);
+        }
+        Ok(())
+    }
+
+    #[must_use]
     pub const fn distribution_digest(&self) -> Digest32 {
         self.distribution_digest
     }
@@ -101,6 +125,21 @@ impl ActivatedLearningTrustV1 {
     #[must_use]
     pub fn verifier(&self) -> &LearningEvidenceVerifierV1 {
         &self.verifier
+    }
+
+    /// True only while the root-signed distribution is usable at this exact
+    /// host-sampled time. Callers must still refresh owner state to observe a
+    /// later revocation or root-rotation ceremony.
+    #[must_use]
+    pub fn is_current_at(&self, now: u64) -> bool {
+        self.generation != 0
+            && self.revalidate_at(now).is_ok()
+            && !self.root_digest.is_zero()
+            && !self.distribution_digest.is_zero()
+            && !self.verifier.trust_digest().is_zero()
+            && !self.verifier.scope_digest().is_zero()
+            && !self.verifier.objective_digest().is_zero()
+            && self.verifier.authority_epoch() != 0
     }
 }
 
@@ -115,11 +154,14 @@ pub fn activate_learning_trust(
         return Err(LearningTrustDistributionError::RootMismatch);
     }
     if signed.issued_at > now
-        || signed.issued_at > signed.expires_at
+        || signed.issued_at >= signed.expires_at
         || signed.issued_at > signed.distribution.effective_at
-        || now > signed.expires_at
+        || now >= signed.expires_at
         || signed.issued_at < root.valid_from
         || signed.expires_at > root.expires_at
+        || root
+            .revoked_at
+            .is_some_and(|revoked_at| signed.expires_at >= revoked_at)
     {
         return Err(LearningTrustDistributionError::DistributionWindow);
     }
@@ -175,6 +217,10 @@ pub fn activate_learning_trust(
         distribution_id: distribution.distribution_id.clone(),
         generation: distribution.generation,
         effective_at: distribution.effective_at,
+        activated_at: now,
+        issued_at: signed.issued_at,
+        expires_at: signed.expires_at,
+        root_revoked_at: root.revoked_at,
         distribution_digest,
         verifier,
     })
@@ -185,9 +231,9 @@ fn validate_root(
     now: u64,
 ) -> Result<Digest32, LearningTrustDistributionError> {
     if root.scope_digest.is_zero()
-        || root.valid_from > root.expires_at
+        || root.valid_from >= root.expires_at
         || now < root.valid_from
-        || now > root.expires_at
+        || now >= root.expires_at
         || root.revoked_at.is_some_and(|at| now >= at)
     {
         return Err(LearningTrustDistributionError::InvalidRoot);
@@ -272,6 +318,7 @@ pub enum LearningTrustDistributionError {
     InvalidGeneration,
     NonMonotonicRotation,
     DistributionWindow,
+    ClockRegression,
     InvalidSignature,
 }
 

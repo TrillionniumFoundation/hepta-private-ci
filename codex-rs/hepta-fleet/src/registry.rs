@@ -6,6 +6,7 @@ use std::io::ErrorKind;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -23,9 +24,34 @@ use crate::FleetRegistryError;
 use crate::release::initialize_release_state;
 use crate::release::load_release_state;
 
+#[path = "registry_owner.rs"]
+mod owner;
+
+#[path = "registry_read.rs"]
+mod scoped_read;
+
 const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
+
+#[path = "registry_retirement.rs"]
+mod retirement;
+
+#[path = "release_digest_cache.rs"]
+mod release_digest_cache;
+#[cfg(unix)]
+pub use release_digest_cache::LaunchDigestDomain;
+pub(crate) use release_digest_cache::ManifestRead;
+#[cfg(unix)]
+pub use release_digest_cache::PreparedReleaseRead;
+use release_digest_cache::ReleaseDigestCache;
+pub use release_digest_cache::ReleaseReadPin;
+#[cfg(unix)]
+pub use release_digest_cache::VerifiedLaunchDigest;
+#[cfg(unix)]
+pub use release_digest_cache::VerifiedLaunchProgram;
+#[cfg(test)]
+pub(crate) use release_digest_cache::take_program_read_bytes;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRecord {
@@ -50,6 +76,7 @@ impl FleetSnapshot {
 #[derive(Clone, Debug)]
 pub struct FleetRegistry {
     layout: HeptaFleetLayout,
+    pub(crate) release_digests: Arc<ReleaseDigestCache>,
 }
 
 impl FleetRegistry {
@@ -65,13 +92,18 @@ impl FleetRegistry {
             std::fs::create_dir_all(directory)?;
             validate_physical_directory(directory)?;
         }
+        create_owner_socket_directory(&layout)?;
         sync_directory(layout.fleet_root().as_path())?;
-        Ok(Self { layout })
+        Ok(Self {
+            layout,
+            release_digests: Arc::default(),
+        })
     }
 
-    pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
+    fn existing_layout(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
         let registry = Self {
             layout: fleet_root.layout(),
+            release_digests: Arc::default(),
         };
         for directory in [
             registry.layout.fleet_root().as_path(),
@@ -82,6 +114,11 @@ impl FleetRegistry {
         ] {
             validate_physical_directory(directory)?;
         }
+        Ok(registry)
+    }
+
+    pub fn open_existing(fleet_root: HeptaFleetRoot) -> Result<Self, FleetRegistryError> {
+        let registry = Self::existing_layout(fleet_root)?;
         registry.migrate_legacy_matrix_roots()?;
         registry.load()?;
         Ok(registry)
@@ -118,6 +155,9 @@ impl FleetRegistry {
 
     pub fn register(&self, manifest: AgentManifest) -> Result<AgentRecord, FleetRegistryError> {
         manifest.validate(self.layout.fleet_root())?;
+        if self.retired_agent_path(&manifest.agent_id)?.is_some() {
+            return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));
+        }
         let snapshot = self.load()?;
         if snapshot.agent(&manifest.agent_id).is_some() {
             return Err(FleetRegistryError::AlreadyRegistered(manifest.agent_id));
@@ -196,7 +236,7 @@ impl FleetRegistry {
         }
         let next = current.successor(requested)?;
         let layout = self.layout.agent(agent_id);
-        match publish_lifecycle(layout.run_root(), &next)? {
+        match publish_lifecycle(layout.owner_run_root(), &next)? {
             PublishOutcome::Published => Ok(next),
             PublishOutcome::AlreadyExists => {
                 let actual = self.load_agent(agent_id)?.lifecycle.generation;
@@ -217,6 +257,7 @@ impl FleetRegistry {
         for name in [
             "home",
             "run",
+            "owner",
             "logs",
             "releases",
             "cognitive",
@@ -233,13 +274,43 @@ impl FleetRegistry {
         )?;
         let initial = AgentLifecycleState::initial(manifest.agent_id.clone());
         write_new_file(
-            &lifecycle_path(&staging_root.join("run"), initial.generation),
+            &lifecycle_path(&staging_root.join("owner"), initial.generation),
             &lifecycle_json(&initial)?,
         )?;
-        sync_directory(&staging_root.join("run"))?;
+        sync_directory(&staging_root.join("owner"))?;
         initialize_release_state(&staging_root.join("releases"), &manifest.agent_id)?;
         sync_directory(&staging_root.join("releases"))?;
         sync_directory(staging_root)
+    }
+
+    /// Read one exact lifecycle event from this Agent's authenticated local
+    /// history, after the original owner validates its complete contiguous
+    /// sequence. This is historical evidence, never current serving authority.
+    pub fn load_agent_lifecycle_generation(
+        &self,
+        agent_id: &AgentId,
+        generation: u64,
+    ) -> Result<AgentLifecycleState, FleetRegistryError> {
+        let record = self.load_agent(agent_id)?;
+        if generation > record.lifecycle.generation {
+            return Err(FleetRegistryError::Corrupt(
+                "requested lifecycle generation is outside the validated history".to_string(),
+            ));
+        }
+        let path = lifecycle_path(record.layout.owner_run_root(), generation);
+        let state: AgentLifecycleState =
+            serde_json::from_str(&read_regular_file(&path)?).map_err(|error| {
+                FleetRegistryError::Corrupt(format!("invalid historical lifecycle: {error}"))
+            })?;
+        if state.schema_version != AGENT_STATE_SCHEMA_VERSION
+            || &state.agent_id != agent_id
+            || state.generation != generation
+        {
+            return Err(FleetRegistryError::Corrupt(
+                "historical lifecycle does not match the exact Agent and generation".to_string(),
+            ));
+        }
+        Ok(state)
     }
 
     /// Read and validate one registered Agent without enumerating its peers.
@@ -259,6 +330,7 @@ impl FleetRegistry {
             layout.agent_root(),
             layout.home_root(),
             layout.run_root(),
+            layout.owner_run_root(),
             layout.logs_root(),
             layout.releases_root(),
             layout.cognitive_root(),
@@ -270,18 +342,8 @@ impl FleetRegistry {
         }
         validate_private_directory(layout.matrix_root())?;
         validate_private_directory(layout.matrix_secrets_root())?;
-        let manifest: AgentManifest = toml::from_str(&read_regular_file(layout.agent_config())?)
-            .map_err(|error| {
-                FleetRegistryError::Corrupt(format!("invalid agent manifest: {error}"))
-            })?;
-        manifest.validate(self.layout.fleet_root())?;
-        if &manifest.agent_id != agent_id {
-            return Err(FleetRegistryError::Corrupt(format!(
-                "manifest identity {} differs from directory {agent_id}",
-                manifest.agent_id
-            )));
-        }
-        let lifecycle = load_lifecycle(layout.run_root(), agent_id)?;
+        let manifest = self.load_agent_manifest(agent_id)?;
+        let lifecycle = load_lifecycle(layout.owner_run_root(), agent_id)?;
         let release_state = load_release_state(layout.releases_root(), agent_id)?;
         Ok(AgentRecord {
             manifest,
@@ -290,6 +352,19 @@ impl FleetRegistry {
             layout,
         })
     }
+}
+
+fn create_owner_socket_directory(layout: &HeptaFleetLayout) -> Result<(), FleetRegistryError> {
+    let directory = layout.run_root().join("owner");
+    match create_private_directory(&directory) {
+        Ok(()) => sync_directory(layout.run_root())?,
+        Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+            validate_physical_directory(&directory)?;
+            validate_private_directory(&directory)?;
+        }
+        Err(error) => return Err(error.into()),
+    }
+    Ok(())
 }
 
 enum PublishOutcome {
@@ -466,6 +541,7 @@ fn staging_root(agents_root: &Path, agent_id: &AgentId) -> PathBuf {
 fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError> {
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
     file.write_all(contents)?;
+    crate::registry_metadata::inherit_protected_read_group(&file, path)?;
     file.sync_all()?;
     Ok(())
 }
@@ -502,8 +578,9 @@ fn migrate_private_directory(parent: &Path, name: &str) -> Result<(), FleetRegis
                     final_path.display()
                 )));
             }
-            set_private_directory_permissions(&final_path)?;
-            sync_directory(parent)?;
+            if set_private_directory_permissions(&final_path)? {
+                sync_directory(parent)?;
+            }
             return Ok(());
         }
         Err(error) if error.kind() == ErrorKind::NotFound => {}
@@ -535,16 +612,19 @@ fn create_private_directory(path: &Path) -> std::io::Result<()> {
 }
 
 #[cfg(unix)]
-fn set_private_directory_permissions(path: &Path) -> Result<(), FleetRegistryError> {
+fn set_private_directory_permissions(path: &Path) -> Result<bool, FleetRegistryError> {
     use std::os::unix::fs::PermissionsExt;
 
+    if std::fs::symlink_metadata(path)?.permissions().mode() & 0o777 == 0o700 {
+        return Ok(false);
+    }
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-    Ok(())
+    Ok(true)
 }
 
 #[cfg(not(unix))]
-fn set_private_directory_permissions(_path: &Path) -> Result<(), FleetRegistryError> {
-    Ok(())
+fn set_private_directory_permissions(_path: &Path) -> Result<bool, FleetRegistryError> {
+    Ok(false)
 }
 
 #[cfg(unix)]

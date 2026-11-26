@@ -369,7 +369,13 @@ def rust_configuration_scope(paths: list[str]) -> list[str]:
                 raise ValueError(f"Rust format input escapes repository: {value!r}")
             if target.is_file():
                 selected.add(value)
-    return sorted(selected)
+    # Published third-party Rust keeps its upstream style and archive diff;
+    # Cargo's workspace formatter likewise excludes these vendored packages.
+    return sorted(
+        path
+        for path in selected
+        if not Path(path).is_relative_to("codex-rs/third_party")
+    )
 
 
 def scoped_formatter_groups(

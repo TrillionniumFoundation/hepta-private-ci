@@ -6,10 +6,8 @@ use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_arg0::Arg0DispatchPaths;
-use codex_hepta_automation::AutomationError;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_memory::CognitiveRuntime;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::memory::CognitiveRuntime;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::time::Instant;
 use tokio::time::sleep;
@@ -22,9 +20,12 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::CognitiveRetrievalMode;
+
+#[path = "runtime_cognitive_maintenance.rs"]
+mod cognitive_maintenance;
 use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
-use crate::automation::spawn_automation_service;
+use crate::automation::AutomationService;
 
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
@@ -39,6 +40,9 @@ pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
+    // Reject partial product composition before opening owners or publishing sockets.
+    config.require_intelligence_composition()?;
+    let module_profile = config.runtime_module_profile();
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
@@ -52,6 +56,9 @@ pub async fn run(
         .map(|(frontier, trust)| (frontier.to_path_buf(), trust.to_path_buf()));
     let automation_effect_host_file = config
         .automation_effect_host_file()
+        .map(std::path::Path::to_path_buf);
+    let secrets_runtime_client_file = config
+        .secrets_runtime_client_file()
         .map(std::path::Path::to_path_buf);
     let objective_profile_file = config
         .objective_profile_file()
@@ -76,23 +83,76 @@ pub async fn run(
     let retrieval_context = config.cognitive_retrieval_context();
     let retrieval_learning = config.cognitive_retrieval_learning();
     require_cognitive_retrieval_context_for_mode(retrieval_mode, retrieval_context.is_some())?;
+    let retrieval_context = retrieval_context
+        .map(|reader| crate::retrieval_product_mode::route(retrieval_mode, reader));
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let neuron_runtime_v2 = config.take_neuron_runtime_v2();
+    if neuron_runtime_v2.is_some()
+        && (intelligence_product.is_none() || intelligence_invocation.is_none())
+    {
+        return Err(AgentdError::Invalid(
+            "Neuron V2 requires the canonical intelligence runner and invocation provider"
+                .to_string(),
+        ));
+    }
+    let self_iteration_config = config.take_self_iteration_runtime();
+    let self_iteration_handle = self_iteration_config
+        .as_ref()
+        .map(crate::AgentdSelfIterationRuntimeConfigV1::handle);
+    let self_iteration_model_owner = config.take_self_iteration_model_owner();
+    let native_model_receipt_reader = config.take_native_model_receipt_reader();
+    let prepared_generation_reader = config.take_prepared_generation_reader();
+    let iteration_recovery = self_iteration_config
+        .as_ref()
+        .is_some_and(crate::AgentdSelfIterationRuntimeConfigV1::unresolved_apply);
+    let neuron_runtime_v2 = neuron_runtime_v2
+        .map(|runtime| {
+            if iteration_recovery {
+                runtime.start_for_iteration_recovery()
+            } else {
+                runtime.start()
+            }
+        })
+        .transpose()?;
+    let self_iteration_runtime = self_iteration_config
+        .map(|runtime| {
+            let host = neuron_runtime_v2.as_ref().ok_or_else(|| {
+                AgentdError::Invalid("self-iteration requires the durable Neuron V2 owner".into())
+            })?;
+            runtime.start(Arc::clone(host))
+        })
+        .transpose()?;
+    let run_store_restart = config.verified_run_store_restart()?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
-        .load()?
-        .agents
-        .into_values()
-        .filter(|record| record.manifest.agent_id != identity.agent_id)
-        .map(|record| record.layout)
+        .registered_agent_layouts()?
+        .into_iter()
+        .filter(|layout| layout.agent_id() != &identity.agent_id)
         .collect::<Vec<_>>();
-    let state = Arc::new(AgentdState::new(
+    let state = Arc::new(AgentdState::new_with_verified_restart(
         identity.clone(),
         registry,
         EVENT_CAPACITY,
+        &run_store_restart,
     )?);
+    if let Some(reader) = prepared_generation_reader {
+        state.prepared_generation_reader.set(reader).map_err(|_| {
+            AgentdError::Invalid("original prepared reader already attached".into())
+        })?;
+    }
+    if let Some(reader) = native_model_receipt_reader {
+        state.native_model_receipt_reader.set(reader).map_err(|_| {
+            AgentdError::Invalid("original native receipt reader already attached".into())
+        })?;
+    }
+    if let Some(handle) = self_iteration_handle {
+        state.self_iteration_handle.set(handle).map_err(|_| {
+            AgentdError::Invalid("original iteration handle already attached".into())
+        })?;
+    }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(host) = intuition_policy_host {
@@ -115,6 +175,12 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+    }
+    if let Some(host) = neuron_runtime_v2.as_ref() {
+        state
+            .neuron_runtime_v2
+            .set(Arc::clone(host))
+            .map_err(|_| AgentdError::Invalid("Neuron V2 host already attached".to_string()))?;
     }
     if let Some(current) = retrieval_context {
         state
@@ -222,20 +288,33 @@ pub async fn run(
         federation_owner_layouts,
     )
     .await?;
-    let automation_layout = identity.layout.clone();
-    let automation_store = open_automation_store_after_generation_fence(&state, || async move {
-        AutomationStore::open(&automation_layout).await
-    })
-    .await?;
-    if let Some(store) = automation_store.as_ref() {
-        state.attach_automation_store(store.clone())?;
-    }
+    cognitive_maintenance::maintain_once(&state, &cognitive_runtime).await?;
+    let automation_service = AutomationService::open(Arc::clone(&state), module_profile).await?;
     if let Some(path) = automation_effect_host_file {
         state.refresh_generation()?;
         let host =
             crate::automation_effect_host::AgentdAutomationEffectHost::open(&identity, &path)?;
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
+    }
+    #[cfg(target_os = "linux")]
+    let secrets_host = if let Some(path) = secrets_runtime_client_file {
+        state.refresh_generation()?;
+        let host = Arc::new(crate::secrets_host::AgentdSecretsHost::open(&state, &path)?);
+        state.refresh_generation()?;
+        state
+            .secrets_host
+            .set(Arc::clone(&host))
+            .map_err(|_| AgentdError::Protocol("secrets runtime client already attached".into()))?;
+        Some(host)
+    } else {
+        None
+    };
+    #[cfg(not(target_os = "linux"))]
+    if secrets_runtime_client_file.is_some() {
+        return Err(AgentdError::Invalid(
+            "protected secrets daemon enrollment requires Linux kernel peers".into(),
+        ));
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
@@ -249,6 +328,17 @@ pub async fn run(
     // All fallible owner opens and control binding above precede task startup.
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        tasks.spawn_required(
+            "cognitive-federation-maintenance",
+            cognitive_maintenance::run(
+                Arc::clone(&state),
+                cognitive_runtime.clone(),
+                cancellation.clone(),
+            ),
+        )?;
+        if let Some(owner) = self_iteration_runtime {
+            tasks.spawn_required("self-iteration-owner", owner.run(cancellation.clone()))?;
+        }
         if let Some((host, interval)) = production_operations {
             tasks.spawn_required(
                 "production-operation-reconciler",
@@ -256,6 +346,13 @@ pub async fn run(
             )?;
         }
         tasks.spawn_required("control-server", control.run())?;
+        if let Some(owner) = self_iteration_model_owner {
+            let context = crate::AgentdSelfIterationModelOwnerContextV2::from_state(&state);
+            tasks.spawn_required(
+                "self-iteration-model-owner",
+                owner(context, cancellation.clone()),
+            )?;
+        }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);
         let app_drain = state.app_server_drain_handle();
@@ -292,46 +389,77 @@ pub async fn run(
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
-        spawn_automation_service(
-            &mut tasks,
-            automation_store,
-            Arc::clone(&state),
-            identity,
-            cancellation.clone(),
-        )
-        .await?;
+        automation_service
+            .spawn(&mut tasks, cancellation.clone())
+            .await?;
         Ok(())
     }
     .await;
     if let Err(error) = startup {
         tasks.shutdown().await;
+        #[cfg(target_os = "linux")]
+        if let Some(host) = secrets_host.as_ref() {
+            host.shutdown().await?;
+        }
+        if let Some(host) = neuron_runtime_v2.as_ref()
+            && let Err(shutdown_error) = host.shutdown()
+        {
+            return Err(AgentdError::Protocol(format!(
+                "Agentd startup failed: {error}; Neuron V2 shutdown also failed: {shutdown_error}"
+            )));
+        }
         return Err(error);
     }
-    tasks
+    let runtime_result = tasks
         .run_until(async move {
             shutdown_signal().await?;
             // Keep control and owner reconciliation alive throughout drain.
             drain_runtime(state).await
         })
-        .await
+        .await;
+    #[cfg(target_os = "linux")]
+    let runtime_result = match (
+        runtime_result,
+        async {
+            match secrets_host.as_ref() {
+                Some(host) => host.shutdown().await,
+                None => Ok(()),
+            }
+        }
+        .await,
+    ) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(error), Err(join_error)) => Err(AgentdError::Protocol(format!(
+            "Agentd failed: {error}; physical secrets worker join failed: {join_error}"
+        ))),
+    };
+    let neuron_shutdown = neuron_runtime_v2
+        .as_ref()
+        .map_or(Ok(()), |host| host.shutdown());
+    match (runtime_result, neuron_shutdown) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) => Err(error),
+        (Ok(()), Err(error)) => Err(error),
+        (Err(runtime_error), Err(neuron_error)) => Err(AgentdError::Protocol(format!(
+            "Agentd runtime failed: {runtime_error}; Neuron V2 shutdown also failed: {neuron_error}"
+        ))),
+    }
 }
 
 fn require_cognitive_retrieval_context_for_mode(
     mode: CognitiveRetrievalMode,
     configured: bool,
 ) -> Result<(), AgentdError> {
-    match (mode, configured) {
-        (CognitiveRetrievalMode::Compatibility, false)
-        | (CognitiveRetrievalMode::HnmfRequired, true) => Ok(()),
-        (CognitiveRetrievalMode::Compatibility, true) => Err(AgentdError::Invalid(
-            "compatibility retrieval profile forbids an HNMF current context; select HnmfRequired explicitly"
-                .to_string(),
-        )),
-        (CognitiveRetrievalMode::HnmfRequired, false) => Err(AgentdError::Invalid(
-            "HNMF-required retrieval profile requires a current authenticated retrieval context"
-                .to_string(),
-        )),
+    if mode.requires_current_context() == configured {
+        return Ok(());
     }
+    let message = if mode.requires_current_context() {
+        "HNMF-required retrieval profile (including shadow/canary composition) requires a current authenticated retrieval context"
+    } else {
+        "compatibility retrieval profile cannot attach an HNMF context"
+    };
+    Err(AgentdError::Invalid(message.to_string()))
 }
 
 #[cfg(feature = "production-cognitive-write")]
@@ -352,28 +480,10 @@ fn require_cognitive_runtime_for_profile(
     Ok(runtime)
 }
 
-async fn open_automation_store_after_generation_fence<Open, OpenFuture>(
-    state: &AgentdState,
-    open: Open,
-) -> Result<Option<AutomationStore>, AgentdError>
-where
-    Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<AutomationStore, codex_hepta_automation::AutomationError>>,
-{
-    state.refresh_generation()?;
-    let opened = open().await;
-    state.refresh_generation()?;
-    match opened {
-        Ok(store) => Ok(Some(store)),
-        Err(AutomationError::Unavailable | AutomationError::Corrupt) => Ok(None),
-        Err(error) => Err(error.into()),
-    }
-}
-
 async fn attach_federation_after_generation_fence(
     state: &AgentdState,
     runtime: CognitiveRuntime,
-    owner_layouts: Vec<codex_hepta_paths::HeptaAgentLayout>,
+    owner_layouts: Vec<codex_hepta_agent_components::paths::HeptaAgentLayout>,
 ) -> Result<CognitiveRuntime, AgentdError> {
     if runtime.available_store().is_none() || owner_layouts.is_empty() {
         return Ok(runtime);
@@ -392,7 +502,9 @@ async fn open_cognitive_runtime_after_generation_fence<Open, OpenFuture>(
 ) -> Result<CognitiveRuntime, AgentdError>
 where
     Open: FnOnce() -> OpenFuture,
-    OpenFuture: Future<Output = Result<CognitiveStore, codex_hepta_memory::CognitiveStoreError>>,
+    OpenFuture: Future<
+        Output = Result<CognitiveStore, codex_hepta_agent_components::memory::CognitiveStoreError>,
+    >,
 {
     state.refresh_generation()?;
     let cognitive_runtime = CognitiveRuntime::from_open_result(open().await);
@@ -495,6 +607,9 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
 }
 
 async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    if let Some(host) = state.neuron_runtime_v2.get() {
+        host.begin_quiesce()?;
+    }
     state.mark_draining()?;
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
@@ -552,4 +667,4 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
-mod tests;
+pub(crate) mod tests;

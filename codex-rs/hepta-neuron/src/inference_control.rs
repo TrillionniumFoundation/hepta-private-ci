@@ -39,60 +39,71 @@ impl<P: NeuronInferenceControlPort> NeuronModelPort for InferenceControlModelPor
         &mut self,
         request: &NeuronModelRequestV1,
     ) -> Result<NeuronModelOutputV1, NeuronModelError> {
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: request.request_id.clone(),
-            generation: request.generation,
-            model_id: request.model_id.clone(),
-            encoder_digest: request.encoder_digest,
-            head_digest: request.head_digest,
-            weights_digest: request.weights_digest,
-            input_digest: request.input_digest,
-            feature_vector_q24: request.feature_vector_q24.clone(),
-            expected_output_width: request.expected_output_width,
-        };
-        let receipt = self.control.execute_feature(&control_request)?;
-        verify_neuron_feature_receipt_v1(&control_request, &receipt)
-            .map_err(|_| NeuronModelError::Rejected)?;
-        match receipt.status {
-            NeuronFeatureTerminalStatusV1::Succeeded => {}
-            NeuronFeatureTerminalStatusV1::Indeterminate => {
-                return Err(NeuronModelError::Indeterminate);
-            }
-            NeuronFeatureTerminalStatusV1::Failed | NeuronFeatureTerminalStatusV1::Cancelled => {
-                return Err(NeuronModelError::Rejected);
-            }
-        }
-        let runtime_receipt = LocalModelRuntimeReceiptV1 {
-            model_id: receipt.runtime_tuple.model_id.clone(),
-            model_manifest_digest: receipt.runtime_tuple.model_manifest_digest,
-            weights_digest: receipt.runtime_tuple.weights_digest,
-            tokenizer_digest: receipt.runtime_tuple.tokenizer_digest,
-            preprocessor_digest: receipt.runtime_tuple.preprocessor_digest,
-            quantization_id: digest_id("quantization", receipt.runtime_tuple.quantization_digest)?,
-            quantization_digest: receipt.runtime_tuple.quantization_digest,
-            backend_id: digest_id("runtime", receipt.runtime_tuple.runtime_digest)?,
-            runtime_digest: receipt.runtime_tuple.runtime_digest,
-            device_identity_digest: receipt.runtime_tuple.device_digest,
-            latency_micros: receipt.latency_micros,
-            resident_bytes: receipt.observed_memory_bytes,
-        };
-        let output_digest = canonical_model_output_digest_v1(
-            &receipt.drive_q24,
-            &receipt.prediction_q24,
-            &runtime_receipt,
-        )
-        .map_err(|_| NeuronModelError::Rejected)?;
-        Ok(NeuronModelOutputV1 {
-            encoder_digest: receipt.encoder_digest,
-            head_digest: receipt.head_digest,
-            output_digest,
-            drive_q24: receipt.drive_q24,
-            prediction_q24: receipt.prediction_q24,
-            queue_age_micros: receipt.queue_age_micros,
-            transient_allocation_bytes: receipt.transient_allocation_bytes,
-            runtime_receipt,
-        })
+        let request = feature_request(request);
+        let receipt = self.control.execute_feature(&request)?;
+        model_output(&request, receipt)
     }
+}
+
+pub(crate) fn feature_request(request: &NeuronModelRequestV1) -> NeuronFeatureRequestV1 {
+    NeuronFeatureRequestV1 {
+        request_id: request.request_id.clone(),
+        generation: request.generation,
+        model_id: request.model_id.clone(),
+        encoder_digest: request.encoder_digest,
+        head_digest: request.head_digest,
+        weights_digest: request.weights_digest,
+        input_digest: request.input_digest,
+        feature_vector_q24: request.feature_vector_q24.clone(),
+        expected_output_width: request.expected_output_width,
+    }
+}
+
+pub(crate) fn model_output(
+    request: &NeuronFeatureRequestV1,
+    receipt: NeuronFeatureReceiptV1,
+) -> Result<NeuronModelOutputV1, NeuronModelError> {
+    verify_neuron_feature_receipt_v1(request, &receipt)
+        .map_err(|_| NeuronModelError::Indeterminate)?;
+    match receipt.status {
+        NeuronFeatureTerminalStatusV1::Succeeded => {}
+        NeuronFeatureTerminalStatusV1::Indeterminate => {
+            return Err(NeuronModelError::Indeterminate);
+        }
+        NeuronFeatureTerminalStatusV1::Failed | NeuronFeatureTerminalStatusV1::Cancelled => {
+            return Err(NeuronModelError::Rejected);
+        }
+    }
+    let runtime_receipt = LocalModelRuntimeReceiptV1 {
+        model_id: receipt.runtime_tuple.model_id.clone(),
+        model_manifest_digest: receipt.runtime_tuple.model_manifest_digest,
+        weights_digest: receipt.runtime_tuple.weights_digest,
+        tokenizer_digest: receipt.runtime_tuple.tokenizer_digest,
+        preprocessor_digest: receipt.runtime_tuple.preprocessor_digest,
+        quantization_id: digest_id("quantization", receipt.runtime_tuple.quantization_digest)?,
+        quantization_digest: receipt.runtime_tuple.quantization_digest,
+        backend_id: digest_id("runtime", receipt.runtime_tuple.runtime_digest)?,
+        runtime_digest: receipt.runtime_tuple.runtime_digest,
+        device_identity_digest: receipt.runtime_tuple.device_digest,
+        latency_micros: receipt.latency_micros,
+        resident_bytes: receipt.observed_memory_bytes,
+    };
+    let output_digest = canonical_model_output_digest_v1(
+        &receipt.drive_q24,
+        &receipt.prediction_q24,
+        &runtime_receipt,
+    )
+    .map_err(|_| NeuronModelError::Indeterminate)?;
+    Ok(NeuronModelOutputV1 {
+        encoder_digest: receipt.encoder_digest,
+        head_digest: receipt.head_digest,
+        output_digest,
+        drive_q24: receipt.drive_q24,
+        prediction_q24: receipt.prediction_q24,
+        queue_age_micros: receipt.queue_age_micros,
+        transient_allocation_bytes: receipt.transient_allocation_bytes,
+        runtime_receipt,
+    })
 }
 
 fn digest_id(

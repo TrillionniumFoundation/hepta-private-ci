@@ -1,0 +1,58 @@
+---
+source: src/ui/fleet_overview_tests.rs
+assertion_line: 74
+expression: rendered
+---
+=== English ===
+Service is recovering
+Agents: 2
+Healthy: 1
+Need attention: 1
+Recorded faults: 2
+Agents
+Agent control is unavailable or waiting for a previous action.
+Agent version updates and module changes are not available in this desktop yet.
+Agent 1 · 018f4f72
+Recovery blocked
+Version: agentd-real-owner
+Recovery requires attention. See the current diagnostics below.
+Companion service is recovering
+Start
+Stop
+Restart
+companion process exited
+Agent 2 · 028f4f72
+Running · healthy
+Version: agentd-real-owner
+Start
+Stop
+Restart
+
+=== 中文 ===
+服务正在恢复
+代理: 2
+健康: 1
+需要关注: 1
+已记录故障: 2
+代理
+代理控制尚未启用，或正在等待上次操作。
+此桌面暂不支持代理版本升级和模块变更。
+代理 1 · 018f4f72
+恢复受阻
+版本: agentd-real-owner
+恢复需要关注，请查看下方当前诊断信息。
+附属服务正在恢复
+启动
+停止
+重启
+companion process exited
+代理 2 · 028f4f72
+运行中 · 健康
+版本: agentd-real-owner
+启动
+停止
+重启
+
+=== Legacy ===
+Connected to the legacy runtime
+Agent information is unavailable from this source.

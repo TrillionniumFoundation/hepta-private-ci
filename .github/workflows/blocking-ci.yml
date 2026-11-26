@@ -24,8 +24,14 @@ jobs:
       learning: ${{ steps.scope.outputs.learning }}
       objective: ${{ steps.scope.outputs.objective }}
       native: ${{ steps.scope.outputs.native }}
+      native_desktop: ${{ steps.scope.outputs.native_desktop }}
       derived: ${{ steps.scope.outputs.derived }}
       full_repo: ${{ steps.scope.outputs.full_repo }}
+      risk: ${{ steps.scope.outputs.risk }}
+      require_exact_source: ${{ steps.scope.outputs.require_exact_source }}
+      lanes: ${{ steps.scope.outputs.lanes }}
+      scoped_timeout_minutes: ${{ steps.scope.outputs.scoped_timeout_minutes }}
+      ordinary_feedback_target_minutes: ${{ steps.scope.outputs.ordinary_feedback_target_minutes }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -33,6 +39,16 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Install locked Python policy-test dependencies
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Select the small CI Python environment
+        shell: bash
+        run: |
+          uv sync --frozen --project scripts --only-group ci
+          echo "$GITHUB_WORKSPACE/scripts/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Select dependency impact
         id: scope
@@ -52,6 +68,17 @@ jobs:
             args+=(--full)
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
+          python3 scripts/hepta_ci_risk.py "${args[@]}"
+
+      - name: Validate workflow and module extension boundaries
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_repository_surface scripts.test_hepta_ci_risk
+          python3 scripts/hepta_repository_surface.py --base "$BASE_SHA" --head "$HEAD_SHA"
 
       - name: Regression-test scoped fan-in policy
         shell: bash
@@ -72,7 +99,7 @@ jobs:
     if: needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/hepta-contract-gate.yml
     with:
-      profile: development
+      profile: ${{ needs.scope.outputs.require_exact_source == 'true' && 'qualification' || 'development' }}
     secrets: inherit
 
   bazel:
@@ -120,12 +147,66 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
+  native-desktop:
+    name: Native desktop Rust checks
+    needs: scope
+    if: needs.scope.outputs.native_desktop == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prepare desktop build prerequisites
+        run: |
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hepta-desktop-target" >> "$GITHUB_ENV"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libx11-dev libxi-dev libxrandr-dev libgl1-mesa-dev libwayland-dev libxkbcommon-dev libudev-dev
+      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d
+        with:
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Check actual desktop formatting
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-desktop-records/format.json" --
+          cargo fmt --manifest-path apps/hepta-native/Cargo.toml -- --check
+      - name: Run actual desktop tests
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-desktop-records/test.json" --
+          just test -p hepta-native --manifest-path ../apps/hepta-native/Cargo.toml --locked --cargo-profile dev-small --retries 0
+      - name: Check all desktop targets independently of test outcome
+        if: ${{ !cancelled() }}
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-desktop-records/clippy.json" --
+          cargo clippy --manifest-path apps/hepta-native/Cargo.toml --locked --profile dev-small --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+      - name: Retain actual desktop command records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-desktop-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-desktop-records/*
+          if-no-files-found: error
+          retention-days: 30
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   hepta-scoped:
     name: Hepta scoped native checks
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: ${{ fromJSON(needs.scope.outputs.scoped_timeout_minutes) }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -201,6 +282,9 @@ jobs:
           python3 scripts/asciicheck.py README.md
           python3 scripts/readme_toc.py README.md
           python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta_module_manifest.py --check
+          python3 scripts/hepta_architecture_graph.py --check
+          python3 scripts/hepta_rust_reachability.py --strict
           python3 scripts/hepta-docs.py verify --profile development
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -219,6 +303,7 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - native-desktop
       - lightweight
     runs-on: ubuntu-24.04
     steps:
@@ -230,6 +315,7 @@ jobs:
         env:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
+          NATIVE_DESKTOP: ${{ needs.scope.outputs.native_desktop }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
         shell: bash
         run: |
@@ -240,6 +326,7 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
+          desktop = os.environ["NATIVE_DESKTOP"] == "true"
           allowed = []
           if not (native or full):
               allowed.append("hepta-contract-gate")
@@ -247,6 +334,8 @@ jobs:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
           if not (native and not full):
               allowed.append("hepta-scoped")
+          if not desktop:
+              allowed.append("native-desktop")
           if not (not native and not full):
               allowed.append("lightweight")
           print(json.dumps(allowed))

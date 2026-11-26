@@ -9,6 +9,7 @@ use super::protocol::RefreshRemoteServerRequest;
 use super::protocol::RemoteControlTarget;
 use axum::http::HeaderMap;
 use axum::http::StatusCode;
+use codex_http_client::HttpClient;
 use codex_login::default_client::create_client_without_request_logging;
 use rand::Rng;
 use serde::Serialize;
@@ -81,6 +82,23 @@ pub(super) async fn enroll_remote_control_server(
     installation_id: &str,
     server_name: &str,
 ) -> io::Result<RemoteControlEnrollment> {
+    enroll_remote_control_server_with_client(
+        &create_client_without_request_logging(),
+        remote_control_target,
+        auth,
+        installation_id,
+        server_name,
+    )
+    .await
+}
+
+pub(super) async fn enroll_remote_control_server_with_client(
+    client: &HttpClient,
+    remote_control_target: &RemoteControlTarget,
+    auth: &RemoteControlConnectionAuth,
+    installation_id: &str,
+    server_name: &str,
+) -> io::Result<RemoteControlEnrollment> {
     let enroll_url = &remote_control_target.enroll_url;
     let request = EnrollRemoteServerRequest {
         name: server_name.to_string(),
@@ -90,6 +108,7 @@ pub(super) async fn enroll_remote_control_server(
         installation_id: installation_id.to_string(),
     };
     let enrollment_response = send_remote_control_server_request::<_, EnrollRemoteServerResponse>(
+        client,
         enroll_url,
         auth,
         installation_id,
@@ -123,6 +142,21 @@ pub(super) async fn refresh_remote_control_server(
     installation_id: &str,
     enrollment: &mut RemoteControlEnrollment,
 ) -> io::Result<()> {
+    refresh_remote_control_server_with_client(
+        &create_client_without_request_logging(),
+        auth,
+        installation_id,
+        enrollment,
+    )
+    .await
+}
+
+pub(super) async fn refresh_remote_control_server_with_client(
+    client: &HttpClient,
+    auth: &RemoteControlConnectionAuth,
+    installation_id: &str,
+    enrollment: &mut RemoteControlEnrollment,
+) -> io::Result<()> {
     let now = OffsetDateTime::now_utc();
     let refresh_requirement = enrollment.server_token_refresh_requirement_at(now);
     if refresh_requirement == RemoteControlServerTokenRefreshRequirement::NotNeeded {
@@ -143,6 +177,7 @@ pub(super) async fn refresh_remote_control_server(
         installation_id: installation_id.to_string(),
     };
     let refreshed = match send_remote_control_server_request::<_, EnrollRemoteServerResponse>(
+        client,
         &refresh_url,
         auth,
         installation_id,
@@ -211,6 +246,7 @@ pub(super) async fn refresh_remote_control_server(
 }
 
 async fn send_remote_control_server_request<Request, Response>(
+    client: &HttpClient,
     url: &str,
     auth: &RemoteControlConnectionAuth,
     installation_id: &str,
@@ -223,7 +259,6 @@ where
     Request: Serialize,
     Response: DeserializeOwned,
 {
-    let client = create_client_without_request_logging();
     let auth_headers = auth.request_headers()?;
     let response = client
         .post(url)

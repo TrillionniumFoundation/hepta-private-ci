@@ -13,6 +13,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::time::timeout;
 
+use crate::DurableMutationStatusV1;
 use crate::DurableReleaseTransaction;
 use crate::H7H89ProductionGrant;
 use crate::ProductionMutationState;
@@ -33,6 +34,7 @@ pub struct SupervisordClient {
     socket_path: PathBuf,
     next_request_id: AtomicU64,
     timeout: Duration,
+    expected_owner_uid: Option<u32>,
 }
 
 impl SupervisordClient {
@@ -44,9 +46,191 @@ impl SupervisordClient {
         }
         Ok(Self {
             socket_path,
-            next_request_id: AtomicU64::new(1),
+            next_request_id: AtomicU64::new(random_request_seed()),
             timeout: Duration::from_secs(2),
+            expected_owner_uid: None,
         })
+    }
+
+    /// Installation policy supplies the original owner's UID. Verify it before
+    /// writing any protocol bytes; the default client remains compatible.
+    pub fn with_owner_uid(mut self, owner_uid: u32) -> Self {
+        self.expected_owner_uid = Some(owner_uid);
+        self
+    }
+
+    /// Read one selected module from the existing durable Supervisor owner.
+    pub async fn runtime_module_selection(
+        &self,
+        module_id: String,
+    ) -> Result<codex_hepta_agent_protocol::RuntimeModuleSelectionV1, SupervisorError> {
+        codex_hepta_agent_protocol::validate_runtime_module_id(&module_id)
+            .map_err(SupervisorError::Invalid)?;
+        match self
+            .send(SupervisordMethod::RuntimeModuleSelection {
+                module_id: module_id.clone(),
+            })
+            .await?
+        {
+            SupervisordPayload::RuntimeModuleSelection { selection } => {
+                selection.validate().map_err(SupervisorError::Invalid)?;
+                if selection.module_id != module_id {
+                    return Err(SupervisorError::Invalid(
+                        "runtime module response identity mismatch".to_string(),
+                    ));
+                }
+                Ok(selection)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
+    pub fn reserve_request_id(&self) -> u64 {
+        loop {
+            let candidate = self.next_request_id.fetch_add(1, Ordering::Relaxed);
+            if candidate != 0 {
+                return candidate;
+            }
+        }
+    }
+
+    pub async fn register_agent(
+        &self,
+        manifest: codex_hepta_fleet::AgentManifest,
+    ) -> Result<SupervisordAgentStatus, SupervisorError> {
+        let agent_id = manifest.agent_id.clone();
+        match self
+            .send(SupervisordMethod::RegisterAgent { manifest })
+            .await?
+        {
+            SupervisordPayload::AgentRegistered { agent } if agent.agent_id == agent_id => {
+                Ok(agent)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn allow_installed_release(
+        &self,
+        fence: SupervisordControlFence,
+        release_id: ReleaseId,
+    ) -> Result<SupervisordAgentStatus, SupervisorError> {
+        let agent_id = fence.agent_id.clone();
+        match self
+            .send(SupervisordMethod::AllowInstalledRelease { fence, release_id })
+            .await?
+        {
+            SupervisordPayload::InstalledReleaseAllowed { agent } if agent.agent_id == agent_id => {
+                Ok(agent)
+            }
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn retire_agent(
+        &self,
+        fence: SupervisordControlFence,
+    ) -> Result<PathBuf, SupervisorError> {
+        let expected_agent_id = fence.agent_id.clone();
+        match self.send(SupervisordMethod::RetireAgent { fence }).await? {
+            SupervisordPayload::AgentRetired {
+                agent_id,
+                archived_root,
+            } if agent_id == expected_agent_id => Ok(archived_root),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn retired_agent_status(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<PathBuf>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::RetiredAgentStatus {
+                agent_id: agent_id.clone(),
+            })
+            .await?
+        {
+            SupervisordPayload::RetiredAgentStatus {
+                agent_id: actual,
+                archived_root,
+            } if actual == agent_id => Ok(archived_root),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Bound transport waiting without changing lifecycle or execution budgets.
+    /// A timeout after admission still requires a durable status query.
+    pub fn with_timeout(mut self, timeout: Duration) -> Result<Self, SupervisorError> {
+        if timeout.is_zero() || timeout > Duration::from_secs(30) {
+            return Err(SupervisorError::Invalid(
+                "supervisord transport timeout must be within 0..=30 seconds".to_string(),
+            ));
+        }
+        self.timeout = timeout;
+        Ok(self)
+    }
+
+    pub async fn execute_mutation_with_request_id(
+        &self,
+        request_id: u64,
+        method: SupervisordMethod,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        if request_id == 0 {
+            return Err(SupervisorError::Invalid(
+                "ordinary mutation request identity must be non-zero".to_string(),
+            ));
+        }
+        if !matches!(
+            &method,
+            SupervisordMethod::Start { .. }
+                | SupervisordMethod::Drain { .. }
+                | SupervisordMethod::Stop { .. }
+                | SupervisordMethod::Kill { .. }
+                | SupervisordMethod::Restart { .. }
+                | SupervisordMethod::Upgrade { .. }
+                | SupervisordMethod::Rollback { .. }
+        ) {
+            return Err(SupervisorError::Invalid(
+                "execute_mutation_with_request_id requires an ordinary lifecycle mutation"
+                    .to_string(),
+            ));
+        }
+        self.mutation_with_request_id(request_id, method).await
+    }
+
+    pub async fn ordinary_mutation_status(
+        &self,
+        agent_id: AgentId,
+        mutation_request_id: u64,
+    ) -> Result<Option<DurableMutationStatusV1>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::OrdinaryMutationStatus {
+                agent_id,
+                mutation_request_id,
+            })
+            .await?
+        {
+            SupervisordPayload::OrdinaryMutationStatus { status } => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn reconcile_ordinary_mutation(
+        &self,
+        fence: SupervisordControlFence,
+        mutation_request_id: u64,
+    ) -> Result<Option<DurableMutationStatusV1>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ReconcileOrdinaryMutation {
+                fence,
+                mutation_request_id,
+            })
+            .await?
+        {
+            SupervisordPayload::OrdinaryMutationStatus { status } => Ok(status),
+            payload => unexpected(payload),
+        }
     }
 
     pub async fn health(&self) -> Result<SupervisordHealth, SupervisorError> {
@@ -60,6 +244,29 @@ impl SupervisordClient {
         match self.send(SupervisordMethod::Roster { limit }).await? {
             SupervisordPayload::Roster { agents } => Ok(agents),
             payload => unexpected(payload),
+        }
+    }
+
+    /// Read bounded diagnostic text through the private administrator socket.
+    pub async fn diagnostics(&self, agent_id: AgentId) -> Result<Vec<String>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::AgentDiagnostics {
+                agent_id: agent_id.clone(),
+            })
+            .await?
+        {
+            SupervisordPayload::AgentDiagnostics {
+                agent_id: observed,
+                entries,
+            } if observed == agent_id
+                && entries.len() <= 16
+                && entries.iter().all(|entry| entry.len() <= 512) =>
+            {
+                Ok(entries)
+            }
+            _ => Err(SupervisorError::Invalid(
+                "unexpected or oversized Agent diagnostics".to_string(),
+            )),
         }
     }
 
@@ -205,7 +412,16 @@ impl SupervisordClient {
         &self,
         method: SupervisordMethod,
     ) -> Result<SupervisordMutationAccepted, SupervisorError> {
-        match self.send(method).await? {
+        let request_id = self.reserve_request_id();
+        self.mutation_with_request_id(request_id, method).await
+    }
+
+    async fn mutation_with_request_id(
+        &self,
+        request_id: u64,
+        method: SupervisordMethod,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        match self.send_with_request_id(request_id, method).await? {
             SupervisordPayload::MutationAccepted {
                 operation,
                 accepted_state_digest,
@@ -222,7 +438,27 @@ impl SupervisordClient {
     }
 
     async fn send(&self, method: SupervisordMethod) -> Result<SupervisordPayload, SupervisorError> {
-        let request_id = self.next_request_id.fetch_add(1, Ordering::Relaxed);
+        let request_id = self.reserve_request_id();
+        self.send_with_request_id(request_id, method).await
+    }
+
+    async fn send_with_request_id(
+        &self,
+        request_id: u64,
+        method: SupervisordMethod,
+    ) -> Result<SupervisordPayload, SupervisorError> {
+        let observation = matches!(
+            &method,
+            SupervisordMethod::Health
+                | SupervisordMethod::Roster { .. }
+                | SupervisordMethod::Snapshot { .. }
+        );
+        let configuration = matches!(
+            &method,
+            SupervisordMethod::RegisterAgent { .. }
+                | SupervisordMethod::AllowInstalledRelease { .. }
+                | SupervisordMethod::RetireAgent { .. }
+        );
         let request = SupervisordRequest::new(request_id, method);
         request
             .validate()
@@ -230,6 +466,9 @@ impl SupervisordClient {
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| SupervisorError::Invalid("supervisord connect timed out".to_string()))??;
+        if let Some(uid) = self.expected_owner_uid {
+            stream.ensure_peer_user(uid)?;
+        }
         let (reader, mut writer) = tokio::io::split(stream);
         let mut bytes = serde_json::to_vec(&request)
             .map_err(|error| SupervisorError::Invalid(format!("encode request: {error}")))?;
@@ -266,6 +505,33 @@ impl SupervisordClient {
             ));
         }
         match response.payload {
+            SupervisordPayload::Error { code, message, .. }
+                if observation
+                    && code == "control_state_unavailable"
+                    && message == crate::daemon_protocol::OBSERVATION_UNAVAILABLE_MESSAGE =>
+            {
+                Err(SupervisorError::ObservationUnavailable)
+            }
+            SupervisordPayload::Error { code, .. } if code == "not_admitted_busy" => {
+                Err(SupervisorError::NotAdmittedBusy)
+            }
+            SupervisordPayload::Error { code, .. } if code == "release_validation_rejected" => {
+                Err(SupervisorError::ReleaseValidationRejected)
+            }
+            SupervisordPayload::Error { code, message, .. }
+                if configuration
+                    && matches!(
+                        code.as_str(),
+                        "configuration_not_ready" | "stale_control_fence"
+                    ) =>
+            {
+                Err(SupervisorError::ConfigurationNotReady(message))
+            }
+            SupervisordPayload::Error { code, .. } if code == "stale_control_fence" => {
+                // The owner rejects this fence before journal admission or an
+                // effect. Expose that result without refreshing the intent.
+                Err(SupervisorError::StaleControlFence)
+            }
             SupervisordPayload::Error {
                 code,
                 message,
@@ -278,8 +544,19 @@ impl SupervisordClient {
     }
 }
 
+fn random_request_seed() -> u64 {
+    uuid::Uuid::new_v4().as_u64_pair().0.max(1)
+}
+
 fn unexpected<T>(payload: SupervisordPayload) -> Result<T, SupervisorError> {
     Err(SupervisorError::Invalid(format!(
         "supervisord returned unexpected payload {payload:?}"
     )))
 }
+
+#[cfg(all(test, unix))]
+#[path = "daemon_observation_client_tests.rs"]
+mod observation_tests;
+#[cfg(all(test, unix))]
+#[path = "daemon_client_peer_tests.rs"]
+mod peer_tests;

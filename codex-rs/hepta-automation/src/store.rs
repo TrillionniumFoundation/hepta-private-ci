@@ -5,8 +5,6 @@ use std::path::PathBuf;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::SqlitePool;
 
@@ -23,6 +21,9 @@ use crate::AutomationTaskState;
 use crate::model::client_message_id;
 use crate::taskflow::TaskFlowError;
 use crate::taskflow::verify_taskflow_store;
+
+#[path = "store_listing.rs"]
+mod listing;
 
 const AUTOMATION_DB_FILENAME: &str = "automation_1.sqlite3";
 const MAX_TASK_PAGE: usize = 1_024;
@@ -43,54 +44,6 @@ impl AutomationStore {
             layout.agent_id().clone(),
         )
         .await
-    }
-
-    pub(crate) async fn open_root(
-        root: PathBuf,
-        owner_agent_id: AgentId,
-    ) -> Result<Self, AutomationError> {
-        create_private_directory(&root)?;
-        let path = root.join(AUTOMATION_DB_FILENAME);
-        let sqlite_home = AbsolutePathBuf::try_from(root).map_err(|_| AutomationError::Invalid)?;
-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(&path)
-            .await
-            .map_err(unavailable)?;
-        if let Err(error) = reconcile_legacy_migration_ids(&pool).await {
-            pool.close().await;
-            return Err(error);
-        }
-        if MIGRATOR.run(&pool).await.is_err() {
-            pool.close().await;
-            return Err(AutomationError::Unavailable);
-        }
-        protect_database_file(&path)?;
-        sqlx::query(
-            "INSERT INTO automation_meta (singleton, schema_version, owner_agent_id)
-             VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
-        )
-        .bind(i64::from(AUTOMATION_SCHEMA_VERSION))
-        .bind(owner_agent_id.as_str())
-        .execute(&pool)
-        .await
-        .map_err(unavailable)?;
-        verify_store(&pool, &owner_agent_id).await?;
-        let timer_epoch: i64 = sqlx::query_scalar(
-            "SELECT writer_epoch FROM automation_timer_lifecycle WHERE singleton = 1",
-        )
-        .fetch_one(&pool)
-        .await
-        .map_err(unavailable)?;
-        if timer_epoch <= 0 {
-            pool.close().await;
-            return Err(AutomationError::Corrupt);
-        }
-        Ok(Self {
-            pool,
-            owner_agent_id,
-            path,
-            timer_epoch,
-        })
     }
 
     pub fn owner_agent_id(&self) -> &AgentId {
@@ -1157,6 +1110,32 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if owner != owner_agent_id.as_str() {
         return Err(AutomationError::AccessDenied);
     }
+    // Validate the actual index, not just its name or column names. A partial,
+    // foreign-table or differently collated index is not this paging contract.
+    let listing_indexes: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM pragma_index_list('automation_tasks')
+         WHERE name = 'automation_tasks_listing_idx'
+           AND [unique] = 0 AND origin = 'c' AND partial = 0",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    let listing_columns: Vec<(Option<String>, i64, String)> = sqlx::query_as(
+        "SELECT name, [desc], coll FROM pragma_index_xinfo('automation_tasks_listing_idx')
+         WHERE [key] = 1 ORDER BY seqno",
+    )
+    .fetch_all(pool)
+    .await
+    .map_err(unavailable)?;
+    if listing_indexes != 1
+        || listing_columns
+            != [
+                (Some("created_at_ms".into()), 0, "BINARY".into()),
+                (Some("task_id".into()), 0, "BINARY".into()),
+            ]
+    {
+        return Err(AutomationError::Corrupt);
+    }
     let foreign: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_tasks WHERE owner_agent_id != ?")
             .bind(owner_agent_id.as_str())
@@ -1371,3 +1350,6 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
 #[cfg(test)]
 #[path = "migration_convergence_tests.rs"]
 mod migration_convergence_tests;
+
+#[path = "store_open.rs"]
+mod open;

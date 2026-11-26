@@ -69,8 +69,8 @@ impl Session {
     }
 
     /// Emits idle lifecycle while retaining the caller's own terminalization
-    /// completion fence.  External admissions remain fenced; only the exact
-    /// owner may progress to the idle callback and subsequent mailbox wake.
+    /// completion witness. Durable terminal publication releases admission
+    /// before these callbacks; shutdown still waits for the exact witness.
     pub(crate) async fn emit_thread_idle_lifecycle_if_idle_for_terminalization(
         &self,
         cause: ThreadIdleCause,

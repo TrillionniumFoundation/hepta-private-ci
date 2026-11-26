@@ -224,6 +224,36 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertEqual(command.cwd, self.root / "qualification/fixture")
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
 
+    def test_real_vendor_import_keeps_upstream_rust_and_formats_first_party_and_build(
+        self,
+    ):
+        self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
+        self.write("codex-rs/rustfmt.toml", "max_width=88\n")
+        self.write(
+            "codex-rs/third_party_tasks/Cargo.toml",
+            '[package]\nname="owner"\nedition.workspace=true\n',
+        )
+        first_party = self.write(
+            "codex-rs/third_party_tasks/src/lib.rs", "pub fn entry() {}\n"
+        )
+        upstream = self.write(
+            "codex-rs/third_party/sdk/src/lib.rs", "use std::{fmt, sync::Arc};\n"
+        )
+        build = self.write(
+            "codex-rs/third_party/sdk/BUILD.bazel", 'load("//:defs.bzl", "sdk")\n'
+        )
+        original = upstream.read_bytes()
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual([group.name for group in groups], ["Rust", "Bazel/Starlark"])
+        self.assertEqual(
+            [command.args[-1] for command in groups[0].commands], [str(first_party)]
+        )
+        self.assertIn(
+            "codex-rs/third_party/sdk/BUILD.bazel", groups[1].commands[0].args
+        )
+        self.assertEqual(upstream.read_bytes(), original)
+        self.assertTrue(build.is_file())
+
     def test_changed_ruff_configuration_checks_the_owning_python_tree(self):
         groups = FMT.scoped_formatter_groups(["scripts/ruff.toml"], check=True)
         self.assertEqual([group.name for group in groups], ["Python scripts"])
@@ -352,6 +382,56 @@ class FormatterScopeTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "workspace edition missing"):
             FMT.rust_file_command("codex-rs/member/src/lib.rs", check=True)
+
+
+class WorkflowFormatExecutionTests(unittest.TestCase):
+    def test_clean_ci_checkout_checks_commit_range_and_propagates_failures(self):
+        import json
+        from hepta_workflow_commands import (
+            load_workflow,
+            workflow_step_by_id,
+            workflow_run,
+        )
+
+        source = Path(__file__).resolve().parents[1]
+        workflow = load_workflow(
+            (source / ".github/workflows/repo-checks.yml").read_text()
+        )
+        step = workflow_step_by_id(workflow, "build-test", "changed_format")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            tool = root / "python3"
+            output = root / "args.json"
+            tool.write_text(
+                f"#!{sys.executable}\nimport json,os,sys\nfrom pathlib import Path\nPath(os.environ['FORMAT_PROBE']).write_text(json.dumps(sys.argv[1:]))\nsys.exit(int(os.environ['FORMAT_EXIT']))\n"
+            )
+            tool.chmod(0o755)
+            for base, scope in (
+                ("", ["--all"]),
+                ("0" * 40, ["--all"]),
+                ("a" * 40, ["--base", "a" * 40]),
+            ):
+                for exit_code in (0, 1):
+                    with self.subTest(base=base, exit_code=exit_code):
+                        env = dict(
+                            os.environ,
+                            PATH=str(root) + os.pathsep + os.environ["PATH"],
+                            BASE_SHA=base,
+                            FORMAT_PROBE=str(output),
+                            FORMAT_EXIT=str(exit_code),
+                        )
+                        done = subprocess.run(
+                            ["bash", "-c", workflow_run(step)],
+                            cwd=root,
+                            env=env,
+                            capture_output=True,
+                            text=True,
+                        )
+                        self.assertEqual(done.returncode, exit_code)
+                        self.assertEqual(
+                            json.loads(output.read_text()),
+                            ["scripts/format.py", "--check", *scope],
+                        )
 
 
 if __name__ == "__main__":

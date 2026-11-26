@@ -6,6 +6,8 @@
 //! paths.
 
 use http::HeaderMap;
+#[cfg(unix)]
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -37,6 +39,8 @@ pub struct HttpClientBuilder {
     chatgpt_cookie_store: Option<Arc<ChatGptCookieStore>>,
     request_logging: RequestLogging,
     tls_backend: TlsBackend,
+    #[cfg(unix)]
+    unix_socket: Option<PathBuf>,
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -104,6 +108,14 @@ impl HttpClientBuilder {
     /// Limits only connection establishment, not the request as a whole.
     pub fn connect_timeout(mut self, timeout: Duration) -> Self {
         self.connect_timeout = Some(timeout);
+        self
+    }
+
+    /// Connect to a local Unix HTTP transport. Use `build_direct` for this
+    /// exceptional route so ambient proxies cannot redirect a local exchange.
+    #[cfg(unix)]
+    pub fn unix_socket(mut self, path: impl Into<PathBuf>) -> Self {
+        self.unix_socket = Some(path.into());
         self
     }
 
@@ -306,6 +318,10 @@ impl HttpClientBuilder {
 
     fn base_reqwest_builder(self) -> reqwest::ClientBuilder {
         let mut builder = reqwest::Client::builder();
+        #[cfg(unix)]
+        if let Some(socket) = self.unix_socket {
+            builder = builder.unix_socket(socket);
+        }
         if self.tls_backend == TlsBackend::Rustls {
             ensure_rustls_crypto_provider();
             builder = builder.use_rustls_tls();
@@ -339,6 +355,8 @@ impl Default for HttpClientBuilder {
             chatgpt_cookie_store: None,
             request_logging: RequestLogging::Enabled,
             tls_backend: TlsBackend::TransportDefault,
+            #[cfg(unix)]
+            unix_socket: None,
         }
     }
 }

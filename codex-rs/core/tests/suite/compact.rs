@@ -5298,11 +5298,28 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         instruction_fragments(&requests[3]),
         vec![old_fragment.clone(), replacement_fragment]
     );
-    let resumed_input = requests[3].input();
+    let resumed_rollout = resumed.codex.rollout_path().expect("resumed rollout path");
     assert_eq!(
-        resumed_input.get(..replacement_history.len()),
-        Some(replacement_history.as_slice()),
-        "remote-v2 cold resume should replay persisted replacement history verbatim"
+        replacement_history_from_rollout(&resumed_rollout)?,
+        replacement_history,
+        "remote-v2 cold resume must retain the original durable replacement history verbatim"
+    );
+    let expected_wire_prefix = replacement_history
+        .iter()
+        .cloned()
+        .map(|mut item| {
+            item.as_object_mut()
+                .expect("response item object")
+                .remove("internal_chat_message_metadata_passthrough");
+            item
+        })
+        .collect::<Vec<_>>();
+    let resumed_input = requests[3].input();
+    super::durable_metadata::assert_wire_has_no_local_metadata(&resumed_input);
+    assert_eq!(
+        resumed_input.get(..expected_wire_prefix.len()),
+        Some(expected_wire_prefix.as_slice()),
+        "custom provider cold resume must replay the complete structured prefix with local metadata stripped"
     );
     let post_compact_input = requests[2].input();
     assert_eq!(

@@ -3,6 +3,9 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-supervisor",
     crate_name = "codex_hepta_supervisor",
+    unit_test_dependency_replacements = {
+        "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+    },
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

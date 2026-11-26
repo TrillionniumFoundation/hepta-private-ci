@@ -27,6 +27,9 @@ use crate::FleetRegistryError;
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
 const RELEASE_MANIFEST_FILE: &str = "release.json";
+
+#[path = "release_launch_read.rs"]
+mod launch_read;
 const AGENTD_RELEASE_PROGRAM: &str = "bin/hepta-agentd";
 const MATRIXD_RELEASE_PROGRAM: &str = "bin/hepta-matrixd";
 const RELEASE_ALLOW_PREFIX: &str = "allow-";
@@ -255,10 +258,16 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
-        std::fs::create_dir(&staging)?;
+        std::fs::create_dir(&staging).inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("create release staging directory", &staging, _error);
+        })?;
         let result = (|| {
             let bin_root = staging.join("bin");
-            std::fs::create_dir(&bin_root)?;
+            std::fs::create_dir(&bin_root).inspect_err(|_error| {
+                #[cfg(test)]
+                copy_tests::trace_io_failure("create release bin directory", &bin_root, _error);
+            })?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
             copy_immutable_program(&source_agentd, &agentd_program)?;
             let matrixd = source_matrixd
@@ -270,7 +279,16 @@ impl FleetRegistry {
                         Ok(ReleaseProgramMetadata {
                             program_relative_path: PathBuf::from(MATRIXD_RELEASE_PROGRAM),
                             program_sha256: sha256_file(&matrixd_program)?,
-                            program_size_bytes: std::fs::metadata(&matrixd_program)?.len(),
+                            program_size_bytes: std::fs::metadata(&matrixd_program)
+                                .inspect_err(|_error| {
+                                    #[cfg(test)]
+                                    copy_tests::trace_io_failure(
+                                        "read matrixd program metadata",
+                                        &matrixd_program,
+                                        _error,
+                                    );
+                                })?
+                                .len(),
                             args: matrixd_args,
                         })
                     },
@@ -282,7 +300,16 @@ impl FleetRegistry {
                 agentd: ReleaseProgramMetadata {
                     program_relative_path: PathBuf::from(AGENTD_RELEASE_PROGRAM),
                     program_sha256: sha256_file(&agentd_program)?,
-                    program_size_bytes: std::fs::metadata(&agentd_program)?.len(),
+                    program_size_bytes: std::fs::metadata(&agentd_program)
+                        .inspect_err(|_error| {
+                            #[cfg(test)]
+                            copy_tests::trace_io_failure(
+                                "read agentd program metadata",
+                                &agentd_program,
+                                _error,
+                            );
+                        })?
+                        .len(),
                     args: agentd_args,
                 },
                 matrixd,
@@ -294,7 +321,14 @@ impl FleetRegistry {
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
             set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
+            std::fs::rename(&staging, &final_root).inspect_err(|_error| {
+                #[cfg(test)]
+                copy_tests::trace_io_failure(
+                    "rename staging to immutable release",
+                    &staging,
+                    _error,
+                );
+            })?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
@@ -303,7 +337,7 @@ impl FleetRegistry {
             let _ = std::fs::remove_dir_all(&staging);
             return Err(error);
         }
-        resolve_catalog_release(self.layout().releases_root(), &release_id)
+        resolve_catalog_release(self, &release_id)
     }
 
     /// Allows one registered agent to use an already installed release. The
@@ -314,16 +348,41 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<(), FleetRegistryError> {
+        self.allow_release_with_read_mode(agent_id, release_id, /*defer_cold_read*/ false)
+    }
+
+    /// Read only immutable catalog bytes; this creates no allowance or receipt.
+    pub fn prevalidate_release(&self, release_id: &ReleaseId) -> Result<(), FleetRegistryError> {
+        resolve_catalog_release(self, release_id).map(|_| ())
+    }
+
+    /// Revalidate physical catalog identity before configuration publication.
+    /// A changed or evicted root-custody digest must be warmed outside the
+    /// lifecycle writer. Ordinary user installations retain full validation.
+    pub fn allow_prevalidated_release(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<(), FleetRegistryError> {
+        self.allow_release_with_read_mode(agent_id, release_id, /*defer_cold_read*/ true)
+    }
+
+    fn allow_release_with_read_mode(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+        defer_cold_read: bool,
+    ) -> Result<(), FleetRegistryError> {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
-        let _ = resolve_catalog_release(self.layout().releases_root(), release_id)?;
-        let manifest = release_manifest_path(self.layout().releases_root(), release_id);
+        let (_, manifest_sha256) =
+            resolve_catalog_release_with_manifest(self, release_id, defer_cold_read)?;
         let allowance = ReleaseAllowance {
             schema_version: RELEASE_METADATA_SCHEMA_VERSION,
             agent_id: agent_id.clone(),
             release_id: release_id.clone(),
-            manifest_sha256: sha256_file(&manifest)?,
+            manifest_sha256,
         };
         let path = allowance_path(record.layout.releases_root(), release_id);
         if path.exists() {
@@ -423,6 +482,18 @@ impl FleetRegistry {
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<RegisteredRelease, FleetRegistryError> {
+        self.resolve_release_with_catalog(agent_id, release_id, resolve_catalog_release)
+    }
+
+    fn resolve_release_with_catalog(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+        resolve_catalog: impl FnOnce(
+            &FleetRegistry,
+            &ReleaseId,
+        ) -> Result<RegisteredRelease, FleetRegistryError>,
+    ) -> Result<RegisteredRelease, FleetRegistryError> {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
@@ -461,7 +532,7 @@ impl FleetRegistry {
                 "allowed release manifest changed for agent {agent_id} release {release_id}"
             )));
         }
-        resolve_catalog_release(self.layout().releases_root(), release_id)
+        resolve_catalog(self, release_id)
     }
 
     pub fn allowed_releases(
@@ -593,9 +664,45 @@ pub(crate) fn load_release_state(
 }
 
 fn resolve_catalog_release(
-    catalog_root: &Path,
+    registry: &FleetRegistry,
     release_id: &ReleaseId,
 ) -> Result<RegisteredRelease, FleetRegistryError> {
+    resolve_catalog_release_with_manifest(registry, release_id, /*defer_cold_read*/ false)
+        .map(|(release, _)| release)
+}
+
+fn resolve_catalog_release_with_manifest(
+    registry: &FleetRegistry,
+    release_id: &ReleaseId,
+    defer_cold_read: bool,
+) -> Result<(RegisteredRelease, String), FleetRegistryError> {
+    resolve_catalog_release_with_programs(registry, release_id, |program, metadata, manifest| {
+        let digest = if defer_cold_read {
+            registry
+                .release_digests
+                .sha256_prevalidated(program, manifest)?
+        } else {
+            registry.release_digests.sha256(program, manifest)?
+        };
+        if digest != metadata.program_sha256 {
+            return Err(FleetRegistryError::Corrupt(format!(
+                "release {release_id} program differs from immutable metadata"
+            )));
+        }
+        Ok(())
+    })
+}
+
+fn resolve_catalog_release_with_programs(
+    registry: &FleetRegistry,
+    release_id: &ReleaseId,
+    mut verify_program: impl FnMut(
+        &Path,
+        &ReleaseProgramMetadata,
+        &crate::registry::ManifestRead,
+    ) -> Result<(), FleetRegistryError>,
+) -> Result<(RegisteredRelease, String), FleetRegistryError> {
+    let catalog_root = registry.layout().releases_root();
     validate_physical_directory(catalog_root, /*immutable*/ false)?;
     let release_root = catalog_root.join(release_id.as_str());
     let bin_root = release_root.join("bin");
@@ -610,8 +717,11 @@ fn resolve_catalog_release(
     }
     let manifest_path = release_root.join(RELEASE_MANIFEST_FILE);
     validate_immutable_regular_file(&manifest_path, /*executable*/ false)?;
-    let metadata: CatalogReleaseMetadata =
-        read_bounded_json(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
+    let manifest = registry
+        .release_digests
+        .manifest(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
+    let metadata: CatalogReleaseMetadata = serde_json::from_slice(&manifest.bytes)
+        .map_err(|error| FleetRegistryError::Corrupt(format!("invalid release JSON: {error}")))?;
     let (release_id_from_manifest, agentd, matrixd) = match metadata {
         CatalogReleaseMetadata::V2(metadata) => {
             validate_metadata(&metadata, release_id)?;
@@ -640,36 +750,58 @@ fn resolve_catalog_release(
             "release {release_id} contains an unexpected closed-world entry"
         )));
     }
-    let program = resolve_program(&release_root, &agentd, release_id)?;
+    let program = resolve_program(
+        &release_root,
+        &agentd,
+        release_id,
+        &manifest,
+        &mut verify_program,
+    )?;
     let matrixd = match matrixd {
         Some(metadata) => Some(RegisteredProgram {
-            program: resolve_program(&release_root, &metadata, release_id)?,
+            program: resolve_program(
+                &release_root,
+                &metadata,
+                release_id,
+                &manifest,
+                &mut verify_program,
+            )?,
             args: metadata.args,
         }),
         None => None,
     };
-    Ok(RegisteredRelease {
-        release_id: release_id_from_manifest,
-        program,
-        args: agentd.args,
-        matrixd,
-    })
+    #[cfg(unix)]
+    manifest.verify_current()?;
+    Ok((
+        RegisteredRelease {
+            release_id: release_id_from_manifest,
+            program,
+            args: agentd.args,
+            matrixd,
+        },
+        manifest.sha256,
+    ))
 }
 
 fn resolve_program(
     release_root: &Path,
     metadata: &ReleaseProgramMetadata,
     release_id: &ReleaseId,
+    manifest: &crate::registry::ManifestRead,
+    verify_program: &mut impl FnMut(
+        &Path,
+        &ReleaseProgramMetadata,
+        &crate::registry::ManifestRead,
+    ) -> Result<(), FleetRegistryError>,
 ) -> Result<PathBuf, FleetRegistryError> {
     let program = release_root.join(&metadata.program_relative_path);
     validate_immutable_regular_file(&program, /*executable*/ true)?;
-    if std::fs::metadata(&program)?.len() != metadata.program_size_bytes
-        || sha256_file(&program)? != metadata.program_sha256
-    {
+    if std::fs::metadata(&program)?.len() != metadata.program_size_bytes {
         return Err(FleetRegistryError::Corrupt(format!(
             "release {release_id} program differs from immutable metadata"
         )));
     }
+    verify_program(&program, metadata, manifest)?;
     Ok(program)
 }
 
@@ -892,9 +1024,29 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
     let mut bytes = serde_json::to_vec(value)
         .map_err(|error| FleetRegistryError::Corrupt(format!("encode release state: {error}")))?;
     bytes.push(b'\n');
-    let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(path)
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("create release metadata", path, _error);
+        })?;
+    file.write_all(&bytes).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("write release metadata", path, _error);
+    })?;
+    crate::registry_metadata::inherit_protected_read_group(&file, path).inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "release I/O failed: operation=inherit metadata read group, path={}, error={_error:?}",
+            path.display()
+        );
+    })?;
+    file.sync_all().inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("sync release metadata writer", path, _error);
+    })?;
     Ok(())
 }
 
@@ -917,25 +1069,44 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
 }
 
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
-    let mut input = File::open(source)?;
+    let mut input = File::open(source).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("open source program", source, _error);
+    })?;
     let mut output = OpenOptions::new()
         .write(true)
         .create_new(true)
-        .open(destination)?;
-    std::io::copy(&mut input, &mut output)?;
+        .open(destination)
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("create destination program", destination, _error);
+        })?;
+    std::io::copy(&mut input, &mut output).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("copy program bytes", destination, _error);
+    })?;
     set_mode(destination, /*mode*/ 0o555)?;
     // Flush through the writing handle retained across the mode change.
     // Windows cannot FlushFileBuffers on a separately opened read-only handle.
-    output.sync_all()?;
+    output.sync_all().inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("sync program writing handle", destination, _error);
+    })?;
     Ok(())
 }
 
 fn sha256_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let mut file = File::open(path)?;
+    let mut file = File::open(path).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("open release digest program", path, _error);
+    })?;
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
     loop {
-        let count = file.read(&mut buffer)?;
+        let count = file.read(&mut buffer).inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("read release digest program", path, _error);
+        })?;
         if count == 0 {
             break;
         }
@@ -1026,7 +1197,12 @@ fn is_executable(_metadata: &std::fs::Metadata) -> bool {
 #[cfg(unix)]
 fn set_mode(path: &Path, mode: u32) -> Result<(), FleetRegistryError> {
     use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode))?;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode)).inspect_err(
+        |_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("set release mode", path, _error);
+        },
+    )?;
     Ok(())
 }
 
@@ -1050,7 +1226,14 @@ fn make_tree_removable(path: &Path) {
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
+    let directory = File::open(path).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("open release directory", path, _error);
+    })?;
+    directory.sync_all().inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("sync release directory", path, _error);
+    })?;
     Ok(())
 }
 
@@ -1085,7 +1268,10 @@ mod tests {
 
     impl Fixture {
         fn new() -> Result<Self, FleetRegistryError> {
-            let temp = tempfile::tempdir()?;
+            Self::with_directory(tempfile::tempdir()?)
+        }
+
+        fn with_directory(temp: TempDir) -> Result<Self, FleetRegistryError> {
             let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
                 .map_err(|error| FleetRegistryError::Invalid(error.to_string()))?;
             let registry = FleetRegistry::initialize(root.clone())?;
@@ -1108,6 +1294,65 @@ mod tests {
                 source,
             })
         }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    #[ignore = "requires root and protected native filesystem"]
+    fn read_prevalidation_cannot_allow_agents_or_hide_replacement_and_revocation()
+    -> Result<(), FleetRegistryError> {
+        use std::os::unix::fs::MetadataExt;
+
+        let temp = tempfile::Builder::new()
+            .prefix("h7-pre-")
+            .tempdir_in("/var/lib")?;
+        assert_eq!(std::fs::metadata(temp.path())?.uid(), 0);
+        let fixture = Fixture::with_directory(temp)?;
+        let release_id = ReleaseId::parse("warm-before-allow")?;
+        let installed =
+            fixture
+                .registry
+                .install_release(release_id.clone(), &fixture.source, vec![])?;
+        // An actual fresh registry represents startup with no volatile facts.
+        let registry = FleetRegistry::open_existing(fixture.root.clone())?;
+        assert!(matches!(
+            registry.allow_prevalidated_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::ReleasePrevalidationRequired)
+        ));
+        registry.prevalidate_release(&release_id)?;
+        assert!(matches!(
+            registry.resolve_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::ReleaseNotAllowed { .. })
+        ));
+        registry.allow_prevalidated_release(&fixture.first, &release_id)?;
+        let original = std::fs::read(&installed.program)?;
+        let parent = installed
+            .program
+            .parent()
+            .ok_or_else(|| FleetRegistryError::Invalid("program parent".into()))?;
+        set_mode(parent, /*mode*/ 0o755)?;
+        let replacement = parent.join("replacement");
+        std::fs::write(&replacement, &original)?;
+        set_mode(&replacement, /*mode*/ 0o555)?;
+        std::fs::rename(&replacement, &installed.program)?;
+        set_mode(parent, /*mode*/ 0o555)?;
+        assert!(matches!(
+            registry.allow_prevalidated_release(&fixture.second, &release_id),
+            Err(FleetRegistryError::ReleasePrevalidationRequired)
+        ));
+        assert!(matches!(
+            registry.resolve_release(&fixture.second, &release_id),
+            Err(FleetRegistryError::ReleaseNotAllowed { .. })
+        ));
+        registry.prevalidate_release(&release_id)?;
+        registry.allow_prevalidated_release(&fixture.second, &release_id)?;
+        registry.revoke_release(&fixture.first, &release_id)?;
+        registry.prevalidate_release(&release_id)?;
+        assert!(matches!(
+            registry.resolve_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::ReleaseRevoked { .. })
+        ));
+        Ok(())
     }
 
     #[test]

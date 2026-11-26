@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import json
-import re
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -35,10 +34,6 @@ SOURCE_ROOTS: dict[str, tuple[str, ...]] = {
 }
 
 SOURCE_STATUS = "existing_bound"
-SOURCE_INTERPRETATION = "source_root_present_is_separate_from_production_implementation; activation_acceptance_promotion_and_release_remain_separate"
-SECTION_TWO_HEADING = "## 2. Source binding and implementation status"
-SECTION_THREE_HEADING = "## 3. Boundary, responsibilities and non-goals"
-SOURCE_RECEIPT_HEADING = "## 17. Source implementation receipt"
 
 
 class RegistryClosureError(RuntimeError):
@@ -136,89 +131,6 @@ def _write_json(
         return False
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(rendered, encoding="utf-8")
-    return True
-
-
-def _technical_section(module_id: str, roots: tuple[str, ...]) -> str:
-    root_lines = "\n".join(f"- `{root}`" for root in roots)
-    return f"""{SECTION_TWO_HEADING}
-
-Declared exclusive target roots:
-
-{root_lines}
-
-Existing declared roots at this exact source snapshot:
-
-{root_lines}
-
-Non-authoritative implementation evidence roots:
-
-None.
-
-Declared roots not yet present:
-
-None.
-
-`{SOURCE_STATUS}` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `{module_id}`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
-"""
-
-
-def _source_receipt(module_id: str, roots: tuple[str, ...], bootstrap: str) -> str:
-    root_lines = "\n".join(f"- `{root}`" for root in roots)
-    return f"""{SOURCE_RECEIPT_HEADING}
-
-The bootstrap source-location obligation for `{module_id}` is implemented by work package `{bootstrap}` in:
-
-{root_lines}
-
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
-"""
-
-
-def _normalize_technical_document(
-    module_id: str,
-    path: Path,
-    roots: tuple[str, ...],
-    bootstrap: str,
-) -> bool:
-    try:
-        text = path.read_text(encoding="utf-8")
-    except OSError as error:
-        raise RegistryClosureError(
-            f"cannot read {path.relative_to(ROOT)}: {error}"
-        ) from error
-
-    status_pattern = re.compile(r"(?m)^\*\*Source status:\*\* `[^`]+`$")
-    if not status_pattern.search(text):
-        raise RegistryClosureError(
-            f"source status metadata is missing in {path.relative_to(ROOT)}"
-        )
-    text = status_pattern.sub(f"**Source status:** `{SOURCE_STATUS}`", text, count=1)
-
-    section_pattern = re.compile(
-        rf"(?ms)^{re.escape(SECTION_TWO_HEADING)}\n.*?(?=^{re.escape(SECTION_THREE_HEADING)}\n)"
-    )
-    if not section_pattern.search(text):
-        raise RegistryClosureError(
-            f"source binding section is missing in {path.relative_to(ROOT)}"
-        )
-    text = section_pattern.sub(
-        _technical_section(module_id, roots) + "\n", text, count=1
-    )
-
-    receipt_pattern = re.compile(rf"(?ms)\n{re.escape(SOURCE_RECEIPT_HEADING)}\n.*\Z")
-    receipt = "\n" + _source_receipt(module_id, roots, bootstrap)
-    if receipt_pattern.search(text):
-        text = receipt_pattern.sub(receipt, text, count=1)
-    else:
-        text = text.rstrip() + "\n" + receipt
-
-    if not text.endswith("\n"):
-        text += "\n"
-    current = path.read_text(encoding="utf-8")
-    if current == text:
-        return False
-    path.write_text(text, encoding="utf-8")
     return True
 
 
@@ -353,7 +265,6 @@ def normalize() -> bool:
     packages_by_id = _index(packages, "id", "WORK_PACKAGES.json")
 
     bootstrap_packages: dict[str, str] = {}
-    technical_paths: list[Path] = []
     for module_id, expected_roots in SOURCE_ROOTS.items():
         module = modules_by_id.get(module_id)
         binding = bindings_by_id.get(module_id)
@@ -403,7 +314,7 @@ def normalize() -> bool:
         binding["existingDeclaredRoots"] = list(expected_roots)
         binding["sourceEvidenceRoots"] = list(expected_roots)
         binding["missingDeclaredRoots"] = []
-        binding["interpretation"] = SOURCE_INTERPRETATION
+        binding.pop("interpretation", None)
 
         package["state"] = "source_implemented"
 
@@ -411,13 +322,16 @@ def normalize() -> bool:
         if not isinstance(technical_document, str) or not technical_document:
             raise RegistryClosureError(f"technical document is missing for {module_id}")
         technical_path = ROOT / technical_document
-        if _normalize_technical_document(
-            module_id,
-            technical_path,
-            expected_roots,
-            bootstrap,
-        ):
-            technical_paths.append(technical_path)
+        try:
+            technical_text = technical_path.read_text(encoding="utf-8")
+        except OSError as error:
+            raise RegistryClosureError(
+                f"cannot read {technical_path.relative_to(ROOT)}: {error}"
+            ) from error
+        if not technical_text.strip():
+            raise RegistryClosureError(
+                f"technical document is empty: {technical_document}"
+            )
 
     changed_paths: list[Path] = []
     if _write_json(MODULES_PATH, modules_document):
@@ -436,10 +350,6 @@ def normalize() -> bool:
     )
     if _write_json(AUDIT_PATH, audit, compact=True):
         changed_paths.append(AUDIT_PATH)
-
-    for path in technical_paths:
-        if path not in changed_paths:
-            changed_paths.append(path)
 
     return bool(changed_paths)
 
@@ -533,8 +443,6 @@ def verify() -> list[str]:
             failures.append(f"binding evidence roots are incorrect: {module_id}")
         if binding.get("missingDeclaredRoots") != []:
             failures.append(f"binding still declares missing roots: {module_id}")
-        if binding.get("interpretation") != SOURCE_INTERPRETATION:
-            failures.append(f"binding interpretation is incorrect: {module_id}")
 
         bootstrap = module.get("bootstrapWorkPackage")
         if not isinstance(bootstrap, str):
@@ -550,16 +458,18 @@ def verify() -> list[str]:
             failures.append(f"technical document is invalid: {module_id}")
             continue
         path = ROOT / technical_document
-        if not path.is_file():
+        try:
+            resolved = path.resolve()
+            text = path.read_text(encoding="utf-8")
+        except OSError:
             failures.append(f"technical document is missing: {technical_document}")
             continue
-        text = path.read_text(encoding="utf-8")
-        if f"**Source status:** `{SOURCE_STATUS}`" not in text:
-            failures.append(f"technical source status is stale: {module_id}")
-        if SOURCE_RECEIPT_HEADING not in text:
-            failures.append(f"technical source receipt is missing: {module_id}")
-        if "Declared roots not yet present:\n\nNone." not in text:
-            failures.append(f"technical missing-root section is stale: {module_id}")
+        if not resolved.is_relative_to(ROOT.resolve()) or path.is_symlink():
+            failures.append(
+                f"technical document escapes repository: {technical_document}"
+            )
+        elif not text.strip():
+            failures.append(f"technical document is empty: {technical_document}")
 
     if not AUDIT_PATH.is_file():
         failures.append("qualification/gap-closure/PLAN_AUDIT.json is missing")

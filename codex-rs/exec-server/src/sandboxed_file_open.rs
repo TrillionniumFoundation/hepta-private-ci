@@ -102,11 +102,18 @@ async fn open_platform(
 // SCM_RIGHTS is Unix-only.
 #[cfg(unix)]
 pub(crate) fn transfer_file(file: &tokio::fs::File) -> io::Result<()> {
+    transfer_file_descriptor(std::io::stdin(), file)
+}
+
+#[cfg(unix)]
+fn transfer_file_descriptor(
+    socket: impl std::os::fd::AsFd,
+    file: impl std::os::fd::AsFd,
+) -> io::Result<()> {
     use rustix::net::SendAncillaryBuffer;
     use rustix::net::SendAncillaryMessage;
     use rustix::net::SendFlags;
     use std::io::IoSlice;
-    use std::os::fd::AsFd;
 
     let descriptors = [file.as_fd()];
     let mut space = [std::mem::MaybeUninit::uninit(); rustix::cmsg_space!(ScmRights(1))];
@@ -115,7 +122,7 @@ pub(crate) fn transfer_file(file: &tokio::fs::File) -> io::Result<()> {
         return Err(io::Error::other("missing file-descriptor control header"));
     }
     if rustix::net::sendmsg(
-        std::io::stdin(),
+        socket,
         &[IoSlice::new(&[0])],
         &mut control,
         SendFlags::empty(),
@@ -165,6 +172,69 @@ fn receive_file_descriptor(
     #[cfg(not(target_os = "linux"))]
     rustix::io::fcntl_setfd(&descriptor, rustix::io::FdFlags::CLOEXEC)?;
     Ok(descriptor)
+}
+
+// Probe the same descriptor handoff used after Linux sandbox authorization.
+// A replacement pathname must not substitute bytes on the transferred handle.
+#[cfg(target_os = "linux")]
+pub(crate) fn stable_handle_authorized_read_available() -> bool {
+    static AVAILABLE: std::sync::LazyLock<bool> = std::sync::LazyLock::new(|| {
+        use std::io::Read;
+        use std::io::Write;
+        use std::os::unix::fs::DirBuilderExt;
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::OpenOptionsExt;
+        use std::os::unix::net::UnixStream;
+        use std::time::Duration;
+
+        let directory = std::env::temp_dir().join(format!(
+            "codex-stable-fd-probe-{}-{}",
+            std::process::id(),
+            uuid::Uuid::new_v4()
+        ));
+        let mut builder = std::fs::DirBuilder::new();
+        builder.mode(0o700);
+        if builder.create(&directory).is_err() {
+            return false;
+        }
+        let available = (|| -> io::Result<bool> {
+            let original = directory.join("original");
+            let retired = directory.join("retired");
+            let mut writer = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .open(&original)?;
+            writer.write_all(b"original")?;
+            drop(writer);
+            let held = std::fs::File::open(&original)?;
+            let held_identity = held.metadata()?;
+            std::fs::rename(&original, &retired)?;
+            std::fs::write(&original, b"replaced")?;
+            let replacement_identity = std::fs::metadata(&original)?;
+            let (receiver, sender) = UnixStream::pair()?;
+            receiver.set_read_timeout(Some(Duration::from_secs(1)))?;
+            sender.set_write_timeout(Some(Duration::from_secs(1)))?;
+            transfer_file_descriptor(&sender, &held)?;
+            let received = receive_file_descriptor(&receiver)?;
+            if !rustix::io::fcntl_getfd(&received)?.contains(rustix::io::FdFlags::CLOEXEC) {
+                return Ok(false);
+            }
+            let received = std::fs::File::from(received);
+            let received_identity = received.metadata()?;
+            let mut bytes = Vec::new();
+            received.take(9).read_to_end(&mut bytes)?;
+            Ok(held_identity.dev() == received_identity.dev()
+                && held_identity.ino() == received_identity.ino()
+                && (held_identity.dev(), held_identity.ino())
+                    != (replacement_identity.dev(), replacement_identity.ino())
+                && bytes == b"original")
+        })()
+        .unwrap_or(false);
+        let _ = std::fs::remove_dir_all(directory);
+        available
+    });
+    *AVAILABLE
 }
 
 // Windows file handles must be duplicated across processes.

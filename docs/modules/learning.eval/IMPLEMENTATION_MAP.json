@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "c40ed3d9fe909d9979b93251c006ad32704e5be3",
+    "tree": "04214f0313436ee9eb4f0790958b32b82cae4a7a"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.eval",
@@ -244,6 +244,34 @@
           "symbol": "ProductQualificationReceiptV1::validate_integrity"
         }
       ]
+    },
+    {
+      "operation": "run_operational_model_lease_evaluator_v2",
+      "nativeSymbol": "run_operational_model_lease_evaluator_v2",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs",
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_operational_model_lease_evaluator_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "inspect_operational_model_lease_v2",
+      "nativeSymbol": "inspect_operational_model_lease_v2",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs",
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_operational_model_lease_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -293,12 +321,21 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
       "nativeSymbol": "run_evaluated_shadow_v1",
       "state": "qualification_consumer_not_default_canonical_daemon"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs",
+      "nativeSymbol": "main",
+      "state": "optional_fixed_role_evaluator_and_reader_cli_normal_cpu_composition_pending"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "04b233286874d4d0fca222b1ccc9fe372dc5c9b8"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs",
+      "object": "9b163275b4d5dec5481ffa1a552f74acbcc9dad1"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
@@ -306,15 +343,15 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
-      "object": "b46cb572492afa8646b92e5213ce9c47a4feaf7d"
+      "object": "9e78551f72064b7c3e044bf7a4b30300489b6fc1"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
-      "object": "d496f6865d39e98d7b92ed62ebf130945cd8266c"
+      "object": "a45e7fe4238cedfb412be2f19b1b7397fd670c8c"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
-      "object": "e6cb964c82d7aea02acae338c739ac1e5158dd3a"
+      "object": "814587a5c6f6952e86bd3664c9323f40c82a01b7"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
@@ -334,11 +371,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/ope.rs",
-      "object": "52fb8b882012f2561c65a95639a63da8e2c12ff4"
+      "object": "75dfdc79311c6478ec3f8034d350b6d355e435f6"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
-      "object": "1a6467723a7f1060178869f915b08286bcaeb502"
+      "object": "58fd862534487b7af0d60818212f6c79131ef0a3"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs",
@@ -346,27 +383,43 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/ope_tests.rs",
-      "object": "33a2103036a6c92ce9154e99d10d395dd058422b"
+      "object": "d40324105416ae27c78e2f648e0683e6c328a9b0"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs",
+      "object": "085cc44108988109e2b38a7fb38b41ca7822186a"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2_tests.rs",
+      "object": "7d705b0467e0b161faaac123c452a828e9f1312b"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs",
+      "object": "c7f15bc325a7d53b5b6ab133533dd198e086d978"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2_tests.rs",
+      "object": "cf47cae5abf82e0b83559fd704ff7e64eaeed4e3"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
-      "object": "d407375ed7a8f645523e58f0f9435b0359b6f25d"
+      "object": "d5b8a7fa4e485e90174af79e1c7cc852603406d1"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
-      "object": "b308fb74ab586be2c9033eb1fa0ce3d0b80131c1"
+      "object": "1d08fcf4ac44c3d9a410bd5182852e54971239a6"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/sequential.rs",
-      "object": "72d41fe1fd6c2710ba7873778d5b74140c89faa4"
+      "object": "ff0bf2f0e9f93cea449e33427023458122286317"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs",
-      "object": "c151b368187814e6fe44012da40cde2f82118d7a"
+      "object": "89ead6cf823ab5e8dd183cfe3c4373e2854009b9"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
-      "object": "35237acc5fa429dcd0eb5e8641a2dad33fa77667"
+      "object": "3d83281fc12eb521a0b082111898b56996268a0b"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
@@ -378,11 +431,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
-      "object": "3447e550262f7b85223a90031620a6b95b11dc69"
+      "object": "db961bba765c2050a35d2f2ed9ba5c691c6d34be"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-      "object": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
+      "object": "16de10f8086ca7b9e0753798b98df373df3f689b"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
@@ -390,11 +443,67 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
-      "object": "80996b19831da4b6a88b1282157ca82ec526e8d8"
+      "object": "4bdac7d37505589ea4d0cc8020d9d47f861c0a6a"
     },
     {
       "path": "docs/modules/learning.eval/TECHNICAL.md",
       "object": "9cc96e05394f08aca263048ecdd40bfc112f7601"
     }
-  ]
+  ],
+  "observedAtHead": {
+    "commit": "f547b26aa4f91e608939d535d97775cee7665d58",
+    "tree": "db9b77d993b8786dd0b995e65c6754c0d5ae5555"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs",
+    "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs",
+    "codex-rs/hepta-intelligence-eval/src/longitudinal_time_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+    "codex-rs/hepta-intelligence-eval/src/ope.rs",
+    "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
+    "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/ope_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+    "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/sequential.rs",
+    "codex-rs/hepta-intelligence-eval/src/sequential_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
+    "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
+    "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/temporal_fold.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+    "docs/modules/learning.eval/TECHNICAL.md"
+  ],
+  "operationalModelLeaseV2": {
+    "purpose": "ConservativeCpuAbstentionOnlyV1",
+    "qualityScope": "stable_model_material_profile_excludes_current_goal_request_and_time",
+    "sourceStageCommit": "f547b26aa4f91e608939d535d97775cee7665d58",
+    "nativeQualification": {
+      "evalLibraryCases": 311,
+      "failures": 0,
+      "ignored": 0,
+      "retries": 0,
+      "testThreads": 2
+    },
+    "normalCpuProductCaller": "not_composed",
+    "installedCaller": false,
+    "actualIndependentRoleWindowProved": false,
+    "sourceMaterialFreezeState": "same_source_worker_and_encoder_closure_pending",
+    "scientificHoldoutOrSuperiorityClaim": false,
+    "goalSevenOwnersAndFinalUseRequired": true,
+    "legacyV1DomainsUnchanged": true,
+    "mapMigrationStatus": "historical_c40_object_unavailable_in_isolated_clone; exact_current_path_objects_recorded; development_navigation_passed"
+  }
 }

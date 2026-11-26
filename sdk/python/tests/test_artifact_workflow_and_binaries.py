@@ -438,6 +438,7 @@ def test_generated_chatgpt_account_email_is_required_nullable() -> None:
 
     account = ChatgptAccount.model_validate({"email": None, "planType": "pro", "type": "chatgpt"})
     assert account.email is None
+    assert isinstance(account.type, str) and account.type == "chatgpt"
     assert ChatgptAccount.model_fields["email"].is_required()
 
     with pytest.raises(ValidationError):

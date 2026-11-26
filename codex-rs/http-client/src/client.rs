@@ -49,7 +49,8 @@ impl HttpClient {
         }
     }
 
-    pub(crate) fn without_trace_propagation(mut self) -> Self {
+    /// Keep ambient trace and baggage out of a separately authenticated transport.
+    pub fn without_trace_propagation(mut self) -> Self {
         self.trace_propagation = TracePropagation::Disabled;
         self
     }

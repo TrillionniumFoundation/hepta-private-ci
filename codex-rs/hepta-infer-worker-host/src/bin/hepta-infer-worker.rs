@@ -23,17 +23,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut maximum_in_flight = None;
     let mut context_query = None;
     let mut final_use_authority_config = None;
+    let mut execution_mode = None;
     let mut intelligence_run_id = None;
-    let mut intelligence_revision = None;
-    let mut intelligence_context_digest = None;
-    let mut intelligence_envelope_digest = None;
     let mut native_profile_selected = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON --execution-mode agentd-admitted|unbound-development [--intelligence-run-id ID] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. In agentd-admitted mode the worker loads the immutable run revision/context/envelope from Agentd; an independent final-use authority must still sign the exact turn/start binding before model dispatch."
             );
             return Ok(());
         }
@@ -52,10 +50,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--final-use-authority-config" => {
                 final_use_authority_config = Some(PathBuf::from(value))
             }
+            "--execution-mode" if value == "agentd-admitted" || value == "unbound-development" => {
+                execution_mode = Some(value)
+            }
+            "--execution-mode" => return Err(format!("unsupported execution mode: {value}").into()),
             "--intelligence-run-id" => intelligence_run_id = Some(value),
-            "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
-            "--intelligence-context-digest" => intelligence_context_digest = Some(value),
-            "--intelligence-envelope-digest" => intelligence_envelope_digest = Some(value),
             "--timeout-ms" => timeout_ms = value.parse()?,
             _ => return Err(format!("unknown argument: {flag}").into()),
         }
@@ -66,10 +65,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let final_use_authorizer = UnixFinalUseAuthorizer::open(
         &final_use_authority_config.ok_or("--final-use-authority-config is required")?,
     )?;
+    // runtime.codex-agentd-admitted-executor-v1: retain the owner identity
+    // for the durable binding lookup; the driver receives the same exact values.
+    let agentd_socket = socket.ok_or("--agentd-socket is required")?;
+    let agent_id = agent_id.ok_or("--agent-id is required")?;
+    let generation = generation.ok_or("--generation is required")?;
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
-        agentd_socket: socket.ok_or("--agentd-socket is required")?,
-        agent_id: agent_id.ok_or("--agent-id is required")?,
-        generation: generation.ok_or("--generation is required")?,
+        agentd_socket: agentd_socket.clone(),
+        agent_id: agent_id.clone(),
+        generation,
         model: model.ok_or("--model is required")?,
         timeout: Duration::from_millis(timeout_ms),
     })?
@@ -95,24 +99,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             signal.cancel();
         }
     });
-    let intelligence = match (
-        intelligence_run_id,
-        intelligence_revision,
-        intelligence_context_digest,
-        intelligence_envelope_digest,
-    ) {
-        (None, None, None, None) => None,
-        (Some(run_id), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
-            Some(NativeIntelligenceRunBinding {
-                run_id,
-                expected_revision,
-                context_digest,
-                envelope_digest,
-            })
+    let intelligence = match (execution_mode.as_deref(), intelligence_run_id) {
+        (Some("agentd-admitted"), Some(run_id)) => {
+            // runtime.codex-agentd-admitted-loader-v1
+            Some(
+                NativeIntelligenceRunBinding::load_from_agentd(
+                    agentd_socket,
+                    agent_id,
+                    generation,
+                    run_id,
+                )
+                .await?,
+            )
         }
-        _ => {
-            return Err("all four --intelligence-* arguments must be supplied together".into());
+        (Some("unbound-development"), None) => None,
+        (Some("agentd-admitted"), None) => {
+            return Err("agentd-admitted mode requires --intelligence-run-id".into());
         }
+        (Some("unbound-development"), Some(_)) => {
+            return Err("unbound-development mode forbids --intelligence-run-id".into());
+        }
+        (None, _) => return Err("--execution-mode must be selected explicitly".into()),
+        _ => unreachable!("execution mode was validated while parsing"),
     };
     let result = match intelligence {
         Some(binding) => {

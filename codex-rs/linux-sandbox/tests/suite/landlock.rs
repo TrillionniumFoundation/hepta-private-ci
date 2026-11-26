@@ -809,12 +809,12 @@ async fn sandbox_keeps_parent_repo_discovery_while_blocking_child_metadata() {
     let repo = tmpdir.path().join("repo");
     let subdir = repo.join("sub");
     let real_tmp = tmpdir.path().join("real-tmp");
-    let redirected_tmp = tmpdir.path().join("redirected-tmp");
-    let tmp_alias = tmpdir.path().join("tmp-alias");
+    let redirected_tmp = subdir.join("redirected-tmp");
+    let tmp_alias = subdir.join("tmp-alias");
+    std::fs::create_dir_all(&subdir).expect("create nested workspace");
     std::fs::create_dir(&real_tmp).expect("create real temp directory");
     std::fs::create_dir(&redirected_tmp).expect("create redirected temp directory");
     std::os::unix::fs::symlink(&real_tmp, &tmp_alias).expect("create temp directory alias");
-    std::fs::create_dir_all(&subdir).expect("create nested workspace");
     assert!(
         std::process::Command::new("git")
             .arg("init")

@@ -1,6 +1,9 @@
 //! Independent deterministic candidate evaluation. Eligibility is not promotion.
 #![forbid(unsafe_code)]
 
+#[cfg(test)]
+extern crate self as tempfile;
+
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -10,6 +13,19 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod calibration_cycle_scope;
+mod calibration_preflight;
+pub use calibration_preflight::CalibrationPreflightDispositionV1;
+pub use calibration_preflight::CalibrationPreflightError;
+pub use calibration_preflight::SignedCalibrationPreflightDecisionV1;
+pub use calibration_preflight::SignedCalibrationPreflightRequestV1;
+pub use calibration_preflight::calibration_cycle_preflight_signing_payload_v2;
+pub use calibration_preflight::calibration_preflight_signing_payload_v1;
+pub use calibration_preflight::decide_with_signed_calibration_cycle_v2;
+pub use calibration_preflight::decide_with_signed_calibration_preflight_v1;
+mod attempt_durability;
+mod attempt_journal;
+mod attempt_recovery;
 mod closure;
 mod durable_holdout;
 mod fenced_holdout;
@@ -17,6 +33,22 @@ mod fenced_holdout_file;
 mod holdout_journal;
 mod ndu_convergence;
 mod ndu_well_posedness;
+#[cfg(test)]
+mod test_tempfile;
+pub use attempt_durability::DurableProductEvaluationAttemptJournalV1;
+pub use attempt_journal::AnchoredProductEvaluationAttemptJournalV1;
+pub use attempt_journal::InMemoryProductEvaluationAttemptJournalV1;
+pub use attempt_journal::LockedFileProductEvaluationAttemptJournalV1;
+pub use attempt_journal::ProductEvaluationAttemptAnchorStoreV1;
+pub use attempt_journal::ProductEvaluationAttemptAnchorV1;
+pub use attempt_journal::ProductEvaluationAttemptJournalErrorV1;
+pub use attempt_journal::ProductEvaluationAttemptJournalV1;
+pub use attempt_journal::ProductEvaluationAttemptPhaseV1;
+pub use attempt_journal::ProductEvaluationAttemptReceiptV1;
+pub use attempt_journal::ProductEvaluationAttemptTransitionV1;
+pub use attempt_recovery::ProductAttemptRecoveryErrorV1;
+pub use attempt_recovery::reconcile_product_attempt_holdout_v1;
+pub use attempt_recovery::reconcile_product_attempt_publication_v1;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorAuthorityV1;
@@ -29,15 +61,93 @@ pub use fenced_holdout::FinalHoldoutCasStoreError;
 pub use fenced_holdout::FinalHoldoutCasStoreV1;
 pub use fenced_holdout::HoldoutFenceIssuerV1;
 pub use fenced_holdout::HoldoutWriterFenceV1;
+pub use fenced_holdout_file::LockedFileCasCapacityV1;
+pub use fenced_holdout_file::LockedFileCasCompactionReceiptV1;
 pub use fenced_holdout_file::LockedFileCasErrorV1;
 pub use fenced_holdout_file::LockedFileFinalHoldoutCasStoreV1;
+#[cfg(test)]
+pub(crate) use test_tempfile::NamedTempFile;
 mod ope;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_observer_transport;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_review_plan;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_review_transport;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use paired_review_plan::PairedReviewSourcePlanV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use paired_review_transport::encode_paired_review_publication_v1;
+mod paired_supervised_estimate;
+mod paired_supervised_facade;
+mod paired_supervised_host_clock;
+mod paired_supervised_plan;
+mod paired_supervised_qualification;
+mod paired_supervised_registration;
+mod paired_supervised_runner;
+mod paired_supervised_scope;
+mod paired_supervised_values;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod protected_paired_provider;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use paired_observer_transport::encode_signed_paired_observation_transport_v1;
+mod product_evidence_file;
+mod product_registration;
+pub use paired_supervised_estimate::PairedClassObservationV1;
+pub use paired_supervised_estimate::PairedNativeObservationV1;
+pub use paired_supervised_estimate::PairedObservationCutV1;
+pub use paired_supervised_estimate::PairedObservedMetricV1;
+pub use paired_supervised_estimate::PairedSupervisedEstimateV1;
+pub use paired_supervised_estimate::PairedTaskObservationV1;
+pub use paired_supervised_estimate::paired_observation_cut_signing_payload_v1;
+pub use paired_supervised_facade::RegisteredPairedEvaluationRunnerV1;
+pub use paired_supervised_plan::PairedBenchmarkPolicyV1;
+pub use paired_supervised_plan::PairedEvidenceMetricsV1;
+pub use paired_supervised_plan::PairedMetricContractV1;
+pub use paired_supervised_plan::PairedMetricKindV1;
+pub use paired_supervised_plan::PairedRuntimeBindingV1;
+pub use paired_supervised_plan::PairedSupervisedErrorV1;
+pub use paired_supervised_plan::PairedSupervisedPlanInputsV1;
+pub use paired_supervised_plan::PairedSupervisedPlanV1;
+pub use paired_supervised_plan::PairedTaskBindingV1;
+pub use paired_supervised_plan::freeze_paired_supervised_plan_v1;
+pub mod product;
 mod product_runner;
+mod reconciled_sink;
+mod recorded_publication;
+mod recorded_runner;
 mod self_evolution_selection;
+mod self_evolution_selection_v2;
+pub use self_evolution_selection_v2::PreparedSelfEvolutionSelectionV2;
+pub use self_evolution_selection_v2::SelfEvolutionSelectionInputsV2;
+pub use self_evolution_selection_v2::SelfEvolutionSelectionPolicyV2;
+pub use self_evolution_selection_v2::SelfEvolutionSelectionReceiptV2;
+pub use self_evolution_selection_v2::VerifiedSelfEvolutionRollbackV2;
+pub use self_evolution_selection_v2::VerifiedSelfEvolutionSelectionV2;
+pub use self_evolution_selection_v2::admit_self_evolution_rollback_v2;
+pub use self_evolution_selection_v2::admit_self_evolution_selection_v2;
+pub use self_evolution_selection_v2::prepare_self_evolution_selection_v2;
+pub use self_evolution_selection_v2::rollback_signing_payload_v2;
+pub use self_evolution_selection_v2::selection_signing_payload_v2;
 mod sequential;
+mod signed_admission;
 mod signed_evaluation;
+mod task_execution_lineage;
+mod task_lineage;
+mod task_lineage_plan;
 mod temporal_evaluation;
 mod temporal_fold;
+
+pub use task_execution_lineage::TaskExecutionRegistrationV1;
+pub use task_execution_lineage::TaskExecutionWindowV1;
+pub use task_execution_lineage::TaskObservedOutcomeV1;
+pub use task_execution_lineage::TaskPredictionEventV1;
+pub use task_execution_lineage::TaskPredictionLineageV1;
+pub use task_lineage::FrozenTaskSourceLineageV1;
+pub use task_lineage::TaskCrossFoldInputsV1;
+pub use task_lineage::TaskLineageError;
+pub use task_lineage::TaskSourceRecordV1;
+pub use task_lineage::TaskSourceScopeV1;
 
 pub use closure::CrossFoldPartitionV1;
 pub use closure::CrossFoldPlanReceiptV1;
@@ -134,8 +244,14 @@ pub use ope::OpePlan;
 pub use ope::OpeRow;
 pub use ope::estimate_cluster_intervals;
 pub use ope::estimate_ope;
+pub use product_evidence_file::LockedFileProductEvidenceSinkV1;
+pub use product_evidence_file::ProductPublicationRecoveryV1;
+pub use product_registration::AuthenticatedProductRegistrationV1;
+pub use product_registration::ProductRegistrationBindingV1;
+pub use product_registration::product_registration_signing_payload_v1;
 pub use product_runner::FinalHoldoutProviderV1;
 pub use product_runner::ProductEvaluationError;
+#[cfg(feature = "trusted-inprocess-eval")]
 pub use product_runner::ProductEvaluationRunnerV1;
 pub use product_runner::ProductEvidenceSinkErrorV1;
 pub use product_runner::ProductFrozenEvaluationPlanV1;
@@ -149,6 +265,13 @@ pub use product_runner::ProductTemporalEvaluationReceiptV1;
 pub use product_runner::ProductTimingEvidenceV1;
 pub use product_runner::TemporalComparisonInputsV1;
 pub use product_runner::freeze_product_evaluation_plan_v1;
+pub use reconciled_sink::ProductQualificationPublicationRecordV1;
+pub use reconciled_sink::ProductQualificationPublicationRequestV1;
+pub use reconciled_sink::ProductQualificationPublicationStoreErrorV1;
+pub use reconciled_sink::ProductQualificationPublicationStoreV1;
+pub use reconciled_sink::ReconciledProductQualificationSinkV1;
+pub use recorded_runner::RecordedProductEvaluationErrorV1;
+pub use recorded_runner::RecordedProductEvaluationRunnerV1;
 pub use self_evolution_selection::PreparedSelfEvolutionSelectionV1;
 pub use self_evolution_selection::SelfEvolutionSelectionError;
 pub use self_evolution_selection::SelfEvolutionSelectionPolicyV1;
@@ -175,12 +298,39 @@ pub use sequential::TrajectoryClaimScope;
 pub use sequential::TrajectoryEstimate;
 pub use sequential::TrajectoryStep;
 pub use sequential::estimate_sequential;
+pub use signed_admission::SignedEligibilityAdmissionError;
+pub use signed_admission::SignedEligibilityAdmissionReceiptV1;
+pub use signed_admission::admit_signed_eligibility_v2;
+mod self_iteration_evaluation_transport;
+mod self_iteration_preparation;
+pub use self_iteration_evaluation_transport::MAX_SELF_ITERATION_EVALUATION_TRANSPORT_BYTES;
+pub use self_iteration_evaluation_transport::VerifiedSelfIterationEvaluationTransportV1;
+pub use self_iteration_evaluation_transport::decode_self_iteration_evaluation_transport_v1;
+pub use self_iteration_evaluation_transport::encode_self_iteration_evaluation_transport_v1;
+pub use self_iteration_evaluation_transport::self_iteration_evaluation_use_payload_v1;
+pub use self_iteration_preparation::MAX_SELF_ITERATION_PREPARATION_FACTS_BYTES_V1;
+pub use self_iteration_preparation::MAX_SELF_ITERATION_PREPARATION_TERMINAL_BYTES_V1;
+pub use self_iteration_preparation::SelfIterationPreparationDispositionV1;
+pub use self_iteration_preparation::SelfIterationPreparationFactsV1;
+pub use self_iteration_preparation::decode_self_iteration_preparation_facts_v1;
+pub use self_iteration_preparation::decode_self_iteration_preparation_terminal_v1;
+pub use self_iteration_preparation::encode_self_iteration_preparation_terminal_v1;
+pub use self_iteration_preparation::self_iteration_preparation_terminal_signing_payload_v1;
+mod self_iteration_frozen_consumer;
+pub use self_iteration_frozen_consumer::MAX_SELF_ITERATION_FROZEN_CANDIDATE_BYTES;
+pub use self_iteration_frozen_consumer::MAX_SELF_ITERATION_FROZEN_CONSUMER_BYTES;
+pub use self_iteration_frozen_consumer::UntrustedSelfIterationCandidateV1;
+pub use self_iteration_frozen_consumer::VerifiedSelfIterationFrozenConsumerV1;
+pub use self_iteration_frozen_consumer::decode_self_iteration_frozen_consumer_v1;
+pub use self_iteration_frozen_consumer::encode_self_iteration_frozen_consumer_v1;
+pub use self_iteration_frozen_consumer::inspect_signed_self_iteration_frozen_consumer_v1;
+pub use self_iteration_frozen_consumer::inspect_unsigned_self_iteration_candidate_v1;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
-#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+#[cfg(test)]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
@@ -371,6 +521,13 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[path = "lib_tests.rs"]
 mod tests;
 
+mod operational_model_lease_v2;
+pub use operational_model_lease_v2::ConservativeCpuRuntimeProfileV2;
+pub use operational_model_lease_v2::OperationalCalibrationGatesV2;
+pub use operational_model_lease_v2::OperationalModelLeaseBindingV2;
+pub use operational_model_lease_v2::OperationalModelLeaseErrorV2;
+pub use operational_model_lease_v2::OperationalModelUseV2;
+
 mod longitudinal_time;
 pub use longitudinal_time::LongitudinalTimeEvidenceV1;
 pub use longitudinal_time::ObservedFutureWindowV1;
@@ -381,3 +538,249 @@ pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 #[cfg(test)]
 #[path = "signed_qualification_e2e_tests.rs"]
 mod signed_qualification_e2e_tests;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_calibration_cycle_evaluator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_calibration_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_paired_custody_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_paired_finish_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_custody_generator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_custody_numeric;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_custody_observations;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_custody_retention;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_custody_withdrawal;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_custody_host::run_fixed_paired_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_custody_host::verify_original_observer_controller;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_finish_host::finish_fixed_paired_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_product_host::root_boundary as verify_original_observer_process_boundary_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_paired_generator_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_public_development_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_holdout_custody::admit_fixed_paired_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_paired_review_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_no_change;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_no_change_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_preparation_review;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change_host::FixedParameterEvaluatorConfigV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_preparation_review::FixedParameterCompletedReviewSourceV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_preparation_review::FixedParameterEvaluationSourceV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_inputs;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_review;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::ParameterEvaluationRoundBindingV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::encode_fixed_parameter_evaluator_config_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::encode_fixed_parameter_preparation_inputs_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::encode_fixed_parameter_role_inputs_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change::FixedParameterNoChangeOutputV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change::decode_fixed_parameter_no_change_output_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change_host::run_fixed_parameter_no_change_evaluator_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change_host::run_fixed_parameter_preparation_evaluator_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+mod self_iteration_role_input;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use self_iteration_role_input::read_self_iteration_role_input_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_development_transport;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_generator_host::run_fixed_paired_generator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_review_host::run_fixed_paired_review_evaluator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_review_host::run_fixed_parameter_review_evaluator_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_public_development_host::run_fixed_public_development_measurement;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod initial_neuron_operational_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod initial_neuron_operational_metrics;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod initial_neuron_operational_reader;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod initial_neuron_operational_source;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_host::initialize_fixed_evaluator_key;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_host::run_fixed_calibration_evaluator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use initial_neuron_operational_host::run_initial_neuron_operational_evaluator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use initial_neuron_operational_reader::VerifiedInitialOperationalEvidenceV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use initial_neuron_operational_reader::VerifiedInitialOperationalHistoryV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use initial_neuron_operational_reader::inspect_initial_neuron_operational_evidence;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use initial_neuron_operational_reader::inspect_initial_neuron_operational_history;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_gguf_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_host_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_material_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_policy_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_reader_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_model_lease_host_v2::run_operational_model_lease_evaluator_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_model_lease_reader_v2::VerifiedOperationalModelLeaseV2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_model_lease_reader_v2::inspect_operational_model_lease_v2;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_calibration_cycle_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_product_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_cycle_host::HistoricalCalibrationRejectionV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_cycle_host::inspect_completed_calibration_rejection;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_cycle_host::resume_fixed_calibration_evaluation;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_calibration_cycle_host::run_fixed_calibration_cycle;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_product_source;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_product_host::inspect_fixed_product_evaluation;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod climate_holdout_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod public_development_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use climate_holdout_custody::inspect_climate_source_holdout;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use climate_holdout_custody::prepare_climate_source_holdout;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use public_development_custody::inspect_public_development_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use public_development_custody::prepare_public_development_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_holdout_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_holdout_custody::inspect_fixed_source_holdout;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_holdout_custody::prepare_fixed_source_holdout;
+
+pub use paired_supervised_qualification::ProductPairedQualificationReceiptV1;
+pub use paired_supervised_qualification::paired_evaluation_signing_payload_v1;
+pub use paired_supervised_registration::AuthenticatedPairedRegistrationV1;
+pub use paired_supervised_registration::paired_registration_signing_payload_v1;
+pub use paired_supervised_runner::PairedFinalHoldoutProviderV1;
+pub use paired_supervised_runner::ProductPairedEvaluationReceiptV1;
+pub use paired_supervised_runner::SignedPairedObservationCutV1;
+
+#[cfg(test)]
+mod paired_supervised_test_support;
+#[cfg(test)]
+mod paired_supervised_tests;
+
+#[cfg(test)]
+mod paired_supervised_boundary_tests;
+
+#[cfg(test)]
+mod paired_supervised_current_trust_tests;
+
+#[cfg(test)]
+mod calibration_cycle_tests;
+mod outcome_channels;
+mod outcome_receipt;
+pub use outcome_channels::FinalOutcomeHoldoutProviderV1;
+pub use outcome_channels::ProductFrozenOutcomePlanV1;
+pub use outcome_channels::ProductOutcomeChannelContractV1;
+pub use outcome_channels::ProductOutcomeInputV1;
+pub use outcome_channels::freeze_product_outcome_plan_v1;
+pub use outcome_channels::product_outcome_inputs_digest_v1;
+pub use outcome_receipt::ProductOutcomeEstimateV1;
+pub use outcome_receipt::ProductOutcomeEvaluationReceiptV1;
+pub use outcome_receipt::ProductOutcomeQualificationReceiptV1;
+
+mod plasticity_untrusted_material_codec;
+pub use plasticity_untrusted_material_codec::decode_untrusted_plasticity_evaluation_v1;
+pub use plasticity_untrusted_material_codec::decode_untrusted_plasticity_learning_evidence_v1;
+pub use plasticity_untrusted_material_codec::encode_untrusted_plasticity_evaluation_v1;
+pub use plasticity_untrusted_material_codec::encode_untrusted_plasticity_learning_evidence_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_host_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_measurement_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_model_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_policy_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_program_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_reader_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_host_v3::run_registered_operational_model_evaluator_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_model_v3::RegisteredArtifactCurrentFactsV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_model_v3::RegisteredOperationalModelBindingV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_model_v3::inspect_registered_artifact_current_material_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_program_v3::verify_registered_operational_program_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_reader_v3::VerifiedRegisteredOperationalEvaluationV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_reader_v3::inspect_registered_operational_evaluation_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_generator_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::FixedParameterGeneratorConfigV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::FixedParameterGeneratorInputsV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::ParameterRoleSourceV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::run_fixed_parameter_generator_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::validate_parameter_generator_baseline_v3;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_observer_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_observer_v1::FixedParameterObserverConfigV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_observer_v1::FixedParameterObserverInputsV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_observer_v1::run_fixed_parameter_observer_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_current_admission_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_current_admission_v1::validate_current_parameter_admission_v1;

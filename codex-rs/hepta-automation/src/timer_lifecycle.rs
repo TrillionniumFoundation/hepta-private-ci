@@ -133,6 +133,7 @@ impl AutomationStore {
             .timer_epoch()
             .checked_add(1)
             .ok_or(AutomationError::Conflict)?;
+        crate::timer_retirement::persist(self.path(), self.owner_agent_id(), next)?;
         sqlx::query(
             "UPDATE automation_timer_lifecycle SET phase = 'retired', writer_epoch = ?
              WHERE singleton = 1",
@@ -154,6 +155,7 @@ impl AutomationStore {
     ) -> Result<(Transaction<'_, Sqlite>, TimerPhase), AutomationError> {
         let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
         let phase = check_timer_writer(&mut transaction, self.timer_epoch()).await?;
+        self.ensure_timer_not_retired()?;
         Ok((transaction, phase))
     }
 }

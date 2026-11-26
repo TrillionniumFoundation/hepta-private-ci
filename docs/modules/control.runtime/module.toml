@@ -1,0 +1,46 @@
+schema = "hepta.module-manifest.v1"
+order = 38
+id = "control.runtime"
+plane = "control"
+kind = "optimizer"
+lifecycle = "target"
+state = "stateful_projection"
+architectureRole = "preference_utility_controller"
+writes = ["global_state_snapshot", "optimization_decision"]
+uses = ["runtime.fleet", "kernel.evidence", "utility.ndu"]
+owner = "runtime-control"
+deputy = "security-authority"
+denies = ["capability_issuance", "physical_effect", "central_rpc_hot_path"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-control-plane"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "RCP-1-RUNTIME-CONTROL-PLANE"
+technicalDocument = "docs/modules/control.runtime/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-control-plane"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-control-plane"
+compileLayer = 2
+ciGroups = ["effects", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-runtime"
+compileLayer = 3
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

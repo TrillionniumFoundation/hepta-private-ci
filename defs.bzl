@@ -3,6 +3,7 @@ load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_proc_macro", "rust_test")
 load("//bazel/rules/testing:foreign_platform_binary.bzl", "foreign_platform_binary")
+load("//bazel/rules/testing:hepta_product_binary.bzl", "hepta_product_test_binary")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 load("//bazel/rules/testing/wine:wine_runtime.bzl", "WINE_TEST_TARGET_COMPATIBLE_WITH", "wine_test_runtime")
 
@@ -182,8 +183,10 @@ workspace_root_test = rule(
 def codex_rust_crate(
         name,
         crate_name,
+        crate_aliases = {},
         crate_features = [],
         crate_srcs = None,
+        crate_root = None,
         crate_edition = None,
         proc_macro = False,
         build_script_enabled = True,
@@ -197,6 +200,8 @@ def codex_rust_crate(
         rustc_env_files = [],
         deps_extra = [],
         integration_compile_data_extra = [],
+        integration_binary_overrides = {},
+        product_integration_tests = [],
         integration_test_args = [],
         unit_test_args = [],
         unit_test_dependency_replacements = {},
@@ -223,14 +228,16 @@ def codex_rust_crate(
             Example: `app-server`.
         crate_name: Cargo crate name from Cargo.toml
             Example: `codex_app_server`.
+        crate_aliases: Cargo dependency renames, as recorded in @crates DEP_DATA aliases.
         crate_features: Cargo features to enable for this crate.
             Crates are only compiled in a single configuration across the workspace, i.e.
             with all features in this list enabled. So use sparingly, and prefer to refactor
             optional functionality to a separate crate.
-        unit_test_dependency_replacements: Test-only workspace dependency variants.
+        unit_test_dependency_replacements: Test-only workspace dependency variants for unit and integration harnesses.
             Replace the complete transitive closure when public types cross crates.
-        unit_test_features: Additional features for the test-only library and harness.
+        unit_test_features: Additional features for the test-only library and its unit/integration harnesses.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
+        crate_root: Optional library root for a Cargo lib.path override.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
         proc_macro: Whether this crate builds a proc-macro library.
@@ -246,6 +253,10 @@ def codex_rust_crate(
         deps_extra: Extra normal deps beyond @crates resolution.
             Typically only needed when features add additional deps.
         integration_compile_data_extra: Extra compile_data for integration tests.
+        integration_binary_overrides: Ordinary product labels for generated binary names
+            in integration-test data and CARGO_BIN_EXE variables only.
+        product_integration_tests: tests/*.rs stems whose process harness must use
+            the product profile for its complete dependency closure.
         integration_test_args: Optional args for integration test binaries.
         unit_test_args: Optional args for the unit test binary.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
@@ -322,11 +333,16 @@ def codex_rust_crate(
 
         maybe_deps += [name + "-build-script"]
 
+    # Production binaries use the normal library; test harnesses share the
+    # same qualification variant and transitive crate identities as Cargo dev.
+    integration_library_deps = maybe_deps
     if lib_srcs:
         lib_rule = rust_proc_macro if proc_macro else rust_library
         lib_rule(
             name = name,
             crate_name = crate_name,
+            crate_root = crate_root,
+            aliases = crate_aliases,
             crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             compile_data = compile_data,
@@ -350,6 +366,8 @@ def codex_rust_crate(
                 name = unit_test_library,
                 testonly = True,
                 crate_name = crate_name,
+                crate_root = crate_root,
+                aliases = crate_aliases,
                 crate_features = crate_features + unit_test_features,
                 deps = rust_test_dependencies(unit_test_dependency_replacements) + maybe_deps + deps_extra,
                 compile_data = compile_data,
@@ -368,6 +386,7 @@ def codex_rust_crate(
         rust_test(
             name = unit_test_binary,
             crate = unit_test_library,
+            aliases = crate_aliases,
             crate_features = crate_features + unit_test_features,
             deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + maybe_deps + deps_extra,
             # Unit tests also compile to standalone Windows executables, so
@@ -404,20 +423,26 @@ def codex_rust_crate(
             **unit_test_kwargs
         )
 
+        integration_library_deps = maybe_deps + [unit_test_library]
         maybe_deps += [name]
 
     sanitized_binaries = []
     cargo_env = {}
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
-        #binary = binary.replace("-", "_")
-        sanitized_binaries.append(binary)
-        cargo_env_runfiles[":" + binary] = "CARGO_BIN_EXE_" + binary
-        cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath :%s)" % binary
+        # Cargo can give a library and a binary the same name; Bazel labels
+        # share one namespace. Preserve the library label and Cargo identity.
+        binary_target = binary + "-bin" if lib_srcs and binary == name else binary
+        integration_binary = integration_binary_overrides.get(binary, ":" + binary_target)
+        sanitized_binaries.append(integration_binary)
+        cargo_env_runfiles[integration_binary] = "CARGO_BIN_EXE_" + binary
+        cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath %s)" % integration_binary
         rust_binary(
-            name = binary,
+            name = binary_target,
             crate_name = binary.replace("-", "_"),
+            aliases = crate_aliases,
             crate_root = main,
+            crate_features = crate_features,
             deps = all_crate_deps() + maybe_deps + deps_extra,
             edition = crate_edition,
             # Keep per-binary Cargo link behavior scoped to the matching
@@ -443,7 +468,8 @@ def codex_rust_crate(
         # sharding while Clippy can still discover the underlying test crate.
         rust_test(
             name = binary_unit_test_binary,
-            crate = ":" + binary,
+            crate = ":" + binary_target,
+            aliases = crate_aliases,
             crate_features = crate_features,
             deps = all_crate_deps(normal_dev = True),
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
@@ -543,6 +569,7 @@ def codex_rust_crate(
             test_kwargs["flaky"] = True
 
         integration_test_binary = test_name + "-bin"
+        product_test = test_file_stem in product_integration_tests
 
         # There are four generated integration-test shapes:
         #
@@ -561,18 +588,20 @@ def codex_rust_crate(
         #    owns cleanup. The outer workspace_root_test resolves the runner,
         #    test, and server from runfiles, sets a Cargo-like cwd, and applies
         #    the native test's shard count.
-        if test_shard_count:
+        if test_shard_count or product_test:
             # This target is intentionally a binary-like helper, not the public
             # test target. The wrapper below owns cwd setup, runfile env
             # materialization, sharding, and flaky retry behavior.
             rust_test(
                 name = integration_test_binary,
                 crate_name = test_crate_name,
+                aliases = crate_aliases,
                 crate_root = test,
+                crate_features = crate_features + unit_test_features,
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -585,6 +614,18 @@ def codex_rust_crate(
                 tags = test_tags + ["manual"],
             )
 
+            integration_test_executable = ":" + integration_test_binary
+            if product_test:
+                product_test_binary = integration_test_binary + "-product"
+                hepta_product_test_binary(
+                    name = product_test_binary,
+                    binary = integration_test_executable,
+                    tags = ["manual"],
+                    testonly = True,
+                    visibility = ["//visibility:private"],
+                )
+                integration_test_executable = ":" + product_test_binary
+
             workspace_root_test(
                 name = test_name,
                 env = test_env,
@@ -593,8 +634,8 @@ def codex_rust_crate(
                 # time so tests keep working after chdir_workspace_root and on
                 # manifest-only platforms.
                 runfile_env = integration_test_cargo_env_runfiles,
-                test_bin = ":" + integration_test_binary,
-                test_threads = test_threads,
+                test_bin = integration_test_executable,
+                test_threads = test_threads or (1 if product_test else 0),
                 workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
                 target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
                 tags = test_tags,
@@ -608,11 +649,13 @@ def codex_rust_crate(
             rust_test(
                 name = test_name,
                 crate_name = test_crate_name,
+                aliases = crate_aliases,
                 crate_root = test,
+                crate_features = crate_features + unit_test_features,
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+                deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -629,7 +672,7 @@ def codex_rust_crate(
 
         if run_tests_with_wine_exec:
             wine_test_name = test_name.removesuffix("-test") + "-wine-exec-test"
-            native_test_binary = ":" + (integration_test_binary if test_shard_count else test_name)
+            native_test_binary = integration_test_executable if test_shard_count or product_test else ":" + test_name
             wine_test_binaries = dict(wine_host_binaries)
 
             wine_exec_server = wine_test_name + "-windows-exec-server"
@@ -683,11 +726,13 @@ def codex_rust_crate(
         rust_test(
             name = windows_cross_test_binary,
             crate_name = test_crate_name,
+            aliases = crate_aliases,
             crate_root = test,
+            crate_features = crate_features + unit_test_features,
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-            deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
+            deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
                 "--remap-path-prefix=codex-rs=",

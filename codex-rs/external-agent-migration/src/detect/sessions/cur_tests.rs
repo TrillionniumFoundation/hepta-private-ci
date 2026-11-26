@@ -251,6 +251,34 @@ fn rejects_ambiguous_cur_project_with_multiple_punctuated_ancestors() {
 }
 
 #[test]
+fn resolves_existing_project_below_multiple_punctuated_ancestors() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root
+        .path()
+        .join("outer-a")
+        .join(".cache b_c")
+        .join("project @ d");
+    fs::create_dir_all(&project).expect("project directory");
+
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&project)),
+        Some(project)
+    );
+}
+
+#[cfg(windows)]
+#[test]
+fn resolves_windows_cursor_paths_with_different_stored_case() {
+    let root = TempDir::new().expect("tempdir");
+    let project = root.path().join("MixedCaseProject");
+    fs::create_dir_all(&project).expect("project directory");
+    assert_eq!(
+        decode_cur_project_path(&encode_project_path(&project).to_lowercase()),
+        Some(project)
+    );
+}
+
+#[test]
 fn parses_windows_cursor_fixture_project_directory() {
     assert_eq!(
         decode_cur_windows_project_drive("C--Users-fixture-Cursor"),

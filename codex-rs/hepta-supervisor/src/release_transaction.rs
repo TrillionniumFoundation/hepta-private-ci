@@ -6,9 +6,7 @@
 //! the release is registered. Qualification-only direct AgentRelease fixtures
 //! keep those bindings absent and never acquire production authority.
 
-use std::fs::OpenOptions;
 use std::io::ErrorKind;
-use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -354,39 +352,7 @@ pub fn write_release_transaction(
     ));
     let final_path = run_root.join(RELEASE_TRANSACTION_FILE);
     let bytes = serde_json::to_vec(transaction)?;
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temp)?;
-    file.write_all(&bytes)?;
-    file.sync_all()?;
-    drop(file);
-    replace_same_directory(&temp, &final_path)?;
-    sync_directory(run_root)?;
-    Ok(())
-}
-
-fn replace_same_directory(temp: &Path, final_path: &Path) -> Result<(), std::io::Error> {
-    #[cfg(unix)]
-    {
-        std::fs::rename(temp, final_path)
-    }
-    #[cfg(not(unix))]
-    {
-        if final_path.exists() {
-            std::fs::remove_file(final_path)?;
-        }
-        std::fs::rename(temp, final_path)
-    }
-}
-
-#[cfg(unix)]
-fn sync_directory(path: &Path) -> Result<(), std::io::Error> {
-    std::fs::File::open(path)?.sync_all()
-}
-
-#[cfg(not(unix))]
-fn sync_directory(_path: &Path) -> Result<(), std::io::Error> {
+    crate::durable_publish::write_atomic(&temp, &final_path, &bytes, "release_transaction")?;
     Ok(())
 }
 

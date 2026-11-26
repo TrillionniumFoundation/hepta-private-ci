@@ -8,10 +8,10 @@
 
 use std::sync::Arc;
 
-use codex_hepta_memory::CognitiveRuntime;
-use codex_hepta_memory_extension::QualificationTurnWriterHost;
+use codex_hepta_agent_components::memory::CognitiveRuntime;
+use codex_hepta_agent_components::memory_extension::QualificationTurnWriterHost;
 #[cfg(feature = "qualification-cognitive-write")]
-use codex_hepta_memory_extension::QualificationTurnWriterPrepareRequest;
+use codex_hepta_agent_components::memory_extension::QualificationTurnWriterPrepareRequest;
 
 use crate::AgentdIdentity;
 use crate::AgentdState;
@@ -21,12 +21,12 @@ const CAPABILITY_ID: &str = "hepta-agentd:qualification-turn-writer:v1";
 
 #[cfg(feature = "qualification-cognitive-write")]
 fn qualification_attempt_digest(
-    agent_id: &codex_hepta_contracts::AgentId,
+    agent_id: &codex_hepta_agent_components::contracts::AgentId,
     logical_turn_id: &str,
     turn_id: &str,
     fleet_generation: u64,
     spawn_generation: u64,
-) -> codex_hepta_contracts::Sha256Digest {
+) -> codex_hepta_agent_components::contracts::Sha256Digest {
     let mut framed = Vec::new();
     let mut push = |part: &[u8]| {
         framed.extend_from_slice(&(part.len() as u64).to_be_bytes());
@@ -38,7 +38,7 @@ fn qualification_attempt_digest(
     push(turn_id.as_bytes());
     push(&fleet_generation.to_be_bytes());
     push(&spawn_generation.to_be_bytes());
-    codex_hepta_contracts::Sha256Digest::for_bytes(&framed)
+    codex_hepta_agent_components::contracts::Sha256Digest::for_bytes(&framed)
 }
 
 pub(crate) fn qualification_turn_writer_host(
@@ -87,13 +87,13 @@ pub(crate) fn qualification_turn_writer_host(
 #[cfg(all(feature = "qualification-cognitive-write", test))]
 pub(crate) async fn prepare_qualification_turn_writer_input(
     state: Arc<AgentdState>,
-    store: Arc<codex_hepta_memory::CognitiveStore>,
-    agent_id: codex_hepta_contracts::AgentId,
+    store: Arc<codex_hepta_agent_components::memory::CognitiveStore>,
+    agent_id: codex_hepta_agent_components::contracts::AgentId,
     spawn_generation: u64,
     turn_id: String,
 ) -> Result<
-    codex_hepta_memory_extension::QualificationTurnWriterInput,
-    codex_hepta_memory_extension::QualificationTurnWriterInputError,
+    codex_hepta_agent_components::memory_extension::QualificationTurnWriterInput,
+    codex_hepta_agent_components::memory_extension::QualificationTurnWriterInputError,
 > {
     let mut request = QualificationTurnWriterPrepareRequest::for_turn(turn_id);
     // This direct helper is used only by Agentd's bounded qualification tests
@@ -113,26 +113,26 @@ pub(crate) async fn prepare_qualification_turn_writer_input(
 #[cfg(feature = "qualification-cognitive-write")]
 async fn prepare_qualification_turn_writer_input_with_request(
     state: Arc<AgentdState>,
-    store: Arc<codex_hepta_memory::CognitiveStore>,
-    agent_id: codex_hepta_contracts::AgentId,
+    store: Arc<codex_hepta_agent_components::memory::CognitiveStore>,
+    agent_id: codex_hepta_agent_components::contracts::AgentId,
     spawn_generation: u64,
     request: QualificationTurnWriterPrepareRequest,
 ) -> Result<
-    codex_hepta_memory_extension::QualificationTurnWriterInput,
-    codex_hepta_memory_extension::QualificationTurnWriterInputError,
+    codex_hepta_agent_components::memory_extension::QualificationTurnWriterInput,
+    codex_hepta_agent_components::memory_extension::QualificationTurnWriterInputError,
 > {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
-    use codex_hepta_contracts::Sha256Digest;
-    use codex_hepta_memory::CompactFence;
-    use codex_hepta_memory::LocalTurnLifecycleBinding;
-    use codex_hepta_memory::LogicalTurnAttemptRequest;
-    use codex_hepta_memory::LogicalTurnRegistryError;
-    use codex_hepta_memory::LogicalTurnRequest;
-    use codex_hepta_memory::LogicalTurnReservation;
-    use codex_hepta_memory_extension::QualificationTurnWriterInput;
-    use codex_hepta_memory_extension::QualificationTurnWriterInputError;
+    use codex_hepta_agent_components::contracts::Sha256Digest;
+    use codex_hepta_agent_components::memory::CompactFence;
+    use codex_hepta_agent_components::memory::LocalTurnLifecycleBinding;
+    use codex_hepta_agent_components::memory::LogicalTurnAttemptRequest;
+    use codex_hepta_agent_components::memory::LogicalTurnRegistryError;
+    use codex_hepta_agent_components::memory::LogicalTurnRequest;
+    use codex_hepta_agent_components::memory::LogicalTurnReservation;
+    use codex_hepta_agent_components::memory_extension::QualificationTurnWriterInput;
+    use codex_hepta_agent_components::memory_extension::QualificationTurnWriterInputError;
 
     const LOCAL_QUALIFICATION_AUTHORITY_EPOCH: u64 = 1;
     const LEASE_TTL_SECONDS: u64 = 3_600;
@@ -283,13 +283,15 @@ async fn prepare_qualification_turn_writer_input_with_request(
         .await
         .map_err(|error| QualificationTurnWriterInputError::Invalid(error.to_string()))?;
     let head = match inspected.disposition {
-        codex_hepta_memory::LocalLeaseHeadDisposition::Active => {
+        codex_hepta_agent_components::memory::LocalLeaseHeadDisposition::Active => {
             inspected.head.ok_or_else(fenced)?
         }
-        codex_hepta_memory::LocalLeaseHeadDisposition::ExpiredActive
-        | codex_hepta_memory::LocalLeaseHeadDisposition::Released
-        | codex_hepta_memory::LocalLeaseHeadDisposition::RolledBack
-        | codex_hepta_memory::LocalLeaseHeadDisposition::Missing => return Err(fenced()),
+        codex_hepta_agent_components::memory::LocalLeaseHeadDisposition::ExpiredActive
+        | codex_hepta_agent_components::memory::LocalLeaseHeadDisposition::Released
+        | codex_hepta_agent_components::memory::LocalLeaseHeadDisposition::RolledBack
+        | codex_hepta_agent_components::memory::LocalLeaseHeadDisposition::Missing => {
+            return Err(fenced());
+        }
     };
     // A returned in-flight attempt may belong to an older fleet lifecycle
     // generation.  It is not safe to adopt that physical fence merely because

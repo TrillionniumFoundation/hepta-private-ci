@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 27
+id = "compact.engine"
+plane = "domain"
+kind = "engine"
+lifecycle = "target"
+state = "stateful"
+architectureRole = "execution_plant"
+writes = ["compact_checkpoint"]
+uses = ["cognitive.read", "kernel.operations"]
+owner = "cognitive-platform"
+deputy = "durability-kernel"
+denies = ["source_fact_mutation"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-compact-engine"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "MEM-5-COMPACT"
+technicalDocument = "docs/modules/compact.engine/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-compact-engine"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-compact-engine"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

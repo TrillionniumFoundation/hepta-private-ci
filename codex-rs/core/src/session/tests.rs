@@ -1,6 +1,8 @@
 use super::mcp_refresh::McpRefresh;
 use super::turn_context::TurnEnvironment;
 use super::*;
+#[path = "terminal_shutdown_tests.rs"]
+mod terminal_shutdown;
 use crate::agents_md_manager::AgentsMdManager;
 use crate::config::ConfigBuilder;
 use crate::config::ConfigOverrides;
@@ -11166,23 +11168,6 @@ async fn hook_transcript_path_materializes_lazy_local_thread() {
     ));
 }
 
-async fn wait_for_flush_count(
-    store: &codex_thread_store::InMemoryThreadStore,
-    expected_flushes: usize,
-) -> codex_thread_store::InMemoryThreadStoreCalls {
-    timeout(Duration::from_secs(2), async {
-        loop {
-            let calls = store.calls().await;
-            if calls.flush_thread >= expected_flushes {
-                return calls;
-            }
-            sleep(Duration::from_millis(10)).await;
-        }
-    })
-    .await
-    .expect("store should observe expected flush count")
-}
-
 async fn recv_terminal_event(
     rx: &async_channel::Receiver<Event>,
     expected: TerminalEventKind,
@@ -11424,7 +11409,7 @@ async fn guardian_helper_review_interrupts_after_three_consecutive_denials() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn turn_complete_flushes_terminal_event_after_delivery() {
+async fn turn_complete_flushes_terminal_event_before_delivery() {
     let (mut sess, tc, rx) = make_session_and_context_with_rx().await;
     let store = attach_in_memory_thread_store(
         Arc::get_mut(&mut sess).expect("session should be uniquely owned"),
@@ -11447,12 +11432,14 @@ async fn turn_complete_flushes_terminal_event_after_delivery() {
     // Expected flushes:
     // 1. Task-runner flush after the task body finishes, before TurnComplete is emitted.
     // 2. Terminal-event flush after TurnComplete is appended.
-    let calls = wait_for_flush_count(&store, /*expected_flushes*/ 2).await;
+    let calls = store.calls().await;
+    assert!(sess.active_turn.lock().await.is_none());
+    assert!(!sess.has_pending_task_terminalization());
     assert_eq!(2, calls.flush_thread);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn turn_aborted_flushes_terminal_event_after_delivery() {
+async fn turn_aborted_flushes_terminal_event_before_delivery() {
     let (mut sess, tc, rx) = make_session_and_context_with_rx().await;
     let store = attach_in_memory_thread_store(
         Arc::get_mut(&mut sess).expect("session should be uniquely owned"),
@@ -11489,13 +11476,15 @@ async fn turn_aborted_flushes_terminal_event_after_delivery() {
         EventMsg::TurnAborted(e) => assert_eq!(TurnAbortReason::Interrupted, e.reason),
         other => panic!("unexpected event: {other:?}"),
     }
-    abort_task.await.expect("abort task should finish");
     // Expected flushes:
     // 1. Task-runner flush after the task body observes cancellation.
     // 2. Interrupted-marker flush before TurnAborted so abort observers can reread it.
     // 3. Terminal-event flush after TurnAborted is appended.
-    let calls = wait_for_flush_count(&store, /*expected_flushes*/ 3).await;
+    let calls = store.calls().await;
     assert_eq!(3, calls.flush_thread);
+    assert!(sess.active_turn.lock().await.is_none());
+    assert!(!sess.has_pending_task_terminalization());
+    abort_task.await.expect("abort task should finish");
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -12148,11 +12137,29 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
     timeout(Duration::from_secs(2), idle_entered.notified())
         .await
         .expect("finish terminalizer should reach idle lifecycle");
-    assert!(session.has_pending_task_terminalization());
+    assert!(!session.has_pending_admission_fence());
+    let mut terminalization_drain = tokio::spawn({
+        let session = Arc::clone(&session);
+        async move {
+            session
+                .drain_task_terminalizations_for_shutdown_except(None)
+                .await
+        }
+    });
+    assert!(
+        timeout(Duration::from_millis(100), &mut terminalization_drain)
+            .await
+            .is_err(),
+        "shutdown must still wait for the durable owner's idle callback"
+    );
 
     finish_owner.abort();
     let _ = finish_owner.await;
     idle_release.notify_one();
+    timeout(Duration::from_secs(2), terminalization_drain)
+        .await
+        .expect("released idle callback should unblock shutdown")
+        .expect("detached terminalizer should complete its original shutdown witness");
 
     timeout(Duration::from_secs(2), async {
         loop {

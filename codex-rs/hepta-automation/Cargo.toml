@@ -12,28 +12,29 @@ test = true
 doctest = false
 
 [features]
-default = []
+default = ["runtime"]
+runtime = ["dep:codex-hepta-operations", "dep:codex-hepta-paths", "dep:codex-hepta-types", "dep:codex-state", "dep:codex-utils-absolute-path", "dep:sha2", "dep:sqlx", "dep:tokio"]
 # Opt-in structural TaskFlow replay/frontier qualification for the separate
 # taskflow_kernel helpers. The durable production step outbox is default code
 # and remains authority-free by itself.
-taskflow-structural-qualification = []
+taskflow-structural-qualification = ["runtime"]
 
 [lints]
 workspace = true
 
 [dependencies]
 codex-hepta-contracts = { workspace = true }
-codex-hepta-operations = { workspace = true }
-codex-hepta-paths = { workspace = true }
-codex-hepta-types = { workspace = true }
-codex-state = { workspace = true }
-codex-utils-absolute-path = { workspace = true }
+codex-hepta-operations = { optional = true, workspace = true }
+codex-hepta-paths = { optional = true, workspace = true }
+codex-hepta-types = { optional = true, workspace = true }
+codex-state = { optional = true, workspace = true }
+codex-utils-absolute-path = { optional = true, workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-sha2 = { workspace = true }
-sqlx = { workspace = true }
+sha2 = { optional = true, workspace = true }
+sqlx = { optional = true, workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true, features = ["sync", "time"] }
+tokio = { optional = true, workspace = true, features = ["sync", "time"] }
 uuid = { workspace = true, features = ["serde", "v7"] }
 
 [dev-dependencies]

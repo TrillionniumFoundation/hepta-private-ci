@@ -1401,6 +1401,7 @@ impl AppServerSession {
             .request_typed(ClientRequest::ThreadUnsubscribe {
                 request_id,
                 params: ThreadUnsubscribeParams {
+                    ephemeral_disposal: None,
                     thread_id: thread_id.to_string(),
                 },
             })

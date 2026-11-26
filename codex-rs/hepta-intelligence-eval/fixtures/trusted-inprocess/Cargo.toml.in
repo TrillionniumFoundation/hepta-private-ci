@@ -1,0 +1,13 @@
+[package]
+name = "codex-hepta-intelligence-eval-trusted-fixture"
+version = "0.0.0"
+edition = "2024"
+license = "Apache-2.0"
+publish = false
+
+[workspace]
+
+[dependencies]
+codex-hepta-intelligence-eval = { path = "@EVAL_PATH@", features = ["trusted-inprocess-eval"] }
+codex-hepta-learning-ledger = { path = "@LEDGER_PATH@" }
+codex-hepta-types = { path = "@TYPES_PATH@" }

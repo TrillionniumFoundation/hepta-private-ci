@@ -29,14 +29,16 @@ Plane `presentation`, kind `native`, state model `ephemeral` and architecture ro
 Declared exclusive target roots:
 
 - `apps/hepta-native`
+- `apps/hepta-robrix`
 
 Existing declared roots at this exact source snapshot:
 
 - `apps/hepta-native`
+- `apps/hepta-robrix`
 
 Non-authoritative implementation evidence roots:
 
-None.
+The same two roots contain the shared Rust runtime and the packaged renderer.
 
 Declared roots not yet present:
 
@@ -46,7 +48,15 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js); observed identifiers include `buildNativeIntent`, `observeNativeOutcome`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) for the implemented subset and remaining product work.
+The shared Rust entry is [NativeHost](../../../apps/hepta-native/src/native_host.rs).
+It composes the existing native runtime, OS keyring and guarded Gateway client.
+The [Robrix application](../../../apps/hepta-robrix/src/hepta_app.rs) renders that
+runtime through Makepad; it owns no Agent, model client or domain database.
+The original native application retains its platform and updater entry.
+The JavaScript source is a reference boundary, rather than the installed Rust
+application entry. Source navigation alone establishes no installed behavior.
+The [Linux installation guide](../../../apps/hepta-native/installation/native-chat-linux-single-use.md)
+describes the existing-owner handoff and the separate real Chat acceptance.
 
 ## 3. Boundary, responsibilities and non-goals
 

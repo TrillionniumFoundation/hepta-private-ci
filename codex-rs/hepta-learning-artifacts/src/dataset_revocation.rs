@@ -105,7 +105,7 @@ pub fn prepare_dataset_revocation(
     if before_head != expected_head {
         return Err(DatasetRevocationError::StaleSnapshot);
     }
-    let mut targets: Vec<StableId> = registry
+    let targets: Vec<StableId> = registry
         .records()
         .iter()
         .filter_map(|record| match &record.event {
@@ -115,11 +115,40 @@ pub fn prepare_dataset_revocation(
             ArtifactEvent::Quarantine(_) | ArtifactEvent::Revoke(_) => None,
         })
         .collect();
+    prepare_targets(
+        registry,
+        expected_head,
+        request,
+        targets,
+        MAX_DIRECT_TARGETS,
+    )
+}
+
+/// The named owner resolves these identities through its complete V2 CURRENT
+/// provenance. The compatibility helper above retains its exact V1 semantics.
+pub(crate) fn prepare_targets(
+    registry: &ArtifactRegistry,
+    expected_head: Digest32,
+    request: &DatasetRevocationRequest,
+    mut targets: Vec<StableId>,
+    maximum_targets: usize,
+) -> Result<PreparedDatasetRevocation, DatasetRevocationError> {
+    if request.dataset_digest.is_zero() || request.source_revocation_digest.is_zero() {
+        return Err(DatasetRevocationError::EmptyDigest);
+    }
+    if registry.records().len() > MAX_DURABLE_ARTIFACT_RECORDS {
+        return Err(DatasetRevocationError::Capacity);
+    }
+    let before_head = registry.head_digest();
+    if before_head != expected_head {
+        return Err(DatasetRevocationError::StaleSnapshot);
+    }
     targets.sort();
+    targets.dedup();
     if targets.is_empty() {
         return Err(DatasetRevocationError::NoMatchingArtifacts);
     }
-    if targets.len() > MAX_DIRECT_TARGETS {
+    if targets.len() > maximum_targets {
         return Err(DatasetRevocationError::Capacity);
     }
     let mut request_bytes = b"hepta.dataset-revocation.request.v1".to_vec();

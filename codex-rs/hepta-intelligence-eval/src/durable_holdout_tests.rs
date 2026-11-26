@@ -106,6 +106,31 @@ fn plan(name: &str) -> CrossFoldPlanReceiptV1 {
 
 #[test]
 fn durable_reopen_prevents_holdout_reuse() {
+    const ISOLATED: &str = "HEPTA_DURABLE_HOLDOUT_REOPEN_CHILD";
+    if std::env::var_os("HEPTA_HOLDOUT_REOPEN_PATH").is_none()
+        && std::env::var_os(ISOLATED).is_none()
+    {
+        // A parallel fork can retain this test's flock descriptor until exec.
+        // Create and close/reopen the store only after entering an isolated
+        // process, preserving the production lock and the original assertions.
+        let output = Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "durable_holdout::tests::durable_reopen_prevents_holdout_reuse",
+                "--nocapture",
+            ])
+            .env(ISOLATED, "1")
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(String::from_utf8_lossy(&output.stdout).contains("1 passed"));
+        return;
+    }
     // The same test is also launched in a distinct process by the test below.
     let owned;
     let (path, anchor) = if let Some(path) = std::env::var_os("HEPTA_HOLDOUT_REOPEN_PATH") {

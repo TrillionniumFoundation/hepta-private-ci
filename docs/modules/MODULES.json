@@ -399,6 +399,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
+        "codex-rs/hepta-agentd-core",
+        "codex-rs/hepta-agent-components",
         "codex-rs/hepta-agentd"
       ],
       "missingDeclaredRoots": [],
@@ -428,11 +430,19 @@
       "localHotPathCentralRpc": "not_applicable_or_bounded",
       "rootBindings": [
         {
-          "path": "codex-rs/codex-app-server",
+          "path": "codex-rs/app-server",
           "mode": "exclusive"
         },
         {
           "path": "codex-rs/hepta-codex-adapter",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-app-bridge",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-app-host",
           "mode": "exclusive"
         }
       ],
@@ -450,7 +460,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "codex-rs/codex-app-server",
+        "codex-rs/app-server",
+        "codex-rs/hepta-app-bridge",
+        "codex-rs/hepta-app-host",
         "codex-rs/hepta-codex-adapter"
       ],
       "missingDeclaredRoots": [],
@@ -633,7 +645,9 @@
       "writes": [],
       "uses": [
         "inference.control",
-        "kernel.authority"
+        "kernel.authority",
+        "channel.matrix",
+        "runtime.supervisor"
       ],
       "owner": "inference-platform",
       "deputy": "security-authority",
@@ -1512,7 +1526,8 @@
       "uses": [
         "learning.ledger",
         "learning.artifacts",
-        "kernel.evidence"
+        "kernel.evidence",
+        "neuron.runtime"
       ],
       "owner": "learning-platform",
       "deputy": "qualification-plane",
@@ -1874,6 +1889,10 @@
         {
           "path": "apps/hepta-native",
           "mode": "exclusive"
+        },
+        {
+          "path": "apps/hepta-robrix",
+          "mode": "exclusive"
         }
       ],
       "hotPathPolicy": {
@@ -1890,7 +1909,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "apps/hepta-native"
+        "apps/hepta-native",
+        "apps/hepta-robrix"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "UI-NATIVE-1-SHELL",
@@ -1994,6 +2014,55 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "ECP-1-ENGINEERING-CONTROL-PLANE",
       "technicalDocument": "docs/modules/control.engineering/TECHNICAL.md",
+      "documentationReady": true
+    },
+    {
+      "id": "runtime.gateway",
+      "plane": "control",
+      "kind": "gateway",
+      "lifecycle": "existing",
+      "state": "ephemeral",
+      "architectureRole": "execution_plant",
+      "writes": [],
+      "uses": [
+        "platform.types",
+        "platform.wire",
+        "runtime.supervisor",
+        "control.runtime"
+      ],
+      "owner": "native-integration",
+      "deputy": "runtime-control",
+      "denies": [
+        "direct_domain_write",
+        "authority_issuance",
+        "raw_secret_export"
+      ],
+      "localHotPathCentralRpc": "not_applicable_or_bounded",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-native-gateway",
+          "mode": "exclusive"
+        }
+      ],
+      "hotPathPolicy": {
+        "centralSynchronousRpcAllowed": false,
+        "boundedCachedControlInputAllowed": true,
+        "fallbackRequired": true
+      },
+      "publicSurfacePolicy": {
+        "typedContractsOnly": true,
+        "denyUnknownCriticalFields": true,
+        "rawModelOrSecretPayloadExportAllowed": false
+      },
+      "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
+      "sourceEvidenceRoots": [
+        "codex-rs/hepta-native-gateway"
+      ],
+      "missingDeclaredRoots": [],
+      "bootstrapWorkPackage": "P0.7A-RUNTIME-BOOTSTRAP",
+      "technicalDocument": "docs/modules/runtime.gateway/TECHNICAL.md",
       "documentationReady": true
     }
   ],

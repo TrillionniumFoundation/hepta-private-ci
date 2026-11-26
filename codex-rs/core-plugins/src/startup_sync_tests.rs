@@ -1382,3 +1382,49 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
 
     writer.finish().expect("finish zip writer").into_inner()
 }
+
+#[cfg(unix)]
+#[test]
+fn curated_git_drains_output_before_waiting_for_exit() {
+    let mut command = Command::new("/bin/sh");
+    command.args([
+        "-c",
+        "head -c 131072 /dev/zero; head -c 131072 /dev/zero >&2",
+    ]);
+    let output =
+        run_git_command_with_timeout(command, "curated Git output", Duration::from_secs(5))
+            .expect("both full pipes are drained");
+    assert!(output.status.success());
+    assert_eq!(
+        (output.stdout, output.stderr),
+        (vec![0; 131072], vec![0; 131072])
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn curated_git_timeout_retires_descendants_after_wrapper_exit() {
+    let temp = tempdir().expect("temporary child observation");
+    let ready = temp.path().join("ready");
+    let survived = temp.path().join("survived");
+    let mut command = Command::new("/bin/sh");
+    command.args(["-c", r#"( : > "$CHILD_READY"; sleep 2; : > "$CHILD_SURVIVED" ) & while [ ! -f "$CHILD_READY" ]; do sleep 0.01; done"#]);
+    command
+        .env("CHILD_READY", &ready)
+        .env("CHILD_SURVIVED", &survived);
+    let result = run_git_command_with_timeout(
+        command,
+        "curated Git descendants",
+        Duration::from_millis(500),
+    );
+    assert_eq!(
+        result.expect_err("inherited pipes remain open"),
+        "curated Git descendants timed out after 0s"
+    );
+    assert!(ready.exists());
+    std::thread::sleep(Duration::from_secs(3));
+    assert!(
+        !survived.exists(),
+        "original Git group survived its deadline"
+    );
+}

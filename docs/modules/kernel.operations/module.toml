@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 3
+id = "kernel.operations"
+plane = "kernel"
+kind = "durability"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "immutable_kernel"
+writes = ["operation_ledger", "cross_owner_outbox"]
+uses = ["platform.types"]
+owner = "durability-kernel"
+deputy = "architecture"
+denies = ["domain_schema_ownership"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-operations", "codex-rs/hepta-memory", "codex-rs/hepta-agentd", "codex-rs/hepta-automation"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.7D-FAULT-MATRIX"
+technicalDocument = "docs/modules/kernel.operations/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-operations"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-operations"
+compileLayer = 1
+ciGroups = ["effects", "lifecycle"]

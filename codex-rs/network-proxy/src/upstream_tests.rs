@@ -6,20 +6,20 @@ use rama_http::StatusCode;
 use rama_http::Version;
 use rama_net::address::Host;
 use rama_net::address::HostWithPort;
-use rama_tls_rustls::dep::pki_types::CertificateDer;
-use rama_tls_rustls::dep::pki_types::PrivateKeyDer;
-use rama_tls_rustls::dep::pki_types::pem::PemObject;
-use rama_tls_rustls::dep::rcgen::BasicConstraints;
-use rama_tls_rustls::dep::rcgen::CertificateParams;
-use rama_tls_rustls::dep::rcgen::DistinguishedName;
-use rama_tls_rustls::dep::rcgen::DnType;
-use rama_tls_rustls::dep::rcgen::ExtendedKeyUsagePurpose;
-use rama_tls_rustls::dep::rcgen::IsCa;
-use rama_tls_rustls::dep::rcgen::Issuer;
-use rama_tls_rustls::dep::rcgen::KeyPair;
-use rama_tls_rustls::dep::rcgen::KeyUsagePurpose;
-use rama_tls_rustls::dep::rcgen::PKCS_ECDSA_P256_SHA256;
+use rama_tls_rustls::dep::rustls::pki_types::CertificateDer;
+use rama_tls_rustls::dep::rustls::pki_types::PrivateKeyDer;
+use rama_tls_rustls::dep::rustls::pki_types::pem::PemObject;
 use rama_tls_rustls::dep::tokio_rustls::TlsAcceptor;
+use rcgen::BasicConstraints;
+use rcgen::CertificateParams;
+use rcgen::DistinguishedName;
+use rcgen::DnType;
+use rcgen::ExtendedKeyUsagePurpose;
+use rcgen::IsCa;
+use rcgen::Issuer;
+use rcgen::KeyPair;
+use rcgen::KeyUsagePurpose;
+use rcgen::PKCS_ECDSA_P256_SHA256;
 use std::collections::HashMap;
 use std::fs;
 use std::sync::Arc;
@@ -88,6 +88,8 @@ async fn mitm_upstream_client_trusts_startup_custom_ca() {
     let address = listener.local_addr().unwrap();
     let acceptor = TlsAcceptor::from(Arc::new(server_config));
     let server = tokio::spawn(async move {
+        let (untrusted, _) = listener.accept().await.unwrap();
+        assert!(acceptor.accept(untrusted).await.is_err());
         let (stream, _) = listener.accept().await.unwrap();
         let mut stream = acceptor.accept(stream).await.unwrap();
         let mut request = [0; 4096];
@@ -102,6 +104,20 @@ async fn mitm_upstream_client_trusts_startup_custom_ca() {
     let mut config = NetworkProxyConfig::default();
     config.set_allowed_domains(vec!["localhost".to_string()]);
     let state = Arc::new(network_proxy_state_for_policy(config));
+    let untrusted_client =
+        UpstreamClient::direct_with_tls_root_store(Arc::clone(&state), baseline_roots);
+    assert!(
+        untrusted_client
+            .serve(
+                Request::builder()
+                    .version(Version::HTTP_2)
+                    .uri(format!("https://localhost:{}/", address.port()))
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .is_err()
+    );
     let client = UpstreamClient::direct_with_tls_root_store(state, roots);
     let response = client
         .serve(

@@ -19,31 +19,31 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::RwLock;
 
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_learning_artifacts::read_registry_snapshot;
-use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::DatasetSnapshotV2;
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_learning_ledger::LedgerAnchor;
-use codex_hepta_learning_ledger::LedgerRecovery;
-use codex_hepta_learning_ledger::TrustedLearningSignerV1;
-use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
-use codex_hepta_ndu::NduProjectionJournalV1;
-use codex_hepta_neuron::InhibitoryEdge;
-use codex_hepta_neuron::JournalAnchor;
-use codex_hepta_neuron::JournalScope;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseJournal;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_agent_components::learning_artifacts::read_registry_snapshot;
+use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotV2;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_agent_components::learning_ledger::LedgerAnchor;
+use codex_hepta_agent_components::learning_ledger::LedgerRecovery;
+use codex_hepta_agent_components::learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_agent_components::learning_ledger::verify_dataset_snapshot_receipt_v3;
+use codex_hepta_agent_components::ndu::NduProjectionJournalV1;
+use codex_hepta_agent_components::neuron::InhibitoryEdge;
+use codex_hepta_agent_components::neuron::JournalAnchor;
+use codex_hepta_agent_components::neuron::JournalScope;
+use codex_hepta_agent_components::neuron::SparseConfig;
+use codex_hepta_agent_components::neuron::SparseJournal;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use serde::Deserialize;
 
 use crate::AgentdError;
@@ -66,6 +66,9 @@ use crate::resume_agentd_topology_writer_v1;
 const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
 const MAX_DESCRIPTOR_BYTES: u64 = 1_048_576;
 const MAX_NDU_JOURNAL_BYTES: u64 = 2 * 1_048_576;
+#[path = "plasticity_current_descriptor.rs"]
+mod current_descriptor;
+use current_descriptor::CurrentArtifactOwnerDescriptorV1;
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -97,6 +100,8 @@ struct ArtifactSnapshotDescriptorV1 {
     update_rule_artifact_id: String,
     mutation_policy_artifact_id: String,
     broadcast_artifact_id: String,
+    #[serde(default)]
+    current_owner: Option<CurrentArtifactOwnerDescriptorV1>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -292,6 +297,14 @@ pub fn load_plasticity_process_bootstrap_v1(
 
     let objective_digest = digest(&descriptor.objective_digest, "objective digest")?;
     let artifacts = load_artifacts(&descriptor.artifacts)?;
+    // A legacy descriptor may reopen its original histories, but without a
+    // current owner every proposal is refused before either writer appends.
+    let current_artifacts = descriptor
+        .artifacts
+        .current_owner
+        .as_ref()
+        .map(CurrentArtifactOwnerDescriptorV1::source)
+        .transpose()?;
     let ledger = load_ledger(&descriptor.ledger)?;
     let dataset = build_dataset_receipt(&descriptor.dataset)?;
     if dataset.snapshot.objective_digest != objective_digest {
@@ -409,7 +422,7 @@ pub fn load_plasticity_process_bootstrap_v1(
     let (topology_writer, topology_anchor_store) =
         open_topology_writer(&descriptor.topology_registry)?;
 
-    PlasticityRuntimeBootstrapV1::new(
+    let bootstrap = PlasticityRuntimeBootstrapV1::new(
         descriptor.queue_capacity,
         artifacts,
         ledger,
@@ -420,7 +433,27 @@ pub fn load_plasticity_process_bootstrap_v1(
         parameter_anchor_store,
         topology_writer,
         topology_anchor_store,
-    )
+    )?;
+    match current_artifacts {
+        Some(source) => bootstrap.with_current_artifacts(
+            source,
+            [
+                stable_id(
+                    &descriptor.artifacts.update_rule_artifact_id,
+                    "update rule artifact",
+                )?,
+                stable_id(
+                    &descriptor.artifacts.mutation_policy_artifact_id,
+                    "mutation policy artifact",
+                )?,
+                stable_id(
+                    &descriptor.artifacts.broadcast_artifact_id,
+                    "broadcast artifact",
+                )?,
+            ],
+        ),
+        None => Ok(bootstrap),
+    }
 }
 
 fn load_artifacts(
@@ -572,6 +605,7 @@ fn build_verifier(
                         "generator" => Ok(LearningEvidenceRoleV1::Generator),
                         "observer" => Ok(LearningEvidenceRoleV1::Observer),
                         "evaluator" => Ok(LearningEvidenceRoleV1::Evaluator),
+                        "selector" => Ok(LearningEvidenceRoleV1::Selector),
                         _ => invalid("unknown learning evidence role"),
                     })
                     .collect::<Result<Vec<_>, AgentdError>>()?,
@@ -593,28 +627,45 @@ fn verify_owner_policy_bindings(
     artifacts: &ArtifactRegistry,
     dataset: &DatasetSnapshotReceiptV3,
 ) -> Result<(), AgentdError> {
-    let policy = &descriptor.owner_policy;
+    verify_fact_policy_bindings(
+        &descriptor.owner_policy,
+        &descriptor.artifacts,
+        &descriptor.ndu,
+        &descriptor.neuron,
+        artifacts,
+        dataset,
+    )
+}
+
+fn verify_fact_policy_bindings(
+    policy: &OwnerPolicyDescriptorV1,
+    artifact_sources: &ArtifactSnapshotDescriptorV1,
+    ndu: &NduDescriptorV1,
+    neuron: &NeuronDescriptorV1,
+    artifacts: &ArtifactRegistry,
+    dataset: &DatasetSnapshotReceiptV3,
+) -> Result<(), AgentdError> {
     if policy.dataset_owner_id != dataset.producer.principal_id.as_str()
-        || policy.modulator_owner_id != descriptor.ndu.owner_id
-        || policy.eligibility_owner_id != descriptor.neuron.owner_id
-        || policy.parameter_signal_owner_id != descriptor.neuron.owner_id
+        || policy.modulator_owner_id != ndu.owner_id
+        || policy.eligibility_owner_id != neuron.owner_id
+        || policy.parameter_signal_owner_id != neuron.owner_id
     {
         return invalid("plasticity owner policy does not match authoritative owner identity");
     }
 
     for (artifact_id, expected_owner, label) in [
         (
-            descriptor.artifacts.update_rule_artifact_id.as_str(),
+            artifact_sources.update_rule_artifact_id.as_str(),
             policy.update_rule_owner_id.as_str(),
             "update rule",
         ),
         (
-            descriptor.artifacts.mutation_policy_artifact_id.as_str(),
+            artifact_sources.mutation_policy_artifact_id.as_str(),
             policy.mutation_policy_owner_id.as_str(),
             "mutation policy",
         ),
         (
-            descriptor.artifacts.broadcast_artifact_id.as_str(),
+            artifact_sources.broadcast_artifact_id.as_str(),
             policy.modulator_broadcast_owner_id.as_str(),
             "modulator broadcast",
         ),
@@ -681,7 +732,7 @@ fn open_parameter_writer(
     descriptor: &RegistryDescriptorV1,
 ) -> Result<
     (
-        codex_hepta_intelligence::AnchoredPlasticityWriterV1,
+        codex_hepta_agent_components::intelligence::AnchoredPlasticityWriterV1,
         crate::AgentdPlasticityAnchorStoreV1,
     ),
     AgentdError,
@@ -919,3 +970,18 @@ mod tests {
         assert!(existing_paths_alias(&left, &right).expect("identity check"));
     }
 }
+
+#[path = "plasticity_input_context_v2.rs"]
+mod input_context;
+pub(crate) use input_context::load_input_context_v2;
+pub(crate) use input_context::protected_context_bytes;
+#[cfg(test)]
+pub(crate) use input_context::validate_context_baseline_artifact;
+
+#[path = "plasticity_process_bootstrap_v2.rs"]
+mod v2;
+pub use v2::load_plasticity_process_bootstrap_v2;
+
+#[cfg(test)]
+#[path = "plasticity_process_bootstrap_trust_tests.rs"]
+mod whole_trust_tests;

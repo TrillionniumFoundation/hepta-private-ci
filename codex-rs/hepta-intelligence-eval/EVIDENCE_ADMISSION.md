@@ -45,6 +45,18 @@ Exact signed-request replay is read-only evaluation; one-use holdouts remain the
 registry/journal's responsibility. This does not replace AuthBus execution replay
 protection or authorize effects.
 
+The opt-in Linux `hepta-fixed-holdout-custody` service prepares pinned official
+source rows in Root-private custody. It excludes whole held-out citation
+components sharing any earlier claim or document, retains original gold and
+annotation provenance, and initializes the existing fenced CAS owner with an
+independently retained acknowledgement. `--inspect` verifies both private data
+digests and the acknowledged native CAS prefix; it never resets damaged state.
+Neither command consumes labels or registers a candidate evaluation plan.
+Unjudged pairs are excluded from scoring. Public source rows do not establish
+unseen human-subject or future-calendar lineage. The authenticated production
+runner still requires its real preregistered plan, deployed reference, support,
+confidence and lifecycle receipts before consuming this reserved holdout.
+
 ## Preregistered metric roles
 
 `freeze_cross_fold_plan_v2` assigns every metric exactly one role and requires at

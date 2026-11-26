@@ -473,6 +473,11 @@ impl ThreadStore for LocalThreadStore {
         self.state_db.is_some()
     }
 
+    fn supports_identified_creation(&self) -> bool {
+        // create_thread binds the lazy recorder before returning it to its original owner.
+        self.state_db.is_some()
+    }
+
     fn append_items(&self, params: AppendThreadItemsParams) -> ThreadStoreFuture<'_, ()> {
         Box::pin(async move { live_writer::append_items(self, params).await })
     }
@@ -581,6 +586,13 @@ impl ThreadStore for LocalThreadStore {
 
     fn read_project(&self, project_id: String) -> ThreadStoreFuture<'_, Option<StoredProject>> {
         Box::pin(async move { projects::read_project(self, project_id).await })
+    }
+
+    fn read_project_by_idempotency_key(
+        &self,
+        key: String,
+    ) -> ThreadStoreFuture<'_, Option<StoredProject>> {
+        Box::pin(async move { projects::read_project_by_idempotency_key(self, key).await })
     }
 
     fn create_project(&self, params: CreateProjectParams) -> ThreadStoreFuture<'_, CreatedProject> {

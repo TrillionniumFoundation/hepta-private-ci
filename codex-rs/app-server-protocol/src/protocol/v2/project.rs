@@ -65,6 +65,13 @@ pub struct ProjectReadResponse {
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS, ExperimentalApi)]
 #[serde(rename_all = "camelCase")]
 #[ts(export_to = "v2/")]
+pub struct ProjectReadByIdempotencyKeyParams {
+    pub idempotency_key: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, JsonSchema, TS, ExperimentalApi)]
+#[serde(rename_all = "camelCase")]
+#[ts(export_to = "v2/")]
 pub struct ProjectCreateParams {
     pub name: String,
     pub roots: Vec<ProjectRoot>,

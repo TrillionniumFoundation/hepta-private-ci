@@ -19,6 +19,7 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
 
 use codex_hepta_contracts::ProviderInvocationReceipt;
 use codex_hepta_contracts::ProviderTerminal;
@@ -97,7 +98,6 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
@@ -388,7 +388,12 @@ impl ContextAdmissionSnapshotV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedAdmissionSnapshotV2 {
-    snapshot: ContextAdmissionSnapshotV2,
+    snapshot_digest: Digest32,
+    scope_digest: Digest32,
+    authority_domain_digest: Digest32,
+    observed_unix_ms: u64,
+    revocation_epoch: u64,
+    revoked_admission_ids: Arc<[StableId]>,
     verifier_digest: Digest32,
     verification_digest: Digest32,
 }
@@ -396,7 +401,7 @@ pub struct VerifiedAdmissionSnapshotV2 {
 impl VerifiedAdmissionSnapshotV2 {
     #[must_use]
     pub fn snapshot_digest(&self) -> Digest32 {
-        self.snapshot.snapshot_digest
+        self.snapshot_digest
     }
 
     #[must_use]
@@ -411,27 +416,59 @@ impl VerifiedAdmissionSnapshotV2 {
 
     #[must_use]
     pub const fn scope_digest(&self) -> Digest32 {
-        self.snapshot.scope_digest
+        self.scope_digest
     }
 
     #[must_use]
     pub const fn authority_domain_digest(&self) -> Digest32 {
-        self.snapshot.authority_domain_digest
+        self.authority_domain_digest
     }
 
     #[must_use]
     pub const fn observed_unix_ms(&self) -> u64 {
-        self.snapshot.observed_unix_ms
+        self.observed_unix_ms
     }
 
     #[must_use]
     pub const fn revocation_epoch(&self) -> u64 {
-        self.snapshot.revocation_epoch
+        self.revocation_epoch
+    }
+
+    fn validate_frontier_from(
+        &self,
+        predecessor: &VerifiedAdmissionSnapshotV2,
+    ) -> Result<(), ContextCompilerV2Error> {
+        if self.scope_digest() != predecessor.scope_digest()
+            || self.authority_domain_digest() != predecessor.authority_domain_digest()
+        {
+            return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
+        }
+        if self.observed_unix_ms() < predecessor.observed_unix_ms()
+            || self.revocation_epoch() < predecessor.revocation_epoch()
+        {
+            return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
+        }
+        if self.revocation_epoch() == predecessor.revocation_epoch()
+            && self.revoked_admission_ids != predecessor.revoked_admission_ids
+        {
+            return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
+        }
+        for admission_id in predecessor.revoked_admission_ids.iter() {
+            if self
+                .revoked_admission_ids
+                .binary_search(admission_id)
+                .is_err()
+            {
+                return Err(ContextCompilerV2Error::RevocationResurrection(
+                    admission_id.to_string(),
+                ));
+            }
+        }
+        Ok(())
     }
 
     fn contains_revocation(&self, admission_id: &StableId) -> bool {
-        self.snapshot
-            .revoked_admission_ids
+        self.revoked_admission_ids
             .binary_search(admission_id)
             .is_ok()
     }
@@ -446,7 +483,12 @@ fn finish_verified_snapshot(
     push_digest(&mut bytes, snapshot.snapshot_digest);
     push_digest(&mut bytes, verifier_digest);
     VerifiedAdmissionSnapshotV2 {
-        snapshot,
+        snapshot_digest: snapshot.snapshot_digest,
+        scope_digest: snapshot.scope_digest,
+        authority_domain_digest: snapshot.authority_domain_digest,
+        observed_unix_ms: snapshot.observed_unix_ms,
+        revocation_epoch: snapshot.revocation_epoch,
+        revoked_admission_ids: snapshot.revoked_admission_ids.into(),
         verifier_digest,
         verification_digest: Digest32::of_bytes(&bytes),
     }
@@ -487,33 +529,9 @@ pub fn verify_admission_snapshot_successor_v2(
     if snapshot.predecessor_snapshot_digest != Some(predecessor.snapshot_digest()) {
         return Err(ContextCompilerV2Error::SnapshotPredecessorMismatch);
     }
-    if snapshot.scope_digest != predecessor.scope_digest()
-        || snapshot.authority_domain_digest != predecessor.authority_domain_digest()
-    {
-        return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
-    }
-    if snapshot.observed_unix_ms < predecessor.observed_unix_ms()
-        || snapshot.revocation_epoch < predecessor.revocation_epoch()
-    {
-        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
-    }
-    if snapshot.revocation_epoch == predecessor.revocation_epoch()
-        && snapshot.revoked_admission_ids != predecessor.snapshot.revoked_admission_ids
-    {
-        return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
-    }
-    for admission_id in &predecessor.snapshot.revoked_admission_ids {
-        if snapshot
-            .revoked_admission_ids
-            .binary_search(admission_id)
-            .is_err()
-        {
-            return Err(ContextCompilerV2Error::RevocationResurrection(
-                admission_id.to_string(),
-            ));
-        }
-    }
-    Ok(finish_verified_snapshot(snapshot, verifier_digest))
+    let verified = finish_verified_snapshot(snapshot, verifier_digest);
+    verified.validate_frontier_from(predecessor)?;
+    Ok(verified)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -535,6 +553,7 @@ pub struct VerifiedAdmissionV2 {
     verified_at_unix_ms: u64,
     record_digest: Digest32,
     verification_digest: Digest32,
+    verified_snapshot: VerifiedAdmissionSnapshotV2,
 }
 
 impl VerifiedAdmissionV2 {
@@ -603,11 +622,6 @@ impl VerifiedAdmissionV2 {
             return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
                 self.item_id.to_string(),
             ));
-        }
-        if current_snapshot.revocation_epoch() < self.verified_revocation_epoch
-            || current_snapshot.observed_unix_ms() < self.verified_at_unix_ms
-        {
-            return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
         }
         if current_snapshot.observed_unix_ms() >= self.expires_unix_ms {
             return Err(ContextCompilerV2Error::AdmissionExpired(
@@ -708,6 +722,7 @@ pub fn verify_admission_v2(
         verified_at_unix_ms: snapshot.observed_unix_ms(),
         record_digest: record.record_digest,
         verification_digest: Digest32::ZERO,
+        verified_snapshot: snapshot.clone(),
     };
     verified.verification_digest = verified.compute_verification_digest();
     Ok(verified)
@@ -1491,6 +1506,7 @@ pub fn record_serialization(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextAttachmentV2 {
     attachment_id: StableId,
+    admission_snapshot: VerifiedAdmissionSnapshotV2,
     compilation_receipt_digest: Digest32,
     serialization_receipt_digest: Digest32,
     generation_vector_digest: Digest32,
@@ -1564,7 +1580,14 @@ impl ContextAttachmentV2 {
         if self.admission_snapshot_observed_unix_ms == 0 {
             return Err(ContextCompilerV2Error::InvalidAdmissionSnapshotTime);
         }
-        if self.compilation_receipt_digest != compiled.receipt.receipt_digest
+        if self.admission_snapshot.snapshot_digest() != self.admission_snapshot_digest
+            || self.admission_snapshot.verification_digest()
+                != self.admission_snapshot_verification_digest
+            || self.admission_snapshot.verifier_digest() != self.admission_verifier_digest
+            || self.admission_snapshot.observed_unix_ms()
+                != self.admission_snapshot_observed_unix_ms
+            || self.admission_snapshot.revocation_epoch() != self.revocation_epoch
+            || self.compilation_receipt_digest != compiled.receipt.receipt_digest
             || self.serialization_receipt_digest != serialization.receipt.receipt_digest
             || self.generation_vector_digest != compiled.receipt.generation_vector_digest
             || self.admission_verifier_digest != compiled.receipt.admission_verifier_digest
@@ -1614,6 +1637,7 @@ pub fn build_attachment(
     revalidate_selected_admissions(compiled, current_snapshot)?;
     let mut attachment = ContextAttachmentV2 {
         attachment_id,
+        admission_snapshot: current_snapshot.clone(),
         compilation_receipt_digest: compiled.receipt.receipt_digest,
         serialization_receipt_digest: serialization.receipt.receipt_digest,
         generation_vector_digest: compiled.receipt.generation_vector_digest,
@@ -1764,11 +1788,7 @@ pub fn prepare_delivery_v2(
     preparation_id: StableId,
 ) -> Result<ContextDeliveryPreparationV2, ContextCompilerV2Error> {
     attachment.validate_for(compiled, serialization, profile)?;
-    if current_snapshot.revocation_epoch() < attachment.revocation_epoch
-        || current_snapshot.observed_unix_ms() < attachment.admission_snapshot_observed_unix_ms
-    {
-        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
-    }
+    current_snapshot.validate_frontier_from(&attachment.admission_snapshot)?;
     revalidate_selected_admissions(compiled, current_snapshot)?;
     let actual_payload_digest = Digest32::of_bytes(&serialization.payload);
     if actual_payload_digest != attachment.payload_digest {
@@ -1992,6 +2012,8 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
+// Keep the existing typed handoff API compatible with provider owners.
+#[allow(clippy::too_many_arguments)]
 pub fn observe_delivery(
     preparation: &ContextDeliveryPreparationV2,
     attachment: &ContextAttachmentV2,
@@ -2173,7 +2195,17 @@ fn revalidate_selected_admissions(
             "current_snapshot".to_string(),
         ));
     }
+    if current_snapshot.scope_digest() != compiled.receipt.scope_digest
+        || current_snapshot.authority_domain_digest() != compiled.receipt.authority_domain_digest
+    {
+        return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
+    }
+    let mut checked_frontiers = BTreeSet::new();
     for candidate in &compiled.selected_candidates {
+        let frontier = &candidate.admission.verified_snapshot;
+        if checked_frontiers.insert(frontier.verification_digest()) {
+            current_snapshot.validate_frontier_from(frontier)?;
+        }
         candidate.admission.revalidate(current_snapshot)?;
     }
     Ok(())

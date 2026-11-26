@@ -51,6 +51,11 @@ const MAX_FRAME_BYTES: usize = 8 + 32 + 4 + MAX_PAYLOAD_BYTES + 32;
 const MAX_FILE_BYTES: u64 = 512 * 1024 * 1024;
 const PAYLOAD_MAGIC: &[u8; 8] = b"HPTPPV02";
 
+#[path = "durable_registry_observation.rs"]
+mod observation;
+pub use observation::DurableCompletedProposalV1;
+pub use observation::MAX_COMPLETED_PROPOSAL_BYTES_V1;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct DurableRegistryAnchorV1 {
     pub sequence: u64,
@@ -412,79 +417,7 @@ impl DurableProposalRegistry {
         expected_predecessor_frame_digest: Digest32,
         proposal: ParameterProposalV2,
     ) -> Result<DurableProposalAppendReceiptV1, DurableProposalRegistryError> {
-        if self.poisoned {
-            return Err(DurableProposalRegistryError::Poisoned);
-        }
-        verify_parameter_proposal_v2(&proposal)?;
-        if let Some(existing) = self.receipts.get(&proposal.proposal_id) {
-            let stored = self
-                .registry
-                .get_v2_by_proposal_id(&proposal.proposal_id)
-                .ok_or(DurableProposalRegistryError::Corrupt)?;
-            if stored == &proposal {
-                let mut observed = existing.clone();
-                observed.disposition = AppendDisposition::Unchanged;
-                return Ok(observed);
-            }
-        }
-        let current = self.frame_digests.last().copied().unwrap_or(Digest32::ZERO);
-        if current != expected_predecessor_frame_digest {
-            return Err(DurableProposalRegistryError::Conflict);
-        }
-        if self.frame_digests.len() >= self.maximum_records {
-            return Err(DurableProposalRegistryError::Capacity);
-        }
-
-        let mut candidate_registry = self.registry.clone();
-        let disposition = candidate_registry.append_v2(proposal.clone())?;
-        if disposition != AppendDisposition::Inserted {
-            return Err(DurableProposalRegistryError::Corrupt);
-        }
-        let sequence = self.frame_digests.len() as u64 + 1;
-        let (frame, frame_digest) =
-            encode_frame(sequence, expected_predecessor_frame_digest, &proposal)?;
-        let frame_total = 4_u64
-            .checked_add(frame.len() as u64)
-            .ok_or(DurableProposalRegistryError::Capacity)?;
-        let expected_offset = self.file.metadata()?.len();
-        if expected_offset < HEADER_SIZE as u64
-            || expected_offset
-                .checked_add(frame_total)
-                .is_none_or(|length| length > MAX_FILE_BYTES)
-        {
-            return Err(DurableProposalRegistryError::Capacity);
-        }
-
-        self.poisoned = true;
-        self.file.seek(SeekFrom::End(0))?;
-        self.file
-            .write_all(&(frame.len() as u32).to_be_bytes())
-            .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
-        self.file
-            .write_all(&frame)
-            .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
-        self.file
-            .sync_data()
-            .map_err(|_| DurableProposalRegistryError::Indeterminate)?;
-
-        let receipt = DurableProposalAppendReceiptV1 {
-            registry_scope_digest: self.registry_scope_digest,
-            writer_fence: self.writer_fence,
-            sequence,
-            proposal_id: proposal.proposal_id.clone(),
-            proposal_digest: proposal.proposal_digest,
-            selected_artifact_digest: proposal.selected_artifact_digest,
-            window_id: proposal.window.window_id.clone(),
-            predecessor_frame_digest: expected_predecessor_frame_digest,
-            frame_digest,
-            disposition: AppendDisposition::Inserted,
-            authority: AuthorityPosture::DENY_ALL,
-        };
-        self.registry = candidate_registry;
-        self.frame_digests.push(frame_digest);
-        self.receipts.insert(proposal.proposal_id, receipt.clone());
-        self.poisoned = false;
-        Ok(receipt)
+        self.append_v2_after_admission(expected_predecessor_frame_digest, proposal, || Ok(()))
     }
 
     pub fn current_anchor(
@@ -910,3 +843,6 @@ impl<'a> ByteReader<'a> {
 #[cfg(test)]
 #[path = "durable_registry_tests.rs"]
 mod tests;
+
+#[path = "durable_registry_append.rs"]
+mod append;

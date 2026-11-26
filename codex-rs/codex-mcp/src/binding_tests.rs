@@ -144,6 +144,56 @@ async fn test_step(
 }
 
 #[tokio::test]
+async fn configured_hidden_call_retains_captured_authority_and_rejects_stale_preparation() {
+    let mut hidden = test_step(
+        "hidden",
+        AppToolApproval::Prompt,
+        /*supports_sandbox_state_meta*/ true,
+    )
+    .await;
+    let binding = Arc::get_mut(&mut hidden.step).expect("fixture owns its original binding");
+    let captured = binding
+        .calls
+        .get_mut(&(SERVER_NAME.to_string(), TOOL_NAME.to_string()))
+        .expect("original permitted call");
+    let mut meta = rmcp::model::MetaObject::new();
+    meta.insert("ui".to_string(), serde_json::json!({ "visibility": [] }));
+    captured.tool_info.tool.meta = Some(meta);
+
+    assert!(hidden.step.prepare_call(SERVER_NAME, TOOL_NAME).is_none());
+    let configured = hidden
+        .step
+        .prepare_configured_call(SERVER_NAME, TOOL_NAME)
+        .expect("explicit configuration can bind the permitted hidden tool");
+    assert_eq!(
+        (
+            configured.server_environment_id(),
+            configured.server_origin(),
+            configured.plugin_id(),
+            configured.tool_approval_mode(),
+        ),
+        (
+            "hidden-environment",
+            Some("https://hidden.example"),
+            Some("hidden-plugin"),
+            AppToolApproval::Prompt,
+        )
+    );
+    *hidden.tool_catalog_revision.write().await = 1;
+    let prepared = Arc::new(AtomicBool::new(false));
+    let preparation_effect = Arc::clone(&prepared);
+    let error = configured
+        .call_with_preparation(/*requested_timeout*/ None, || async move {
+            preparation_effect.store(true, Ordering::SeqCst);
+            Ok((None, None))
+        })
+        .await
+        .expect_err("catalog replacement rejects the original configured call");
+    assert!(error.to_string().contains("catalog changed"));
+    assert!(!prepared.load(Ordering::SeqCst));
+}
+
+#[tokio::test]
 async fn prepared_call_keeps_captured_connection_and_authority_after_refresh() -> anyhow::Result<()>
 {
     let old = test_step(

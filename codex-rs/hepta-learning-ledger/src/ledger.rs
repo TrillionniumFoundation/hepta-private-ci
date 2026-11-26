@@ -337,6 +337,9 @@ impl LearningLedger {
         match event {
             LedgerEvent::Decision(value) => self.validate_decision(value),
             LedgerEvent::RetrievalAssignment(value) => self.validate_retrieval_assignment(value),
+            LedgerEvent::RetrievalPrepared(value) => {
+                self.validate_retrieval_assignment(&value.wire_assignment())
+            }
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::PromptDelivery(value) => self.validate_prompt_delivery(value),
@@ -789,7 +792,7 @@ impl LearningLedger {
         self.record_kinds
             .insert(record_id, event_kind(&record.event));
         match &record.event {
-            LedgerEvent::RetrievalAssignment(_) => {}
+            LedgerEvent::RetrievalAssignment(_) | LedgerEvent::RetrievalPrepared(_) => {}
             LedgerEvent::Decision(value) => {
                 self.decisions.insert(
                     value.episode_id.clone(),
@@ -888,7 +891,8 @@ impl LearningLedger {
         match &record.event {
             LedgerEvent::Decision(_)
             | LedgerEvent::AuthenticatedDecisionV2(_)
-            | LedgerEvent::RetrievalAssignment(_) => true,
+            | LedgerEvent::RetrievalAssignment(_)
+            | LedgerEvent::RetrievalPrepared(_) => true,
             LedgerEvent::Outcome(outcome) => {
                 let indexed = self.outcomes.get(&outcome.outcome_id);
                 self.decisions
@@ -1009,6 +1013,10 @@ fn token_positions_digest(positions: &[u32]) -> Option<Digest32> {
 
 fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
     match event {
+        LedgerEvent::RetrievalPrepared(value) => {
+            value.validate_unexposed()?;
+            validate_support_digests(&LedgerEvent::RetrievalAssignment(value.wire_assignment()))?;
+        }
         LedgerEvent::RetrievalAssignment(value) => {
             for (name, digest) in [
                 ("retrieval cue", value.cue_digest),
@@ -1160,13 +1168,23 @@ fn require_digest(digest: Digest32, label: &'static str) -> Result<(), LedgerErr
 
 fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
     match event {
+        LedgerEvent::RetrievalPrepared(value) => {
+            value.validate_unexposed()?;
+            let mut shape = LedgerEvent::RetrievalAssignment(value.wire_assignment());
+            normalize_event(&mut shape)?;
+            let LedgerEvent::RetrievalAssignment(assignment) = shape else {
+                return Err(LedgerError::InternalInvariant);
+            };
+            *value = crate::RetrievalPreparationFactV1::from_wire_assignment(assignment);
+        }
         LedgerEvent::RetrievalAssignment(assignment) => {
             if assignment.enumerated_candidate_digests.len() > MAX_RETRIEVAL_CANDIDATES {
                 return Err(LedgerError::RetrievalCandidateLimitExceeded);
             }
             // Every index refers to an identity, not its pre-normalization slot.
-            // Reorder the bounded identity vector and remap all three index sets
-            // together, so sorting cannot change which memory was delivered.
+            // Reorder the bounded identity vector and remap both canonical sets
+            // plus the ordered delivered sequence. The delivered vector's offset
+            // is the serialized response position and must not be sorted.
             let original = &assignment.enumerated_candidate_digests;
             let mut order: Vec<usize> = (0..original.len()).collect();
             order.sort_by_key(|index| original[*index]);
@@ -1201,7 +1219,11 @@ fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
             }
             assignment.legal_candidate_indices.sort_unstable();
             assignment.selected_candidate_indices.sort_unstable();
-            assignment.delivered_candidate_indices.sort_unstable();
+            let delivered_unique = assignment
+                .delivered_candidate_indices
+                .iter()
+                .copied()
+                .collect::<BTreeSet<_>>();
             if assignment
                 .legal_candidate_indices
                 .windows(2)
@@ -1210,10 +1232,7 @@ fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
                     .selected_candidate_indices
                     .windows(2)
                     .any(|pair| pair[0] == pair[1])
-                || assignment
-                    .delivered_candidate_indices
-                    .windows(2)
-                    .any(|pair| pair[0] == pair[1])
+                || delivered_unique.len() != assignment.delivered_candidate_indices.len()
             {
                 return Err(LedgerError::DuplicateRetrievalIndex);
             }
@@ -1270,6 +1289,7 @@ fn receipt(record: &LedgerRecord, disposition: AppendDisposition) -> AppendRecei
 #[derive(Clone, Copy)]
 enum EventKind {
     RetrievalAssignment,
+    RetrievalPrepared,
     PromptDelivery,
     Decision,
     Outcome,
@@ -1294,6 +1314,7 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::PromptDelivery => 8,
         // 0..=8 are reserved for the canonical decision/outcome/prompt formats.
         EventKind::RetrievalAssignment => 9,
+        EventKind::RetrievalPrepared => 10,
     }
 }
 
@@ -1301,6 +1322,7 @@ fn event_kind(event: &LedgerEvent) -> u8 {
     let kind = match event {
         LedgerEvent::Decision(_) => EventKind::Decision,
         LedgerEvent::RetrievalAssignment(_) => EventKind::RetrievalAssignment,
+        LedgerEvent::RetrievalPrepared(_) => EventKind::RetrievalPrepared,
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
         LedgerEvent::PromptDelivery(_) => EventKind::PromptDelivery,
@@ -1324,6 +1346,9 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
     match event {
         LedgerEvent::Decision(value) => push_decision(&mut bytes, value),
         LedgerEvent::RetrievalAssignment(value) => push_retrieval_assignment(&mut bytes, value),
+        LedgerEvent::RetrievalPrepared(value) => {
+            push_retrieval_assignment(&mut bytes, &value.wire_assignment())
+        }
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
         LedgerEvent::PromptDelivery(value) => push_prompt_delivery(&mut bytes, value),

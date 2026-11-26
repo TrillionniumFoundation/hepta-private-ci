@@ -355,7 +355,7 @@ fn worker() {
             .unwrap_or_else(|error| panic!("selected immutable load: {error:?}"));
             let current_for_use = verify_current(&request);
             let bytes = candidate
-                .with_current(current_for_use, |bytes| bytes.to_vec())
+                .with_current(current_for_use, <[u8]>::to_vec)
                 .unwrap_or_else(|error| panic!("final-use CURRENT: {error:?}"));
             let model = LoadedTabularOperatorV1::from_pinned_payload(
                 &bytes,

@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 use std::path::Path;
@@ -37,9 +38,9 @@ use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
 use codex_hepta_agentd::AgentdClient;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
 use core_test_support::responses;
 use serde_json::Value;
 use tokio::time::sleep;

@@ -957,13 +957,34 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
     let output_item = requests[1].function_call_output(call_id);
+    let attempted_call = requests[1]
+        .input()
+        .into_iter()
+        .find(|item| item["type"] == "function_call" && item["call_id"] == call_id)
+        .expect("the follow-up retains the original model-attempted call");
     assert_eq!(
-        output_item["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        json!([{
-            "name": format!("{mcp_namespace}__echo"),
-            "arguments": { "message": RMCP_ECHO_MESSAGE },
-        }]),
-        "a blocked MCP request must still retain the original model-attempted call",
+        json!({
+            "call_id": attempted_call["call_id"],
+            "namespace": attempted_call["namespace"],
+            "name": attempted_call["name"],
+            "arguments": attempted_call["arguments"],
+        }),
+        json!({
+            "call_id": call_id,
+            "namespace": mcp_namespace,
+            "name": "echo",
+            "arguments": arguments,
+        }),
+        "blocking execution keeps the original namespaced model attempt",
+    );
+    assert!(
+        requests
+            .iter()
+            .all(|request| request.input().iter().all(|item| {
+                item.get("internal_chat_message_metadata_passthrough")
+                    .is_none()
+            })),
+        "custom Responses providers omit harness-owned item metadata",
     );
     let output = output_item
         .get("output")

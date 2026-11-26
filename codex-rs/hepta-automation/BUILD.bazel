@@ -5,7 +5,9 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 codex_rust_crate(
     name = "hepta-automation",
     compile_data = glob(["migrations/**"]),
+    crate_features = ["runtime"],
     crate_name = "codex_hepta_automation",
+    integration_compile_data_extra = glob(["migrations/**"]),
 )
 
 # Keep structural qualification out of the product library's feature set.
@@ -15,7 +17,10 @@ rust_library(
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
     compile_data = glob(["migrations/**"]),
-    crate_features = ["taskflow-structural-qualification"],
+    crate_features = [
+        "runtime",
+        "taskflow-structural-qualification",
+    ],
     crate_name = "codex_hepta_automation",
     crate_root = "src/lib.rs",
     edition = "2024",
@@ -26,7 +31,10 @@ rust_library(
 rust_test(
     name = "hepta-automation-taskflow-kernel-qualification-test-bin",
     srcs = ["tests/taskflow_kernel.rs"],
-    crate_features = ["taskflow-structural-qualification"],
+    crate_features = [
+        "runtime",
+        "taskflow-structural-qualification",
+    ],
     crate_name = "taskflow_kernel_qualification",
     crate_root = "tests/taskflow_kernel.rs",
     edition = "2024",
@@ -48,7 +56,10 @@ workspace_root_test(
 rust_test(
     name = "hepta-automation-taskflow-step-qualification-test-bin",
     srcs = ["tests/taskflow_step.rs"],
-    crate_features = ["taskflow-structural-qualification"],
+    crate_features = [
+        "runtime",
+        "taskflow-structural-qualification",
+    ],
     crate_name = "taskflow_step_qualification",
     crate_root = "tests/taskflow_step.rs",
     edition = "2024",
@@ -75,4 +86,11 @@ exports_files(
         "tests/automation.rs",
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
+
+# Exact historical migrations used by normal Agentd product-entry upgrade tests.
+filegroup(
+    name = "migration_test_inputs",
+    srcs = glob(["migrations/**"]),
+    visibility = ["//codex-rs/hepta-agentd:__pkg__"],
 )

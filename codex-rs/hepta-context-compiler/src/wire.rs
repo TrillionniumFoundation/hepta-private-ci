@@ -77,6 +77,17 @@ impl ContextCompilationWireCodec {
             }
         }
 
+        let selected_count =
+            value.trusted_instruction_ids.len() + value.untrusted_evidence_ids.len();
+        if value.used_tokens > crate::MAX_TOKENS
+            || value.used_tokens < selected_count as u64
+            || (selected_count == 0 && value.used_tokens != 0)
+        {
+            return Err(SchemaCodecError::Rejected(
+                "invalid context token accounting",
+            ));
+        }
+
         let digest = Digest32::from_str(&value.context_digest)
             .map_err(|_| SchemaCodecError::Rejected("invalid context digest"))?;
         if digest.is_zero() {

@@ -6,6 +6,11 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_port_material_v1;
+pub use canonical_port_material_v1::MAX_CANONICAL_PORT_INPUT_MATERIAL_BYTES_V1;
+pub use canonical_port_material_v1::decode_canonical_port_input_material_v1;
+pub use canonical_port_material_v1::encode_canonical_port_input_material_v1;
+
 mod canonical;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
@@ -85,6 +90,7 @@ pub use plasticity_product::PlasticityWriterStateV1;
 pub use plasticity_product::no_change_disposition_signing_payload_v1;
 pub use plasticity_product::plasticity_admission_signing_payload_v1;
 pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
+pub use plasticity_product::propose_authenticated_parameter_plasticity_with_final_time_v1;
 
 mod topology_canary_product;
 mod topology_product;
@@ -99,6 +105,7 @@ pub use topology_product::TopologyPlasticityProductErrorV1;
 pub use topology_product::TopologyPlasticityProductReceiptV1;
 pub use topology_product::TopologyPlasticityProductRequestV1;
 pub use topology_product::propose_authenticated_topology_plasticity_v1;
+pub use topology_product::propose_authenticated_topology_plasticity_with_final_time_v1;
 pub use topology_product::topology_admission_signing_payload_v1;
 pub use topology_product::topology_evaluation_signing_payload_v1;
 pub use topology_product::topology_generation_signing_payload_v1;
@@ -331,3 +338,11 @@ mod vertical_tests;
 #[cfg(test)]
 #[path = "plasticity_product_tests.rs"]
 mod plasticity_product_tests;
+
+pub use plasticity_product::MAX_PARAMETER_PLASTICITY_MATERIAL_BYTES_V1;
+pub use plasticity_product::decode_parameter_plasticity_receipt_v1;
+pub use plasticity_product::decode_parameter_plasticity_request_v1;
+pub use plasticity_product::encode_parameter_plasticity_receipt_v1;
+pub use plasticity_product::encode_parameter_plasticity_request_v1;
+
+pub use plasticity_product::materialize_completed_parameter_receipt_v1;

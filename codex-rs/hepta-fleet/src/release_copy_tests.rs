@@ -2,6 +2,15 @@ use super::*;
 use codex_hepta_paths::HeptaFleetRoot;
 use pretty_assertions::assert_eq;
 
+pub(super) fn trace_io_failure(operation: &str, path: &Path, error: &std::io::Error) {
+    eprintln!(
+        "release I/O failed: operation={operation}, path={}, kind={:?}, errno={:?}, error={error:?}",
+        path.display(),
+        error.kind(),
+        error.raw_os_error(),
+    );
+}
+
 #[test]
 fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
 -> Result<(), Box<dyn std::error::Error>> {

@@ -1,5 +1,5 @@
-use codex_hepta_control_plane::RuntimeModuleStateClassV1;
-use codex_hepta_fleet::RuntimeModuleCatalogV1;
+use codex_hepta_agent_components::control_plane::RuntimeModuleStateClassV1;
+use codex_hepta_agent_components::fleet::RuntimeModuleCatalogV1;
 
 use super::parse;
 
