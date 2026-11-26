@@ -81,7 +81,9 @@ REFUSAL_HARNESS_CUSTODY_INDEX = "qa/repository-consolidation/20261126/refusal-ha
 GENERATED_DEPTH6_DIFF_CUSTODY_INDEX = "qa/repository-consolidation/20261126/generated-diff-custody/raw-evidence-storage.json"
 RETAINED_CONSOLE_PARTS_CUSTODY_INDEX = "qa/repository-consolidation/20261126/retained-console-custody/raw-evidence-storage.json"
 ARCHIVED_VALIDATION_READBACKS_INDEX = "qa/repository-consolidation/20261126/archived-validation-readbacks/raw-evidence-storage.json"
+ARCHIVED_DEPENDENCY_DIAGNOSTICS_INDEX = "qa/repository-consolidation/20261126/archived-dependency-diagnostics/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    ARCHIVED_DEPENDENCY_DIAGNOSTICS_INDEX: "6db8aa6375c4955da92c69b166b10dc975cac283cb499a6cd8435ea38407f131",
     ARCHIVED_VALIDATION_READBACKS_INDEX: "0b2fe77a81623b8b4b921f35a7af1b78439fcbe7bd08d41593c5958d563a2b70",
     RETAINED_CONSOLE_PARTS_CUSTODY_INDEX: "0e4bb9cbc89ac82daff386e1ca1c97d77ca5de558fb794dcf604a8317c287462",
     GENERATED_DEPTH6_DIFF_CUSTODY_INDEX: "aac592f88085868a77e797ddda119d18317658892821611a2e029ff1a3422057",
