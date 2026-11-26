@@ -1707,7 +1707,6 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
     Ok(canonical)
 }
 
-#[cfg(any(not(unix), test))]
 fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
     #[cfg(unix)]
     {
