@@ -115,6 +115,80 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(ci.select_packages([], self.graph, self.graph)["packages"], [])
 
 
+class ShardedExecutionTests(unittest.TestCase):
+    def test_all_reverse_consumers_are_covered_exactly_once(self):
+        source = {
+            "packages": ["agentd", "codec", "executor", "infer", "ledger", "wire", "worker"],
+            "full_workspace": False,
+            "changed_packages": ["infer"],
+            "reasons": [],
+        }
+        shards = [ci.shard_execution_plan(source, index=i, count=4) for i in range(4)]
+        self.assertEqual(source["packages"], [
+            "agentd", "codec", "executor", "infer", "ledger", "wire", "worker"
+        ])
+        self.assertEqual(
+            sorted(name for plan in shards for name in plan["packages"]),
+            source["packages"],
+        )
+        self.assertEqual(
+            len(set(name for plan in shards for name in plan["packages"])),
+            len(source["packages"]),
+        )
+        self.assertEqual({p["shard"]["count"] for p in shards}, {4})
+        self.assertEqual(
+            {p["shard"]["full_selection_sha256"] for p in shards},
+            {shards[0]["shard"]["full_selection_sha256"]},
+        )
+        self.assertTrue(all(p["full_workspace"] is False for p in shards))
+        for shard in shards:
+            self.assertEqual(
+                ci.execution_command(shard, "test"),
+                ["just", "test", "--locked", *sum(
+                    (["-p", package] for package in shard["packages"]), []
+                )],
+            )
+
+    def test_conservative_full_workspace_fallback_is_sharded_not_waived(self):
+        source = {
+            "packages": ["agentd", "codec", "executor", "infer", "ledger"],
+            "full_workspace": True,
+            "changed_packages": [],
+            "reasons": ["shared CI input: scripts/hepta_ci_dependencies.py"],
+        }
+        shards = [ci.shard_execution_plan(source, index=i, count=4) for i in range(4)]
+        self.assertEqual(
+            sorted(p for shard in shards for p in shard["packages"]),
+            source["packages"],
+        )
+        self.assertTrue(all(shard["shard"]["original_full_workspace"] for shard in shards))
+        self.assertTrue(all(shard["reasons"] == source["reasons"] for shard in shards))
+        self.assertTrue(all("--workspace" not in ci.execution_command(shard, "test")
+                            for shard in shards))
+
+    def test_missing_or_duplicate_tests_cannot_enter_the_shard_planner(self):
+        for bad in [
+            ["b", "a"], ["a", "a"], ["a", "b", "a"]
+        ]:
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                ci.shard_execution_plan({"packages": bad, "full_workspace": False},
+                                        index=0, count=2)
+        source = {"packages": ["a", "b"], "full_workspace": False}
+        for index, count in [(-1, 4), (4, 4), (0, 0), (0, 9)]:
+            with self.subTest(index=index, count=count), self.assertRaises(ValueError):
+                ci.shard_execution_plan(source, index=index, count=count)
+        with self.assertRaises(ValueError):
+            ci.shard_execution_plan(source, index=True, count=4)
+
+    def test_empty_shards_do_not_invent_successful_test_invocations(self):
+        source = {"packages": ["neuron"], "full_workspace": False}
+        outputs = [ci.shard_execution_plan(source, index=i, count=4) for i in range(4)]
+        self.assertEqual([p["packages"] for p in outputs], [["neuron"], [], [], []])
+        self.assertIsNone(ci.execution_command(outputs[1], "test"))
+        self.assertEqual(ci.execution_command(outputs[0], "test"),
+                         ["just", "test", "--locked", "-p", "neuron"])
+
+
 class GitGraphTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -200,6 +274,28 @@ renamed = { package = "leaf", path = "leaf" }
         clean = subprocess.run(command + ["--tested", self.base], capture_output=True)
         self.assertEqual(clean.returncode, 0, clean.stderr)
         self.assertEqual(json.loads(clean.stdout)["packages"], [])
+        # A caller cannot ask for an unpaired or unsupported shard action.
+        for bad_flags in (
+            ["--test-shard-index", "0"],
+            ["--test-shard-index", "0", "--test-shard-count", "4"],
+            ["--action", "test", "--test-shard-index", "4", "--test-shard-count", "4"],
+        ):
+            denied = subprocess.run(
+                command + ["--tested", self.base, *bad_flags],
+                capture_output=True,
+            )
+            self.assertNotEqual(denied.returncode, 0)
+        valid = subprocess.run(
+            command + [
+                "--tested", self.base, "--action", "test",
+                "--test-shard-index", "0", "--test-shard-count", "4",
+            ],
+            capture_output=True,
+        )
+        self.assertEqual(valid.returncode, 0, valid.stderr)
+        exact = json.loads(valid.stdout)
+        self.assertEqual(exact["shard"]["count"], 4)
+        self.assertEqual(exact["packages"], [])
         self.write("codex-rs/leaf/src/lib.rs", "// dirty\n")
         dirty = subprocess.run(command + ["--tested", self.base], capture_output=True)
         self.assertNotEqual(dirty.returncode, 0)
