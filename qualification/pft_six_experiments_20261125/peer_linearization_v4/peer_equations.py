@@ -24,6 +24,157 @@ def _array(value):
     return result
 
 
+def _geometry(gram, moment, square, observation_count):
+    """Check diagonally equilibrated geometry without spectral projection.
+
+    Congruence scaling preserves PSD and rank while separating feature and
+    residual energy scales. Unresolved ranges or underflow are refused.
+    """
+    dimension = len(moment)
+    require(square != 0 or not bool(np.any(moment)),
+            "zero residual energy requires a zero moment")
+    require(bool(np.any(gram)) or not bool(np.any(moment)),
+            "zero Gram requires a zero moment")
+    joint = np.block([[gram, moment[:, None]], [moment[None, :], np.array([[square]])]])
+    diagonal = np.diag(joint)
+    require(bool((diagonal >= 0).all()),
+            "invalid sufficient-equation geometry: negative diagonal (not positive definite or semidefinite)")
+    zero = diagonal == 0
+    require(not bool(np.any(joint[zero, :])) and not bool(np.any(joint[:, zero])),
+            "invalid sufficient-equation range: zero diagonal requires a zero row and column")
+    active = np.flatnonzero(~zero)
+    if not len(active):
+        return
+    try:
+        roots = np.sqrt(diagonal[active])
+        block = joint[np.ix_(active, active)]
+        larger = np.maximum(roots[:, None], roots[None, :])
+        smaller = np.minimum(roots[:, None], roots[None, :])
+        with np.errstate(over="raise", invalid="raise", divide="raise", under="ignore"):
+            intermediate = block / larger
+            normalized = intermediate / smaller
+        require(not bool(np.any((block != 0) & (intermediate == 0)))
+                and not bool(np.any((intermediate != 0) & (normalized == 0))),
+                "sufficient-equation congruence underflow is numerically unresolved")
+        require(bool(np.isfinite(normalized).all()), "nonfinite sufficient-equation correlation")
+        entry_tolerance = 64 * np.finfo(float).eps * len(active)
+        require(bool((np.abs(normalized) <= 1. + entry_tolerance).all()),
+                "invalid sufficient-equation geometry: Cauchy-Schwarz bound")
+        symmetric = .5 * normalized + .5 * normalized.T
+        norm = float(np.linalg.norm(symmetric, ord=2))
+        tolerance = 64 * np.finfo(float).eps * len(active) * norm
+        eigenvalues = np.linalg.eigvalsh(symmetric)
+        require(float(np.max(np.abs(normalized - normalized.T))) <= tolerance
+                and float(eigenvalues.min()) >= -tolerance
+                and int(np.count_nonzero(eigenvalues > tolerance)) <= observation_count,
+                "invalid sufficient-equation geometry")
+        gram_indices = np.flatnonzero(active < dimension)
+        if len(gram_indices):
+            local = symmetric[np.ix_(gram_indices, gram_indices)]
+            values, vectors = np.linalg.eigh(local)
+            threshold = (64 * np.finfo(float).eps * len(gram_indices)
+                         * float(np.max(np.abs(values))))
+            require(float(values.min()) >= -threshold,
+                    "invalid sufficient-equation Gram geometry")
+            if square > 0:
+                standardized_moment = normalized[gram_indices, -1]
+                moment_scale = float(np.max(np.abs(standardized_moment)))
+                if moment_scale:
+                    null = vectors[:, values <= threshold]
+                    direction = standardized_moment / moment_scale
+                    range_error = float(np.linalg.norm(null.T @ direction))
+                    range_tolerance = (64 * np.finfo(float).eps * len(gram_indices)
+                                       * float(np.linalg.norm(direction)))
+                    require(range_error <= range_tolerance,
+                            "moment outside numerically resolved Gram range")
+    except (FloatingPointError, np.linalg.LinAlgError) as error:
+        raise ValueError("sufficient-equation geometry is numerically unresolved") from error
+
+
+def _solve_and_measure(gram, moment, square, ridge):
+    """Solve the same quadratic only when its FP64 geometry is resolved.
+
+    Symmetrization removes the skew part, which contributes zero to the
+    quadratic. No eigenvalue is clipped and no objective coefficient changes.
+    """
+    dimension = len(moment)
+    require(bool(np.isfinite(gram).all() and np.isfinite(moment).all())
+            and math.isfinite(square), "nonfinite aggregate sufficient equations")
+    try:
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            symmetric = .5 * gram + .5 * gram.T
+            operator = symmetric + ridge * np.eye(dimension)
+            require(bool(np.isfinite(operator).all()), "nonfinite regularized operator")
+            scale = float(np.max(np.abs(operator)))
+            require(scale > 0, "zero regularized operator")
+            normalized = operator / scale
+            values = np.linalg.eigvalsh(normalized)
+            spectral_floor = 64 * np.finfo(float).eps * dimension * float(np.max(np.abs(values)))
+            require(float(values.min()) > spectral_floor,
+                    "regularized operator is not reliably positive definite")
+            factor = np.linalg.cholesky(normalized)
+            right = moment / scale
+            delta = np.linalg.solve(factor.T, np.linalg.solve(factor, right))
+            require(bool(np.isfinite(right).all() and np.isfinite(delta).all()),
+                    "nonfinite peer normal-equation solution")
+            error_norm = math.hypot(*(normalized @ delta - right))
+            right_norm = math.hypot(*right)
+            require(math.isfinite(error_norm) and math.isfinite(right_norm),
+                    "unrepresentable normal-equation residual")
+            # Algebraically the original ||A delta-b|| / max(1, ||b||),
+            # without squaring large entries or forming an overflowing 1/scale.
+            residual = (error_norm / max(1. / scale, right_norm) if scale >= 1.
+                        else (scale * error_norm) / max(1., scale * right_norm))
+            require(math.isfinite(residual) and residual <= 1e-10,
+                    "peer normal-equation solve failed its fixed residual gate")
+            gram_scale = float(np.max(np.abs(symmetric)))
+            if gram_scale:
+                normalized_eigenvalues = np.linalg.eigvalsh(symmetric / gram_scale)
+                rank_tolerance = 64 * np.finfo(float).eps * dimension * max(0., float(normalized_eigenvalues[-1]))
+                rank = int(np.count_nonzero(normalized_eigenvalues > rank_tolerance))
+                eigenvalues = normalized_eigenvalues * gram_scale
+                tolerance = rank_tolerance * gram_scale
+            else:
+                eigenvalues, tolerance, rank = np.zeros(dimension), 0., 0
+            objective_scale = max(gram_scale, float(np.max(np.abs(moment))), square, ridge)
+            scaled_gram = symmetric / objective_scale
+            scaled_moment = moment / objective_scale
+            constant, scaled_ridge = square / objective_scale, ridge / objective_scale
+            require(not bool(np.any((symmetric != 0) & (scaled_gram == 0)))
+                    and not bool(np.any((moment != 0) & (scaled_moment == 0)))
+                    and (square == 0 or constant != 0) and scaled_ridge > 0,
+                    "quadratic objective coefficient normalization underflow")
+            quadratic = float(delta @ scaled_gram @ delta)
+            linear = float(delta @ scaled_moment)
+            data_normalized = .5 * math.fsum((quadratic, -2 * linear, constant))
+            regularized_delta = math.sqrt(scaled_ridge) * delta
+            require(not bool(np.any((delta != 0) & (regularized_delta == 0))),
+                    "quadratic ridge-factor underflow")
+            penalty_normalized = .5 * float(regularized_delta @ regularized_delta)
+            require(penalty_normalized > 0 or not bool(np.any(delta)),
+                    "quadratic ridge-energy underflow")
+            regularized_normalized = data_normalized + penalty_normalized
+            objective_tolerance = (128 * np.finfo(float).eps * dimension
+                * math.fsum((abs(quadratic), 2 * abs(linear), abs(constant), penalty_normalized)))
+            require(data_normalized >= 0 and regularized_normalized >= 0
+                    and regularized_normalized <= .5 * constant + objective_tolerance,
+                    "quadratic objective is negative or its minimum is numerically unresolved")
+            require(data_normalized > 0 or not bool(np.any(delta)),
+                    "zero quadratic residual at a nonzero ridge solution is numerically unresolved")
+            data_objective = data_normalized * objective_scale
+            regularized_objective = regularized_normalized * objective_scale
+            require((data_normalized == 0 or data_objective > 0)
+                    and (regularized_normalized == 0 or regularized_objective > 0),
+                    "quadratic objective restoration underflow")
+            require(bool(np.isfinite(eigenvalues).all()) and math.isfinite(tolerance)
+                    and all(math.isfinite(value) for value in
+                            (objective_tolerance, data_objective, regularized_objective)),
+                    "nonfinite aggregate diagnostics or objective")
+    except (FloatingPointError, OverflowError, np.linalg.LinAlgError) as error:
+        raise ValueError("aggregate quadratic solve is numerically unresolved") from error
+    return delta, residual, eigenvalues, tolerance, rank, data_objective, regularized_objective
+
+
 def _common(common):
     fields(common, ("schema", "round", "roster", "profile_sha256", "candidate_sha256",
                     "source_binding_sha256", "runtime", "linearization", "objective", "ridge"),
@@ -127,34 +278,25 @@ def solve_common(common, contributions):
                 "contribution dimensions differ")
         require(type(square) in (int, float) and math.isfinite(square) and square >= 0,
                 "nonnegative finite residual square required")
-        joint = np.block([[gram, moment[:, None]], [moment[None, :], np.array([[square]])]])
-        tolerance = 64 * np.finfo(float).eps * (dimension + 1) * max(1., float(np.linalg.norm(joint, ord=2)))
-        eigenvalues = np.linalg.eigvalsh((joint + joint.T) / 2)
-        require(float(np.max(np.abs(gram - gram.T))) <= tolerance
-                and float(eigenvalues.min()) >= -tolerance
-                and int(np.count_nonzero(eigenvalues > tolerance)) <= body["observation_count"],
-                "invalid sufficient-equation geometry")
+        _geometry(gram, moment, square, body["observation_count"])
         seen.add(node)
         batches.add(body["batch_sha256"])
         validated.append((node, gram, moment, square, envelope))
     require(seen == set(common["roster"]), "incomplete peer set")
     gram, moment, square, count = np.zeros((dimension, dimension)), np.zeros(dimension), 0., 0
     receipts = []
-    for node, local_gram, local_moment, local_square, envelope in sorted(validated, key=lambda row: row[0]):
-        gram += local_gram
-        moment += local_moment
-        square += local_square
-        count += envelope["body"]["observation_count"]
-        receipts.append({"node": node, "sha256": envelope["sha256"]})
-    operator = gram + common["ridge"] * np.eye(dimension)
-    delta = np.linalg.solve(operator, moment)
-    residual = float(np.linalg.norm(operator @ delta - moment) / max(1., np.linalg.norm(moment)))
-    require(bool(np.isfinite(delta).all()) and residual <= 1e-10,
-            "peer normal-equation solve failed its fixed residual gate")
-    eigenvalues = np.linalg.eigvalsh((gram + gram.T) / 2)
-    tolerance = 64 * np.finfo(float).eps * dimension * max(0., float(eigenvalues[-1]))
-    rank = int(np.count_nonzero(eigenvalues > tolerance))
-    data_objective = float(.5 * (delta @ gram @ delta - 2 * delta @ moment + square))
+    try:
+        with np.errstate(over="raise", invalid="raise"):
+            for node, local_gram, local_moment, local_square, envelope in sorted(validated, key=lambda row: row[0]):
+                gram += local_gram
+                moment += local_moment
+                square += local_square
+                count += envelope["body"]["observation_count"]
+                receipts.append({"node": node, "sha256": envelope["sha256"]})
+    except FloatingPointError as error:
+        raise ValueError("aggregate sufficient equations overflow") from error
+    delta, residual, eigenvalues, tolerance, rank, data_objective, regularized_objective = _solve_and_measure(
+        gram, moment, square, common["ridge"])
     return {
         "schema": "hepta.smallhcsn.aggregate-step.v1", "common_sha256": common_sha256,
         "parent_state_sha256": common["linearization"]["parent_state_sha256"],
@@ -165,6 +307,6 @@ def solve_common(common, contributions):
         "gram_rank_tolerance": tolerance, "gram_eigenvalues": eigenvalues.tolist(),
         "rank_method": "Gram eigenvalues; less reliable than original-Jacobian SVD under ill conditioning",
         "objective_at_zero": .5 * square, "linearized_data_objective": data_objective,
-        "regularized_objective": data_objective + .5 * common["ridge"] * float(delta @ delta),
+        "regularized_objective": regularized_objective,
         "actual_nonlinear_improvement_measured": False, "production_adoption": False,
     }
