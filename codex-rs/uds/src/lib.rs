@@ -10,6 +10,11 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncWrite;
 use tokio::io::ReadBuf;
 
+mod owner_local;
+pub use owner_local::OwnerLocalIncoming;
+pub use owner_local::OwnerLocalListener;
+pub use owner_local::OwnerLocalStream;
+
 /// Creates `socket_dir` if needed and restricts it to the current user where
 /// the platform exposes Unix permissions.
 pub async fn prepare_private_socket_directory(socket_dir: impl AsRef<Path>) -> IoResult<()> {
