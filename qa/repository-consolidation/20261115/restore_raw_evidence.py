@@ -80,7 +80,9 @@ AGE_VERBATIM_TESTKIT_FIXTURES_INDEX = "qa/repository-consolidation/20261126/age-
 REFUSAL_HARNESS_CUSTODY_INDEX = "qa/repository-consolidation/20261126/refusal-harness-custody/raw-evidence-storage.json"
 GENERATED_DEPTH6_DIFF_CUSTODY_INDEX = "qa/repository-consolidation/20261126/generated-diff-custody/raw-evidence-storage.json"
 RETAINED_CONSOLE_PARTS_CUSTODY_INDEX = "qa/repository-consolidation/20261126/retained-console-custody/raw-evidence-storage.json"
+ARCHIVED_VALIDATION_READBACKS_INDEX = "qa/repository-consolidation/20261126/archived-validation-readbacks/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    ARCHIVED_VALIDATION_READBACKS_INDEX: "0b2fe77a81623b8b4b921f35a7af1b78439fcbe7bd08d41593c5958d563a2b70",
     RETAINED_CONSOLE_PARTS_CUSTODY_INDEX: "0e4bb9cbc89ac82daff386e1ca1c97d77ca5de558fb794dcf604a8317c287462",
     GENERATED_DEPTH6_DIFF_CUSTODY_INDEX: "aac592f88085868a77e797ddda119d18317658892821611a2e029ff1a3422057",
     REFUSAL_HARNESS_CUSTODY_INDEX: "5c25beccbe41d17dc8b0da1541fcbf8e5564cf815329b88bafe62d922702f74a",
