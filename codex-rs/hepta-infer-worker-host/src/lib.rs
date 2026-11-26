@@ -40,6 +40,8 @@ pub mod model_manifest;
 pub mod final_use_authorizer;
 pub mod governed_app_server;
 pub mod native_app_server;
+/// Durable evidence adapter for signed terminal/usage reconciliation.
+pub mod verified_reconciliation;
 
 /// Closed-world public capability split for `inference.worker`.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
