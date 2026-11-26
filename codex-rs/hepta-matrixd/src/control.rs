@@ -37,6 +37,7 @@ use tokio::io::BufReader;
 #[cfg(test)]
 use tokio::sync::Mutex;
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -44,7 +45,7 @@ use crate::MatrixBridgeError;
 use crate::RemoteMatrixAppServerTransport;
 
 const CONNECTION_CAPACITY: usize = 32;
-const IO_TIMEOUT: Duration = Duration::from_secs(2);
+const IO_TIMEOUT: Duration = Duration::from_secs(/*secs*/ 2);
 const MAX_ERROR_MESSAGE_CHARS: usize = 512;
 
 pub(crate) type MatrixControlFuture<'a> =
@@ -114,11 +115,11 @@ impl MatrixdConnectionState {
     }
 
     pub(crate) fn set_fenced(&self) {
-        self.fenced.store(true, Ordering::Release);
+        self.fenced.store(/*val*/ true, Ordering::Release);
     }
 
     pub(crate) fn set_draining(&self) {
-        self.draining.store(true, Ordering::Release);
+        self.draining.store(/*val*/ true, Ordering::Release);
     }
 
     fn health(&self) -> MatrixdHealth {
@@ -171,7 +172,7 @@ impl MatrixdControlState {
             store,
             transport,
             connections,
-            mutation_gate: Semaphore::new(1),
+            mutation_gate: Semaphore::new(/*permits*/ 1),
         })
     }
 
@@ -233,12 +234,14 @@ impl MatrixdControlState {
                     .acquire()
                     .await
                     .map_err(|_| MatrixdControlRequestError::CorruptState)?;
+                self.require_live_mutation()?;
                 let snapshot = self.store.control_snapshot().await?;
                 if snapshot.active_thread_id.as_deref() != Some(thread_id.as_str())
                     || snapshot.active_turn_id.as_deref() != Some(turn_id.as_str())
                 {
                     return Err(MatrixdControlRequestError::Conflict);
                 }
+                self.require_live_mutation()?;
                 self.transport.interrupt_turn(thread_id, turn_id).await?;
                 Ok(MatrixdPayload::Accepted)
             }
@@ -251,6 +254,7 @@ impl MatrixdControlState {
                     .acquire()
                     .await
                     .map_err(|_| MatrixdControlRequestError::CorruptState)?;
+                self.require_live_mutation()?;
                 let now_ms = system_time_ms()?;
                 let pending = self
                     .store
@@ -272,32 +276,34 @@ impl MatrixdControlState {
                     .await?;
                 let request_id = serde_json::from_str::<RequestId>(&record.request_id_json)
                     .map_err(|_| MatrixdControlRequestError::CorruptState)?;
+                // Store awaits and queued control requests must not freeze an
+                // observed lifecycle fence before the App Server effect.
+                self.require_live_mutation()?;
                 self.transport
                     .resolve_approval(request_id, record.request_kind, decision)
                     .await?;
-                let completion = self
-                    .store
-                    .complete_pending_approval_resolution(
-                        &approval_key,
-                        self.identity.fence.attached_agent_generation,
-                        &self.identity.fence.process_incarnation,
-                        decision,
-                        system_time_ms()?,
-                    )
-                    .await;
-                match completion {
-                    Ok(_) => {}
-                    Err(MatrixDurableError::Conflict)
-                        if self.store.pending_approval(&approval_key).await?.is_none() =>
-                    {
-                        // The authoritative `serverRequest/resolved` event may
-                        // win the race with this local completion after App
-                        // Server accepted the response. Absence is terminal in
-                        // that exact post-send window, not a failed resolve.
-                    }
-                    Err(error) => return Err(error.into()),
-                }
+                // Transport success acknowledges a local socket write, not
+                // App Server resolution. Preserve the exact decision until
+                // its authoritative serverRequest/resolved notification.
                 Ok(MatrixdPayload::Accepted)
+            }
+        }
+    }
+
+    fn require_live_mutation(&self) -> Result<(), MatrixdControlRequestError> {
+        Self::require_mutation_lifecycle(self.connections.health().lifecycle)
+    }
+
+    fn require_mutation_lifecycle(
+        lifecycle: MatrixdLifecycle,
+    ) -> Result<(), MatrixdControlRequestError> {
+        match lifecycle {
+            MatrixdLifecycle::Ready => Ok(()),
+            MatrixdLifecycle::Fenced | MatrixdLifecycle::Draining => {
+                Err(MatrixdControlRequestError::LifecycleFenced)
+            }
+            MatrixdLifecycle::Starting | MatrixdLifecycle::Syncing | MatrixdLifecycle::Degraded => {
+                Err(MatrixdControlRequestError::NotReady)
             }
         }
     }
@@ -306,6 +312,11 @@ impl MatrixdControlState {
         let now_ms = system_time_ms()?;
         let metrics = self.store.queue_metrics(now_ms).await?;
         let control = self.store.control_snapshot().await?;
+        let resync_required = !self
+            .store
+            .redaction_quarantines(/*limit*/ 1)
+            .await?
+            .is_empty();
         let inbox_depth = metrics
             .pending_inbox_depth
             .saturating_add(metrics.pending_dispatch_depth);
@@ -324,7 +335,7 @@ impl MatrixdControlState {
             active_thread_id: control.active_thread_id,
             active_turn_id: control.active_turn_id,
             pending_approvals: control.pending_approvals,
-            resync_required: false,
+            resync_required,
             event_cursor: control.cursor,
         }))
     }
@@ -332,7 +343,8 @@ impl MatrixdControlState {
 
 pub(crate) struct MatrixdControlServer {
     listener: UnixListener,
-    socket_path: PathBuf,
+    // A restarted generation may now own this path. Never unlink it on Drop;
+    // the next start probes and reaps only an abandoned rendezvous.
     state: Arc<MatrixdControlState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -349,7 +361,6 @@ impl MatrixdControlServer {
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
-            socket_path,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -357,9 +368,16 @@ impl MatrixdControlServer {
     }
 
     pub(crate) async fn run(mut self) -> Result<(), MatrixdControlError> {
+        let mut handlers = JoinSet::new();
         loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
+                biased;
+                _ = self.cancellation.cancelled() => {
+                    handlers.abort_all();
+                    while handlers.join_next().await.is_some() {}
+                    return Ok(());
+                },
+                Some(_) = handlers.join_next(), if !handlers.is_empty() => continue,
                 accepted = self.listener.accept() => accepted?,
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
@@ -367,23 +385,10 @@ impl MatrixdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            handlers.spawn(async move {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
-        }
-    }
-}
-
-impl Drop for MatrixdControlServer {
-    fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
-            && error.kind() != ErrorKind::NotFound
-        {
-            eprintln!(
-                "failed to remove matrixd control socket {}: {error}",
-                self.socket_path.display()
-            );
         }
     }
 }
@@ -436,8 +441,15 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
     }
+    // A refused Windows rendezvous can disappear before the stale-path check.
+    // Only a truly missing path may proceed to the exclusive listener bind.
     if codex_uds::is_stale_socket_path(socket_path).await? {
-        tokio::fs::remove_file(socket_path).await?;
+        match tokio::fs::remove_file(socket_path).await {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(error.into()),
+        }
+    } else if !tokio::fs::try_exists(socket_path).await? {
         Ok(())
     } else {
         Err(MatrixdControlError::Io(std::io::Error::new(
@@ -454,7 +466,7 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
 async fn set_owner_only(path: &Path) -> Result<(), MatrixdControlError> {
     use std::os::unix::fs::PermissionsExt;
 
-    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).await?;
+    tokio::fs::set_permissions(path, std::fs::Permissions::from_mode(/*mode*/ 0o600)).await?;
     Ok(())
 }
 
@@ -483,6 +495,10 @@ enum MatrixdControlRequestError {
     AccessDenied,
     #[error("Matrix control request fence is stale")]
     StaleFence,
+    #[error("Matrix control lifecycle is fenced or draining")]
+    LifecycleFenced,
+    #[error("Matrix control dependencies are not ready")]
+    NotReady,
     #[error("Matrix approval decision is not available")]
     DecisionDenied,
     #[error("Matrix control request conflicts with current state")]
@@ -503,6 +519,8 @@ impl MatrixdControlRequestError {
             Self::InvalidRequest => "invalid_request",
             Self::AccessDenied => "access_denied",
             Self::StaleFence => "stale_fence",
+            Self::LifecycleFenced => "fenced",
+            Self::NotReady => "not_ready",
             Self::DecisionDenied => "decision_denied",
             Self::Conflict => "conflict",
             Self::CorruptState => "corrupt_state",
@@ -579,9 +597,9 @@ mod tests {
                     .reconcile_server_request_resolved(
                         &request_id_json,
                         "thread-1",
-                        7,
+                        /*attached_agent_generation*/ 7,
                         "matrixd-incarnation-1",
-                        12,
+                        /*resolved_at_ms*/ 12,
                     )
                     .await
                     .map_err(|error| MatrixBridgeError::Protocol(error.to_string()))?;
@@ -666,6 +684,8 @@ mod tests {
             MatrixDurableStore::open(&layout(temp, &agent_id()?)?, MatrixDurableConfig::default())
                 .await?;
         let connections = Arc::new(MatrixdConnectionState::default());
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
         Ok((
             Arc::new(MatrixdControlState::new(
                 identity()?,
@@ -715,7 +735,7 @@ mod tests {
 
         state
             .store
-            .record_turn_started("thread-1", "turn-1", 10)
+            .record_turn_started("thread-1", "turn-1", /*recorded_at_ms*/ 10)
             .await?;
         for request_id in [2, 3] {
             let mut request = fenced_request(MatrixdMethod::CancelTurn {
@@ -768,10 +788,10 @@ mod tests {
             .store
             .begin_pending_approval_resolution(
                 "approval-1",
-                7,
+                /*attached_agent_generation*/ 7,
                 "matrixd-incarnation-1",
                 LocalApprovalDecision::Accept,
-                11,
+                /*resolving_at_ms*/ 11,
             )
             .await?;
 
@@ -802,7 +822,15 @@ mod tests {
                 LocalApprovalDecision::Accept,
             )]
         );
-        assert!(state.store.pending_approval("approval-1").await?.is_none());
+        assert_eq!(
+            state
+                .store
+                .pending_approval("approval-1")
+                .await?
+                .expect("resolving approval")
+                .resolution_decision,
+            Some(LocalApprovalDecision::Accept)
+        );
         Ok(())
     }
 
@@ -832,6 +860,8 @@ mod tests {
             })
             .await?;
         let connections = Arc::new(MatrixdConnectionState::default());
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
         let state = MatrixdControlState::new(
             identity()?,
             store.clone(),
@@ -849,9 +879,27 @@ mod tests {
             .await;
         assert!(matches!(response.payload, MatrixdPayload::Accepted));
         assert!(store.pending_approval("approval-race").await?.is_none());
+        let replay = state
+            .response(fenced_request(MatrixdMethod::ResolveApproval {
+                approval_key: "approval-race".to_string(),
+                decision: LocalApprovalDecision::Accept,
+            })?)
+            .await;
+        assert!(matches!(
+            replay.payload,
+            MatrixdPayload::Error { ref code, .. } if code == "conflict"
+        ));
+        assert_eq!(
+            store.read_control_events(/*after_cursor*/ 0, /*limit*/ 16).await?.batch.events.iter().filter(|event| matches!(&event.kind, codex_hepta_matrix_protocol::MatrixdEventKind::ApprovalResolved { approval_key } if approval_key == "approval-race")).count(),
+            1
+        );
         Ok(())
     }
 
+    // The request/response path requires an OS-authenticated UDS peer.
+    // Windows codex_uds intentionally returns Unsupported instead of trusting
+    // an unauthenticated peer; assert that rejection in the test below.
+    #[cfg(unix)]
     #[tokio::test]
     async fn health_tracks_real_task_state_and_owner_uds_serves_exact_identity() -> TestResult {
         // The product fleet root deliberately leaves Darwin `sun_path`
@@ -862,6 +910,8 @@ mod tests {
             .tempdir_in("/tmp")?;
         let fake = Arc::new(FakeTransport::default());
         let (state, connections) = state(&temp, fake).await?;
+        connections.set_agentd_connected(/*connected*/ false);
+        connections.set_matrix_sync_connected(/*connected*/ false);
         let socket = layout(&temp, &agent_id()?)?
             .matrixd_control_socket()
             .to_path_buf();
@@ -896,8 +946,8 @@ mod tests {
             })
         ));
 
-        connections.set_agentd_connected(true);
-        connections.set_matrix_sync_connected(true);
+        connections.set_agentd_connected(/*connected*/ true);
+        connections.set_matrix_sync_connected(/*connected*/ true);
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
         connections.set_fenced();
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
@@ -905,4 +955,88 @@ mod tests {
         task.await??;
         Ok(())
     }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_control_socket_refuses_unverified_peer_identity() -> TestResult {
+        let temp = TempDir::new()?;
+        let (state, connections) = state(&temp, Arc::new(FakeTransport::default())).await?;
+        connections.set_agentd_connected(false);
+        connections.set_matrix_sync_connected(false);
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Degraded);
+        let socket = temp.path().join("unverified-matrixd-peer");
+        let mut listener = UnixListener::bind(&socket).await?;
+
+        // Exercise an actual connected UDS stream. A Windows connection must
+        // be rejected before any request bytes are parsed or mutations run,
+        // not silently accepted in place of missing OS peer credentials.
+        let _client = UnixStream::connect(&socket).await?;
+        let accepted = listener.accept().await?;
+        let error = serve_connection(accepted, state)
+            .await
+            .expect_err("unverified Windows peer must fail closed");
+        assert!(matches!(
+            error,
+            MatrixdControlError::Io(ref io_error)
+                if io_error.kind() == ErrorKind::Unsupported
+        ));
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Degraded);
+        connections.set_agentd_connected(true);
+        connections.set_matrix_sync_connected(true);
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
+        connections.set_fenced();
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_preserves_existing_regular_files() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("reserved-control-path");
+        fs::write(&path, b"not a socket")?;
+        let result = prepare_socket(&path).await;
+        assert!(
+            matches!(result, Err(MatrixdControlError::Io(_))),
+            "a non-socket path must never be treated as an abandoned socket"
+        );
+        assert_eq!(fs::read(&path)?, b"not a socket");
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_does_not_steal_live_listener() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("live-control-path");
+        let _live = UnixListener::bind(&path).await?;
+        assert!(
+            matches!(prepare_socket(&path).await, Err(MatrixdControlError::Io(_))),
+            "an active control rendezvous must remain exclusively owned"
+        );
+        assert!(path.exists());
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_retired_server_cannot_unlink_successor() -> TestResult {
+        let temp = TempDir::new()?;
+        let (state, _) = state(&temp, Arc::new(FakeTransport::default())).await?;
+        let path = temp.path().join("matrixd-rebound");
+        let retired =
+            MatrixdControlServer::bind(path.clone(), state, CancellationToken::new()).await?;
+
+        // An old owner must never remove an active replacement's rendezvous.
+        fs::remove_file(&path)?;
+        let _successor = UnixListener::bind(&path).await?;
+        drop(retired);
+        assert!(path.exists(), "retired server unlinked newer generation");
+        let _connected = UnixStream::connect(&path).await?;
+        Ok(())
+    }
 }
+
+#[cfg(test)]
+#[path = "control_lifecycle_tests.rs"]
+mod lifecycle_tests;

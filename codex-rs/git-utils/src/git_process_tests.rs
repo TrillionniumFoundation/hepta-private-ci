@@ -39,17 +39,24 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
+        // Start-Process flattens ArgumentList into a single Windows command line.
+        // Forwarding a raw `-Command` string through that second layer loses
+        // quoting around semicolons, and the descendant never writes its ready
+        // marker. Encode the child script as PowerShell UTF-16LE instead: the
+        // true nested process must become ready before timeout cleanup is tested.
+        let child_launcher = "$encodedChild = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($env:CHILD_PS_SCRIPT)); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encodedChild) -PassThru -NoNewWindow -ErrorAction Stop; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id);";
         let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
+            GitWrapperLifetime::WaitForChild => {
+                format!("{child_launcher} Wait-Process -Id $child.Id")
+            }
             GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
+                "{child_launcher} while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
         };
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .arg(wrapper_command)
+            .env("CHILD_PS_SCRIPT", child_command);
         command
     };
     command
@@ -60,19 +67,38 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let child_pid = tokio::time::timeout(Duration::from_secs(30), async {
+    let ready = tokio::time::timeout(Duration::from_secs(30), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
                 && child_ready_file.exists()
             {
-                break child_pid.trim().to_string();
+                break Ok(child_pid.trim().to_string());
+            }
+            if let Some(status) = wrapper.try_wait().expect("poll Git wrapper readiness") {
+                break Err(format!(
+                    "Git wrapper exited before descendant readiness: {status}"
+                ));
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     })
-    .await
-    .expect("wait for Git wrapper child readiness");
+    .await;
+    let child_pid = match ready {
+        Ok(Ok(pid)) => pid,
+        other => {
+            // A failed fixture must not strand the descendant whose cleanup
+            // the test is intended to validate. Preserve the original 30s
+            // readiness and 100ms process-tree cleanup budgets.
+            let _ = wait_for_git_command_with_timeout_output(
+                wrapper,
+                process_tree,
+                Duration::from_millis(100),
+            )
+            .await;
+            panic!("Git wrapper never produced its descendant readiness marker: {other:?}");
+        }
+    };
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");
@@ -115,6 +141,47 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .stderr(Stdio::null())
         .status();
     panic!("Git wrapper child process {child_pid} survived timeout cleanup");
+}
+
+#[cfg(windows)]
+#[test]
+fn unavailable_windows_job_owner_rejects_launch_before_child_executes() {
+    use std::cell::Cell;
+    use std::io;
+    use std::rc::Rc;
+
+    let root = tempfile::tempdir().expect("create private test fixture");
+    let marker = root.path().join("must-not-be-created.txt");
+    let command_body = format!(
+        "Set-Content -LiteralPath '{}' -Value unsafe",
+        marker.display()
+    );
+    let mut command = Command::new("powershell.exe");
+    command.args(["-NoProfile", "-NonInteractive", "-Command", &command_body]);
+    let factory_calls = Rc::new(Cell::new(0));
+    let observed_calls = Rc::clone(&factory_calls);
+    let spawned = super::spawn_contained_git_command(&mut command, move || {
+        observed_calls.set(observed_calls.get() + 1);
+        Err(io::Error::other("injected unowned job refusal"))
+    });
+    assert!(spawned.is_none(), "unowned Git command must fail closed");
+    assert_eq!(factory_calls.get(), 1, "attempted one contained launch");
+    assert!(!marker.exists(), "no uncontained command was started");
+}
+
+#[cfg(windows)]
+#[test]
+fn contained_launch_failure_never_retries_as_an_unowned_child() {
+    let root = tempfile::tempdir().expect("create private test fixture");
+    let marker = root.path().join("must-not-be-created.txt");
+    let mut command = Command::new(root.path().join("missing-git-wrapper.exe"));
+    command.arg(&marker);
+    let spawned = super::spawn_contained_git_command(&mut command, super::JobObject::create);
+    assert!(
+        spawned.is_none(),
+        "failed contained spawn must not fall back"
+    );
+    assert!(!marker.exists());
 }
 
 #[tokio::test]

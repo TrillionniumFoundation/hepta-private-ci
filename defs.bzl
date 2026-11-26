@@ -1,5 +1,5 @@
 load("@crates//:data.bzl", "DEP_DATA")
-load("@crates//:defs.bzl", "all_crate_deps")
+load("@crates//:defs.bzl", "aliases", "all_crate_deps")
 load("@rules_rust//cargo/private:cargo_build_script_wrapper.bzl", "cargo_build_script")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_proc_macro", "rust_test")
 load("//bazel/rules/testing:foreign_platform_binary.bzl", "foreign_platform_binary")
@@ -179,11 +179,50 @@ workspace_root_test = rule(
     },
 )
 
+def _dependency_aliases(dependencies, crate_aliases, replacements):
+    result = {}
+    for dependency in dependencies:
+        if dependency in crate_aliases:
+            # Match rust_test_dependencies: only workspace edges are replaced.
+            replacement = dependency if dependency.startswith("@crates//:") else replacements.get(Label(dependency), dependency)
+            result[replacement] = crate_aliases[dependency]
+    return result
+
+def _crate_aliases(normal = False, normal_dev = False, build = False, replacements = {}):
+    """Keep alias analysis edges in the same Cargo buckets as target deps."""
+    data = DEP_DATA[native.package_name()]
+    crate_aliases = aliases()
+    normalized = {Label(original): replacement for original, replacement in replacements.items()}
+    kinds = []
+    if normal_dev:
+        kinds.append("dev_deps")
+    if build:
+        kinds.append("build_deps")
+    if normal or not kinds:
+        kinds.append("deps")
+
+    shared = {}
+    by_platform = {}
+    for kind in kinds:
+        shared.update(_dependency_aliases(data.get(kind, []), crate_aliases, normalized))
+        for platform, dependencies in data.get(kind + "_by_platform", {}).items():
+            branch = by_platform.setdefault(platform, {})
+            branch.update(_dependency_aliases(dependencies, crate_aliases, normalized))
+    if not by_platform:
+        return shared
+
+    # A label-keyed alias dictionary creates analysis dependencies itself.
+    # Do not expose dev/build-only or inactive-platform labels unconditionally.
+    branches = {platform: shared | branch for platform, branch in by_platform.items()}
+    branches["//conditions:default"] = shared
+    return select(branches)
+
 def codex_rust_crate(
         name,
         crate_name,
         crate_features = [],
         crate_srcs = None,
+        binary_crate_root_overrides = {},
         crate_edition = None,
         proc_macro = False,
         build_script_enabled = True,
@@ -304,7 +343,19 @@ def codex_rust_crate(
         manifest_relpath = manifest_relpath[len("codex-rs/"):]
     manifest_path = manifest_relpath + "/Cargo.toml"
 
-    binaries = DEP_DATA.get(native.package_name())["binaries"]
+    binaries = dict(DEP_DATA.get(native.package_name())["binaries"])
+
+    # Cargo manifests are the authority for binary roots, but the Bazel
+    # @crates metadata can retain an older root after a source-layout change.
+    # An explicit narrow override must name an existing registered binary
+    # and a crate-local Rust path; never silently fall back to src/main.rs.
+    for binary, crate_root in binary_crate_root_overrides.items():
+        if binary not in binaries:
+            fail("Bazel binary-root override does not name a registered binary: " + binary)
+        is_local_source = crate_root.startswith("src/") and crate_root.endswith(".rs")
+        if not is_local_source or ".." in crate_root:
+            fail("Bazel binary-root override escapes crate source: " + crate_root)
+        binaries[binary] = crate_root
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 
@@ -314,6 +365,7 @@ def codex_rust_crate(
         cargo_build_script(
             name = name + "-build-script",
             srcs = ["build.rs"],
+            aliases = _crate_aliases(build = True),
             deps = all_crate_deps(build = True),
             data = build_script_data,
             # Some build script deps sniff version-related env vars...
@@ -328,6 +380,7 @@ def codex_rust_crate(
             name = name,
             crate_name = crate_name,
             crate_features = crate_features,
+            aliases = _crate_aliases(),
             deps = all_crate_deps() + maybe_deps + deps_extra,
             compile_data = compile_data,
             data = lib_data_extra,
@@ -351,6 +404,7 @@ def codex_rust_crate(
                 testonly = True,
                 crate_name = crate_name,
                 crate_features = crate_features + unit_test_features,
+                aliases = _crate_aliases(normal = True, replacements = unit_test_dependency_replacements),
                 deps = rust_test_dependencies(unit_test_dependency_replacements) + maybe_deps + deps_extra,
                 compile_data = compile_data,
                 data = lib_data_extra,
@@ -369,6 +423,7 @@ def codex_rust_crate(
             name = unit_test_binary,
             crate = unit_test_library,
             crate_features = crate_features + unit_test_features,
+            aliases = _crate_aliases(normal = True, normal_dev = True, replacements = unit_test_dependency_replacements),
             deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + maybe_deps + deps_extra,
             # Unit tests also compile to standalone Windows executables, so
             # keep their stack reserve aligned with binaries and integration
@@ -418,6 +473,7 @@ def codex_rust_crate(
             name = binary,
             crate_name = binary.replace("-", "_"),
             crate_root = main,
+            aliases = _crate_aliases(),
             deps = all_crate_deps() + maybe_deps + deps_extra,
             edition = crate_edition,
             # Keep per-binary Cargo link behavior scoped to the matching
@@ -445,6 +501,7 @@ def codex_rust_crate(
             name = binary_unit_test_binary,
             crate = ":" + binary,
             crate_features = crate_features,
+            aliases = _crate_aliases(normal_dev = True),
             deps = all_crate_deps(normal_dev = True),
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
@@ -572,6 +629,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
+                aliases = _crate_aliases(normal = True, normal_dev = True),
                 deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
@@ -612,6 +670,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
+                aliases = _crate_aliases(normal = True, normal_dev = True),
                 deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
@@ -687,6 +746,7 @@ def codex_rust_crate(
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
+            aliases = _crate_aliases(normal = True, normal_dev = True),
             deps = all_crate_deps(normal = True, normal_dev = True) + maybe_deps + deps_extra,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",

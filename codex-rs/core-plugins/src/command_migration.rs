@@ -4,7 +4,7 @@ mod render;
 use render::rewrite_terms;
 use render::slugify_name;
 use render::yaml_string;
-use serde_yaml::Value as YamlValue;
+use serde_json::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -314,15 +314,19 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
-    let mapping = parsed.as_mapping()?;
-    mapping.iter().find_map(|(key, value)| {
-        if key.as_str()?.trim() == "description" {
-            yaml_scalar(value)
-        } else {
-            None
-        }
-    })
+    // serde-saphyr deserializes tagged scalars transparently into serde_json::Value.
+    // Capture the tag at both the root and the description node; never promote an
+    // explicitly tagged value to an untagged, trusted skill description.
+    let parsed: serde_yaml::Tagged<BTreeMap<String, serde_yaml::Tagged<YamlValue>>> =
+        serde_yaml::from_str(raw_frontmatter).ok()?;
+    if parsed.1.is_some() {
+        return None;
+    }
+    let description = parsed.0.get("description")?;
+    if description.1.is_some() {
+        return None;
+    }
+    yaml_scalar(&description.0)
 }
 
 fn yaml_scalar(value: &YamlValue) -> Option<String> {
@@ -330,9 +334,7 @@ fn yaml_scalar(value: &YamlValue) -> Option<String> {
         YamlValue::String(value) => Some(value.trim().to_string()),
         YamlValue::Bool(value) => Some(value.to_string()),
         YamlValue::Number(value) => Some(value.to_string()),
-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
-            None
-        }
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => None,
     }
 }
 
