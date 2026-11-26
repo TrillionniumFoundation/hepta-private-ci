@@ -1,0 +1,38 @@
+{
+  "cloud_request": "hepta-hcsn-av-t4-20261126-a2",
+  "provider": "colab",
+  "machine": "T4 requested",
+  "controller": "Mac via HeptaRuntime on ROG",
+  "cli_version": "0.1.4-integrity-retirement+adoption-v1",
+  "source_sha256": "5311806b8fdd145b6987bab0495b70f7e234e7daf11abfba6583443977afcf2c",
+  "candidate_counts": {
+    "ready_kaggle": 2,
+    "reserved_kaggle": 1,
+    "ready_colab": 2,
+    "reserved_colab": 1
+  },
+  "control_jobs": {
+    "evaluate": "dpty-febbba7a7d6688f04f459f4abb0cd2091967a38e3d7f18f3e1916af9d01e1883",
+    "plan": "dpty-2f984425a2fc39226c1f456cdfc47b428063d04ae4bf9f1a664051c6365ed4bd",
+    "execute": "dpty-68c032b0f54995526300563e92d65e66bf24fc4523b6a12819dc2716dd3b9d50",
+    "reconcile": "dpty-7d1b45682bbadf897b63413fcafcabe63263bf479b1486e72ff468031a052109",
+    "inspect": "dpty-ca3ad7d3b80a58fb6a261337b7c2ff50e8f7b83f99dc0af14b7899b62057da7d"
+  },
+  "provider_request_key": "hc-417db2852aa7fb3a03512d90cd348736017524ed",
+  "last_router_state": "RECONCILIATION_REQUIRED",
+  "phase": "allocation_unknown",
+  "error_code": "ALLOCATION_NOT_OBSERVED_NO_RESUBMIT",
+  "owned_kernel": false,
+  "owned_runtime": false,
+  "runtime_submit_attempts": 1,
+  "kernel_submit_attempts": 0,
+  "updated_at": "2026-11-26T15:54:05.535892+00:00",
+  "origin": {
+    "at": "2026-11-26T15:52:40.372185+00:00",
+    "exception_class": "requests.exceptions.ReadTimeout",
+    "phase": "exception",
+    "seq": 6,
+    "stage": "ASSIGNMENT_POST"
+  },
+  "conclusion": "One allocation attempt with unknown outcome and zero submitted kernels. No retry or account rotation. No T4 wall, quality, or release claim."
+}
