@@ -73,13 +73,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
-        let pending = crate::restart_budget::pending_restart(
+        let Some(budget) = crate::restart_budget::recover_restart_budget(
             record.layout.run_root(),
             self.config.restart_max_attempts,
         )
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        if let Some(claim) = pending {
-            slot.restart_attempt = claim.attempt;
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        else {
+            return Ok(());
+        };
+        slot.restart_attempt = budget.attempts;
+        if let Some(claim) = budget.pending {
             slot.restart_not_before = Some(deadline(now, claim.backoff)?);
             // An adopted replacement is already satisfying this durable
             // restart. Only a missing runtime needs the replacement queued.
