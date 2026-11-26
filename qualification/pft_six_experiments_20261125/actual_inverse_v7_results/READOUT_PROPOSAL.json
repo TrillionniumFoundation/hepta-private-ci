@@ -1,0 +1,97 @@
+{
+  "binary64_delta_projection_max_abs_residual": {
+    "denominator": "324518553658426726783156020576256",
+    "numerator": "55166171733969"
+  },
+  "binding": {
+    "common_file_sha256": "cf04461f394e123ccb9599b094ec2f0b150aa087fe11e4aa39d5dd4c44de0f10",
+    "coordinate_layout_sha256": "7950b64cfed821e58e7dd3dee08c656edaa74f80493aa24166133129e668768f",
+    "initial_margin_sha256": "0a497c985158f5df5b0564153450d13370bacae293ddc9d59fd204ce8697c52b",
+    "input_sha256": "012e6e7c0c52b2f639ba6cca41f3197391c7b08e8804ed6c6d92941bd0374a93",
+    "model_source_sha256": "aabc7a29ebfdaed592ebd4a16d7e4db927a6a88cb7247d4b334fd7299eab8576",
+    "reference_candidate_sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+    "reference_state_sha256": "136026bde0867265b040f679e60fb991b131b6d8403127fa7b2a94237da5f907",
+    "source_binding_sha256": "3146e2c56757ff7c818670aa3a9c229b26271c7336d573b1692b91ac8e7a00e9",
+    "source_linearization_sha256": "8fc3f5eac5d1f63441ffcfd9e28528f5357b03ea5a3fdc94100710a77e63a40c"
+  },
+  "candidate_exported": false,
+  "coordinates": [
+    {
+      "flat_index": 0,
+      "name": "readout.weight",
+      "shape": [
+        2,
+        20
+      ]
+    },
+    {
+      "flat_index": 0,
+      "name": "readout.bias",
+      "shape": [
+        2
+      ]
+    }
+  ],
+  "delta_binary64_hex": [
+    "0x1.55e4446392bd2p-9",
+    "-0x1.c6b313f74251bp-8"
+  ],
+  "delta_exact": [
+    {
+      "denominator": "172655804366695",
+      "numerator": "450359962744"
+    },
+    {
+      "denominator": "19596084077852844206587904",
+      "numerator": "-135960847332759049431167"
+    }
+  ],
+  "exact_max_abs_residual": {
+    "denominator": "1",
+    "numerator": "0"
+  },
+  "freeze_rule": "all_parameters_buffers_config_inputs_and_initial_state_except_two_listed_coordinates",
+  "inverse_linf_norm": {
+    "denominator": "1113908415269",
+    "numerator": "77284793934891"
+  },
+  "model_executed": false,
+  "normal_constant": {
+    "denominator": "79228162514264337593543950336",
+    "numerator": "1584563250334195843825"
+  },
+  "normal_determinant": {
+    "denominator": "5070602400912917605986812821504",
+    "numerator": "29810026781510456230025223025"
+  },
+  "normal_matrix": [
+    {
+      "denominator": "5070602400912917605986812821504",
+      "numerator": "71764839238263013676620534957025"
+    },
+    {
+      "denominator": "2251799813685248",
+      "numerator": "11979143059908105"
+    },
+    {
+      "denominator": "1",
+      "numerator": "2"
+    }
+  ],
+  "normal_rhs": [
+    {
+      "denominator": "633825300114114700748351602688",
+      "numerator": "4859828857372078574604745"
+    },
+    {
+      "denominator": "281474976710656",
+      "numerator": "1"
+    }
+  ],
+  "production_adoption": false,
+  "projection_scope": "rounding_delta_only_with_frozen_exact_binary64_features; excludes parameter-addition and physical-forward roundoff",
+  "regularization": "none",
+  "request_sha256": "e6c8e04059737337d8cdde5db97d1358b2b3fcce908a1d5d7488fd309cddf07c",
+  "schema": "hepta.frozen-readout.inverse-proposal.v1",
+  "status": "EXACT_AFFINE_PROPOSAL_ONLY"
+}

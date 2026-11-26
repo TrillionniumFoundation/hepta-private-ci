@@ -1,0 +1,75 @@
+{
+  "builds": 0,
+  "gates": [
+    {
+      "argv": [
+        "/Users/qianqi/work/hepta-pft-continuation-20261126-8a32/tooling/bin/codespell",
+        "--count",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "qualification/pft_six_experiments_20261125/actual_inverse_v7/ACTUAL_MODEL_INVERSE.md",
+        "qualification/pft_six_experiments_20261125/actual_inverse_v7/READOUT_REQUEST.json",
+        "qualification/pft_six_experiments_20261125/actual_inverse_v7/SOURCE_PREPARATION.json",
+        "qualification/pft_six_experiments_20261125/actual_inverse_v7/readout_inverse.py",
+        "qualification/pft_six_experiments_20261125/actual_inverse_v7/readout_inverse_tests.py"
+      ],
+      "exit_code": 0,
+      "name": "codespell",
+      "seconds": 0.05779125,
+      "stderr": "0\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "name": "official_just_fmt",
+      "seconds": 0.068510958,
+      "stderr": "",
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n"
+    }
+  ],
+  "manifest": {
+    "files": {
+      "ACTUAL_MODEL_INVERSE.md": {
+        "bytes": 15187,
+        "lines": 297,
+        "sha256": "531c8d351d5857f9ae3da906594e57c33fb47a99b47d8b395a5eab0477259440"
+      },
+      "READOUT_REQUEST.json": {
+        "bytes": 2005,
+        "lines": 51,
+        "sha256": "e6c8e04059737337d8cdde5db97d1358b2b3fcce908a1d5d7488fd309cddf07c"
+      },
+      "SOURCE_PREPARATION.json": {
+        "bytes": 2992,
+        "lines": 62,
+        "sha256": "7f6fc57f8e374b07cbf6567a4f0f2dba720246de47ccf1d942f0a7c2a15c97ac"
+      },
+      "readout_inverse.py": {
+        "bytes": 9549,
+        "lines": 212,
+        "sha256": "5b5142c9fef66412bb72efc9ede18e04b1c18a2afae1d546679ec5d947d92d3e"
+      },
+      "readout_inverse_tests.py": {
+        "bytes": 6279,
+        "lines": 139,
+        "sha256": "2b8447fea74e6ab5a96a07bfb67989560ea1c8f82e2dcbd383570d7efcdf7422"
+      }
+    },
+    "prefix": "qualification/pft_six_experiments_20261125/actual_inverse_v7",
+    "root_algebra_result_sha256": "beb24084e900f0772763f7ef706d040a4504318327d22a42160a655cdab7e892",
+    "schema": "hepta.pft.v7.math-source-input.v1"
+  },
+  "models": 0,
+  "primary_index_unchanged": true,
+  "schema": "hepta.pft.v7.math-format.v1",
+  "scope": "Official repository recipe; qualification Python files have no owning formatter in this recipe; no model or test rerun.",
+  "source_unchanged": true,
+  "status": "FORMATTED_SOURCE_READY",
+  "tests": 0
+}

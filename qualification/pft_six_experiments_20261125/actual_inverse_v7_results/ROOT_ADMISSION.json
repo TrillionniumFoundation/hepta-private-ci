@@ -1,0 +1,23 @@
+{
+  "candidate_exports_allowed": 0,
+  "checkpoint_loads_allowed": 0,
+  "expected_test_count": 14,
+  "model_forwards_allowed": 0,
+  "model_imports_allowed": 0,
+  "numerical_rule": "exact Fraction endpoint residual equals zero; report rounded-delta residual separately; no physical inference claim",
+  "old_gate_replays_allowed": 0,
+  "recorded_at": "2026-11-26T13:17:00.343343+00:00",
+  "retained_request_sha256": "e6c8e04059737337d8cdde5db97d1358b2b3fcce908a1d5d7488fd309cddf07c",
+  "retained_request_solves_allowed": 1,
+  "schema": "hepta.pft.v7.algebra-admission.v1",
+  "scope": "new stdlib algebra correctness and archived frozen-feature proposal only",
+  "source_directory": "/workspace/scratch/8a32fcb41ccf/discovery/math_v7",
+  "source_pins": {
+    "READOUT_REQUEST.json": "e6c8e04059737337d8cdde5db97d1358b2b3fcce908a1d5d7488fd309cddf07c",
+    "readout_inverse.py": "5b5142c9fef66412bb72efc9ede18e04b1c18a2afae1d546679ec5d947d92d3e",
+    "readout_inverse_tests.py": "2b8447fea74e6ab5a96a07bfb67989560ea1c8f82e2dcbd383570d7efcdf7422"
+  },
+  "source_provenance_checked": true,
+  "status": "FROZEN_BEFORE_FIRST_EXECUTION",
+  "test_executions_allowed": 1
+}
