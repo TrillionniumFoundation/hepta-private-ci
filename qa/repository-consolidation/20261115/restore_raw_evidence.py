@@ -67,7 +67,9 @@ REVIEW_ONLY_FROZEN_PATCH_INDEX = "qa/repository-consolidation/20261125/review-on
 REVIEWED_BRANCH_DIFF_INDEX = "qa/repository-consolidation/20261125/reviewed-branch-diff-replay/raw-evidence-storage.json"
 CORE_MEMORY_REVIEWED_SOURCE_INDEX = "qa/repository-consolidation/20261125/core-memory-reviewed-source-custody/raw-evidence-storage.json"
 HCSN_ARCHITECTURE_SOURCE_CONSOLE_INDEX = "qa/repository-consolidation/20261125/hcsn-architecture-source-console/raw-evidence-storage.json"
+REGISTERED_HISTORICAL_CONSOLE_INDEX = "qa/repository-consolidation/20261125/registered-historical-console/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    REGISTERED_HISTORICAL_CONSOLE_INDEX: "2b71a73fe4d51d86baf853086a0088122979f81ed57bcf2fb6ee9f2b14295473",
     HCSN_ARCHITECTURE_SOURCE_CONSOLE_INDEX: "8acf741b49278909b811fed997ca6cb5958b246b9e5bbe6bd2b48a0ec5280142",
     CORE_MEMORY_REVIEWED_SOURCE_INDEX: "68fa2232ea0f288ad6453edec7c5e5aa8b03b62278d8dae1a290337322417cc3",
     REVIEWED_BRANCH_DIFF_INDEX: "ad1da0ba6dbc6161e8c2cb5cb185c15e9b5855f8ba43aab500391606c5955638",
