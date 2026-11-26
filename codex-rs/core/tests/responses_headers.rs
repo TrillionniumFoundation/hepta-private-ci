@@ -450,8 +450,27 @@ async fn responses_respects_model_info_overrides_from_config() {
     );
 }
 
-#[tokio::test]
-async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() {
+#[test]
+fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() {
+    const TEST_STACK_SIZE_BYTES: usize = 8 * 1024 * 1024;
+
+    let test = std::thread::Builder::new()
+        .name("git-workspace-turn-metadata".to_string())
+        .stack_size(TEST_STACK_SIZE_BYTES)
+        .spawn(|| {
+            tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .expect("build Git workspace metadata test runtime")
+                .block_on(assert_git_workspace_turn_metadata());
+        })
+        .expect("spawn Git workspace metadata fixture");
+    if let Err(panic) = test.join() {
+        std::panic::resume_unwind(panic);
+    }
+}
+
+async fn assert_git_workspace_turn_metadata() {
     core_test_support::skip_if_no_network!();
 
     let server = responses::start_mock_server().await;
@@ -520,6 +539,17 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
             .and_then(serde_json::Value::as_str),
         None
     );
+
+    // TurnComplete is emitted before the matching finish owner releases the thread.
+    // Do not submit the next turn until it can observe the new Git workspace.
+    if let Some(finish) = test
+        .codex
+        .pending_normal_turn_finish_completion(&initial_turn_id)
+    {
+        tokio::time::timeout(std::time::Duration::from_secs(10), finish)
+            .await
+            .expect("finish the initial turn before changing the Git fixture");
+    }
 
     let git_config_global = cwd.join("empty-git-config");
     std::fs::write(&git_config_global, "").expect("write empty git config");
