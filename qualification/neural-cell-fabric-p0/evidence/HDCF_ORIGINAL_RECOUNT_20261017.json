@@ -1,0 +1,69 @@
+{
+  "archive_sha256": {
+    "hdcf-original-features.zip": "3d8d6b7bed80f1f5efb1a17fd1df94208bef4239e5bbbbcd29e63262fb6e025d",
+    "hdcf-original-head-trial.zip": "8bd2d2ba3b2de9f2fe1b99042b471c016d78f90c8305d7d82c91bf1a23138bed",
+    "hdcf-original-public.zip": "51e258a7a721a03f402e6606cffb57f52e5ee35a458f5f75218eaafabd9fe698",
+    "hdcf-original-targets.zip": "140191b7915923b51a447c9cabc43d6dbba96060ae4dee90716f1fd2539821fb"
+  },
+  "authority": "DENY_ALL",
+  "disposition": "HOLD_NO_GO",
+  "fit_count": 64,
+  "held_count": 32,
+  "independent_publisher_signature_verified": false,
+  "kind": "historical_original_pretrained_archived_prediction_recount",
+  "metrics": {
+    "frozen": {
+      "brier": 0.2504677043492307,
+      "correct": 12
+    },
+    "shared_dense": {
+      "brier": 0.24955371279252875,
+      "correct": 16
+    },
+    "shared_one_touch": {
+      "brier": 0.24955371279252875,
+      "correct": 16
+    },
+    "split": {
+      "brier": 0.23901124936861365,
+      "correct": 20
+    },
+    "swapped": {
+      "brier": 0.26643595100616674,
+      "correct": 12
+    },
+    "type_prior_zero_sgd": {
+      "brier": 0.23725020123760174,
+      "correct": 20
+    }
+  },
+  "model_selection_authorized": false,
+  "native_effect_authorized": false,
+  "new_pretrained_forward_executed": false,
+  "original_run": 38930339541,
+  "physical_encoder_forward_count_in_original_receipt": 96,
+  "replayed_original_prediction_rows": 160,
+  "source_identity": "95dc97bd0700165b431d140e77c35500713bc95dd3f6c31b6dabb9e021d26fad",
+  "source_independent_future_gain_verified": false,
+  "split_vs_prior_agreement": 32,
+  "split_vs_shared_one_touch_losses": 8,
+  "split_vs_shared_one_touch_mcnemar_exact_p": 0.5034446716308594,
+  "split_vs_shared_one_touch_wins": 12,
+  "system2_or_multimodal_ability_verified": false,
+  "train_only_type_counts": {
+    "hash0": {
+      "neg": 15,
+      "pos": 20
+    },
+    "hash1": {
+      "neg": 17,
+      "pos": 12
+    }
+  },
+  "trial_reused_cached_features_without_new_forwards": true,
+  "type_prior_probabilities": {
+    "hash0": 0.5675675675675675,
+    "hash1": 0.41935483870967744
+  },
+  "zero_feature_original_predictions_reexecuted": false
+}
