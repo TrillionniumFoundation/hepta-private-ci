@@ -90,7 +90,9 @@ ARCHIVED_ARTIFACT_PUBLICATION_INDEX = "qa/repository-consolidation/20261126/arch
 ARCHIVED_SEALED_REVIEW_READBACKS_INDEX = "qa/repository-consolidation/20261126/archived-sealed-review-readbacks/raw-evidence-storage.json"
 ARCHIVED_SEALED_READER_SOURCE_INDEX = "qa/repository-consolidation/20261126/archived-sealed-reader-source/raw-evidence-storage.json"
 ARCHIVED_SEALED_RUN_RECORDS_INDEX = "qa/repository-consolidation/20261126/archived-sealed-run-records/raw-evidence-storage.json"
+ARCHIVED_AGE_APACHE_LICENSE_INDEX = "qa/repository-consolidation/20261126/archived-age-apache-license/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    ARCHIVED_AGE_APACHE_LICENSE_INDEX: "8f5382b798ea187bec27da72889d91cfc98457645dc6ea9b294ccd8639063943",
     ARCHIVED_SEALED_RUN_RECORDS_INDEX: "7c80d7b14048f6992137f22fd47c3a659625b203e7379798275762a1d82b8d07",
     ARCHIVED_SEALED_READER_SOURCE_INDEX: "af126b3db28aa9097b35ff715f37868e73f58a97b3f915077652b52758da8e9b",
     ARCHIVED_SEALED_REVIEW_READBACKS_INDEX: "d26cdb85dc0fba913037a1ed67ed6aaa9491fdcbcf9f37595d824a4f4e1092dd",

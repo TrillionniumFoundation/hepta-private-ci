@@ -45,3 +45,7 @@ The standalone test harness reads their gzip carriers without normalizing the
 payload. For an upstream-layout comparison, use the repository evidence
 restorer; the registry and the upstream SHA-256 entries bind the original
 uncompressed bytes. The crate's runtime source and dependencies are unchanged.
+
+The packaged Apache license text differs from the upstream file only by a
+blank line at EOF. The exact original is preserved as
+`HEPTA_LICENSE-APACHE.original.evidence.gz`.
