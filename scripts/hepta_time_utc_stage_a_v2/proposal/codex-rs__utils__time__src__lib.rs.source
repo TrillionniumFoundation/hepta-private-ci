@@ -1,0 +1,359 @@
+//! UTC timestamps for the first, inactive Chrono migration candidate.
+//!
+//! This type deliberately has a smaller domain than Chrono: four-digit UTC
+//! years 0000 through 9999, nanosecond precision, and no leap seconds. Rejecting
+//! an older supported input is still an unresolved migration contract. Do not
+//! activate consumers until that compatibility decision has been reviewed.
+//!
+//! The backing library's default display, serde, and leap-second conversion
+//! are not the persisted wire format. Formatting below preserves the existing
+//! UTC AutoSi bytes, and numeric timestamps floor before the Unix epoch.
+
+mod parser;
+
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::Serializer;
+use std::fmt;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+use time::OffsetDateTime;
+use time::UtcOffset;
+use time::format_description::well_known::Rfc3339;
+
+const NANOS_PER_SECOND: i128 = 1_000_000_000;
+const NANOS_PER_MILLISECOND: i128 = 1_000_000;
+const LEGACY_MAX_DURATION_NANOS: u128 = 9_223_372_036_854_775_807_u128 * 1_000_000;
+
+/// An owned UTC instant with explicit persisted-wire formatting.
+#[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct UtcTimestamp(OffsetDateTime);
+
+/// Precision used by explicit UTC string encodings.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TimestampPrecision {
+    Seconds,
+    Milliseconds,
+    AutoSi,
+}
+
+/// Choose the UTC suffix without an opaque positional boolean.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum UtcSuffix {
+    Z,
+    Offset,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum TimestampError {
+    InvalidRfc3339(String),
+    UnsupportedExpandedYear,
+    UnsupportedLeapSecond,
+    UnsupportedFractionalPrecision,
+    OutsideSupportedRange,
+    DurationOutOfRange,
+    ArithmeticOverflow,
+}
+
+impl fmt::Display for TimestampError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::InvalidRfc3339(reason) => write!(f, "invalid RFC 3339 timestamp: {reason}"),
+            Self::UnsupportedExpandedYear => {
+                f.write_str("expanded timestamp years are not supported by this migration")
+            }
+            Self::UnsupportedLeapSecond => {
+                f.write_str("leap seconds are not supported by this migration")
+            }
+            Self::UnsupportedFractionalPrecision => {
+                f.write_str("more than nine fractional digits are not supported by this migration")
+            }
+            Self::OutsideSupportedRange => {
+                f.write_str("timestamp is outside UTC years 0000 through 9999")
+            }
+            Self::DurationOutOfRange => {
+                f.write_str("duration exceeds the legacy signed millisecond bound")
+            }
+            Self::ArithmeticOverflow => f.write_str("timestamp arithmetic overflow"),
+        }
+    }
+}
+
+impl std::error::Error for TimestampError {}
+
+impl UtcTimestamp {
+    pub fn now() -> Result<Self, TimestampError> {
+        Self::from_system_time(SystemTime::now())
+    }
+
+    pub fn from_system_time(value: SystemTime) -> Result<Self, TimestampError> {
+        let nanos = match value.duration_since(UNIX_EPOCH) {
+            Ok(duration) => i128::try_from(duration.as_nanos())
+                .map_err(|_| TimestampError::OutsideSupportedRange)?,
+            Err(error) => {
+                let before = i128::try_from(error.duration().as_nanos())
+                    .map_err(|_| TimestampError::OutsideSupportedRange)?;
+                before.checked_neg().ok_or(TimestampError::ArithmeticOverflow)?
+            }
+        };
+        Self::from_unix_nanos(nanos)
+    }
+
+    pub fn from_unix_seconds(value: i64) -> Result<Self, TimestampError> {
+        Self::from_unix_nanos(i128::from(value) * NANOS_PER_SECOND)
+    }
+
+    pub fn from_unix_millis(value: i64) -> Result<Self, TimestampError> {
+        // This constructor always means milliseconds. The state database's
+        // legacy seconds heuristic belongs at that database's own boundary.
+        Self::from_unix_nanos(i128::from(value) * NANOS_PER_MILLISECOND)
+    }
+
+    pub fn from_unix_nanos(value: i128) -> Result<Self, TimestampError> {
+        let timestamp = OffsetDateTime::from_unix_timestamp_nanos(value)
+            .map_err(|_| TimestampError::OutsideSupportedRange)?;
+        Self::from_offset_timestamp(timestamp)
+    }
+
+    pub fn parse_rfc3339(input: &str) -> Result<Self, TimestampError> {
+        validate_rfc3339_subset(input)?;
+        let timestamp = OffsetDateTime::parse(input, &Rfc3339)
+            .map_err(|error| TimestampError::InvalidRfc3339(error.to_string()))?;
+        Self::from_offset_timestamp(timestamp)
+    }
+
+    fn from_offset_timestamp(value: OffsetDateTime) -> Result<Self, TimestampError> {
+        let utc = value
+            .checked_to_offset(UtcOffset::UTC)
+            .ok_or(TimestampError::OutsideSupportedRange)?;
+        // This remains an explicit bound even if another workspace dependency
+        // enables time's large-dates feature.
+        if !(0..=9999).contains(&utc.year()) {
+            return Err(TimestampError::OutsideSupportedRange);
+        }
+        Ok(Self(utc))
+    }
+
+    pub fn unix_seconds(self) -> i64 {
+        self.0.unix_timestamp()
+    }
+
+    pub fn unix_millis(self) -> i64 {
+        // unix_timestamp is the floor second and nanosecond is nonnegative.
+        // Four-digit UTC years keep this multiplication safely inside i64.
+        self.unix_seconds() * 1_000 + i64::from(self.0.nanosecond() / 1_000_000)
+    }
+
+    pub fn unix_nanos(self) -> i128 {
+        self.0.unix_timestamp_nanos()
+    }
+
+    pub fn signed_duration_nanos_since(self, earlier: Self) -> i128 {
+        // Both operands are restricted to four-digit years.
+        self.unix_nanos() - earlier.unix_nanos()
+    }
+
+    pub fn checked_add_std(self, duration: Duration) -> Result<Self, TimestampError> {
+        let delta = legacy_duration_nanos(duration)?;
+        let nanos = self.unix_nanos().checked_add(delta)
+            .ok_or(TimestampError::ArithmeticOverflow)?;
+        Self::from_unix_nanos(nanos)
+    }
+
+    pub fn checked_sub_std(self, duration: Duration) -> Result<Self, TimestampError> {
+        let delta = legacy_duration_nanos(duration)?;
+        let nanos = self.unix_nanos().checked_sub(delta)
+            .ok_or(TimestampError::ArithmeticOverflow)?;
+        Self::from_unix_nanos(nanos)
+    }
+
+    /// The legacy DateTime::to_rfc3339 shape: AutoSi and an explicit +00:00.
+    pub fn to_rfc3339(self) -> String {
+        self.to_rfc3339_opts(TimestampPrecision::AutoSi, UtcSuffix::Offset)
+    }
+
+    /// Fixed seconds/milliseconds never round into the next second.
+    pub fn to_rfc3339_opts(self, precision: TimestampPrecision, suffix: UtcSuffix) -> String {
+        UtcText { timestamp: self, precision, suffix, separator: 'T' }.to_string()
+    }
+
+
+}
+
+
+/// Preserve the old ChronoDuration::from_std upper bound, rather than making
+/// formerly invalid TTLs valid because the backing library has a larger range.
+pub fn legacy_duration_nanos(duration: Duration) -> Result<i128, TimestampError> {
+    let nanos = duration.as_nanos();
+    if nanos > LEGACY_MAX_DURATION_NANOS {
+        return Err(TimestampError::DurationOutOfRange);
+    }
+    i128::try_from(nanos).map_err(|_| TimestampError::DurationOutOfRange)
+}
+
+fn invalid_syntax() -> TimestampError {
+    TimestampError::InvalidRfc3339("expected a four-digit date, time, and UTC offset".to_string())
+}
+
+fn validate_rfc3339_subset(input: &str) -> Result<(), TimestampError> {
+    let bytes = input.as_bytes();
+    if matches!(bytes.first(), Some(&b'+') | Some(&b'-')) {
+        return Err(TimestampError::UnsupportedExpandedYear);
+    }
+    if !input.is_ascii() || bytes.len() < 20 {
+        return Err(invalid_syntax());
+    }
+    if bytes[4] != b'-' || bytes[7] != b'-'
+        || !matches!(bytes[10], b'T' | b't')
+        || bytes[13] != b':' || bytes[16] != b':'
+        || ![0, 1, 2, 3, 5, 6, 8, 9, 11, 12, 14, 15, 17, 18]
+            .into_iter().all(|index| bytes[index].is_ascii_digit())
+    {
+        return Err(invalid_syntax());
+    }
+    // time 0.3.55 maps a parsed leap second to the preceding nanosecond.
+    // Reject it before parsing so an unsupported input never changes instant.
+    if &bytes[17..19] == b"60" {
+        return Err(TimestampError::UnsupportedLeapSecond);
+    }
+    let mut zone_start = 19;
+    if bytes[zone_start] == b'.' {
+        zone_start += 1;
+        let fraction_start = zone_start;
+        while zone_start < bytes.len() && bytes[zone_start].is_ascii_digit() {
+            zone_start += 1;
+        }
+        let digits = zone_start - fraction_start;
+        if digits == 0 {
+            return Err(invalid_syntax());
+        }
+        if digits > 9 {
+            return Err(TimestampError::UnsupportedFractionalPrecision);
+        }
+    }
+    let zone = &bytes[zone_start..];
+    let valid_zone = zone == b"Z" || zone == b"z"
+        || (zone.len() == 6 && matches!(zone[0], b'+' | b'-')
+            && zone[3] == b':'
+            && [1, 2, 4, 5].into_iter().all(|index| zone[index].is_ascii_digit()));
+    if !valid_zone {
+        return Err(invalid_syntax());
+    }
+    Ok(())
+}
+
+struct UtcText {
+    timestamp: UtcTimestamp,
+    precision: TimestampPrecision,
+    suffix: UtcSuffix,
+    separator: char,
+}
+
+impl fmt::Display for UtcText {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let value = self.timestamp.0;
+        write!(f, "{:04}-{:02}-{:02}{}{:02}:{:02}:{:02}",
+            value.year(), u8::from(value.month()), value.day(), self.separator,
+            value.hour(), value.minute(), value.second())?;
+        let nanos = value.nanosecond();
+        match self.precision {
+            TimestampPrecision::Seconds => {}
+            TimestampPrecision::Milliseconds => write!(f, ".{:03}", nanos / 1_000_000)?,
+            TimestampPrecision::AutoSi if nanos == 0 => {}
+            TimestampPrecision::AutoSi if nanos % 1_000_000 == 0 => {
+                write!(f, ".{:03}", nanos / 1_000_000)?;
+            }
+            TimestampPrecision::AutoSi if nanos % 1_000 == 0 => {
+                write!(f, ".{:06}", nanos / 1_000)?;
+            }
+            TimestampPrecision::AutoSi => write!(f, ".{nanos:09}")?,
+        }
+        if self.separator == ' ' {
+            f.write_str(" UTC")
+        } else if self.suffix == UtcSuffix::Z {
+            f.write_str("Z")
+        } else {
+            f.write_str("+00:00")
+        }
+    }
+}
+
+impl fmt::Debug for UtcTimestamp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&UtcText { timestamp: *self, precision: TimestampPrecision::AutoSi,
+            suffix: UtcSuffix::Z, separator: 'T' }, f)
+    }
+}
+
+impl fmt::Display for UtcTimestamp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&UtcText { timestamp: *self, precision: TimestampPrecision::AutoSi,
+            suffix: UtcSuffix::Offset, separator: ' ' }, f)
+    }
+}
+
+impl Serialize for UtcTimestamp {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.collect_str(&UtcText { timestamp: *self,
+            precision: TimestampPrecision::AutoSi, suffix: UtcSuffix::Z, separator: 'T' })
+    }
+}
+
+impl<'de> Deserialize<'de> for UtcTimestamp {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let input = String::deserialize(deserializer)?;
+        parser::parse_legacy_serde(&input).map_err(serde::de::Error::custom)
+    }
+}
+
+/// Explicit numeric seconds schema; no unit inference or floating-point path.
+pub mod epoch_seconds {
+    use super::*;
+
+    pub fn serialize<S>(value: &UtcTimestamp, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_i64(value.unix_seconds())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<UtcTimestamp, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        UtcTimestamp::from_unix_seconds(i64::deserialize(deserializer)?)
+            .map_err(serde::de::Error::custom)
+    }
+}
+
+/// Explicit numeric milliseconds schema; never applies the state-row heuristic.
+pub mod epoch_milliseconds {
+    use super::*;
+
+    pub fn serialize<S>(value: &UtcTimestamp, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_i64(value.unix_millis())
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<UtcTimestamp, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        UtcTimestamp::from_unix_millis(i64::deserialize(deserializer)?)
+            .map_err(serde::de::Error::custom)
+    }
+}
+
+#[cfg(test)]
+#[path = "utc_timestamp_tests.rs"]
+mod tests;
