@@ -32,6 +32,8 @@
 
 ## 复核与复现
 
+固定 128 步实验的权重由两个可独立解压的 ZIP 提供。`equal_updates_selected_weights.zip` 含 27 个开发集选中的 `selected.pt`，`equal_updates_wall20_weights.zip` 含相同 27 个拟合的前缀检查点 `wall20.pt`。每个检查点保留训练时的目录及原始 `.pt` 文件字节。`verify.py` 检查两个包的精确成员清单，并将每个文件的 SHA-256 与测试前的 `campaign/seal.json` 逐项核对。
+
 在本目录执行 `python verify.py`。只依赖 Python 标准库，以封存文件校验每个原始权重、逐窗概率、完整流程退出码、适格检查点、指标和源版本。原始两个协议的汇总 JSON 与 CSV 必须与重新生成的文件逐字节一致。第三种的汇总为 `wallplus_summary.json`。`sender_intervention.json` 保留逐窗干预概率及权重指纹。
 
 在授权可访问仓库的环境中，将上游模型固定到前述提交并加入 `PYTHONPATH`，在作者固定数据的目录上依次执行 `python launch.py --help`、`python wall.py --help`、`python wallplus.py --help` 所示的独立输出目录命令。`protocol.md`、`wall_protocol.md` 和 `wallplus_protocol.md` 是各自冻结的协议；训练运行所用源码与预先登记的 SHA-256 均进入归档。Data credit: Luis Candanedo and Véronique Feldheim, *Accurate occupancy detection of an office room from light, temperature, humidity and CO2 measurements using statistical learning models*, Energy and Buildings 112 (2016), 28–39. UCI dataset DOI 10.24432/C5X01N, CC BY 4.0.

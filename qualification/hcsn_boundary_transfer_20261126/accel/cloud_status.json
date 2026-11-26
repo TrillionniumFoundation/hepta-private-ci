@@ -16,17 +16,19 @@
     "plan": "dpty-2f984425a2fc39226c1f456cdfc47b428063d04ae4bf9f1a664051c6365ed4bd",
     "execute": "dpty-68c032b0f54995526300563e92d65e66bf24fc4523b6a12819dc2716dd3b9d50",
     "reconcile": "dpty-7d1b45682bbadf897b63413fcafcabe63263bf479b1486e72ff468031a052109",
-    "inspect": "dpty-ca3ad7d3b80a58fb6a261337b7c2ff50e8f7b83f99dc0af14b7899b62057da7d"
+    "inspect": "dpty-ca3ad7d3b80a58fb6a261337b7c2ff50e8f7b83f99dc0af14b7899b62057da7d",
+    "reconcile_recovery": "dpty-6a282b93c0524fd4cb6ac66565ce38f3111f28977c6073ee859cf945a31db041",
+    "inspect_recovery": "dpty-3de0e62706a9a08b451f8b89c6a360e11307c86fc5e171e5cd4ec1b9ca165c9a",
+    "resume_confirmed_effect": "dpty-0fe475d7029b2f4cf51222ad5c7e8b35163d793531a612ffb0ff5be4a9544cc8",
+    "inspect_after_bind": "dpty-c34fcb8761efe098603269ba30f0817383fa8caeb378ed251c30badcf9a2c1fa"
   },
   "provider_request_key": "hc-417db2852aa7fb3a03512d90cd348736017524ed",
   "last_router_state": "RECONCILIATION_REQUIRED",
-  "phase": "allocation_unknown",
-  "error_code": "ALLOCATION_NOT_OBSERVED_NO_RESUBMIT",
-  "owned_kernel": false,
-  "owned_runtime": false,
+  "phase": "runtime_ready_last_successful_provider_observation",
+  "error_code": "FIXED_RUNTIME_NOT_FOUND",
   "runtime_submit_attempts": 1,
   "kernel_submit_attempts": 0,
-  "updated_at": "2026-11-26T15:54:05.535892+00:00",
+  "updated_at": "2026-11-26T16:07:48.868309+00:00",
   "origin": {
     "at": "2026-11-26T15:52:40.372185+00:00",
     "exception_class": "requests.exceptions.ReadTimeout",
@@ -34,5 +36,39 @@
     "seq": 6,
     "stage": "ASSIGNMENT_POST"
   },
-  "conclusion": "One allocation attempt with unknown outcome and zero submitted kernels. No retry or account rotation. No T4 wall, quality, or release claim."
+  "conclusion": "Original T4 allocation recovered temporarily. Binding the fixed original runtime returned FIXED_RUNTIME_NOT_FOUND. The router retained its reservation, with no local submit or scientific run recorded. Original identity inspected again without account rotation or a new allocation. There is no verified T4 scientific output or release.",
+  "actual_spec": {
+    "accelerator": "T4",
+    "variant": "GPU",
+    "shape": "STANDARD"
+  },
+  "observation_error": "FIXED_RUNTIME_NOT_FOUND",
+  "owned_runtime_last_successful_observation": true,
+  "owned_kernel_last_successful_observation": false,
+  "current_runtime_verified": false,
+  "current_kernel_verified": false,
+  "effects": {
+    "allocate": {
+      "at": "2026-11-26T15:51:22.482147+00:00",
+      "status": "confirmed"
+    },
+    "bind": {
+      "at": "2026-11-26T16:06:04.829154+00:00",
+      "error_code": "FIXED_RUNTIME_NOT_FOUND",
+      "status": "unknown"
+    }
+  },
+  "scientific_submission_or_run_recorded": false,
+  "outcome_verified": false,
+  "resource_release_verified": false,
+  "recovery": {
+    "at": "2026-11-26T16:01:25.105922+00:00",
+    "state": "runtime_ready",
+    "spec": {
+      "accelerator": "T4",
+      "variant": "GPU",
+      "shape": "STANDARD"
+    },
+    "same_original_provider_request": true
+  }
 }

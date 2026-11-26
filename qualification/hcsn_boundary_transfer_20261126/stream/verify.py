@@ -23,9 +23,19 @@ def digest(path):
 def verify_bundle(folder,output):
     with tempfile.TemporaryDirectory() as temp:
         root=Path(temp)
-        for name in ['equal_updates_records.zip','equal_updates_weights.zip','equal_wall_records.zip','equal_wall_weights.zip','wallplus_bundle.zip']:
+        checkpoint_archives = {
+            'equal_updates_selected_weights.zip': 'selected.pt',
+            'equal_updates_wall20_weights.zip': 'wall20.pt',
+        }
+        for name in ['equal_updates_records.zip', *checkpoint_archives, 'equal_wall_records.zip',
+                     'equal_wall_weights.zip', 'wallplus_bundle.zip']:
             with zipfile.ZipFile(folder/name) as archive:
                 assert archive.testzip() is None
+                if name in checkpoint_archives:
+                    expected = {f'campaign/{arm}-{seed}/{checkpoint_archives[name]}'
+                                for arm in ARMS for seed in SEEDS}
+                    members = archive.namelist()
+                    assert len(members) == len(expected) and set(members) == expected
                 for member in archive.namelist():
                     p=Path(member)
                     assert not p.is_absolute() and '..' not in p.parts
