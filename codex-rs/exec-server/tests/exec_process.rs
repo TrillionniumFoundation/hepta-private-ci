@@ -1,4 +1,7 @@
 mod common;
+#[cfg(windows)]
+#[path = "support/windows_elevated_fixture.rs"]
+mod windows_elevated_fixture;
 
 use std::collections::HashMap;
 #[cfg(unix)]
@@ -1179,15 +1182,19 @@ async fn assert_exec_process_write_then_read_without_tty(use_remote: bool) -> Re
 }
 
 async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
-    let context = create_process_context(/*use_remote*/ true).await?;
+    #[cfg(windows)]
+    let workspace = windows_elevated_fixture::AuthorizedReadOnlySandboxFixture::new()?;
+    #[cfg(not(windows))]
     let workspace = TempDir::new()?;
+    // Authorization and owned-directory checks precede exec-server and Full setup.
+    let context = create_process_context(/*use_remote*/ true).await?;
     let blocked_file = workspace.path().join("blocked.txt");
     let cwd = PathUri::from_host_native_path(workspace.path())?;
     let mut sandbox = FileSystemSandboxContext::from_legacy_sandbox_policy(
         SandboxPolicy::new_read_only_policy(),
         cwd.clone(),
     )?;
-    sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
 
     let session = match context
         .backend
@@ -1235,6 +1242,8 @@ async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
     assert_eq!(exit_code, Some(0));
     assert!(closed);
     assert!(!blocked_file.exists());
+    #[cfg(windows)]
+    workspace.close()?;
     Ok(())
 }
 
