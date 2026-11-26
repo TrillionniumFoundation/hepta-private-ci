@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.smallhcsn.numeric-profile.v1",
+  "family": "hepta.smallhcsn.population",
+  "scope": "research_numeric_inference",
+  "format": "actual_hcsn_v2_selected",
+  "checkpoint": {
+    "path": "checkpoint/candidate.pt",
+    "bytes": 33078,
+    "sha256": "2eeda94ea29a02119b8d7b73b2f1c355e9a052a802a5867ca5092782adc44513"
+  },
+  "capsule": {
+    "root": "capsule",
+    "archive_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+    "provenance": {
+      "path": "capsule/source_provenance.json",
+      "bytes": 9632,
+      "sha256": "72194249d27b8af51cf95f89f5db494fa525e44c156eaf11b56e417ccc8c3b55"
+    }
+  },
+  "scientific_sources": {
+    "common.py": {
+      "path": "scientific/common.py",
+      "bytes": 9582,
+      "sha256": "b14f1d47e3a8635aa781b5b983e84eca7634f9d1e26cbf7674fb697645d7759a"
+    },
+    "optimized.py": {
+      "path": "scientific/optimized.py",
+      "bytes": 1923,
+      "sha256": "c481cc23fe3953bcbb6a5e82dff28344d7cb4c0c4703cb74d14500b5b33c60d3"
+    }
+  },
+  "runtime": {
+    "python": "3.14.4",
+    "numpy": "2.5.5",
+    "torch": "2.15.0+cpu",
+    "device": "cpu",
+    "threads": 1,
+    "interop_threads": 1
+  },
+  "origin": {
+    "protocol_sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8",
+    "coordinate_candidate_sha256": null
+  }
+}
