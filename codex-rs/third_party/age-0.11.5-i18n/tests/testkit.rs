@@ -13,6 +13,7 @@ use age::x25519;
 use age::DecryptError;
 use age::Decryptor;
 use age::Identity;
+use flate2::read::GzDecoder;
 use futures::AsyncReadExt;
 use sha2::Digest;
 use sha2::Sha256;
@@ -773,7 +774,18 @@ struct TestFile {
 
 impl TestFile {
     fn parse(filename: &str) -> Self {
-        let file = File::open(format!("./tests/testdata/testkit/{}", filename)).unwrap();
+        let path = format!("./tests/testdata/testkit/{filename}");
+        let file: Box<dyn Read> = match File::open(&path) {
+            Ok(file) => Box::new(file),
+            Err(error) if error.kind() == io::ErrorKind::NotFound => {
+                // Preserve deliberate CRLF and trailing spaces in original test vectors.
+                let archive = format!("{path}.evidence.gz");
+                let file = File::open(&archive)
+                    .unwrap_or_else(|error| panic!("open fixture {archive}: {error}"));
+                Box::new(GzDecoder::new(file))
+            }
+            Err(error) => panic!("open fixture {path}: {error}"),
+        };
         let mut r = BufReader::new(file);
         let mut line = String::new();
 
