@@ -299,7 +299,6 @@ mod tests {
     use axum::Json;
     use axum::Router;
     use axum::http::StatusCode;
-    use axum::http::header::WWW_AUTHENTICATE;
     use axum::routing::get;
     use codex_exec_server::ExecServerError;
     use codex_exec_server::HttpRedirectPolicy;
