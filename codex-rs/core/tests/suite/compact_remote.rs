@@ -34,6 +34,7 @@ use codex_protocol::dynamic_tools::DynamicToolNamespaceTool;
 use codex_protocol::dynamic_tools::DynamicToolResponse;
 use codex_protocol::dynamic_tools::DynamicToolSpec;
 use codex_protocol::items::TurnItem;
+use codex_protocol::models::AgentMessageInputContent;
 use codex_protocol::models::ContentItem;
 use codex_protocol::models::FunctionCallOutputBody;
 use codex_protocol::models::FunctionCallOutputContentItem;
@@ -446,6 +447,33 @@ fn assert_compacted_user_metadata(path: &Path, retained_text: &str) -> Result<()
         "compacted user message should retain its aligned harness metadata"
     );
     Ok(())
+}
+
+fn message_create_time(item: &ResponseItem, message: &str) -> Option<serde_json::Number> {
+    match item {
+        ResponseItem::Message {
+            content,
+            internal_chat_message_metadata_passthrough: Some(metadata),
+            ..
+        } if content
+            .iter()
+            .any(|part| matches!(part, ContentItem::InputText { text } if text == message)) =>
+        {
+            metadata.create_time.clone()
+        }
+        ResponseItem::AgentMessage {
+            content,
+            internal_chat_message_metadata_passthrough: Some(metadata),
+            ..
+        } if content.iter().any(|part| {
+            matches!(part, AgentMessageInputContent::EncryptedContent { encrypted_content }
+                if encrypted_content == message)
+        }) =>
+        {
+            metadata.create_time.clone()
+        }
+        _ => None,
+    }
 }
 
 fn assert_compact_request_omits_harness_metadata(request: &responses::ResponsesRequest) {
@@ -1641,27 +1669,6 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let response_requests = responses_mock.requests();
     let compact_request = &response_requests[3];
-    let item_create_time = |request: &responses::ResponsesRequest, text: &str| {
-        request
-            .input()
-            .into_iter()
-            .find(|item| {
-                item["content"].as_array().is_some_and(|content| {
-                    content.iter().any(|part| {
-                        part["text"].as_str() == Some(text)
-                            || part["encrypted_content"].as_str() == Some(text)
-                    })
-                })
-            })
-            .and_then(|item| {
-                item.pointer("/internal_chat_message_metadata_passthrough/create_time")
-                    .cloned()
-            })
-            .expect("matching message should include a creation timestamp")
-    };
-    let original_user_create_time = item_create_time(&response_requests[0], "hello remote compact");
-    let delegated_task_create_time =
-        item_create_time(&response_requests[1], &delegated_task_ciphertext);
     assert!(
         compact_request
             .inputs_of_type("agent_message")
@@ -1741,19 +1748,53 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
     );
 
     let follow_up_request = response_requests.last().expect("follow-up request missing");
-    assert_eq!(
-        item_create_time(follow_up_request, "hello remote compact"),
-        original_user_create_time
-    );
-    assert_eq!(
-        item_create_time(follow_up_request, &delegated_task_ciphertext),
-        delegated_task_create_time
-    );
+    // The loopback provider cannot receive internal metadata. Compare the original
+    // messages with their retained entries in the actual rollout instead.
+    codex.ensure_rollout_materialized().await;
+    codex.flush_rollout().await?;
+    let rollout = fs::read_to_string(codex.rollout_path().context("missing rollout path")?)?;
+    let lines = rollout
+        .lines()
+        .map(serde_json::from_str::<RolloutLine>)
+        .collect::<std::result::Result<Vec<_>, _>>()?;
+    let (index, retained_history) = lines
+        .iter()
+        .enumerate()
+        .rev()
+        .find_map(|(index, line)| match &line.item {
+            RolloutItem::Compacted(compacted) => compacted
+                .replacement_history
+                .as_ref()
+                .map(|history| (index, history)),
+            _ => None,
+        })
+        .context("missing retained compaction history")?;
+    let recorded_create_time = |lines: &[RolloutLine], text: &str| {
+        lines.iter().find_map(|line| match &line.item {
+            RolloutItem::ResponseItem(envelope) => message_create_time(&envelope.item, text),
+            _ => None,
+        })
+    };
+    for text in ["hello remote compact", delegated_task_ciphertext.as_str()] {
+        let original_time = recorded_create_time(&lines[..index], text)
+            .with_context(|| format!("missing original creation timestamp for {text:?}"))?;
+        let retained_time = retained_history
+            .iter()
+            .find_map(|envelope| message_create_time(&envelope.item, text))
+            .with_context(|| format!("missing retained creation timestamp for {text:?}"))?;
+        assert_eq!(retained_time, original_time);
+    }
     assert!(
-        item_create_time(follow_up_request, "after compact")
-            .as_f64()
+        recorded_create_time(&lines[index + 1..], "after compact")
+            .and_then(|create_time| create_time.as_f64())
             .is_some_and(|create_time| create_time > 0.0)
     );
+    for request in [compact_request, follow_up_request] {
+        assert!(request.input().iter().all(|item| {
+            item.get("internal_chat_message_metadata_passthrough")
+                .is_none()
+        }));
+    }
     assert!(
         follow_up_request
             .inputs_of_type("agent_message")
@@ -4502,20 +4543,20 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_http() -> Result<()> {
 async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server(vec![vec![
-        vec![
+    let server = start_websocket_server(vec![
+        vec![vec![
             responses::ev_response_created("warm-1"),
             responses::ev_completed("warm-1"),
-        ],
-        vec![
+        ]],
+        vec![vec![
             json!({
                 "type": "response.metadata",
                 "headers": {(TURN_STATE_HEADER): "sampling-state"},
             }),
             responses::ev_function_call("call-before-compact", DUMMY_FUNCTION_NAME, "{}"),
             responses::ev_completed_with_tokens("r1", /*total_tokens*/ 500),
-        ],
-        vec![
+        ]],
+        vec![vec![
             json!({
                 "type": "response.metadata",
                 "headers": {(TURN_STATE_HEADER): "compact-state"},
@@ -4528,20 +4569,22 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<
                 }
             }),
             responses::ev_completed("r-compact"),
-        ],
+        ]],
         vec![
-            json!({
-                "type": "response.metadata",
-                "headers": {(TURN_STATE_HEADER): "continuation-state"},
-            }),
-            responses::ev_function_call("call-after-compact", DUMMY_FUNCTION_NAME, "{}"),
-            responses::ev_completed_with_tokens("r2", /*total_tokens*/ 80),
+            vec![
+                json!({
+                    "type": "response.metadata",
+                    "headers": {(TURN_STATE_HEADER): "continuation-state"},
+                }),
+                responses::ev_function_call("call-after-compact", DUMMY_FUNCTION_NAME, "{}"),
+                responses::ev_completed_with_tokens("r2", /*total_tokens*/ 80),
+            ],
+            vec![
+                responses::ev_assistant_message("m1", "FINAL_REPLY"),
+                responses::ev_completed_with_tokens("r3", /*total_tokens*/ 80),
+            ],
         ],
-        vec![
-            responses::ev_assistant_message("m1", "FINAL_REPLY"),
-            responses::ev_completed_with_tokens("r3", /*total_tokens*/ 80),
-        ],
-    ]])
+    ])
     .await;
     let mut builder = test_codex()
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
@@ -4561,30 +4604,36 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<
         .await?;
     wait_for_turn_complete(&test.codex).await;
 
-    let requests = server.single_connection();
-    assert_eq!(requests.len(), 5);
-    assert_eq!(requests[0].body_json()["generate"].as_bool(), Some(false));
-    // Phase 2: the v2 compact request replays the state already established by sampling.
+    let connections = server.connections();
+    // Compaction has a different WebSocket compatibility identity from sampling.
+    // The turn state must survive both reconnects, not merely a reused socket.
+    let [startup, sampling, compaction, continuation] = connections.as_slice() else {
+        panic!("expected startup, sampling, compaction and continuation connections");
+    };
+    assert_eq!(startup.len(), 1);
+    assert_eq!(sampling.len(), 1);
+    assert_eq!(compaction.len(), 1);
+    assert_eq!(continuation.len(), 2);
+    assert_eq!(startup[0].body_json()["generate"].as_bool(), Some(false));
+    assert!(startup[0].body_json()["client_metadata"][TURN_STATE_HEADER].is_null());
+    assert!(sampling[0].body_json()["client_metadata"][TURN_STATE_HEADER].is_null());
+
     assert!(
-        requests[2]
+        compaction[0]
             .body_json()
             .to_string()
             .contains("\"type\":\"compaction_trigger\"")
     );
-    // Phase 3: both post-compact requests keep replaying that first value.
     assert_eq!(
-        requests
-            .iter()
-            .map(|request| request.body_json()["client_metadata"][TURN_STATE_HEADER].clone())
-            .collect::<Vec<_>>(),
-        vec![
-            json!(null),
-            json!(null),
-            json!("sampling-state"),
-            json!("sampling-state"),
-            json!("sampling-state"),
-        ]
+        compaction[0].body_json()["client_metadata"][TURN_STATE_HEADER],
+        json!("sampling-state")
     );
+    for request in continuation {
+        assert_eq!(
+            request.body_json()["client_metadata"][TURN_STATE_HEADER],
+            json!("sampling-state")
+        );
+    }
 
     server.shutdown().await;
     Ok(())
