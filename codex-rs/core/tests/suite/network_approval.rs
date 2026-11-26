@@ -80,6 +80,9 @@ use test_case::test_case;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
+#[path = "network_approval_command_fixture_tests.rs"]
+mod command_fixture;
+
 const NETWORK_TEST_HOST: &str = "codex-network-test.invalid";
 const NETWORK_TEST_TARGET: &str = "http://codex-network-test.invalid:80";
 
@@ -107,60 +110,74 @@ async fn guardian_network_approval_preserves_action_and_outcome_routing() -> Res
         .context("expected local sh")?
         .derive_exec_args(&first_command, /*use_login_shell*/ false);
     let denial = "The destination is outside the approved test boundary.";
-    let responses = mount_sse_sequence(
+    let responses = mount_sse_once(
         &server,
-        vec![
-            sse(vec![
-                ev_response_created("resp-guardian-network-parent-1"),
-                ev_function_call(
-                    first_call_id,
-                    "exec_command",
-                    &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
-                ),
-                ev_completed("resp-guardian-network-parent-1"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-guardian-network-allow"),
-                ev_assistant_message(
-                    "msg-guardian-network-allow",
-                    r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The test request is safe."}"#,
-                ),
-                ev_completed("resp-guardian-network-allow"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-guardian-network-parent-2"),
-                ev_assistant_message("msg-guardian-network-parent-2", "approved"),
-                ev_completed("resp-guardian-network-parent-2"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-guardian-network-parent-3"),
-                ev_function_call(
-                    second_call_id,
-                    "exec_command",
-                    &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
-                ),
-                ev_completed("resp-guardian-network-parent-3"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-guardian-network-deny"),
-                ev_assistant_message(
-                    "msg-guardian-network-deny",
-                    &json!({
-                        "risk_level": "high",
-                        "user_authorization": "low",
-                        "outcome": "deny",
-                        "rationale": denial,
-                    })
-                    .to_string(),
-                ),
-                ev_completed("resp-guardian-network-deny"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-guardian-network-parent-4"),
-                ev_assistant_message("msg-guardian-network-parent-4", "denied"),
-                ev_completed("resp-guardian-network-parent-4"),
-            ]),
-        ],
+        sse(vec![
+            ev_response_created("resp-guardian-network-parent-1"),
+            ev_function_call(
+                first_call_id,
+                "exec_command",
+                &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
+            ),
+            ev_completed("resp-guardian-network-parent-1"),
+        ]),
+    )
+    .await;
+    command_fixture::mount_command_followups(
+        &server,
+        &responses,
+        first_call_id,
+        sse(vec![
+            ev_response_created("resp-guardian-network-allow"),
+            ev_assistant_message(
+                "msg-guardian-network-allow",
+                r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The test request is safe."}"#,
+            ),
+            ev_completed("resp-guardian-network-allow"),
+        ]),
+        "approved",
+    )
+    .await;
+    wiremock::Mock::given(wiremock::matchers::method("POST"))
+        .and(wiremock::matchers::path_regex(".*/responses$"))
+        .and(move |request: &wiremock::Request| {
+            !is_guardian_request(request)
+                && request_body_contains(request, "deny the network request")
+                && !request_body_contains(request, second_call_id)
+        })
+        .and(responses.clone())
+        .respond_with(sse_response(sse(vec![
+            ev_response_created("resp-guardian-network-parent-3"),
+            ev_function_call(
+                second_call_id,
+                "exec_command",
+                &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
+            ),
+            ev_completed("resp-guardian-network-parent-3"),
+        ])))
+        .up_to_n_times(1)
+        .expect(1)
+        .mount(&server)
+        .await;
+    command_fixture::mount_command_followups(
+        &server,
+        &responses,
+        second_call_id,
+        sse(vec![
+            ev_response_created("resp-guardian-network-deny"),
+            ev_assistant_message(
+                "msg-guardian-network-deny",
+                &json!({
+                    "risk_level": "high",
+                    "user_authorization": "low",
+                    "outcome": "deny",
+                    "rationale": denial,
+                })
+                .to_string(),
+            ),
+            ev_completed("resp-guardian-network-deny"),
+        ]),
+        "denied",
     )
     .await;
 
@@ -174,6 +191,7 @@ async fn guardian_network_approval_preserves_action_and_outcome_routing() -> Res
         )
         .await?;
         wait_for_completion_without_network_prompt(&test).await;
+        assert!(test.codex.list_background_terminals().await.is_empty());
     }
 
     let actions = guardian_network_actions(&responses)?;
@@ -209,16 +227,9 @@ async fn guardian_network_approval_preserves_action_and_outcome_routing() -> Res
         Some(second_command.as_str())
     );
 
-    let requests = responses.requests();
-    let approved_output = requests
-        .iter()
-        .find_map(|request| request.function_call_output_text(first_call_id))
-        .context("expected approved network tool output")?;
+    let approved_output = command_fixture::completed_output(&responses, first_call_id)?;
     assert!(!approved_output.contains("rejected"));
-    let denied_output = requests
-        .iter()
-        .find_map(|request| request.function_call_output_text(second_call_id))
-        .context("expected denied network tool output")?;
+    let denied_output = command_fixture::completed_output(&responses, second_call_id)?;
     assert!(denied_output.contains(denial));
     Ok(())
 }
@@ -1672,29 +1683,29 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
     let server = start_mock_server().await;
     let test = managed_network_unified_exec_test(&server).await?;
     let command = "python3 -c \"import urllib.request; opener = urllib.request.build_opener(urllib.request.ProxyHandler()); print('OK:' + opener.open('http://1.1.1.1', timeout=10).read().decode(errors='replace'))\"".to_string();
-    let responses = mount_sse_sequence(
+    let responses = mount_sse_once(
         &server,
-        vec![
-            sse(vec![
-                ev_response_created("resp-network-single"),
-                ev_function_call(
-                    "exec-network-single",
-                    "exec_command",
-                    &serde_json::to_string(&network_exec_args(&command))?,
-                ),
-                ev_completed("resp-network-single"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-network-guardian"),
-                ev_assistant_message("msg-network-guardian", r#"{"outcome":"deny"}"#),
-                ev_completed("resp-network-guardian"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-network-done"),
-                ev_assistant_message("msg-network-done", "done"),
-                ev_completed("resp-network-done"),
-            ]),
-        ],
+        sse(vec![
+            ev_response_created("resp-network-single"),
+            ev_function_call(
+                "exec-network-single",
+                "exec_command",
+                &serde_json::to_string(&network_exec_args(&command))?,
+            ),
+            ev_completed("resp-network-single"),
+        ]),
+    )
+    .await;
+    command_fixture::mount_command_followups(
+        &server,
+        &responses,
+        "exec-network-single",
+        sse(vec![
+            ev_response_created("resp-network-guardian"),
+            ev_assistant_message("msg-network-guardian", r#"{"outcome":"deny"}"#),
+            ev_completed("resp-network-guardian"),
+        ]),
+        "done",
     )
     .await;
 
@@ -1707,6 +1718,8 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
     )
     .await?;
     wait_for_turn_complete(&test).await;
+    assert!(test.codex.list_background_terminals().await.is_empty());
+    command_fixture::completed_output(&responses, "exec-network-single")?;
 
     assert_eq!(
         guardian_network_triggers(&[&responses])?,
