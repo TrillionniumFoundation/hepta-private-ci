@@ -34,7 +34,10 @@ legacy vectors rather than keeping an archived dependency in the active graph.
 ## Repository formatting provenance
 
 `HEPTA-formatting.patch` records the subsequent mechanical changes from
-`just fmt`; it does not belong to the functional maintenance patch.
+`just fmt`; it does not belong to the functional maintenance patch. The
+original bytes are stored as `HEPTA-formatting.patch.evidence.gz`. From the
+repository root, run `python3 qa/repository-consolidation/20261115/restore_raw_evidence.py /path/to/new-directory`
+to recover the patch at its original relative path.
 The source metadata records both pre-format and final hashes. Targeted tests
 were run before the required final fix/format step, in the order specified by
 the repository instructions.
