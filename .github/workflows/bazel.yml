@@ -247,6 +247,13 @@ jobs:
           bazel_test_args=(
             test
             --platforms=//:windows_x86_64_msvc
+            # This fixture may provision the supported sandbox only on an already
+            # elevated hosted Windows runner; its Rust guard verifies the real token.
+            --test_env=CODEX_TEST_WINDOWS_ELEVATED_FIXTURE=github-hosted-admin-v1
+            --test_env=GITHUB_ACTIONS
+            --test_env=RUNNER_ENVIRONMENT
+            --test_env=RUNNER_OS
+            --test_env=RUNNER_TEMP
             --skip_incompatible_explicit_targets
             --test_tag_filters=-argument-comment-lint
             --test_verbose_timeout_warnings
@@ -336,6 +343,13 @@ jobs:
           bazel_test_args=(
             test
             --platforms=//:windows_x86_64_msvc
+            # This fixture may provision the supported sandbox only on an already
+            # elevated hosted Windows runner; its Rust guard verifies the real token.
+            --test_env=CODEX_TEST_WINDOWS_ELEVATED_FIXTURE=github-hosted-admin-v1
+            --test_env=GITHUB_ACTIONS
+            --test_env=RUNNER_ENVIRONMENT
+            --test_env=RUNNER_OS
+            --test_env=RUNNER_TEMP
             --test_tag_filters=-argument-comment-lint
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
