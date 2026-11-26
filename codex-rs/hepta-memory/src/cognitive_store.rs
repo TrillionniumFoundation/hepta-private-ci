@@ -1821,13 +1821,11 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
 }
 
 #[cfg(all(test, unix))]
-fn canonical_database_test_directory() -> tempfile::TempDir {
+fn canonical_database_test_directory() -> std::io::Result<tempfile::TempDir> {
     // A runner's temporary directory can be spelled through an OS-managed
     // symlink. Resolve the fixture parent, not the database's security boundary.
-    let parent = std::env::temp_dir()
-        .canonicalize()
-        .expect("canonical temporary fixture directory");
-    tempfile::tempdir_in(parent).expect("private SQLite fixture directory")
+    let parent = std::env::temp_dir().canonicalize()?;
+    tempfile::tempdir_in(parent)
 }
 
 #[cfg(all(test, unix))]
@@ -1866,8 +1864,8 @@ mod additional_initial_database_permissions_tests {
     use std::os::unix::fs::PermissionsExt;
 
     #[tokio::test]
-    async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() {
-        let directory = canonical_database_test_directory();
+    async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() -> std::io::Result<()> {
+        let directory = canonical_database_test_directory()?;
         let path = directory.path().join(COGNITIVE_DB_FILENAME);
         create_private_initial_database(&path).expect("create private main before SQLite");
         assert_eq!(
@@ -1905,11 +1903,12 @@ mod additional_initial_database_permissions_tests {
             );
         }
         pool.close().await;
+        Ok(())
     }
 
     #[test]
-    fn existing_main_is_not_rewritten_by_initial_creation() {
-        let directory = canonical_database_test_directory();
+    fn existing_main_is_not_rewritten_by_initial_creation() -> std::io::Result<()> {
+        let directory = canonical_database_test_directory()?;
         let path = directory.path().join(COGNITIVE_DB_FILENAME);
         fs::write(&path, b"existing crash evidence").expect("existing file");
         fs::set_permissions(&path, fs::Permissions::from_mode(0o640))
@@ -1927,6 +1926,7 @@ mod additional_initial_database_permissions_tests {
                 & 0o7777,
             0o640
         );
+        Ok(())
     }
 }
 

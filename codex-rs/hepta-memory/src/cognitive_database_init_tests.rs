@@ -197,8 +197,8 @@ async fn recovery_does_not_repair_an_unsafe_existing_sidecar() {
 }
 
 #[test]
-fn existing_private_bytes_are_neither_truncated_nor_rewritten() {
-    let temp = canonical_database_test_directory();
+fn existing_private_bytes_are_neither_truncated_nor_rewritten() -> std::io::Result<()> {
+    let temp = canonical_database_test_directory()?;
     let root = create_private_directory(temp.path()).expect("private canonical fixture root");
     let home = AbsolutePathBuf::try_from(root.clone()).expect("absolute fixture root");
     let config = SqliteConfig::from_sqlite_home(home);
@@ -215,11 +215,12 @@ fn existing_private_bytes_are_neither_truncated_nor_rewritten() {
         (after.dev(), after.ino(), after.mode())
     );
     assert_eq!(fs::read(&path).expect("retained"), b"retained bytes");
+    Ok(())
 }
 
 #[test]
-fn existing_links_and_restrictive_permissions_are_rejected_without_repair() {
-    let temp = canonical_database_test_directory();
+fn existing_links_and_restrictive_permissions_are_rejected_without_repair() -> std::io::Result<()> {
+    let temp = canonical_database_test_directory()?;
     let root = create_private_directory(temp.path()).expect("private canonical fixture root");
     let home = AbsolutePathBuf::try_from(root.clone()).expect("absolute fixture root");
     let config = SqliteConfig::from_sqlite_home(home);
@@ -251,12 +252,13 @@ fn existing_links_and_restrictive_permissions_are_rejected_without_repair() {
         fs::metadata(&restricted).expect("unchanged mode").mode() & 0o7777,
         0o000
     );
+    Ok(())
 }
 
 #[test]
-fn existing_fifo_is_rejected_without_waiting_for_a_peer() {
+fn existing_fifo_is_rejected_without_waiting_for_a_peer() -> std::io::Result<()> {
     use std::os::unix::fs::FileTypeExt;
-    let temp = canonical_database_test_directory();
+    let temp = canonical_database_test_directory()?;
     let root = create_private_directory(temp.path()).expect("private canonical fixture root");
     let home = AbsolutePathBuf::try_from(root.clone()).expect("absolute fixture root");
     let config = SqliteConfig::from_sqlite_home(home);
@@ -275,6 +277,7 @@ fn existing_fifo_is_rejected_without_waiting_for_a_peer() {
             .file_type()
             .is_fifo()
     );
+    Ok(())
 }
 
 #[tokio::test]

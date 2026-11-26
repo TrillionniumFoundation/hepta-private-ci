@@ -4,8 +4,8 @@ use super::*;
 use std::os::unix::fs::PermissionsExt;
 
 #[tokio::test]
-async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() {
-    let directory = canonical_database_test_directory();
+async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() -> std::io::Result<()> {
+    let directory = canonical_database_test_directory()?;
     let path = directory.path().join(COGNITIVE_DB_FILENAME);
     create_private_initial_database(&path).expect("create private main before SQLite");
     assert_eq!(
@@ -43,11 +43,12 @@ async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() {
         );
     }
     pool.close().await;
+    Ok(())
 }
 
 #[test]
-fn existing_main_is_not_rewritten_by_initial_creation() {
-    let directory = canonical_database_test_directory();
+fn existing_main_is_not_rewritten_by_initial_creation() -> std::io::Result<()> {
+    let directory = canonical_database_test_directory()?;
     let path = directory.path().join(COGNITIVE_DB_FILENAME);
     fs::write(&path, b"existing crash evidence").expect("existing file");
     fs::set_permissions(&path, fs::Permissions::from_mode(0o640))
@@ -65,4 +66,5 @@ fn existing_main_is_not_rewritten_by_initial_creation() {
             & 0o7777,
         0o640
     );
+    Ok(())
 }
