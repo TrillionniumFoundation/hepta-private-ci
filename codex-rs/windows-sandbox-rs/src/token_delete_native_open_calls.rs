@@ -47,6 +47,8 @@ const SHARING: u32 = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 pub(super) enum NativeRequest {
     DeleteOnly,
     ObservedWin32Grant,
+    DeleteReadAttributes,
+    DeleteSynchronize,
 }
 
 #[derive(Debug)]
@@ -95,6 +97,8 @@ pub(super) fn native(path: &Path, scenario: &str, request: NativeRequest) -> Res
             DELETE | SYNCHRONIZE | FILE_READ_ATTRIBUTES,
             "NTObservedGrant",
         ),
+        NativeRequest::DeleteReadAttributes => (DELETE | FILE_READ_ATTRIBUTES, "NTReadAttributes"),
+        NativeRequest::DeleteSynchronize => (DELETE | SYNCHRONIZE, "NTSynchronize"),
     };
     let dos = local_drive_name(path)?;
     let mut name: Vec<u16> = r"\??\".encode_utf16().chain(dos).collect();

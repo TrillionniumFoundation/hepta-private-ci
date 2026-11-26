@@ -1,4 +1,4 @@
-//! Twelve opens on four new fixtures; no deletion or authority change.
+//! Twenty opens on four new fixtures; no deletion or authority change.
 
 #[path = "token_delete_native_open_calls.rs"]
 mod calls;
@@ -71,25 +71,37 @@ fn absolute_nt_and_win32_open_observations() -> Result<()> {
             integrity::object_facts(&target)?,
         );
         let authorization = AuthorizationSnapshot::capture(&parent, &target, &name, "before")?;
-        let (win32, native, observed_grant, token_facts) = token.run(|| -> Result<_> {
-            let identity = facts::current_token(&name, "before")?;
-            let token_facts = integrity::current_token_facts()?;
-            authorization.observe_current_token(&name, "before")?;
-            let win32 = calls::win32(&target, &name)?;
-            let native = calls::native(&target, &name, calls::NativeRequest::DeleteOnly)?;
-            let observed_grant =
-                calls::native(&target, &name, calls::NativeRequest::ObservedWin32Grant)?;
-            authorization.observe_current_token(&name, "after")?;
-            ensure!(
-                identity == facts::current_token(&name, "after")?,
-                "semantic token identity/privileges changed"
-            );
-            ensure!(
-                token_facts == integrity::current_token_facts()?,
-                "token integrity/policy changed"
-            );
-            Ok((win32, native, observed_grant, token_facts))
-        })??;
+        let (win32, native, observed_grant, read_attributes, synchronize, token_facts) =
+            token.run(|| -> Result<_> {
+                let identity = facts::current_token(&name, "before")?;
+                let token_facts = integrity::current_token_facts()?;
+                authorization.observe_current_token(&name, "before")?;
+                let win32 = calls::win32(&target, &name)?;
+                let native = calls::native(&target, &name, calls::NativeRequest::DeleteOnly)?;
+                let observed_grant =
+                    calls::native(&target, &name, calls::NativeRequest::ObservedWin32Grant)?;
+                let read_attributes =
+                    calls::native(&target, &name, calls::NativeRequest::DeleteReadAttributes)?;
+                let synchronize =
+                    calls::native(&target, &name, calls::NativeRequest::DeleteSynchronize)?;
+                authorization.observe_current_token(&name, "after")?;
+                ensure!(
+                    identity == facts::current_token(&name, "after")?,
+                    "semantic token identity/privileges changed"
+                );
+                ensure!(
+                    token_facts == integrity::current_token_facts()?,
+                    "token integrity/policy changed"
+                );
+                Ok((
+                    win32,
+                    native,
+                    observed_grant,
+                    read_attributes,
+                    synchronize,
+                    token_facts,
+                ))
+            })??;
         let after = (
             facts::descriptor_bytes(&parent)?,
             facts::descriptor_bytes(&target)?,
@@ -110,7 +122,13 @@ fn absolute_nt_and_win32_open_observations() -> Result<()> {
             target.is_dir() && std::fs::read_dir(&target)?.next().is_none(),
             "open-only fixture namespace changed"
         );
-        for observation in [&win32, &native, &observed_grant] {
+        for observation in [
+            &win32,
+            &native,
+            &observed_grant,
+            &read_attributes,
+            &synchronize,
+        ] {
             match scenario {
                 Scenario::NullTarget => ensure!(
                     observation.opened && observation.error.is_none(),
@@ -131,8 +149,8 @@ fn absolute_nt_and_win32_open_observations() -> Result<()> {
         fixture
             .close()
             .with_context(|| format!("cleanup native-open fixture: {scenario:?}"))?;
-        observed += 3;
+        observed += 5;
     }
-    ensure!(observed == 12, "expected twelve distinct open observations");
+    ensure!(observed == 20, "expected twenty distinct open observations");
     Ok(())
 }

@@ -135,15 +135,16 @@ def verify_native_open(log):
             r"Summary\s+\[[^]]+\] 1 tests? run: 1 passed, 0 skipped", clean):
         raise RuntimeError("the independent native-open diagnostic did not complete")
     rows = re.findall(r"^\s*HEPTA_NATIVE_OPEN scenario=(Target|NullParent|NullTarget|Neither) "
-                      r"api=(Win32|NT|NTObservedGrant) requested=0x([0-9a-f]{8}) "
+                      r"api=(Win32|NT|NTObservedGrant|NTReadAttributes|NTSynchronize) requested=0x([0-9a-f]{8}) "
                       r"opened=(true|false) (.+)$", clean, re.M)
     scenarios = {"Target", "NullParent", "NullTarget", "Neither"}
-    masks = {"Win32": "00010000", "NT": "00010000", "NTObservedGrant": "00110080"}
+    masks = {"Win32": "00010000", "NT": "00010000", "NTObservedGrant": "00110080",
+             "NTReadAttributes": "00010080", "NTSynchronize": "00110000"}
     expected = {(scenario, api, mask) for scenario in scenarios for api, mask in masks.items()}
     raw_rows = re.findall(r"^\s*HEPTA_NATIVE_OPEN .+$", clean, re.M)
-    if len(raw_rows) != 12 or len(rows) != 12 or {
+    if len(raw_rows) != 20 or len(rows) != 20 or {
             (scenario, api, mask) for scenario, api, mask, _, _ in rows} != expected:
-        raise RuntimeError("expected exactly twelve distinct open observations with fixed masks")
+        raise RuntimeError("expected exactly twenty distinct open observations with fixed masks")
     for scenario, api, mask, opened, details in rows:
         if opened == "true":
             grant = re.search(r"\bgranted=Some\((\d+)\)", details)
