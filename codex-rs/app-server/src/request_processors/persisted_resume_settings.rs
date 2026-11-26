@@ -10,6 +10,7 @@ pub(super) struct PersistedResumeSettings {
     pub(super) approval_policy: AskForApproval,
     pub(super) approvals_reviewer: Option<ApprovalsReviewer>,
     pub(super) active_permission_profile: Option<ActivePermissionProfile>,
+    pub(super) runtime_permission_profile: Option<ActivePermissionProfile>,
     pub(super) runtime_cwd: Option<AbsolutePathBuf>,
     pub(super) runtime_workspace_roots: Option<Vec<AbsolutePathBuf>>,
 }
@@ -24,13 +25,17 @@ pub(super) fn latest_persisted_resume_settings(
     // effective list was empty, which remains distinct from no turn context.
     let runtime_environment = history.iter().rev().find_map(|item| match item {
         RolloutItem::TurnContext(turn_context) => Some((
+            turn_context.active_permission_profile.clone(),
             turn_context.cwd.clone(),
             turn_context.workspace_roots.clone().unwrap_or_default(),
         )),
         _ => None,
     });
-    let runtime_cwd = runtime_environment.as_ref().map(|(cwd, _)| cwd.clone());
-    let runtime_workspace_roots = runtime_environment.map(|(_, roots)| roots);
+    let runtime_permission_profile = runtime_environment
+        .as_ref()
+        .and_then(|(profile, _, _)| profile.clone());
+    let runtime_cwd = runtime_environment.as_ref().map(|(_, cwd, _)| cwd.clone());
+    let runtime_workspace_roots = runtime_environment.map(|(_, _, roots)| roots);
 
     history
         .iter()
@@ -49,6 +54,7 @@ pub(super) fn latest_persisted_resume_settings(
                     })
                 }),
                 active_permission_profile: turn_context.active_permission_profile.clone(),
+                runtime_permission_profile: runtime_permission_profile.clone(),
                 runtime_cwd: runtime_cwd.clone(),
                 runtime_workspace_roots: runtime_workspace_roots.clone(),
             }),
@@ -60,6 +66,7 @@ pub(super) fn latest_persisted_resume_settings(
                         .thread_settings
                         .active_permission_profile
                         .clone(),
+                    runtime_permission_profile: runtime_permission_profile.clone(),
                     runtime_cwd: runtime_cwd.clone(),
                     runtime_workspace_roots: runtime_workspace_roots.clone(),
                 })
