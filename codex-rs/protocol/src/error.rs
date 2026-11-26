@@ -753,12 +753,10 @@ fn format_retry_timestamp(resets_at: &codex_utils_time::Timestamp) -> String {
     let local_reset = resets_at.to_local();
     let local_now = now_for_retry().to_local();
     if local_reset.date() == local_now.date() {
-        local_reset.format("%-I:%M %p").to_string()
+        local_reset.format("%-I:%M %p")
     } else {
         let suffix = day_suffix(local_reset.day());
-        local_reset
-            .format(&format!("%b %-d{suffix}, %Y %-I:%M %p"))
-            .to_string()
+        local_reset.format(&format!("%b %-d{suffix}, %Y %-I:%M %p"))
     }
 }
 
