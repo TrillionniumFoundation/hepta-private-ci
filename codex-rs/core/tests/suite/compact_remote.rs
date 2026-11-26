@@ -1667,10 +1667,9 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
     let response_requests = responses_mock.requests();
     for request in &response_requests {
         assert!(
-            request
-                .input()
-                .iter()
-                .all(|item| item.get("internal_chat_message_metadata_passthrough").is_none()),
+            request.input().iter().all(|item| item
+                .get("internal_chat_message_metadata_passthrough")
+                .is_none()),
             "a provider mock must not receive internal message metadata"
         );
     }
@@ -4585,22 +4584,20 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<
                 responses::ev_completed_with_tokens("r1", /*total_tokens*/ 500),
             ],
         ],
-        vec![
-            vec![
-                json!({
-                    "type": "response.metadata",
-                    "headers": {(TURN_STATE_HEADER): "compact-state"},
-                }),
-                json!({
-                    "type": "response.output_item.done",
-                    "item": {
-                        "type": "compaction",
-                        "encrypted_content": "V2_WS_COMPACT_SUMMARY",
-                    }
-                }),
-                responses::ev_completed("r-compact"),
-            ],
-        ],
+        vec![vec![
+            json!({
+                "type": "response.metadata",
+                "headers": {(TURN_STATE_HEADER): "compact-state"},
+            }),
+            json!({
+                "type": "response.output_item.done",
+                "item": {
+                    "type": "compaction",
+                    "encrypted_content": "V2_WS_COMPACT_SUMMARY",
+                }
+            }),
+            responses::ev_completed("r-compact"),
+        ]],
         vec![
             vec![
                 json!({
