@@ -458,6 +458,25 @@ impl SparseJournal {
         }
     }
 
+    /// Reject a mismatched submitted owner scope/objective before any external
+    /// model invocation. This repeats the commit-time check; it does not grant
+    /// authority or substitute for the final commit's own verification.
+    pub(crate) fn verify_owner_context(
+        &self,
+        scope_digest: Digest32,
+        objective_digest: Digest32,
+    ) -> Result<(), JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if self.scope.scope_digest != scope_digest
+            || self.scope.objective_digest != objective_digest
+        {
+            return Err(JournalError::ContextMismatch);
+        }
+        Ok(())
+    }
+
     /// Return the current durable checkpoint frontier. This is an observation,
     /// not an external acknowledgement; hosts still retain JournalAnchor in an
     /// independent rollback domain before treating the frontier as acknowledged.
