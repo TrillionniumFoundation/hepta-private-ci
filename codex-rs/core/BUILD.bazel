@@ -24,7 +24,7 @@ codex_rust_crate(
     ],
     integration_compile_data_extra = ["src/guardian/node_repl_policy.md"],
     integration_test_timeout = "long",
-    native_sharded_test_tags = {
+    native_test_launcher_tags = {
         "core-all-test": ["no-remote-exec"],
     },
     run_tests_with_wine_exec = True,
