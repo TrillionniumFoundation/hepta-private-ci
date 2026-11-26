@@ -1,0 +1,245 @@
+name: Learning plasticity exact qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-runtime/**"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/learning.plasticity/**"
+      - "qualification/module-execution-dossiers/detail/learning.plasticity.md"
+      - "scripts/*plasticity*"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+      - ".github/workflows/learning-plasticity-exact-qualification.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-runtime/**"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/learning.plasticity/**"
+      - "qualification/module-execution-dossiers/detail/learning.plasticity.md"
+      - "scripts/*plasticity*"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+      - ".github/workflows/learning-plasticity-exact-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: learning-plasticity-exact-v2-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUST_BACKTRACE: "1"
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  WORKFLOW_SHA: ${{ github.workflow_sha }}
+
+jobs:
+  source-snapshot:
+    name: Preserve immutable review source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export exact Git candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          BASE_SHA="$EVENT_BASE_SHA"
+          if [ "${{ github.event_name }}" != pull_request ]; then
+            BASE_SHA="$(git rev-parse "$SOURCE_SHA^1" 2>/dev/null || printf '%s' "$SOURCE_SHA")"
+          fi
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            BASE_SHA="$SOURCE_SHA"
+          fi
+          mkdir -p "$RUNNER_TEMP/plasticity-source"
+          git bundle create "$RUNNER_TEMP/plasticity-source/source.bundle" HEAD
+          {
+            printf 'source=%s\n' "$SOURCE_SHA"
+            printf 'source_tree=%s\n' "$(git rev-parse "$SOURCE_SHA^{tree}")"
+            printf 'base=%s\n' "$BASE_SHA"
+            printf 'base_tree=%s\n' "$(git rev-parse "$BASE_SHA^{tree}")"
+            printf 'workflow_sha=%s\n' "$WORKFLOW_SHA"
+            printf 'run_id=%s\n' "$GITHUB_RUN_ID"
+            printf 'run_attempt=%s\n' "$GITHUB_RUN_ATTEMPT"
+          } > "$RUNNER_TEMP/plasticity-source/identity.txt"
+          sha256sum "$RUNNER_TEMP/plasticity-source/source.bundle" \
+            "$RUNNER_TEMP/plasticity-source/identity.txt" \
+            > "$RUNNER_TEMP/plasticity-source/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plasticity-source-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/plasticity-source/
+          retention-days: 14
+          if-no-files-found: error
+
+  map-projection:
+    name: Project exact implementation map
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate prospective tracked map/status files outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          python3 scripts/project_learning_plasticity_map.py \
+            --output "$RUNNER_TEMP/plasticity-map-projection"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: plasticity-map-projection-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/plasticity-map-projection/
+          retention-days: 14
+          if-no-files-found: error
+
+  qualify:
+    name: Plasticity ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["final-merge"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind one immutable Git candidate
+        id: candidate
+        shell: bash
+        env:
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          BASE_SHA="$EVENT_BASE_SHA"
+          if [ "$LANE" = final-merge ]; then
+            BASE_SHA="$(git rev-parse "$SOURCE_SHA^1" 2>/dev/null || printf '%s' "$SOURCE_SHA")"
+          fi
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            echo "invalid fixed base: $BASE_SHA" >&2
+            exit 2
+          fi
+          if [ "$LANE" = synthetic-merge ]; then
+            TREE="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            [[ "$TREE" =~ ^[0-9a-f]{40}$ ]]
+            export GIT_AUTHOR_NAME="Hepta Plasticity Qualification"
+            export GIT_AUTHOR_EMAIL="plasticity-qualification@invalid"
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE="2000-01-01T00:00:00Z"
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            TESTED_SHA="$(printf '%s\n' 'Deterministic learning.plasticity qualification' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            git checkout --detach "$TESTED_SHA"
+            test "$(git rev-list --parents -n 1 HEAD)" = "$TESTED_SHA $BASE_SHA $SOURCE_SHA"
+          else
+            TESTED_SHA="$SOURCE_SHA"
+          fi
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain)"
+          {
+            printf 'BASE_SHA=%s\n' "$BASE_SHA"
+            printf 'TESTED_SHA=%s\n' "$TESTED_SHA"
+            printf 'LANE=%s\n' "$LANE"
+            printf 'GITHUB_WORKFLOW_SHA=%s\n' "$WORKFLOW_SHA"
+          } >> "$GITHUB_ENV"
+          printf 'tested_sha=%s\n' "$TESTED_SHA" >> "$GITHUB_OUTPUT"
+          printf 'source=%s\nbase=%s\ntested=%s\ntree=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$TESTED_SHA" "$(git rev-parse HEAD^{tree})" \
+            >> "$GITHUB_STEP_SUMMARY"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute read-only qualification
+        run: |
+          python3 scripts/qualify_learning_plasticity.py \
+            --output "${{ runner.temp }}/plasticity-evidence/${{ matrix.lane }}"
+      - name: Verify unchanged candidate
+        if: always() && steps.candidate.outputs.tested_sha != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plasticity-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/plasticity-evidence/${{ matrix.lane }}/
+          retention-days: 14
+          if-no-files-found: error
+
+  readiness:
+    name: Single candidate readiness
+    needs: [source-snapshot, map-projection, qualify]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          pattern: plasticity-*-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/plasticity-input
+          merge-multiple: false
+      - name: Aggregate only this run and attempt
+        shell: bash
+        env:
+          GITHUB_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha || '' }}
+        run: |
+          set -euo pipefail
+          BASE_SHA="$EVENT_BASE_SHA"
+          if [ "${{ github.event_name }}" != pull_request ]; then
+            BASE_SHA="$(git rev-parse "$SOURCE_SHA^1" 2>/dev/null || printf '%s' "$SOURCE_SHA")"
+          fi
+          python3 scripts/aggregate_learning_plasticity_readiness.py \
+            --input "$RUNNER_TEMP/plasticity-input" \
+            --output "$RUNNER_TEMP/plasticity-readiness" \
+            --event "${{ github.event_name }}" \
+            --source "$SOURCE_SHA" \
+            --base "$BASE_SHA" \
+            --workflow-sha "$WORKFLOW_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --github-merge-sha "$GITHUB_MERGE_SHA"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: plasticity-readiness-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plasticity-readiness/
+          retention-days: 30
+          if-no-files-found: error
