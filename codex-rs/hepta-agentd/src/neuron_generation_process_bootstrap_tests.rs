@@ -292,7 +292,8 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
 }
 
 #[tokio::test]
-async fn actual_resident_joint_reopens_the_original_descriptor_owner_without_dispatch() -> Result<()> {
+async fn actual_resident_joint_reopens_the_original_descriptor_owner_without_dispatch() -> Result<()>
+{
     reopen_original_result(/*resident*/ true).await
 }
 
