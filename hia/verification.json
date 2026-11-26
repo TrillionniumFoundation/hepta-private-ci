@@ -6,17 +6,33 @@
   "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
   "target": "x86_64-unknown-linux-gnu",
   "build_mode": "native-selfhost",
-  "build_status": "source_increment_not_executed",
-  "compiler_fixed_point": null,
-  "compiler_generations": [],
-  "build_report_sha256": null,
-  "native_module_count": 35,
-  "current_opt_in_linked_kernel_count": 32,
+  "build_status": "local_native_selfhost_and_utf8_owner_passed",
+  "compiler_fixed_point": true,
+  "compiler_generations": [
+    {
+      "name": "B1",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+    },
+    {
+      "name": "B2",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+    },
+    {
+      "name": "B3",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "evidence_scope": "Fresh local native-selfhost generation; 679950-byte image retained in native36-v1/bootstrap."
+    }
+  ],
+  "build_report_sha256": "bfe83b2cb03326412a16426f7d2cc29915b021af5122cd8356afe8c4bb88f14a",
+  "native_module_count": 36,
+  "current_opt_in_linked_kernel_count": 33,
   "retained_oracle_only_kernel_count": 3,
-  "borrowed_module_count": 33,
+  "borrowed_module_count": 34,
   "scalar_module_count": 2,
   "production_algorithm_group_count": null,
-  "module_count_scope": "Configured current source modules and links only:35 build modules,32 opt-in caller kernels across eight build entries (9+7+3+8+1+1+2+1),33 borrowed-buffer profiles and two scalar profiles. The installed CLI requires31 symbols plus one library-only; three retained oracle-only modules remain. The historical audited union remains29. These counts do not assert publication, execution, algorithms, production coverage or qualification.",
+  "module_count_scope": "36 configured build modules, 33 opt-in caller kernels across eight build entries (9+7+3+8+1+1+3+1), 34 borrowed-buffer and two scalar profiles. The installed CLI still requires 31 symbols; uuid_find and utf8_stream are library-only, and three modules are retained oracle-only. Counts do not establish algorithms or whole-production coverage.",
   "whole_codex_rewritten": false,
   "production_dispatch_migrated": false,
   "default_release_migrated": false,
@@ -26,77 +42,61 @@
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "opt_in_production_callers_verified": false,
-  "scope": "The complete fuzzy_match HIA source, bounded Rust transport, original public routing and literal/public/private-decoder regressions are composed and unqualified. Fresh exact35-lock B1/B2/B3, all module/link receipts, original default/native owner, five focused original UI regression groups and installed-consumer evidence are pending. These groups are not five direct matcher callers or whole-default-TUI coverage. Earlier34/33/32/31/30/29 and exact17 records remain historical.",
+  "scope": "The exact native36 source was built locally through fresh B1/B2/B3 and all 36 module/link bindings. The UTF-8 public library owner passed all 72 native and 54 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 200-call raw gate and six retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified.",
   "module_roles": "hia/joint_module_roles.json",
   "current_qualification": {
-    "status": "source_increment_unqualified",
+    "status": "local_utf8_owner_passed_other_gates_pending",
     "qualification_revision": null,
     "source_composed": true,
-    "new_source_module": "fuzzy_match",
-    "kernel_source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+    "new_source_module": "utf8_stream",
+    "kernel_source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+    "kernel_source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
+    "kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+    "owner_source_revision": "ede835e745fb05c5506655ed56532f77672e25d4",
+    "integration_source_revision": "820ebc07b0b76fdc39ef539bbfedf57e28fba399",
     "raw_abi_harness_authored": true,
     "rust_public_oracles_authored": true,
-    "raw_abi_harness_executed": false,
-    "rust_public_oracles_executed": false,
-    "native_build_executed": false,
-    "compiler_generations_executed": false,
+    "raw_abi_harness_executed": true,
+    "rust_public_oracles_executed": true,
+    "native_build_executed": true,
+    "compiler_generations_executed": true,
+    "full_native36_admission": true,
+    "public_library_owner_verified_locally": true,
     "opt_in_production_callers_verified": false,
     "complete_current_workflow_passed": false,
     "historical_exact17_job_passed_this_run": false,
     "joint_job_runtime_cost_verified": false,
     "per_job_budget_minutes": 60,
-    "all_static_link_receipts_require_regeneration": true,
-    "receipt_regeneration_scope": "The lock and caller sources changed. Fresh exact-source B1/B2/B3/compiler evidence and all35 configured module source/object/library/archive/input/.link bindings are required. Older full-native29/30/31/32/33/34 receipts cannot be reused or relabeled.",
-    "new_native_artifacts_created": false,
+    "new_native_artifacts_created": true,
     "complete_independent_artifact_custody": false,
     "documentation_successor_exact_head_qualified": false,
     "retirement_authorized": false,
+    "configured_raw_literal_cases": 25,
+    "executed_raw_native_calls": 200,
+    "original_utf8_public_methods_preserved": 6,
+    "added_public_methods_both_features": 4,
+    "added_native_methods": 5,
+    "byte_classification_differential_inputs": 111996,
+    "native_owner_tests_passed": 72,
+    "default_owner_tests_passed": 54,
+    "owner_tests_skipped": 0,
+    "strict_clippy_both_features_passed": true,
+    "just_fix_both_features_and_just_fmt_passed": true,
+    "maintenance_left_rust_sources_unchanged": true,
+    "aggregate_input_size_cap_introduced": false,
+    "large_default_and_native_public_execution": true,
+    "installed_cli_reachability_claimed": false,
     "network_owner_workflow_baselines": [
       "original",
-      "native35"
+      "native36"
     ],
     "mandatory_owner_baselines": [
       "original",
       "native16",
-      "native35"
+      "native36"
     ],
     "mandatory_predecessor16_gate_executed": false,
-    "network_owner_scope": "The retained workflow runs two baselines and lacks the admitted published16 link bundle. It does not execute or qualify the separate mandatory original/native16/current owner gate.",
-    "kernel_source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
-    "kernel_source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
-    "configured_raw_literal_frames": 242,
-    "rust_public_oracle_methods_authored": 3,
-    "configured_raw_native_calls": 242,
-    "original_public_owner_methods_preserved": 8,
-    "public_methods_both_features_authored": 1,
-    "native_only_large_public_methods_authored": 2,
-    "native_decoder_methods_authored": 13,
-    "large_default_execution_claimed": false,
-    "configured_raw_streams": 16,
-    "configured_raw_stream_calls": 70,
-    "configured_standalone_raw_cases": 172,
-    "raw_input_files": [
-      "hia/tests/fuzzy_match_oracle_inputs.json",
-      "hia/tests/fuzzy_match_oracle_streams.json",
-      "hia/tests/fuzzy_match_oracle_raw_core.json",
-      "hia/tests/fuzzy_match_oracle_raw_hay_max.json",
-      "hia/tests/fuzzy_match_oracle_raw_tail.json"
-    ],
-    "maximum_raw_shard_bytes": 308312,
-    "public_literal_rows_authored": 50,
-    "full_native35_admission": false,
-    "focused_original_UI_regression_groups": [
-      "bottom_pane::command_popup::",
-      "bottom_pane::file_search_popup::",
-      "bottom_pane::selection_popup_common::",
-      "bottom_pane::skill_popup::",
-      "bottom_pane::skills_toggle_view::"
-    ],
-    "focused_UI_scope": "Five focused original UI regression groups under native/default selections, not five direct fuzzy callers or whole-default-TUI coverage. The two skill_popup ranking oracles use the real matcher; selection_popup_common renders supplied scalar indices, command_popup has independent exact/prefix logic, file_search_popup preserves result paging, and skills_toggle_view routes through match_skill.",
-    "whole_default_TUI_qualified": false,
-    "aggregate_input_size_cap_introduced": false,
-    "allocation_OOM_and_panic_timing_equivalence_claimed": false,
-    "logical_u64_states_are_real_giant_workloads": false
+    "scope": "The exact native36 source was built locally through fresh B1/B2/B3 and all 36 module/link bindings. The UTF-8 public library owner passed all 72 native and 54 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 200-call raw gate and six retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified."
   },
   "source_owner_histories": {
     "17": {
@@ -453,17 +453,16 @@
     "retirement_authorized": false
   },
   "pending_gates_context": {
-    "scope": "The pending_gates array is retained as historical pending-gate text. Earlier source contexts remain in previous_source_increment snapshots. Current35 source requirements are only those in current_pending_gates and current_qualification; previous execution evidence is revision-bound.",
+    "scope": "Historical pending arrays and previous_source_increment snapshots retain their own contexts. Current36 pending work is in current_pending_gates; local execution is limited by current_qualification.",
     "historical_qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
     "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
   },
   "current_pending_gates": [
-    "Build exact full-native35 through fresh B1/B2/B3 with the unchanged compiler pin; bind all35 sources, objects, namespaced libraries, archives, compiler inputs and eight-owner static-link receipts. Current35 admission and installed31-symbol CLI plus library-only/oracle distinctions remain unqualified.",
-    "Run all242 planned fuzzy ABI invocations:16 literal streams with70 calls and172 standalone frames. Authenticate the small manifest and four fixed-name/size/SHA shards, largest308312 bytes, before native loading; compare whole u64 returns, every state word, command/index payload and untouched source/workspace/output guards and tail. Huge logical-u64 histories are not executed giant workloads. Retain every earlier raw/public gate.",
-    "Run the eight unchanged original matcher methods and one new public method containing50 hand-derived literal rows under both default/native selections; run13 private native decoder methods and two native-only >1MiB public witnesses. Run the five focused original UI regression groups under both selections; they are neither five direct matcher callers nor whole-default-TUI coverage. Preserve every prior owner, Core consumer, assertion, skip and budget.",
-    "Verify full Unicode17 char-versus-str lowercase including Final_Sigma and Case_Ignorable precedence, NUL retention, greedy original-scalar indices, expansion deduplication, prefix preference and the original three i32 score operations. The ordinary overflow primitive bridge must use the actual crate overflow-check policy without Rust score/search/lowercase fallback. No aggregate semantic cap is added; allocation/OOM/panic timing equivalence is not claimed.",
-    "Complete both current and exact74d1 historical jobs within the unchanged60-minute budgets. The current two-baseline network workflow does not satisfy the separate mandatory original/native16/current owner gate.",
-    "Independently receive and verify exact-source artifact/report payloads. Required platforms, whole workspace/product behavior, performance, default release and retirement remain separately unqualified."
+    "Run the complete native36 and separately checked-out exact74d1 historical CI jobs within their unchanged 60-minute budgets; local component passes do not qualify complete workflows.",
+    "Complete every retained original/default/native owner and selected Core/UI consumer gate, including all fuzzy-match owner and five focused UI groups and the installed31-symbol CLI gate. The two library-only symbols remain outside installed reachability claims.",
+    "Complete the separate mandatory original/native16/current network owner gate; the current two-baseline workflow cannot replace it.",
+    "Preserve exact source, lock, build/helper and artifact bindings for any later change. The fresh native36 report is bound to the recorded local inputs and is not transferable to a changed lock or kernel.",
+    "Independently receive and verify complete exact-source artifact/report payloads. Required platforms, workspace/product behavior, performance, default release and retirement remain separately unqualified."
   ],
   "previous_source_increment": {
     "source_revision": "00a7d0f06fe62fa513ce6e4c4f80212e488e9e0b",
@@ -842,5 +841,198 @@
       "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
     },
     "qualification_transferred_to_current35": false
+  },
+  "previous_source_increment_35": {
+    "build_status": "source_increment_not_executed",
+    "compiler_fixed_point": null,
+    "compiler_generations": [],
+    "build_report_sha256": null,
+    "native_module_count": 35,
+    "current_opt_in_linked_kernel_count": 32,
+    "retained_oracle_only_kernel_count": 3,
+    "borrowed_module_count": 33,
+    "scalar_module_count": 2,
+    "module_count_scope": "Configured current source modules and links only:35 build modules,32 opt-in caller kernels across eight build entries (9+7+3+8+1+1+2+1),33 borrowed-buffer profiles and two scalar profiles. The installed CLI requires31 symbols plus one library-only; three retained oracle-only modules remain. The historical audited union remains29. These counts do not assert publication, execution, algorithms, production coverage or qualification.",
+    "scope": "The complete fuzzy_match HIA source, bounded Rust transport, original public routing and literal/public/private-decoder regressions are composed and unqualified. Fresh exact35-lock B1/B2/B3, all module/link receipts, original default/native owner, five focused original UI regression groups and installed-consumer evidence are pending. These groups are not five direct matcher callers or whole-default-TUI coverage. Earlier34/33/32/31/30/29 and exact17 records remain historical.",
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "source_composed": true,
+      "new_source_module": "fuzzy_match",
+      "kernel_source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+      "raw_abi_harness_authored": true,
+      "rust_public_oracles_authored": true,
+      "raw_abi_harness_executed": false,
+      "rust_public_oracles_executed": false,
+      "native_build_executed": false,
+      "compiler_generations_executed": false,
+      "opt_in_production_callers_verified": false,
+      "complete_current_workflow_passed": false,
+      "historical_exact17_job_passed_this_run": false,
+      "joint_job_runtime_cost_verified": false,
+      "per_job_budget_minutes": 60,
+      "all_static_link_receipts_require_regeneration": true,
+      "receipt_regeneration_scope": "The lock and caller sources changed. Fresh exact-source B1/B2/B3/compiler evidence and all35 configured module source/object/library/archive/input/.link bindings are required. Older full-native29/30/31/32/33/34 receipts cannot be reused or relabeled.",
+      "new_native_artifacts_created": false,
+      "complete_independent_artifact_custody": false,
+      "documentation_successor_exact_head_qualified": false,
+      "retirement_authorized": false,
+      "network_owner_workflow_baselines": [
+        "original",
+        "native35"
+      ],
+      "mandatory_owner_baselines": [
+        "original",
+        "native16",
+        "native35"
+      ],
+      "mandatory_predecessor16_gate_executed": false,
+      "network_owner_scope": "The retained workflow runs two baselines and lacks the admitted published16 link bundle. It does not execute or qualify the separate mandatory original/native16/current owner gate.",
+      "kernel_source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
+      "kernel_source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+      "configured_raw_literal_frames": 242,
+      "rust_public_oracle_methods_authored": 3,
+      "configured_raw_native_calls": 242,
+      "original_public_owner_methods_preserved": 8,
+      "public_methods_both_features_authored": 1,
+      "native_only_large_public_methods_authored": 2,
+      "native_decoder_methods_authored": 13,
+      "large_default_execution_claimed": false,
+      "configured_raw_streams": 16,
+      "configured_raw_stream_calls": 70,
+      "configured_standalone_raw_cases": 172,
+      "raw_input_files": [
+        "hia/tests/fuzzy_match_oracle_inputs.json",
+        "hia/tests/fuzzy_match_oracle_streams.json",
+        "hia/tests/fuzzy_match_oracle_raw_core.json",
+        "hia/tests/fuzzy_match_oracle_raw_hay_max.json",
+        "hia/tests/fuzzy_match_oracle_raw_tail.json"
+      ],
+      "maximum_raw_shard_bytes": 308312,
+      "public_literal_rows_authored": 50,
+      "full_native35_admission": false,
+      "focused_original_UI_regression_groups": [
+        "bottom_pane::command_popup::",
+        "bottom_pane::file_search_popup::",
+        "bottom_pane::selection_popup_common::",
+        "bottom_pane::skill_popup::",
+        "bottom_pane::skills_toggle_view::"
+      ],
+      "focused_UI_scope": "Five focused original UI regression groups under native/default selections, not five direct fuzzy callers or whole-default-TUI coverage. The two skill_popup ranking oracles use the real matcher; selection_popup_common renders supplied scalar indices, command_popup has independent exact/prefix logic, file_search_popup preserves result paging, and skills_toggle_view routes through match_skill.",
+      "whole_default_TUI_qualified": false,
+      "aggregate_input_size_cap_introduced": false,
+      "allocation_OOM_and_panic_timing_equivalence_claimed": false,
+      "logical_u64_states_are_real_giant_workloads": false
+    },
+    "current_pending_gates": [
+      "Build exact full-native35 through fresh B1/B2/B3 with the unchanged compiler pin; bind all35 sources, objects, namespaced libraries, archives, compiler inputs and eight-owner static-link receipts. Current35 admission and installed31-symbol CLI plus library-only/oracle distinctions remain unqualified.",
+      "Run all242 planned fuzzy ABI invocations:16 literal streams with70 calls and172 standalone frames. Authenticate the small manifest and four fixed-name/size/SHA shards, largest308312 bytes, before native loading; compare whole u64 returns, every state word, command/index payload and untouched source/workspace/output guards and tail. Huge logical-u64 histories are not executed giant workloads. Retain every earlier raw/public gate.",
+      "Run the eight unchanged original matcher methods and one new public method containing50 hand-derived literal rows under both default/native selections; run13 private native decoder methods and two native-only >1MiB public witnesses. Run the five focused original UI regression groups under both selections; they are neither five direct matcher callers nor whole-default-TUI coverage. Preserve every prior owner, Core consumer, assertion, skip and budget.",
+      "Verify full Unicode17 char-versus-str lowercase including Final_Sigma and Case_Ignorable precedence, NUL retention, greedy original-scalar indices, expansion deduplication, prefix preference and the original three i32 score operations. The ordinary overflow primitive bridge must use the actual crate overflow-check policy without Rust score/search/lowercase fallback. No aggregate semantic cap is added; allocation/OOM/panic timing equivalence is not claimed.",
+      "Complete both current and exact74d1 historical jobs within the unchanged60-minute budgets. The current two-baseline network workflow does not satisfy the separate mandatory original/native16/current owner gate.",
+      "Independently receive and verify exact-source artifact/report payloads. Required platforms, whole workspace/product behavior, performance, default release and retirement remain separately unqualified."
+    ],
+    "pending_gates_context": {
+      "scope": "The pending_gates array is retained as historical pending-gate text. Earlier source contexts remain in previous_source_increment snapshots. Current35 source requirements are only those in current_pending_gates and current_qualification; previous execution evidence is revision-bound.",
+      "historical_qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+      "current_increment_gates": "See current_pending_gates and current_qualification. Historical passes, report hashes and module counts are not transferred."
+    },
+    "source_revision": "bbb534d8be9098c041d5f3dd1ca1214fbcc2fd8a",
+    "qualification_transferred_to_current36": false
+  },
+  "local_component_evidence": {
+    "host": "ai395",
+    "directory": "/home/qq/codex-hia-work/codex-utf8-owner-20261126-d0d2",
+    "build_report": {
+      "path": "native36-v1/build.json",
+      "sha256": "bfe83b2cb03326412a16426f7d2cc29915b021af5122cd8356afe8c4bb88f14a"
+    },
+    "raw_reports": [
+      {
+        "name": "utf8",
+        "path": "utf8-raw-v1.json",
+        "sha256": "1da215446dc4e966e6d4550b6ae309522654ef9e30e0bca859d6b471decb9c23",
+        "passed": true,
+        "native_calls": 200,
+        "literal_cases": 25,
+        "full36": true
+      },
+      {
+        "name": "output_lines",
+        "path": "output_lines-raw-v1.json",
+        "sha256": "7df5b79d042055bf2416325599fcb431cba03608656a6fe491896163a1280d8f",
+        "passed": true,
+        "native_calls": null,
+        "literal_cases": null,
+        "full36": true
+      },
+      {
+        "name": "output_item_budget",
+        "path": "output_item_budget-raw-v1.json",
+        "sha256": "5ff8d65bfc8b10f0090af4d27523530333683d81f946da7e3033e67b4f13589d",
+        "passed": true,
+        "native_calls": null,
+        "literal_cases": null,
+        "full36": true
+      },
+      {
+        "name": "format_env_display",
+        "path": "format_env_display-raw-v1.json",
+        "sha256": "00f6f675dc923957fb8353297f7a5a59921279f43be56f2b682c52f7046dd794",
+        "passed": true,
+        "native_calls": null,
+        "literal_cases": null,
+        "full36": true
+      },
+      {
+        "name": "citation_stream_parser",
+        "path": "citation_stream_parser-raw-v1.json",
+        "sha256": "8f4c5543dd539fa8447badbce6453485364454dcf9911fc3fbdbd23314bef979",
+        "passed": true,
+        "native_calls": null,
+        "literal_cases": null,
+        "full36": true
+      },
+      {
+        "name": "proposed_plan_parser",
+        "path": "proposed_plan_parser-raw-v1.json",
+        "sha256": "d6930ac72d4eabada0a3ab515298812daf6ee4929490479c90b413240b87c712",
+        "passed": true,
+        "native_calls": null,
+        "literal_cases": null,
+        "full36": true
+      },
+      {
+        "name": "fuzzy_match",
+        "path": "fuzzy_match-raw-v1.json",
+        "sha256": "38367aebfa0c5898aed0b73b0241ace58ae4958c5ab78ac31e7714fd82a79af2",
+        "passed": true,
+        "native_calls": null,
+        "literal_cases": null,
+        "full36": true
+      }
+    ],
+    "owner_results": {
+      "path": "owner-results-v2.json",
+      "sha256": "a21608abb285e4bbe3514781bb3bd19915410b9b8221ca8ca923f0d7636524c4"
+    },
+    "strict_clippy_results": {
+      "path": "clippy-results-v1.json",
+      "sha256": "75cb7fd44fdd9f28c6416ab36bf594c8195183fd3698320e6189fa2746a88963"
+    },
+    "maintenance_results": "maintenance-results-v1.json",
+    "native_test_log": "stream-parser-native-v2.log",
+    "default_test_log": "stream-parser-default-v2.log",
+    "sources_and_artifacts_are_not_repository_files": true
+  },
+  "local_gitdata_publication": {
+    "tested_local_head": "a628c53db88690a58ddcb140aab91345f856b534",
+    "source_and_test_bytes_unchanged": true,
+    "published_source_commit_mapping": {
+      "e5c4f69f86d8bb2ab315447b6c9ac9ce663d3fb9": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+      "6c4f77077357ed73b37e7c4f84446a204b472606": "ede835e745fb05c5506655ed56532f77672e25d4",
+      "ce7b6ff162e6eed468915c1fb2f23cf7d0f899c0": "820ebc07b0b76fdc39ef539bbfedf57e28fba399"
+    },
+    "scope": "The connected Git transport creates new commit identities. Kernel, public owner, ABI tests, build lock and CI bytes match the locally tested commits. Only these revision references and this publication record differ in the evidence metadata. Existing report hashes retain their exact local evidence identities; no whole-product or exact-final-head qualification is inferred."
   }
 }

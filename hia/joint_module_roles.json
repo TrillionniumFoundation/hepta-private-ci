@@ -3,7 +3,7 @@
   "base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
   "donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
   "audited_name_union": 29,
-  "current_opt_in_linked_kernels": 32,
+  "current_opt_in_linked_kernels": 33,
   "retained_oracle_only_kernels": 3,
   "entry_profiles": {
     "token_budget": "u64-pair-to-u64-v1",
@@ -539,6 +539,26 @@
       "production_entry": "codex_utils_fuzzy_match::fuzzy_match, selected by codex-utils-fuzzy-match/hia-native and forwarded by the existing TUI/CLI feature route; existing ranking and scalar-index highlight consumers retain their APIs",
       "runtime_qualified_on_joint_tree": false,
       "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "utf8_stream",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/utf8_stream.hepta",
+      "source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+      "source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
+      "source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+      "production_link_sites": [
+        "codex-rs/utils/stream-parser/build.rs"
+      ],
+      "production_entry": "Public Utf8StreamParser<P> byte validation through hia-native; original generic inner parser and container effects remain in Rust.",
+      "library_only": true,
+      "installed_cli_reachability_claimed": false,
+      "runtime_qualified_on_joint_tree": true,
+      "qualification_status": "local_public_library_owner_passed_full_product_and_platforms_pending",
+      "qualification_report": "hia/verification.json#local_component_evidence"
     }
   ],
   "superseded_shared_symbol_protocols": [
@@ -603,14 +623,16 @@
     }
   },
   "count_is_not_a_production_coverage_claim": true,
-  "current_build_or_runtime_executed": false,
-  "current_build_module_count": 35,
+  "current_build_or_runtime_executed": true,
+  "current_build_module_count": 36,
   "modules_added_after_audited_union": [
     "output_lines",
     "output_item_budget",
     "format_env_display",
     "citation_stream_parser",
     "proposed_plan_parser",
-    "fuzzy_match"
-  ]
+    "fuzzy_match",
+    "utf8_stream"
+  ],
+  "current_build_or_runtime_scope": "Local native36 build, seven raw suites and stream-parser owner only; whole workflow and product qualification remain pending."
 }

@@ -1,6 +1,60 @@
 # HIA components: revision-bound joint qualification
 
-## Current source increment: Unicode fuzzy matching
+## Current source increment: streaming UTF-8 validation
+
+`Utf8StreamParser<P>` now selects the `utf8_stream` HIA validator under
+`hia-native`. HIA decides complete, invalid or incomplete UTF-8 and the exact
+original `valid_up_to` / `error_len` values. It reads the complete borrowed
+byte slice and returns four little-endian u64 words in a 32-byte output.
+The [buffer contract](utf8_stream_buffer_contract.json) binds the source and
+capacity precedence. The input has no new one-MiB or framing limit.
+
+Rust keeps the original pending `Vec<u8>`, five validation call sites, whole
+chunk rollback, inner-call boundaries, EOF handling and `into_inner` behavior.
+The native adapter checks the complete return and result shape before it
+constructs a borrowed string. It has no Rust UTF-8 validator fallback.
+The six original UTF-8 tests and their assertions remain unchanged.
+
+The current source configures **36 modules and 33 opt-in caller kernels**:
+34 borrowed-buffer and two scalar profiles across eight build owners
+(9 + 7 + 3 + 8 + 1 + 1 + 3 + 1). The installed CLI gate still requires 31
+symbols. `utf8_stream` and `uuid_find` are public library-only owners; no new
+CLI reachability is claimed. Three retained oracle-only modules remain.
+
+Local execution on Linux x86-64 GNU used the unchanged compiler revision
+`0de5657a80f96b138525ac7ee9ce11712a83a10d` and Rust 1.96.1:
+
+| Gate | Observed result |
+| --- | --- |
+| Fresh native-selfhost full-native36 build | All 36 modules and link bindings built |
+| B1 / B2 / B3 | Identical `76fe758b...9273` images |
+| UTF-8 literal raw ABI | 25 cases, 200 native calls passed |
+| Six retained raw ABI suites | Output lines, item budget, environment display, citation, proposed plan and fuzzy match passed |
+| Public stream-parser owner, native feature | 72 passed, zero skipped |
+| Public stream-parser owner, default feature | 54 passed, zero skipped |
+| Strict Clippy, both selections | Passed with all targets and warnings denied |
+| `just fix`, both selections, and `just fmt` | Passed; Rust source hashes unchanged |
+
+The new public cases exercise rollback after a completed buffered scalar,
+partial EOF recovery, empty pushes, exact inner-call boundaries, scalar split
+points and input above one MiB. Native differential cases compare 111,996 raw
+byte inputs against `std::str::from_utf8`, including every one- and two-byte
+input and the three-/four-byte scalar boundary classes. Raw ABI cases compare
+whole output buffers and source/workspace guards with both nonzero and zero
+fills. The exact source, build and report bindings are recorded in
+[verification.json](verification.json#local_component_evidence).
+
+Current raw gates select full-native36. Earlier profiles retain their exact
+module sets and defaults. Historical CI and prior source records keep their
+own scope. Complete current/historical CI, the other public/Core/UI/installed
+gates, supported platforms, performance, default release and retirement remain
+pending. Generic inline-tag grammar and state are the next stream-parser owner.
+
+## Earlier source increment: Unicode fuzzy matching
+
+The following preserves the 35-module source-preparation record. Its pending
+claims describe that earlier increment; current local execution is recorded
+above and does not establish complete fuzzy owner/UI or product qualification.
 
 The complete `fuzzy_match` source unit moves the original public matcher into
 HIA under the opt-in feature. HIA owns the pinned Rust 1.96.1 / Unicode 17
