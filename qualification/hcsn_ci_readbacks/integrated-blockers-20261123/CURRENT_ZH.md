@@ -1,5 +1,14 @@
 # Hepta 研究与集成核验
 
+## 2026-11-26 22:38 UTC 后：Common 29 文件隔离历史视图原生闭合（数值资格仍 HOLD）
+
+- ROG 原生作业 `1a21a045cb1-ffbe-4b1c` 实际 succeeded/exit0，stdout6672B、stderr0B、output_complete/durable/terminal_publication_confirmed=true。复用此前已核验的 c440d2ba Split 缓存，从 GitHub 精确原对象比对 COMMON_MANIFEST.json（blob864f0d4438e0fabd476dab7424d47595dc79e017，SHA256 850d341309b75c14ea035d9d3a841d8d3f539bbc6d50db95fcc07a6bc1f7fbcf），逐文件重哈希29/29、172837B；复制至全新隔离目录后，以原 qualify_common 同样的两目录 glob 和两显式文件重新读取摘要，实测字典与原冻结清单完全相同（29/29、0额外、0缺失），目录总30文件含原manifest。原缓存未改，当前产品17个后继文件及产品源码均未改。**仅闭合历史执行视图的原源码集合与字节身份**，没有导入模型，45测试和120次更新均未重跑；原实验消耗台账尚未确认，不把此结果当作完整 Common 科学或集成通过。
+- #6799 当前观察真实 head `4d98afb7fd1d7f31a81c5b7f7884449cdc9d5ed0`，draft未合并；首屏100条60 success/15 failure/14 skipped/11 in_progress；前一c167d16d首屏终态69 success/22 failure/7 skipped/2 cancelled，非全分页终局。#7016/#7021/#7032原草案未合并。
+- [Retained adjoint 原生](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45904766044/job/140198736890) 345项保留算术比较、17源码/输入、source_unchanged=true、candidate_numerical_qualification=false、模型/adjoint/矩阵指数/Torch/优化器调用0；原 REVIEW SHA256 278f745d8d4ef55ad7c5ec1de9e5b0e9a229e2a8d4fd52e9121f82a69efd8107，原ZIP SHA256 8380c49edf3dc2dfbd8871e0a83ac9b5129ae79061203aef8f23eba37ce48eda（未独立下载）。[固定先验物理偏导](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45904766115/job/140198737508) 5/5、11.093s，仅原 uniform 范围，拒绝新几何复用，不重复复算与此前585坐标重叠结果。[large-grid intent](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45904766134/job/140198737438) 原只读静态算术成功，计划128380标量、1380 expm，实际0 expm/0动态，HOLD_INTENT_ONLY。
+- [N256 consumed-original readback](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45904766060/job/140198737139) 12控制10过2错误，仍为 provider README.md source size drift，真实保留原件读取阶段跳过，不将此前局部门转移，不盲重派。
+- [不可变原生作业完整回执及29项逐路径SHA](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a69e0767bd64a015bf6b2c7ac327c77d9bec14bf/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/common-native-projection-and-current-readback-20261126-2238Z.json) 已全文回读一致。全仓 HOLD；未修改原科学判据、冻结摘要、500ms或安全权限，未合并红门PR。
+
+
 ## 2026-11-26 21:33 UTC 后：当前 graded 物理梯度原生与保留向量独立复算
 
 - #6799 真实 head `c167d16d2ef9064e1f9de5cce2f0fd987aaabcf2`、base732e934、draft未合并；首屏100条65 success/22 failure/6 skipped/1 cancelled/6 in_progress。前一923c7b首屏终局70 success/23 failure/7 skipped。非全分页，不跨版本转移资格。
