@@ -782,15 +782,13 @@ async fn append_direct_evidence(
         envelope,
     )?;
     let message = SignedMessage {
-        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(
-            key.sign(&claims.signing_bytes()).to_bytes(),
-        ),
+        signature: key.sign(&claims.signing_bytes()).to_bytes(),
         claims,
     };
     let issuer = IssuerRegistration {
         issuer_id: StableId::new(issuer_id.to_string()).map_err(anyhow::Error::msg)?,
         key_epoch: Generation::new(1).map_err(anyhow::Error::msg)?,
-        verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(key.verifying_key()),
+        verifying_key: key.verifying_key(),
         revoked: false,
     };
     store
