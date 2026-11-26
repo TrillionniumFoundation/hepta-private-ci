@@ -34,6 +34,9 @@ common:macos --test_env=PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr
 common:windows --test_env=SYSTEMROOT
 common:windows --test_env=COMSPEC
 common:windows --test_env=WINDIR
+# PowerShell appends .CPL during startup. Without the inherited PATHEXT,
+# native .exe hooks are treated as documents and lose their standard streams.
+common:windows --test_env=PATHEXT
 # Rust's libtest harness runs test bodies on std-spawned threads. The default
 # 2 MiB stack can be too small for large async test futures on Windows CI; see
 # https://github.com/openai/codex/pull/19067 for the motivating failure.
@@ -183,6 +186,10 @@ common:ci-linux --platforms=//:rbe
 common:ci-macos --config=ci-bazel
 common:ci-macos --build_metadata=TAG_os=macos
 common:ci-macos --strategy=TestRunner=darwin-sandbox,local
+# Bound client analysis and action concurrency on macOS runners. Large RBE
+# defaults exhausted native threads while traversing the analysis graph.
+common:ci-macos --jobs=30
+common:ci-macos --loading_phase_threads=4
 
 # On Windows, use Linux remote execution for build actions but keep test actions
 # on the Windows runner so Bazel's normal test sharding and flaky-test retries
