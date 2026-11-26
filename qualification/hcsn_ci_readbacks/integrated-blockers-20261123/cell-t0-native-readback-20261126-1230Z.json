@@ -1,0 +1,186 @@
+{
+  "schema": "hcsn-candidate-native-readback-v1",
+  "date": "2026-11-26",
+  "head": "1d4eb60cfe2516d132c68d01bed083fcbdc39437",
+  "prospective_merge": "0650797145dc50341f6d0889ccfb4b696dfcf65c",
+  "first_page_workflow_snapshot": {
+    "success": 62,
+    "failure": 21,
+    "skipped": 13,
+    "in_progress": 4,
+    "total": 100,
+    "not_full_pagination": true
+  },
+  "cell": {
+    "run": 45814937775,
+    "job": 139892105134,
+    "conclusion": "success",
+    "checkout_from_artifact": "1d4eb60cfe2516d132c68d01bed083fcbdc39437",
+    "artifact": 15115877414,
+    "zip_bytes": 5384,
+    "zip_sha256": "9bc1011bc1ceb99b7f3d22e43797390faf95278d79b2be5a5ef4294fd56facb8",
+    "downloaded_and_hash_matched": true,
+    "crc_errors": 0,
+    "member_sha256": {
+      "RUNTIME.txt": "834405dd32690b4924f5b8811b7b8929619045af2d0a33df2f1e9be9f768713e",
+      "STDERR.txt": "f77f12c30d5c918358689dd7474d148fad319ea07984bbd80ca572fda166fbdf",
+      "SOURCE_HEAD.txt": "b89b307fd4fcf69b927ca549f77322086f8f8ca0f52185e1cee49713e3a342d3",
+      "STDOUT.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "test_names": 145,
+    "unique_names": 145,
+    "passed": 145,
+    "interleaved_diagnostic_outcomes": 10,
+    "wall_seconds": 21.086,
+    "python": "3.12.3",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "scope": "declared Cell fixture test suite only"
+  },
+  "t0": {
+    "run": 45814938293,
+    "job": 139892107696,
+    "checkout": "0650797145dc50341f6d0889ccfb4b696dfcf65c",
+    "conclusion": "success",
+    "source_freeze_files": 8,
+    "normal_tests": 4,
+    "optimized_tests": 4,
+    "artifact": 15115322462,
+    "zip_bytes": 12902,
+    "zip_sha256": "b852f43e1eac2b54d3d5d6a1c3cda910b6d722d5c32720a7d65247aba316dc85",
+    "downloaded_and_hash_matched": true,
+    "crc_errors": 0,
+    "member_sha256": {
+      "AUDIT.json": "694a574bc51ef46364de3b32af45d13fab8a1e04ac3f691d2e1376610c456e8b",
+      "BUILD.json": "0c66b86ddcdeccdbc8c9b3451c87c7d89c55b77eb4acd62d99f5bc0007d04c87",
+      "capsule.bin": "1ebdf4750ccbb56b4ef00d6764b1af266359d648e5449db371ffe631bb32c67d"
+    },
+    "original_cold_audit": {
+      "coordinates_compared": 2656,
+      "coordinates_equal": 2656,
+      "mismatches": 0,
+      "status": "PASS_INDEPENDENT_COLD_BYTES_HOLD"
+    },
+    "independent_structural_parser": {
+      "capsule_bytes": 23581,
+      "checksum_trailer": "b1f8aac73e7b0f3220283f66b13b8e18799046d35214bfea08000a9a00dd099a",
+      "trailer_matches": true,
+      "unique_packets": 8,
+      "packet_coordinates": 56,
+      "state_coordinates": 2600,
+      "total_coordinates": 2656,
+      "finite_fp64": true,
+      "canonical_metadata": true,
+      "unconsumed_bytes": 0,
+      "blocks": {
+        "active": {
+          "shape": [
+            5,
+            2,
+            255
+          ],
+          "coords": 2550,
+          "sha256": "3169fb2c15c1e65f1d30320006e83b137981930ad48cb4c5abdadbc1ed4faf55"
+        },
+        "discounted_hit": {
+          "shape": [
+            5,
+            2
+          ],
+          "coords": 10,
+          "sha256": "5b6fb58e61fa475939767d68a446f97f1bff02c0e5935a3ea8bb51e6515783d8"
+        },
+        "lower_hit": {
+          "shape": [
+            5,
+            2
+          ],
+          "coords": 10,
+          "sha256": "5b6fb58e61fa475939767d68a446f97f1bff02c0e5935a3ea8bb51e6515783d8"
+        },
+        "occupation": {
+          "shape": [
+            5,
+            3
+          ],
+          "coords": 15,
+          "sha256": "6edd9f6f9cc92cded36e6c4a580933f9c1b90562b46903b806f21902a1a54f"
+        },
+        "upper": {
+          "shape": [
+            5,
+            3
+          ],
+          "coords": 15,
+          "sha256": "65fac266a37e58e56ff37b5cdcc34e3699ed946101b747d5d6338edf1a47e5d7"
+        }
+      },
+      "original_inputs_recompared": false
+    },
+    "dynamic_calls": 0,
+    "expm_calls": 0,
+    "provider_calls": 0,
+    "torch_calls": 0,
+    "optimizer_calls": 0,
+    "largegrid_qualification": false,
+    "all_closed": false
+  },
+  "windows": {
+    "run": 45814940240,
+    "shard2": {
+      "job": 139892855856,
+      "conclusion": "failure",
+      "log_lines": 6827,
+      "final_unit_failures": [
+        "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output",
+        "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots"
+      ]
+    },
+    "shard4": {
+      "job": 139892855783,
+      "conclusion": "failure",
+      "log_lines": 5450,
+      "final_core_failures": [
+        "suite::windows_sandbox::windows_elevated_does_not_create_missing_workspace_metadata",
+        "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+        "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+      ],
+      "other_failed_target": "network-proxy-windows_stable_ingress-test"
+    },
+    "observed_refusal": "ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; a replacement preserving read, launch and IPC behavior has not been qualified",
+    "production_isolation": "HOLD",
+    "no_blind_rerun": true
+  },
+  "latest_pr_observation": {
+    "pr": 6799,
+    "head": "b24b6dd0e48c6439f1c12db112262666d51c987b",
+    "draft": true,
+    "merged": false,
+    "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "ahead_from_prior": 8,
+    "behind": 0,
+    "changed_files": 28,
+    "workflow_first_page_count_at_observation": 0
+  },
+  "split": {
+    "historical_candidate": "c440d2baff9c2befaef3ea96148b77f2ae3582b6",
+    "initial_source_fetch_job": "1a217df384b-ffbe-4750",
+    "initial_fetch_exit": 1,
+    "initial_verified": 27,
+    "missing_six_filled_by_exact_connector_bytes": true,
+    "fill_job": "1a217e3d3ce-ffbe-4754",
+    "fill_exit": 0,
+    "matched": 33,
+    "package_initializers_404": 5,
+    "first_real_numeric_job": "1a217e4e506-ffbe-4758",
+    "last_observed_state": "running",
+    "complete_gate": "HOLD_PENDING_TERMINAL",
+    "not_repeated_completed_experiment": true
+  },
+  "all_closed": false,
+  "no_product_source_change_this_readback": true
+}
