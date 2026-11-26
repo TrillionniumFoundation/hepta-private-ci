@@ -185,5 +185,11 @@
       "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/RELEASING.md.original",
       "validation": "CommonMark with tables rendered HTML equality"
     }
+  },
+  "standaloneCargoLock": {
+    "originalRecoveryPath": "qa/repository-consolidation/20261126/bm25-format-originals/bm25-2.3.2-stable-hash/Cargo.lock.original",
+    "originalSha256": "53c542ecf5a6c4c19df6ec639168d107572e6389e7716c28950ff5acb56098f5",
+    "maintainedSha256": "3b5c0cecfa34e1083656d81db732105b327d3599b110b9ea06d49703d0014b26",
+    "change": "Use the existing codex-utils-stable-hash path dependency instead of fxhash"
   }
 }
