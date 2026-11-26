@@ -11,6 +11,8 @@ import sys
 import time
 import tomllib
 
+from environment_observer_parser import record_environment_observations
+
 ROOT = Path(__file__).resolve().parents[3]
 PACKAGE = "codex-windows-sandbox"
 BRANCH = "research/windows-production-delete-observer-20261126-87d09924"
@@ -367,6 +369,7 @@ def main():
             "--success-output", "immediate", "--failure-output", "immediate"])
         report["native"] = {"status": "command_completed", "exit": code, "observation": "unverified"}
         record_child_token(report, [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")])
+        record_environment_observations(report, [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")])
         report["native"].update(verify_native(
             [out.read_text(encoding="utf-8"), err.read_text(encoding="utf-8")], listing))
     except Exception as error:
