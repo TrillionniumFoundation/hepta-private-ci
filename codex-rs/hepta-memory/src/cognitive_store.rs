@@ -1485,6 +1485,12 @@ fn valid_recovered_database_filename(value: &str) -> bool {
 }
 
 fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    let canonical_root = canonical_path_without_redirection(root)
+        .map_err(unavailable)?
+        .ok_or_else(|| {
+            CognitiveStoreError::Corrupt("cognitive private root is redirected".to_string())
+        })?;
+    let root = canonical_root.as_path();
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
 
     #[cfg(unix)]
@@ -1548,7 +1554,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
                 "cognitive active database target is missing or redirected".to_string(),
             )
         })?;
-    if canonical.parent() != Some(root) || canonical != path {
+    if canonical.parent() != Some(root) {
         return Err(CognitiveStoreError::Corrupt(
             "cognitive active database escapes the private root".to_string(),
         ));
@@ -1563,7 +1569,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
             ));
         }
     }
-    Ok(path)
+    Ok(canonical)
 }
 
 pub(crate) fn publish_active_database(
