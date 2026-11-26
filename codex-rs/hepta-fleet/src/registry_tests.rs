@@ -379,3 +379,17 @@ fn windows_registration_establishes_private_owner_leaves_without_adopting_them()
     assert_eq!(fs::read(cognitive.join("sentinel"))?, b"original owner");
     Ok(())
 }
+
+#[cfg(windows)]
+#[test]
+fn registered_cognitive_directory_satisfies_native_owner_contract() -> Result<(), FleetRegistryError>
+{
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
+    let root = record.layout.cognitive_root();
+    assert!(fs::symlink_metadata(root)?.is_dir());
+    codex_utils_path::open_existing_private_state_directory(root)?;
+    Ok(())
+}
