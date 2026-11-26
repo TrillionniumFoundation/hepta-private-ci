@@ -891,18 +891,19 @@ async fn ordinary_discovery_and_post_probe_share_the_same_absolute_deadline() {
     result.expect_err("ordinary discovery cannot grant the POST probe a fresh five seconds");
     assert!(started.elapsed() >= Duration::from_millis(4_500));
     client.assert_original_capability(&origin, "initialize");
-    let requests = client.requests.lock().expect("request recorder lock");
-    let post = requests
-        .iter()
-        .find(|request| request.method == "POST" && request.url == format!("{origin}/mcp"))
-        .expect("the actual probe was attempted after ordinary discovery");
-    assert!(
-        post.timeout_ms
-            .is_some_and(|timeout| timeout > 0 && timeout <= 4_000),
-        "POST receives only the remaining original budget: {:?}",
-        post.timeout_ms,
-    );
-    drop(requests);
+    {
+        let requests = client.requests.lock().expect("request recorder lock");
+        let post = requests
+            .iter()
+            .find(|request| request.method == "POST" && request.url == format!("{origin}/mcp"))
+            .expect("the actual probe was attempted after ordinary discovery");
+        assert!(
+            post.timeout_ms
+                .is_some_and(|timeout| timeout > 0 && timeout <= 4_000),
+            "POST receives only the remaining original budget: {:?}",
+            post.timeout_ms,
+        );
+    }
     server.verify().await;
 }
 

@@ -577,12 +577,14 @@ impl UnexpectedOAuthProxy {
 
     fn assert_unused(mut self) -> Result<()> {
         self.stop.store(true, std::sync::atomic::Ordering::Release);
-        let connections = self
+        let observer = self
             .observer
             .take()
-            .expect("proxy observer must be owned")
-            .join()
-            .expect("proxy observer must not panic")?;
+            .ok_or_else(|| anyhow::anyhow!("proxy observer must be owned"))?;
+        let connections = match observer.join() {
+            Ok(result) => result?,
+            Err(payload) => std::panic::resume_unwind(payload),
+        };
         assert!(
             connections.is_empty(),
             "the explicit direct route unexpectedly reached its configured proxy: {connections:?}"
