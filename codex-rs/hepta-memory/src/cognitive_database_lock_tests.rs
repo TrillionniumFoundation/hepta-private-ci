@@ -18,18 +18,17 @@ finally:
     os.close(fd)
 "#;
 
-fn main_lock_is_held(path: &Path) -> bool {
+fn main_lock_is_held(path: &Path) -> io::Result<bool> {
     let mut child = Command::new("python3")
         .args(["-c", LOCK_PROBE])
         .arg(path)
-        .spawn()
-        .expect("independent Python POSIX lock probe");
+        .spawn()?;
     let deadline = Instant::now() + Duration::from_secs(/*secs*/ 10);
     loop {
-        if let Some(status) = child.try_wait().expect("probe status") {
+        if let Some(status) = child.try_wait()? {
             return match status.code() {
-                Some(23) => true,
-                Some(0) => false,
+                Some(23) => Ok(true),
+                Some(0) => Ok(false),
                 _ => panic!("unexpected lock probe failure: {status}"),
             };
         }
@@ -51,35 +50,35 @@ async fn existing_main_validation_preserves_live_sqlite_posix_locks() {
         .path()
         .canonicalize()
         .expect("canonical control");
-    let control = CognitiveStore::open(&layout(&control_root))
+    let control = CognitiveStore::open(&layout(&control_root).expect("control layout"))
         .await
         .expect("control store");
     assert!(
-        main_lock_is_held(control.path()),
+        main_lock_is_held(control.path()).expect("independent Python POSIX lock probe"),
         "control must initially hold SQLite locks"
     );
     drop(File::open(control.path()).expect("intentional unsafe raw-close control"));
     assert!(
-        !main_lock_is_held(control.path()),
+        !main_lock_is_held(control.path()).expect("independent Python POSIX lock probe"),
         "raw close must demonstrably lose locks"
     );
     control.close().await;
 
     let temp = tempfile::tempdir().expect("fixture");
     let root = temp.path().canonicalize().expect("canonical fixture");
-    let first = CognitiveStore::open(&layout(&root))
+    let first = CognitiveStore::open(&layout(&root).expect("fixture layout"))
         .await
         .expect("first pool");
     let expected = first.recovery_anchor().await.expect("initial cut");
     assert!(
-        main_lock_is_held(first.path()),
+        main_lock_is_held(first.path()).expect("independent Python POSIX lock probe"),
         "first live pool must hold locks"
     );
-    let second = CognitiveStore::open(&layout(&root))
+    let second = CognitiveStore::open(&layout(&root).expect("fixture layout"))
         .await
         .expect("independent second pool");
     assert!(
-        main_lock_is_held(first.path()),
+        main_lock_is_held(first.path()).expect("independent Python POSIX lock probe"),
         "second open must not discard process locks"
     );
     assert_eq!(first.recovery_anchor().await.expect("first cut"), expected);
@@ -89,7 +88,7 @@ async fn existing_main_validation_preserves_live_sqlite_posix_locks() {
     );
     second.close().await;
     assert!(
-        main_lock_is_held(first.path()),
+        main_lock_is_held(first.path()).expect("independent Python POSIX lock probe"),
         "SQLite-owned close must retain first pool locks"
     );
     first.close().await;
@@ -99,7 +98,7 @@ async fn existing_main_validation_preserves_live_sqlite_posix_locks() {
 async fn competing_first_opens_keep_private_consistent_state_or_fail_closed() {
     let temp = tempfile::tempdir().expect("fixture");
     let root = temp.path().canonicalize().expect("canonical fixture");
-    let owner_layout = layout(&root);
+    let owner_layout = layout(&root).expect("fixture layout");
     let (left, right) = tokio::join!(
         CognitiveStore::open(&owner_layout),
         CognitiveStore::open(&owner_layout),
