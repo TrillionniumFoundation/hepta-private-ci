@@ -1,0 +1,62 @@
+{
+  "execution_counts": {
+    "AD_calls": 0,
+    "GitHub_mutations": 0,
+    "checkpoint_deserializations": 0,
+    "formatter_executions": 0,
+    "model_forwards": 0,
+    "model_imports": 0,
+    "numerical_solves": 0,
+    "test_suite_executions": 0
+  },
+  "execution_counts_scope": "Source-preparation agent only; subsequent root pure-algebra execution is recorded separately.",
+  "files": {
+    "ACTUAL_MODEL_INVERSE.md": {
+      "bytes": 15187,
+      "lines": 297,
+      "sha256": "531c8d351d5857f9ae3da906594e57c33fb47a99b47d8b395a5eab0477259440"
+    },
+    "READOUT_REQUEST.json": {
+      "bytes": 2005,
+      "lines": 51,
+      "sha256": "e6c8e04059737337d8cdde5db97d1358b2b3fcce908a1d5d7488fd309cddf07c"
+    },
+    "readout_inverse.py": {
+      "bytes": 9549,
+      "lines": 212,
+      "sha256": "5b5142c9fef66412bb72efc9ede18e04b1c18a2afae1d546679ec5d947d92d3e"
+    },
+    "readout_inverse_tests.py": {
+      "bytes": 6279,
+      "lines": 139,
+      "sha256": "2b8447fea74e6ab5a96a07bfb67989560ea1c8f82e2dcbd383570d7efcdf7422"
+    }
+  },
+  "observed_source_identity": {
+    "capsule_provenance": "72194249d27b8af51cf95f89f5db494fa525e44c156eaf11b56e417ccc8c3b55",
+    "generator": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876",
+    "origin_commit": "88414dda04443897def179754779aecdca6f0296",
+    "physical_model": "aabc7a29ebfdaed592ebd4a16d7e4db927a6a88cb7247d4b334fd7299eab8576",
+    "uniformized_flow": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae"
+  },
+  "preparation_operations": [
+    "source and JSON reads",
+    "SHA256 identity checks",
+    "static AST parsing without importing either new module",
+    "copy retained fields into canonical binary64 hexadecimal request",
+    "symbolic derivations and bounds"
+  ],
+  "proposed_test_methods": 14,
+  "published_stage_lines": 699,
+  "retained_row_identity": {
+    "common": "cf04461f394e123ccb9599b094ec2f0b150aa087fe11e4aa39d5dd4c44de0f10",
+    "parent_candidate": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+    "parent_state": "136026bde0867265b040f679e60fb991b131b6d8403127fa7b2a94237da5f907",
+    "row0": "7e0946d79ae2069178cdea466b6ec12b90ba27afbaf651ace5921794883af8be",
+    "row1": "cad4b3c7f03dc3d2154fe93ff81611b4b4d98250c0c8764efbde021ffeef9972"
+  },
+  "schema": "hepta.actual-model.inverse-source-preparation.v1",
+  "scientific_scope": "Two frozen readout coordinates and nominal decimal constants interpreted as exact real numbers in the fixed-control-box proof. Actual FP64 state conditions require separate coefficient enclosures and numerical error bounds. No full-field identification, real independent user acceptance or training advantage claim.",
+  "source_retrieval_note": "Dependency paths absent at current PR head and queried capsule extraction paths; origin-commit retrieval succeeded and exact SHA256 matches retained provenance. No source substitution used.",
+  "status": "SOURCE_PREPARATION_FROZEN_ROOT_EXECUTION_RECORDED_SEPARATELY"
+}

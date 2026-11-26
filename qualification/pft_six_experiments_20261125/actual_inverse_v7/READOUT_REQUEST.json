@@ -1,0 +1,51 @@
+{
+  "binding": {
+    "common_file_sha256": "cf04461f394e123ccb9599b094ec2f0b150aa087fe11e4aa39d5dd4c44de0f10",
+    "coordinate_layout_sha256": "7950b64cfed821e58e7dd3dee08c656edaa74f80493aa24166133129e668768f",
+    "initial_margin_sha256": "0a497c985158f5df5b0564153450d13370bacae293ddc9d59fd204ce8697c52b",
+    "input_sha256": "012e6e7c0c52b2f639ba6cca41f3197391c7b08e8804ed6c6d92941bd0374a93",
+    "model_source_sha256": "aabc7a29ebfdaed592ebd4a16d7e4db927a6a88cb7247d4b334fd7299eab8576",
+    "reference_candidate_sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+    "reference_state_sha256": "136026bde0867265b040f679e60fb991b131b6d8403127fa7b2a94237da5f907",
+    "source_binding_sha256": "3146e2c56757ff7c818670aa3a9c229b26271c7336d573b1692b91ac8e7a00e9",
+    "source_linearization_sha256": "8fc3f5eac5d1f63441ffcfd9e28528f5357b03ea5a3fdc94100710a77e63a40c"
+  },
+  "coordinates": [
+    {
+      "flat_index": 0,
+      "name": "readout.weight",
+      "shape": [
+        2,
+        20
+      ]
+    },
+    {
+      "flat_index": 0,
+      "name": "readout.bias",
+      "shape": [
+        2
+      ]
+    }
+  ],
+  "freeze_rule": "all_parameters_buffers_config_inputs_and_initial_state_except_two_listed_coordinates",
+  "observation": "final_logit_1_minus_logit_0",
+  "rows": [
+    {
+      "base_margin_hex": "0x1.fdbd0536a0e00p+4",
+      "feature0_hex": "0x1.4f8f80374b351p+1",
+      "row_id": "ai395",
+      "source_row_sha256": "7e0946d79ae2069178cdea466b6ec12b90ba27afbaf651ace5921794883af8be",
+      "target_margin_hex": "0x1.fdbd6e122c8c7p+4",
+      "weight_hex": "0x1.0000000000000p+0"
+    },
+    {
+      "base_margin_hex": "0x1.e1b6e9abfde00p+5",
+      "feature0_hex": "0x1.595ff9357f2b8p+1",
+      "row_id": "pocket4",
+      "source_row_sha256": "cad4b3c7f03dc3d2154fe93ff81611b4b4d98250c0c8764efbde021ffeef9972",
+      "target_margin_hex": "0x1.e1b6b53e3809cp+5",
+      "weight_hex": "0x1.0000000000000p+0"
+    }
+  ],
+  "schema": "hepta.frozen-readout.inverse-request.v1"
+}
