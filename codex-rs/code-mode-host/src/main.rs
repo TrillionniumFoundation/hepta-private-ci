@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use clap::Parser;
 
 #[derive(Debug, Parser)]
@@ -13,11 +15,24 @@ struct Cli {
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
+    // The Tokio runtime has already been constructed before this body starts.
+    let startup_started = Instant::now();
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
         .with_writer(std::io::stderr)
         .with_ansi(false)
         .init();
+    tracing::info!(
+        phase = "tracing_ready",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
 
-    codex_code_mode_host::run_main(&Cli::parse().listen).await
+    let cli = Cli::parse();
+    tracing::info!(
+        phase = "arguments_ready",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
+    codex_code_mode_host::run_main(&cli.listen).await
 }

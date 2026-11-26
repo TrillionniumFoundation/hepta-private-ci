@@ -1,6 +1,7 @@
 use std::io;
 use std::io::Write as _;
 use std::net::SocketAddr;
+use std::time::Instant;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -22,7 +23,18 @@ use tracing::info;
 use crate::GrpcCodeModeHost;
 
 pub(super) async fn run_tcp_listener(bind_address: SocketAddr) -> Result<()> {
+    let startup_started = Instant::now();
+    info!(
+        phase = "grpc_bind_begin",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
     let listener = bind_tcp_listener(bind_address).await?;
+    info!(
+        phase = "grpc_listener_bound",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
     let local_address = listener
         .local_addr()
         .context("failed to read code-mode gRPC listen address")?;
@@ -31,6 +43,11 @@ pub(super) async fn run_tcp_listener(bind_address: SocketAddr) -> Result<()> {
     io::stdout()
         .flush()
         .context("failed to publish code-mode gRPC listen address")?;
+    info!(
+        phase = "grpc_endpoint_published",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
 
     let routes = Routes::new(
         CodeModeHostServer::new(GrpcCodeModeHost::new())
