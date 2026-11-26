@@ -1,0 +1,190 @@
+name: Hepta Safe YAML RustSec Migration (shadow)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/skills/**"
+      - "codex-rs/ext/skills/**"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - ".github/actions/setup-bazel-ci/**"
+      - "codex-rs/core/src/client*.rs"
+      - "codex-rs/core-plugins/**"
+      - "codex-rs/external-agent-migration/**"
+      - ".github/workflows/hepta-safe-yaml-rustsec-qualification.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-reviewed-lockfile:
+    # A generated proposal is not qualification of the committed dependency graph.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind qualification and lockfile to exact PR source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install Matrix-qualified Rust toolchain
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt
+      - name: Resolve actual changed workspace Cargo.lock without fabricated crate checksums
+        working-directory: codex-rs
+        run: |
+          cargo +1.96.0 metadata --format-version 1 >/dev/null
+          cargo +1.96.0 metadata --locked --format-version 1 --no-deps >/dev/null
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          from pathlib import Path
+          content = Path("Cargo.lock").read_bytes()
+          print("HEPTA_YAML_LOCK_SHA256=" + hashlib.sha256(content).hexdigest())
+          print("HEPTA_YAML_LOCK_BYTES=" + str(len(content)))
+          print("HEPTA_YAML_CARGO_LOCK_BASE64_BEGIN")
+          encoded = base64.b64encode(content).decode("ascii")
+          for start in range(0, len(encoded), 120):
+              print(encoded[start:start + 120])
+          print("HEPTA_YAML_CARGO_LOCK_BASE64_END")
+          PY
+      - name: Retain exact dependency solver output as a reproducible review artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: safe-yaml-solver-lockfile
+          path: codex-rs/Cargo.lock
+          retention-days: 7
+      - name: Require the generated Cargo graph to equal committed source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+  yaml-compile-and-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind qualification and lockfile to exact PR source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install exact source toolchain
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Ensure committed lockfile and strict source formatting
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/safe-yaml-native"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/safe-yaml-native/source.txt"
+          cargo +1.96.0 metadata --locked --format-version 1 --no-deps >/dev/null
+          cargo +1.96.0 fmt --all -- --check 2>&1 | tee "$RUNNER_TEMP/safe-yaml-native/fmt.log"
+      - name: Exercise all ten response-context and terminal-owner regressions
+        env:
+          RUSTUP_TOOLCHAIN: "1.96.0"
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-core --lib --retries 0 --no-tests fail -E 'test(client::provider_policy_tests::) | test(client::tests::dropped_response_stream_traces_cancelled_partial_output) | test(client::tests::response_stream_records_last_model_feedback_ids) | test(client::tests::ephemeral_unauthorized_and_stream_errors_are_redacted) | test(client::tests::dropped_backpressured_response_stream_traces_cancelled_partial_output)' --no-capture 2>&1 | tee "$RUNNER_TEMP/safe-yaml-native/core-response-context.log"
+          python3 - <<'PYCOUNT'
+          import os
+          import re
+          from pathlib import Path
+          text = (Path(os.environ["RUNNER_TEMP"]) / "safe-yaml-native/core-response-context.log").read_text()
+          text = re.sub(r"\x1b\[[0-9;]*m", "", text)
+          summaries = re.findall(r"^\s*Summary[^\n]*?\b10 tests run: 10 passed(?:, [0-9]+ skipped)?\s*$", text, re.MULTILINE)
+          assert len(summaries) == 1, "expected all ten real response-context regressions to pass"
+          PYCOUNT
+      - name: Exercise all four YAML consumer owners and exact strict Clippy
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo +1.96.0 test --locked -p codex-skills -p codex-core-plugins -p codex-external-agent-migration -p codex-skills-extension --lib 2>&1 | tee "$RUNNER_TEMP/safe-yaml-native/tests.log"
+          cargo +1.96.0 clippy --locked -p codex-skills -p codex-core-plugins -p codex-external-agent-migration -p codex-skills-extension --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/safe-yaml-native/clippy.log"
+      - name: Preserve exact tested source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Retain actual native results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: safe-yaml-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/safe-yaml-native/
+          if-no-files-found: error
+          retention-days: 7
+
+  bazel-lock-proposal:
+    # Use the original recipe. Changed output remains a proposal and fails the
+    # final clean-source gate until a reviewed successor actually commits it.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind actual Bazel source and original lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/safe-yaml-bazel"
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/safe-yaml-bazel/source.txt"
+          git show HEAD:MODULE.bazel.lock > "$RUNNER_TEMP/safe-yaml-bazel/original-MODULE.bazel.lock"
+          git diff --exit-code
+      - uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Execute the existing Bazel lock generation recipe
+        shell: bash
+        run: |
+          set -euo pipefail
+          just bazel-lock-update 2>&1 | tee "$RUNNER_TEMP/safe-yaml-bazel/generation.log"
+      - name: Preserve actual proposal bytes without rewriting checksums
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/safe-yaml-bazel"
+          cp MODULE.bazel.lock "$RUNNER_TEMP/safe-yaml-bazel/MODULE.bazel.lock"
+          git diff --binary -- MODULE.bazel.lock > "$RUNNER_TEMP/safe-yaml-bazel/MODULE.bazel.lock.patch"
+          sha256sum "$RUNNER_TEMP/safe-yaml-bazel/MODULE.bazel.lock" > "$RUNNER_TEMP/safe-yaml-bazel/MODULE.bazel.lock.sha256"
+      - name: Require committed-source lock parity and unchanged source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          just bazel-lock-check
+      - name: Retain Bazel output including failures or lock drift
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: safe-yaml-bazel-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/safe-yaml-bazel/
+          if-no-files-found: error
+          retention-days: 7

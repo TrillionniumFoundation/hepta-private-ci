@@ -19,6 +19,7 @@ use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
 use codex_hepta_supervisor::AgentCommand;
+use codex_hepta_supervisor::AgentFault;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
 use codex_hepta_supervisor::ProcessDriverError;
@@ -33,6 +34,7 @@ use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisorEventKind;
 use codex_hepta_supervisor::TickReport;
+use pretty_assertions::assert_eq;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
@@ -264,7 +266,15 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
 
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor.tick(now),
+        TickReport {
+            faults: vec![AgentFault {
+                agent_id: agent_id.clone(),
+                message: SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string(),
+            }],
+        }
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);

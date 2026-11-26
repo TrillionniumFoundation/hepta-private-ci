@@ -30,6 +30,7 @@ use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::MemoryLifecycleState;
 use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory::canonical_workspace_binding;
 use serde::Serialize;
 use serde_json::Value;
 use serde_json::json;
@@ -236,9 +237,10 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let prepared = input.turn_store.get::<PreparedFederatedAttachment>()?;
+        let workspace = canonical_workspace_binding(input.cwd).ok()??;
         if prepared.thread_id != input.thread_id
             || prepared.turn_id != input.turn_id
-            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(input.cwd)
+            || path_identity_bytes(prepared.workspace.as_path()) != path_identity_bytes(&workspace)
         {
             return None;
         }
@@ -253,7 +255,7 @@ impl FederatedCognitiveExtension {
         }
         let now = now_unix_seconds()?;
         let access =
-            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(&workspace));
         let Ok(statuses) = self.revalidate_many(&access, &prepared.bindings, now).await else {
             return None;
         };
@@ -283,7 +285,7 @@ impl FederatedCognitiveExtension {
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
-            input.cwd,
+            &workspace,
             &prepared.query_sha256,
             &prepared.coverage,
             &prepared.bindings,
@@ -390,10 +392,12 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             if primary_environments.next().is_some() {
                 return Vec::new();
             }
-            let workspace = primary.cwd.to_path_buf();
-            if !workspace.is_absolute() {
+            // URI transport drops the Windows verbatim prefix used by the
+            // registered workspace. Recover that identity before grant lookup.
+            let Ok(Some(workspace)) = canonical_workspace_binding(&primary.cwd.to_path_buf())
+            else {
                 return Vec::new();
-            }
+            };
             let capture = capture_directive(&input.user_input);
             let Some(query) = capture.query else {
                 return Vec::new();
@@ -1261,6 +1265,8 @@ mod tests {
         let workspace = temp.path().join("consumer-workspace");
         std::fs::create_dir_all(&workspace).expect("consumer workspace");
         let workspace = workspace.canonicalize().expect("canonical workspace");
+        let workspace_uri = PathUri::from_host_native_path(&workspace).expect("workspace uri");
+        let wire_workspace = workspace_uri.to_path_buf();
         let capability = owner
             .grant_federated_recall(
                 &owner_access,
@@ -1294,7 +1300,7 @@ mod tests {
                 }],
                 environments: vec![TurnInputEnvironment {
                     environment_id: "primary".to_string(),
-                    cwd: PathUri::from_host_native_path(&workspace).expect("workspace uri"),
+                    cwd: workspace_uri,
                     is_primary: true,
                 }],
             },
@@ -1339,6 +1345,28 @@ mod tests {
         .expect("contributor")
         .expect("proposal before revoke");
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
+        // The URI-decoded cwd and the registered native cwd must bind the same
+        // proposal. On Windows the former has lost the verbatim prefix.
+        let mut wire_input = input("model-provider-attempt:v1:uri-roundtrip");
+        wire_input.cwd = &wire_workspace;
+        let wire_proposal = EphemeralModelInputContributor::contribute(&extension, wire_input)
+            .await
+            .expect("URI roundtrip contributor")
+            .expect("URI roundtrip proposal");
+        assert_eq!(
+            wire_proposal.source_binding_sha256(),
+            first.source_binding_sha256()
+        );
+        let other_workspace = temp.path().join("other-workspace");
+        std::fs::create_dir(&other_workspace).expect("other workspace");
+        let mut wrong_workspace_input = input("model-provider-attempt:v1:wrong-workspace");
+        wrong_workspace_input.cwd = &other_workspace;
+        assert!(
+            EphemeralModelInputContributor::contribute(&extension, wrong_workspace_input)
+                .await
+                .expect("wrong workspace contributor")
+                .is_none()
+        );
         let (first_content, final_use_guard) = first.into_content_and_final_use_guard();
         assert!(first_content.contains(OWNER_ID));
         assert!(
