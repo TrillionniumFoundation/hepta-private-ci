@@ -2,6 +2,8 @@
 
 #[path = "acl_setup_tests.rs"]
 mod acl_setup_tests;
+#[path = "legacy_delete_observer_tests.rs"]
+mod legacy_delete_observer;
 
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
@@ -745,6 +747,25 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             ),
         ]);
 
+        let mut observer = legacy_delete_observer::Observer::new(
+            [
+                ("workspace_dir", workspace.clone()),
+                ("workspace_file", workspace_file.clone()),
+                ("temp_dir", temp_root.clone()),
+                ("temp_file", temp_file.clone()),
+                ("tmp_dir", tmp_root.clone()),
+                ("tmp_file", tmp_file.clone()),
+                ("outside_dir", outside_root.clone()),
+                ("outside_file", outside_file.clone()),
+                ("protected_git_dir", protected_git_dir.clone()),
+            ],
+            [
+                ("cap_workspace", workspace.clone()),
+                ("cap_temp", temp_root.clone()),
+                ("cap_tmp", tmp_root.clone()),
+            ],
+        );
+        observer.observe("before_spawn", codex_home.path());
         let permission_profile = PermissionProfile::workspace_write();
         let spawned = spawn_windows_sandbox_session_legacy(
             &permission_profile,
@@ -767,10 +788,19 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         )
         .await
         .expect("spawn legacy delete session");
-        let (stdout, exit_code) =
-            collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
-                .await;
-        let stdout = String::from_utf8_lossy(&stdout);
+        let (stdout, stderr, exit_code) = legacy_delete_observer::collect_output_and_exit(
+            spawned,
+            Duration::from_secs(/*secs*/ 10),
+        )
+        .await
+        .unwrap_or_else(|error| panic!("collect legacy delete output: {error:#}\n{}", sandbox_log(codex_home.path())));
+        observer.observe("after_exit", codex_home.path());
+        let stdout_bytes = stdout.total_bytes;
+        let stderr_bytes = stderr.total_bytes;
+        let stdout_retained = stdout.prefix.len();
+        let stderr_retained = stderr.prefix.len();
+        let stdout = String::from_utf8_lossy(&stdout.prefix);
+        let stderr = String::from_utf8_lossy(&stderr.prefix);
 
         assert_eq!(
             (
@@ -782,7 +812,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
                 protected_git_dir.is_dir(),
             ),
             (0, false, false, false, Some("outside".to_string()), true),
-            "stdout={stdout:?}\n{}",
+            "stdout={stdout:?} stderr={stderr:?} stdout_bytes={stdout_bytes} stdout_retained={stdout_retained} stderr_bytes={stderr_bytes} stderr_retained={stderr_retained}\n{}",
             sandbox_log(codex_home.path())
         );
     });
