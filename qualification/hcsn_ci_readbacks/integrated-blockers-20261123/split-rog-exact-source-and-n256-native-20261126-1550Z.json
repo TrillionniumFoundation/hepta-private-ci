@@ -1,0 +1,160 @@
+{
+  "observed": "2026-11-26T15:50:00Z follow-up window",
+  "prior_candidate": "5a39d736fcec8abed27a14e204ad17d5e61fd368",
+  "prior_first_page": {
+    "success": 54,
+    "failure": 22,
+    "skipped": 13,
+    "cancelled": 9,
+    "in_progress": 1,
+    "queued": 1
+  },
+  "current_candidate": "9518a3d9a415bdc74ff5fbc69b193d6f423a5fc8",
+  "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "pr": 6799,
+  "draft": true,
+  "merged": false,
+  "current_first_page": {
+    "queued": 88,
+    "skipped": 5,
+    "in_progress": 3,
+    "pending": 4
+  },
+  "scope": "first page only; no transfer of qualification between commits",
+  "native_jobs": [
+    {
+      "run": 45840009872,
+      "job": 139978866945,
+      "lines": 287,
+      "normal": 4,
+      "optimized": 4,
+      "conclusion": "success",
+      "status": "PASS_CURRENTSTATE_N256_OPERATOR_SEGMENT_ROSTER"
+    },
+    {
+      "run": 45840009772,
+      "job": 139978866726,
+      "lines": 327,
+      "normal": 4,
+      "optimized": 4,
+      "conclusion": "success",
+      "status": "PASS_N256_NON_SUBSTOCHASTIC_SIGNED_INTERVAL_SOURCE_ONLY"
+    },
+    {
+      "run": 45840009194,
+      "job": 139978864072,
+      "lines": 338,
+      "normal": 5,
+      "optimized": 5,
+      "conclusion": "success",
+      "status": "PASS_V2_FROZEN_PRESERVE_V1_RED_HOLD_RESOURCE_OBSERVATION",
+      "resource_admitted": false
+    },
+    {
+      "run": 45840006183,
+      "job": 139978857764,
+      "lines": 287,
+      "normal": 4,
+      "optimized": 4,
+      "conclusion": "success",
+      "status": "PASS_CURRENTSTATE_N256_EXECUTION_FREEZE_PROTOCOL_HOLD"
+    }
+  ],
+  "split": {
+    "historical_commit": "c440d2baff9c2befaef3ea96148b77f2ae3582b6",
+    "manifest_blob": "6af14a5912634b3ce4ae2e32fb135609f0051a98",
+    "source_count": 33,
+    "source_bytes": 189535,
+    "source_path": "~/.cache/hepta-hcsn-split-20261126-1550/source-c440d2ba",
+    "source_host": "rog",
+    "source_batches": [
+      {
+        "job": "1a2188ffbec-ffbe-48a9",
+        "files": 5
+      },
+      {
+        "job": "1a21890988e-ffbe-48ac",
+        "files": 6
+      },
+      {
+        "job": "1a21891fe08-ffbe-48b0",
+        "files": 6
+      },
+      {
+        "job": "1a218940c07-ffbe-48b4",
+        "files": 8
+      },
+      {
+        "job": "1a21894878e-ffbe-48b6",
+        "files": 9
+      }
+    ],
+    "all_five_batches_exit_0": true,
+    "manifest_included_in_first_batch": true,
+    "per_file_git_blob_and_frozen_sha256_verified": true,
+    "source_and_range_probe": "1a21895a104-ffbe-48b8",
+    "full_source_rehash_stdout": "source_identity 33 189535",
+    "probe_terminal": "last observed finalizing; terminal witness unavailable",
+    "x230_probe": {
+      "job": "1a2188dc3f4-ffbe-489f",
+      "python": "3.12.3",
+      "numpy": "missing"
+    },
+    "rog_existing": {
+      "python": "3.14.4",
+      "numpy": "2.3.5",
+      "scipy": "1.16.3"
+    },
+    "ordinary_wheel_download": {
+      "job": "1a2188e7577-ffbe-48a2",
+      "state": "timed_out",
+      "exit": 124
+    },
+    "official_wheel": {
+      "filename": "scipy-1.17.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "bytes": 34995775,
+      "sha256": "00fb5f8ec8398ad90215008d8b6009c9db9fa924fd4c7d6be307c6f945f9cd73",
+      "metadata": "https://pypi.org/pypi/scipy/1.17.0/json",
+      "download_url": "https://files.pythonhosted.org/packages/b8/7e/8c917cc573310e5dc91cbeead76f1b600d3fb17cf0969db02c9cf92e3cfa/scipy-1.17.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+    },
+    "range_job": {
+      "job": "1a218969f49-ffbe-48bb",
+      "last_stdout_ranges": [
+        {
+          "offset": 0,
+          "bytes": 1048576,
+          "sha256": "6ded0c15c520ceeca2ca0c8113a408f1eded906e7822c3b38b08fb60ea5fb35c"
+        },
+        {
+          "offset": 1048576,
+          "bytes": 1048576,
+          "sha256": "b711b5f4af2fd41ca0e43b8e2a74b37200636049aad60321324a3448c2045d58"
+        },
+        {
+          "offset": 2097152,
+          "bytes": 1048576,
+          "sha256": "059f0653283d63cede9fa99862f040e43555a816c3129bf634b58599807106cd"
+        },
+        {
+          "offset": 3145728,
+          "bytes": 1048576,
+          "sha256": "b8863cd940705184a877a8c03435e0392cb38784d90785cca4b04b8f0b71de16"
+        },
+        {
+          "offset": 4194304,
+          "bytes": 1048576,
+          "sha256": "716736d18ae4b25ac34aece2e798f1b0967961c0b0480523edca302c65f7db25"
+        }
+      ],
+      "last_observed_bytes": 5242880,
+      "terminal": "unknown; subsequent status read failed transient host reachability",
+      "execution_gate": "full official SHA256, private install, NumPy2.3.5/SciPy1.17.0 and all 33 source hashes required before original qualify; no confirmed test completion",
+      "original_four_tests_confirmed": false
+    },
+    "numerical_status": "HOLD"
+  },
+  "global_status": "HOLD",
+  "changed_frozen_sources": false,
+  "changed_integrated_product": false,
+  "merged_red_pr": false
+}
