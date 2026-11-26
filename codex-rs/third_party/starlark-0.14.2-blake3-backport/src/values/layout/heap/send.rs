@@ -53,7 +53,7 @@ unsafe impl Sync for Value<'static> {}
 ///
 ///  a. Unfrozen starlark values must be send up to any `Value<'v>` inside them. In other words,
 ///     they can contain a `Vec<Value<'v>>` or whatever, but not a `Rc<u8>`.
-///  
+///
 ///  b. When we send a heap to another thread, we enforce that the heap is sent "in its entirety",
 ///     ie together with any references into that heap.
 ///

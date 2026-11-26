@@ -4,6 +4,14 @@ This is the complete published `serde-saphyr 2.0.0` crate. Its official archive 
 https://static.crates.io/crates/serde-saphyr/serde-saphyr-2.0.0.crate, SHA-256
 `a253edfdea34032da21af84e16fcc94f4c7a6ba237f9f3bc2dbf43cea8535c44`.
 The upstream license, original manifest, tests and examples remain intact.
+README, change log, contributing, security and Grafana notes have local
+whitespace edits checked to preserve CommonMark output. The archive above
+retains the exact original bytes, including all fenced example whitespace.
+Four Rust doc-comment hard breaks use backslash notation rather than trailing
+spaces; their original lines in the same archive render identically.
+Five test sources encode YAML line-ending spaces as explicit Rust escapes.
+Each compiled fixture emits exactly the original bytes; the published crate
+above remains the source for the unmodified test files.
 
 The added `hepta-legacy-scalars` feature is disabled by default. The first-party
 `codex-utils-yaml` dependency and this candidate's Bazel library explicitly enable

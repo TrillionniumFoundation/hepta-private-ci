@@ -29,3 +29,23 @@ backport, the recorded repository base).
 The source metadata records both pre-format and final hashes. Targeted tests
 were run before the required final fix/format step, in the order specified by
 the repository instructions.
+
+The recorded patches `HEPTA-formatting.patch` are stored as exact evidence carriers.
+Run `python3 qa/repository-consolidation/20261115/restore_raw_evidence.py <new-output-dir>`
+from the repository root to recover the original paths and bytes before applying them.
+The source manifest retains the original patch digests.
+
+For these recorded patches, recover the original bytes before applying: `HEPTA-maintenance.patch`.
+See the [patch restoration instructions](../../../qa/repository-consolidation/20261125/vendor-maintenance-patches/README.md).
+
+## Verbatim test vectors
+
+Eight original testkit vectors intentionally contain CRLF or trailing spaces.
+The standalone test harness reads their gzip carriers without normalizing the
+payload. For an upstream-layout comparison, use the repository evidence
+restorer; the registry and the upstream SHA-256 entries bind the original
+uncompressed bytes. The crate's runtime source and dependencies are unchanged.
+
+The packaged Apache license text differs from the upstream file only by a
+blank line at EOF. The exact original is preserved as
+`HEPTA_LICENSE-APACHE.original.evidence.gz`.

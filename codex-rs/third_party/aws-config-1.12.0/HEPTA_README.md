@@ -19,3 +19,11 @@ The workspace Cargo.lock and MODULE.bazel.lock identify the actual graph.
 `HEPTA-repository-format.patch` records the separate, mechanical repository
 Rust formatting pass. Apply the compatibility patch first, then formatting.
 The manifest records both patch hashes and final original-file hashes.
+
+The recorded patches `HEPTA-repository-format.patch` are stored as exact evidence carriers.
+Run `python3 qa/repository-consolidation/20261115/restore_raw_evidence.py <new-output-dir>`
+from the repository root to recover the original paths and bytes before applying them.
+The source manifest retains the original patch digests.
+
+For these recorded patches, recover the original bytes before applying: `HEPTA-p256-0.14.patch`.
+See the [patch restoration instructions](../../../qa/repository-consolidation/20261125/vendor-maintenance-patches/README.md).
