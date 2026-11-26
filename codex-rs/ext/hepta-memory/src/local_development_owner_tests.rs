@@ -261,6 +261,10 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
     let other_temp = TempDir::new().expect("other temp");
     let other_root = other_temp.path().join("fleet");
     fs::create_dir_all(&other_root).expect("other fleet root");
+    #[cfg(unix)]
+    let other_root = other_root
+        .canonicalize()
+        .expect("canonical other fleet root");
     let other_fleet = HeptaFleetRoot::parse(other_root).expect("other fleet");
     let other_store = CognitiveStore::open(&other_fleet.layout().agent(&owner_id))
         .await
