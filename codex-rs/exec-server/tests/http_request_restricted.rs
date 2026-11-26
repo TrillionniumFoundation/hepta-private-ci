@@ -46,6 +46,7 @@ fn request(url: String, original: String, id: &str) -> HttpRequestRestrictedPara
             stream_response: true,
         },
         configured_resource_origin: original,
+        authorization_origins: Default::default(),
     }
 }
 
@@ -208,6 +209,79 @@ async fn queued_restricted_request_cancels_its_nested_id_without_http_or_affecti
         HttpRequestCancelResponse::NotActive
     );
     assert!(poll!(queued_accept.as_mut()).is_pending());
+    server.shutdown().await?;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn remote_oauth_grant_reaches_exact_origin_without_expanding_other_loopback_ports()
+-> anyhow::Result<()> {
+    let mut server = exec_server().await?;
+    let client = ExecServerClient::connect_websocket(RemoteExecServerConnectArgs::new(
+        server.websocket_url().to_string(),
+        "owner-oauth-origin".to_string(),
+        HttpClientFactory::new(OutboundProxyPolicy::ReqwestDefault),
+    ))
+    .await?;
+    let resource = TcpListener::bind("127.0.0.1:0").await?;
+    let authorization = TcpListener::bind("127.0.0.1:0").await?;
+    let unrelated = TcpListener::bind("127.0.0.1:0").await?;
+    let resource_origin = format!("http://{}", resource.local_addr()?);
+    let authorization_origin = format!("http://{}", authorization.local_addr()?);
+    let token_url = format!("{authorization_origin}/token");
+
+    let denied = timeout(
+        LIMIT,
+        client.http_request_stream_restricted(request(
+            token_url.clone(),
+            resource_origin.clone(),
+            "no-owner-grant",
+        )),
+    )
+    .await?;
+    assert!(matches!(denied, Err(error) if error.to_string().contains("address capability")));
+    {
+        let not_connected = authorization.accept();
+        tokio::pin!(not_connected);
+        assert!(poll!(not_connected.as_mut()).is_pending());
+    }
+
+    let grants = codex_protocol::OAuthAuthorizationOrigins::new(vec![authorization_origin])?;
+    let mut authorized = request(token_url, resource_origin.clone(), "explicit-owner-grant");
+    authorized.authorization_origins = grants.clone();
+    let mut pending = Box::pin(client.http_request_stream_restricted(authorized));
+    let mut peer = tokio::select! {
+        peer = accept_headers(&authorization) => peer?,
+        _ = pending.as_mut() => bail!("authorized request completed before fixture response"),
+    };
+    peer.write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok")
+        .await?;
+    let (headers, mut body) = timeout(LIMIT, pending).await??;
+    assert_eq!(headers.status, 200);
+    let mut received = Vec::new();
+    while let Some(chunk) = timeout(LIMIT, body.recv()).await?? {
+        received.extend_from_slice(&chunk);
+    }
+    assert_eq!(received, b"ok");
+    let mut unrelated_request = request(
+        format!("http://{}/private", unrelated.local_addr()?),
+        resource_origin,
+        "unlisted-owner-port",
+    );
+    unrelated_request.authorization_origins = grants;
+    let denied = timeout(
+        LIMIT,
+        client.http_request_stream_restricted(unrelated_request),
+    )
+    .await?;
+    assert!(matches!(denied, Err(error) if error.to_string().contains("address capability")));
+    let unrelated_accept = unrelated.accept();
+    tokio::pin!(unrelated_accept);
+    assert!(poll!(unrelated_accept.as_mut()).is_pending());
+    let resource_accept = resource.accept();
+    tokio::pin!(resource_accept);
+    assert!(poll!(resource_accept.as_mut()).is_pending());
+    drop(client);
     server.shutdown().await?;
     Ok(())
 }

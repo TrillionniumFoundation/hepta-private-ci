@@ -11,7 +11,9 @@ use reqwest::dns::Name;
 use reqwest::dns::Resolve;
 use reqwest::dns::Resolving;
 
-/// A capability derived only from the originally configured resource URL.
+use crate::oauth_authorization_origins::OAuthAuthorizationOrigins;
+
+/// A capability derived from the resource and explicit owner authorization origins.
 ///
 /// Discovered URLs never extend this capability. Public addresses are allowed;
 /// an explicit private/loopback IP or `localhost` permits only that exact origin.
@@ -20,6 +22,7 @@ use reqwest::dns::Resolving;
 pub struct HttpAddressPolicy {
     configured_origin: String,
     local: ConfiguredLocal,
+    authorization_origins: Vec<ConfiguredOrigin>,
 }
 
 impl fmt::Debug for HttpAddressPolicy {
@@ -28,6 +31,12 @@ impl fmt::Debug for HttpAddressPolicy {
             .debug_struct("HttpAddressPolicy")
             .finish_non_exhaustive()
     }
+}
+
+#[derive(Clone)]
+struct ConfiguredOrigin {
+    origin: String,
+    local: ConfiguredLocal,
 }
 
 #[derive(Clone, Copy)]
@@ -41,6 +50,8 @@ enum ConfiguredLocal {
 pub enum HttpAddressPolicyError {
     #[error("restricted HTTP requires a valid configured HTTP resource origin")]
     InvalidConfiguredResource,
+    #[error("an OAuth authorization origin duplicates the configured resource origin")]
+    DuplicateConfiguredOrigin,
     #[error("restricted HTTP requires an HTTP destination without URL credentials")]
     InvalidDestination,
     #[error("HTTP destination is outside the configured address capability")]
@@ -75,7 +86,27 @@ impl HttpAddressPolicy {
         Ok(Self {
             configured_origin: url.origin().ascii_serialization(),
             local,
+            authorization_origins: Vec::new(),
         })
+    }
+
+    /// Adds only validated origins explicitly granted by the resource owner.
+    pub fn from_configured_resource_with_oauth_authorization_origins(
+        resource: &str,
+        origins: &OAuthAuthorizationOrigins,
+    ) -> Result<Self, HttpAddressPolicyError> {
+        let mut policy = Self::from_configured_resource(resource)?;
+        for origin in origins.as_slice() {
+            if *origin == policy.configured_origin {
+                return Err(HttpAddressPolicyError::DuplicateConfiguredOrigin);
+            }
+            let granted = Self::from_configured_resource(origin)?;
+            policy.authorization_origins.push(ConfiguredOrigin {
+                origin: granted.configured_origin,
+                local: granted.local,
+            });
+        }
+        Ok(policy)
     }
 
     /// Carries the same original origin across an execution boundary; it must not
@@ -89,23 +120,27 @@ impl HttpAddressPolicy {
         url: &Url,
     ) -> Result<RestrictedResolver, HttpAddressPolicyError> {
         validate_url(url)?;
-        let same_origin = url.origin().ascii_serialization() == self.configured_origin;
+        let destination_origin = url.origin().ascii_serialization();
+        let local = if destination_origin == self.configured_origin {
+            self.local
+        } else {
+            self.authorization_origins
+                .iter()
+                .find(|granted| granted.origin == destination_origin)
+                .map(|granted| granted.local)
+                .unwrap_or(ConfiguredLocal::None)
+        };
         let allowance = if let Some(ip) = literal_ip(url) {
             match address_class(ip) {
                 AddressClass::Public => AddressAllowance::Public,
-                AddressClass::Private | AddressClass::Loopback
-                    if same_origin
-                        && matches!(self.local, ConfiguredLocal::Literal(original) if original == ip) =>
-                {
+                AddressClass::Private | AddressClass::Loopback if matches!(local, ConfiguredLocal::Literal(original) if original == ip) => {
                     AddressAllowance::Exact(ip)
                 }
                 AddressClass::Private | AddressClass::Loopback | AddressClass::Forbidden => {
                     return Err(HttpAddressPolicyError::DestinationDenied);
                 }
             }
-        } else if url.host_str() == Some("localhost")
-            && same_origin
-            && matches!(self.local, ConfiguredLocal::Localhost)
+        } else if url.host_str() == Some("localhost") && matches!(local, ConfiguredLocal::Localhost)
         {
             AddressAllowance::Loopback
         } else {

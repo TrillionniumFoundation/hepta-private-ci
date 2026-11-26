@@ -30,7 +30,10 @@ const HTTP_BODY_DELTA_CHANNEL_CAPACITY: usize = 256;
 
 enum HttpStreamAccess {
     Unrestricted,
-    ConfiguredResource(String),
+    ConfiguredResource {
+        origin: String,
+        authorization_origins: codex_protocol::OAuthAuthorizationOrigins,
+    },
 }
 
 impl ExecServerClient {
@@ -65,7 +68,10 @@ impl ExecServerClient {
     ) -> Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError> {
         self.http_request_stream_with_access(
             params.request,
-            HttpStreamAccess::ConfiguredResource(params.configured_resource_origin),
+            HttpStreamAccess::ConfiguredResource {
+                origin: params.configured_resource_origin,
+                authorization_origins: params.authorization_origins,
+            },
         )
         .await
     }
@@ -97,13 +103,17 @@ impl ExecServerClient {
                 self.call_rpc(&rpc_client, HTTP_REQUEST_CANCELLABLE_METHOD, &params)
                     .await
             }
-            HttpStreamAccess::ConfiguredResource(configured_resource_origin) => {
+            HttpStreamAccess::ConfiguredResource {
+                origin: configured_resource_origin,
+                authorization_origins,
+            } => {
                 self.call_rpc(
                     &rpc_client,
                     HTTP_REQUEST_RESTRICTED_METHOD,
                     &HttpRequestRestrictedParams {
                         request: params,
                         configured_resource_origin,
+                        authorization_origins,
                     },
                 )
                 .await

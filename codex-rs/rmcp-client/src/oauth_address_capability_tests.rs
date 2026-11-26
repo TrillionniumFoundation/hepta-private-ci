@@ -171,6 +171,7 @@ async fn protocol_fixture_cannot_expand_resource_method_path_or_query() {
         let result = client
             .http_request_stream_restricted(HttpRequestRestrictedParams {
                 configured_resource_origin: origin,
+                authorization_origins: Default::default(),
                 request: HttpRequestParams {
                     method: method.to_string(),
                     url,

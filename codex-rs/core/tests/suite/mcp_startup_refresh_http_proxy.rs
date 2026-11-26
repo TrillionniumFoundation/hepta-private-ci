@@ -536,6 +536,7 @@ async fn configured_http_proxy_rejects_restricted_requests_before_http_io() -> R
                 stream_response: true,
             },
             configured_resource_origin: resource_origin.clone(),
+            authorization_origins: Default::default(),
         }),
     )
     .await?;

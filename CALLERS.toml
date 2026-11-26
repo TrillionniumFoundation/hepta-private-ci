@@ -3124,6 +3124,8 @@ required_function_order = [{ function = "fn read_original(", sequence = ["contin
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/paired_preparation_continuation.rs"
+required = ["self.verified.original_ingress()?", "serde_json::from_str(&self.prepared.receipt.payload_json)?", "self.prepared.request.original != *self.verified.request()", "payload.original_route != *self.verified.route()", "payload.permission_revision != self.verified.permission_revision()", "payload.expires_at_ms != self.verified.expires_at_ms()", "payload.statement_sha256 != self.verified.statement_sha256().to_string()", ".final_use_binding(&self.prepared.receipt, DESTINATION)", "PairedTrainingReadRequest::from_original(", "Ok((request, delivery))"]
+forbidden = []
 required_function_order = [{ function = "fn into_training_request(", sequence = ["self.verified.original_ingress()?", "serde_json::from_str(&self.prepared.receipt.payload_json)?", "self.prepared.request.original != *self.verified.request()", "payload.original_route != *self.verified.route()", "payload.permission_revision != self.verified.permission_revision()", "payload.expires_at_ms != self.verified.expires_at_ms()", "payload.statement_sha256 != self.verified.statement_sha256().to_string()", ".final_use_binding(&self.prepared.receipt, DESTINATION)", "PairedTrainingReadRequest::from_original(", "Ok((request, delivery))"] }]
 
 
@@ -3136,15 +3138,20 @@ required_function_order = [{ function = "fn read_verified(", sequence = [".prepa
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/config.rs"
+required = ["self\n            .production_writer_host()", "host.has_registered_destination(crate::paired_preparation::DESTINATION)", "self\n            .notes_thread_tools\n            .as_mut()", ".install_paired_training(client)?", "Ok((self, handle))"]
+forbidden = []
 required_function_order = [{ function = "fn with_original_paired_training(", sequence = ["self\n            .production_writer_host()", "host.has_registered_destination(crate::paired_preparation::DESTINATION)", "self\n            .notes_thread_tools\n            .as_mut()", ".install_paired_training(client)?", "Ok((self, handle))"] }]
 
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_tool.rs"
+forbidden = []
 required = ["paired_training: None"]
 required_function_order = [{ function = "fn install_paired_training(", sequence = ["self.paired_training.is_some()", "self.adapter.check_available()?", "self.paired_preparation.as_ref()", "TrainingLane::attach(\n            &preparation.journal,\n            client,\n        )?", "self.paired_training = Some(lane)"] }]
 
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/notes_thread_runtime.rs"
+required = ["pending.complete_on_owner(&cancellation, async {", "lane.journal.retained(&request).await?", "PairedTrainingReadResult::RetainedReadOnly", "connection.verify_paired_turn(", "self.adapter.check_paired_preparation_lifetime(&verified)?", "lane.read_verified(&request, &verified, &preparing).await?", "self.adapter.check_paired_preparation_lifetime(&verified)?"]
+forbidden = []
 required_order = [["pending.complete_on_owner(&cancellation, async {", "lane.journal.retained(&request).await?", "PairedTrainingReadResult::RetainedReadOnly", "connection.verify_paired_turn(", "self.adapter.check_paired_preparation_lifetime(&verified)?", "lane.read_verified(&request, &verified, &preparing).await?", "self.adapter.check_paired_preparation_lifetime(&verified)?"]]

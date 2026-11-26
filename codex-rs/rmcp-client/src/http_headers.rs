@@ -239,6 +239,7 @@ impl HttpClient for HttpHeadersClient {
                 .http_request_stream_restricted(HttpRequestRestrictedParams {
                     request,
                     configured_resource_origin: params.configured_resource_origin,
+                    authorization_origins: params.authorization_origins,
                 })
                 .await?;
             if prevent_proxy_authorization_redirect {

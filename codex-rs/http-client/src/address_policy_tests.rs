@@ -185,3 +185,96 @@ async fn reqwest_connector_never_receives_rejected_loopback_dns_answer() {
         matches!(listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
     );
 }
+
+#[test]
+fn explicit_oauth_origin_grants_preserve_resource_identity_and_exact_local_boundaries() {
+    let origins = OAuthAuthorizationOrigins::new(vec![
+        "http://localhost:8383".to_string(),
+        "http://127.0.0.1:8484".to_string(),
+    ])
+    .unwrap();
+    let policy = HttpAddressPolicy::from_configured_resource_with_oauth_authorization_origins(
+        "http://127.0.0.1:8181/mcp",
+        &origins,
+    )
+    .unwrap();
+    assert_eq!(policy.configured_resource_origin(), "http://127.0.0.1:8181");
+    for destination in [
+        "http://127.0.0.1:8181/resource",
+        "http://localhost:8383/tenant1/token",
+        "http://127.0.0.1:8484/register",
+    ] {
+        assert!(
+            policy
+                .resolver_for(&Url::parse(destination).unwrap())
+                .is_ok(),
+            "{destination}"
+        );
+    }
+    for destination in [
+        "http://localhost:8384/token",
+        "https://localhost:8383/token",
+        "http://localhost.:8383/token",
+        "http://other.localhost:8383/token",
+        "http://127.0.0.2:8484/token",
+        "http://127.0.0.1:8383/token",
+        "http://10.0.0.1:8484/token",
+        "http://169.254.169.254/token",
+    ] {
+        assert!(
+            matches!(
+                policy.resolver_for(&Url::parse(destination).unwrap()),
+                Err(HttpAddressPolicyError::DestinationDenied)
+            ),
+            "{destination}"
+        );
+    }
+}
+
+#[test]
+fn oauth_origin_grants_reject_redundant_resource_capability() {
+    let origins =
+        OAuthAuthorizationOrigins::new(vec!["http://localhost:8181".to_string()]).unwrap();
+    assert!(matches!(
+        HttpAddressPolicy::from_configured_resource_with_oauth_authorization_origins(
+            "http://localhost:8181/mcp",
+            &origins,
+        ),
+        Err(HttpAddressPolicyError::DuplicateConfiguredOrigin)
+    ));
+}
+
+#[tokio::test]
+async fn granted_dns_origin_still_filters_private_answers_and_rebinding() {
+    let origins =
+        OAuthAuthorizationOrigins::new(vec!["https://authorization.example".to_string()]).unwrap();
+    let policy = HttpAddressPolicy::from_configured_resource_with_oauth_authorization_origins(
+        "https://resource.example/mcp",
+        &origins,
+    )
+    .unwrap();
+    let mut resolver = policy
+        .resolver_for(&Url::parse("https://authorization.example/token").unwrap())
+        .unwrap();
+    resolver.lookup = Arc::new(Lookup(Mutex::new(VecDeque::from([
+        vec![
+            "10.0.0.2:443".parse().unwrap(),
+            "8.8.8.8:443".parse().unwrap(),
+        ],
+        vec!["127.0.0.1:443".parse().unwrap()],
+    ]))));
+    assert_eq!(
+        resolver
+            .resolve("authorization.example".parse().unwrap())
+            .await
+            .unwrap()
+            .collect::<Vec<_>>(),
+        vec!["8.8.8.8:0".parse::<SocketAddr>().unwrap()]
+    );
+    assert!(
+        resolver
+            .resolve("authorization.example".parse().unwrap())
+            .await
+            .is_err()
+    );
+}

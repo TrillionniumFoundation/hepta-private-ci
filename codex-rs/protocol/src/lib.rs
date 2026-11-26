@@ -6,6 +6,7 @@ mod session_id;
 mod thread_id;
 mod tool_name;
 pub use agent_path::AgentPath;
+pub use codex_http_client::OAuthAuthorizationOrigins;
 pub use permission_profile_intersection::PermissionIntersectionError;
 pub use permission_profile_intersection::intersect_effective_permission_profiles;
 pub use response_item_id::ResponseItemId;
