@@ -1,15 +1,20 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
-use sqlx::sqlite::SqlitePoolOptions;
+//! The schema oracle is a private disposable file opened by the canonical
+//! codex-state SQLite shim, never an unreviewed SQLx pool constructor.
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 
 use super::*;
 
 #[tokio::test]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let temp = tempfile::tempdir().expect("private reference SQLite root");
+    let home = AbsolutePathBuf::try_from(temp.path().to_path_buf())
+        .expect("absolute isolated reference path");
+    let pool = SqliteConfig::new_for_testing(home)
+        .open_durable_evidence_pool(&temp.path().join("reference-schema.sqlite3"))
         .await
-        .expect("reference SQLite");
+        .expect("reference SQLite via codex-state shim");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");
     // Recovery and startup share one canonical schema inventory. A migration
     // adding a logical table must bind its contents, not silently ignore it.

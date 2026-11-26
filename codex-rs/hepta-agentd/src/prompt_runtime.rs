@@ -827,37 +827,71 @@ struct StoredObservation {
 struct PromptRuntimeStore {
     root: PathBuf,
     _lock: File,
+    // Windows child files must always resolve beneath one retained, ACL-
+    // checked, non-reparse directory handle. Plain paths would be unsafe.
+    #[cfg(windows)]
+    secure_root: File,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: AtomicBool,
 }
 
 impl PromptRuntimeStore {
     fn open(directory: &Path) -> Result<(Self, PromptRuntimeState), AgentdPromptRuntimeError> {
-        prepare_state_directory(directory)?;
-        let lock_path = directory.join(LOCK_FILE);
-        let lock = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(&lock_path)
+        #[cfg(windows)]
+        let secure_root = codex_utils_path::open_private_state_directory(directory)
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        set_private_file_permissions(&lock_path)?;
+        #[cfg(not(windows))]
+        prepare_state_directory(directory)?;
+        #[cfg(windows)]
+        let lock = codex_utils_path::open_private_state_child(
+            &secure_root,
+            LOCK_FILE,
+            codex_utils_path::PrivateFileAccess::Create,
+        )
+        .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+        #[cfg(not(windows))]
+        let lock = {
+            let lock_path = directory.join(LOCK_FILE);
+            let file = OpenOptions::new()
+                .create(true)
+                .truncate(false)
+                .read(true)
+                .write(true)
+                .open(&lock_path)
+                .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+            set_private_file_permissions(&lock_path)?;
+            file
+        };
         lock.try_lock()
             .map_err(|_| AgentdPromptRuntimeError::StateLocked)?;
         let store = Self {
             root: directory.to_path_buf(),
             _lock: lock,
+            #[cfg(windows)]
+            secure_root,
             #[cfg(test)]
             fail_directory_sync_after_rename_once: AtomicBool::new(false),
         };
-        let state_path = directory.join(STATE_FILE);
-        if !state_path.exists() {
+        #[cfg(windows)]
+        let exists = codex_utils_path::private_state_child_exists(&store.secure_root, STATE_FILE)
+            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+        #[cfg(not(windows))]
+        let exists = directory.join(STATE_FILE).exists();
+        if !exists {
             return Ok((store, PromptRuntimeState::default()));
         }
+        #[cfg(windows)]
+        let state_file = codex_utils_path::open_private_state_child(
+            &store.secure_root,
+            STATE_FILE,
+            codex_utils_path::PrivateFileAccess::Read,
+        )
+        .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+        #[cfg(not(windows))]
+        let state_file = File::open(directory.join(STATE_FILE))
+            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
         let mut bytes = Vec::new();
-        File::open(&state_path)
-            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?
+        state_file
             .take(MAX_DURABLE_STATE_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
@@ -877,18 +911,41 @@ impl PromptRuntimeStore {
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
             return Err(AgentdPromptRuntimeError::CapacityExceeded);
         }
-        let next_path = self.root.join(NEXT_FILE);
-        let mut next = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(&next_path)
+        #[cfg(windows)]
+        let mut next = {
+            let file = codex_utils_path::open_private_state_child(
+                &self.secure_root,
+                NEXT_FILE,
+                codex_utils_path::PrivateFileAccess::Create,
+            )
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        set_private_file_permissions(&next_path)?;
+            file.set_len(0)
+                .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+            file
+        };
+        #[cfg(not(windows))]
+        let mut next = {
+            let next_path = self.root.join(NEXT_FILE);
+            let file = OpenOptions::new()
+                .create(true)
+                .truncate(true)
+                .write(true)
+                .open(&next_path)
+                .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+            set_private_file_permissions(&next_path)?;
+            file
+        };
         next.write_all(&bytes)
             .and_then(|()| next.sync_all())
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        std::fs::rename(&next_path, self.root.join(STATE_FILE))
+        // Drop the open source handle before rename; MSVC can forbid deletion
+        // of a still-open file even when its contents were fully fsynced.
+        drop(next);
+        #[cfg(windows)]
+        codex_utils_path::replace_private_state_child(&self.secure_root, NEXT_FILE, STATE_FILE)
+            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+        #[cfg(not(windows))]
+        std::fs::rename(self.root.join(NEXT_FILE), self.root.join(STATE_FILE))
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
         #[cfg(test)]
         if self
@@ -897,6 +954,13 @@ impl PromptRuntimeStore {
         {
             return Err(AgentdPromptRuntimeError::IndeterminateDurability);
         }
+        #[cfg(windows)]
+        {
+            // The native private-owner replace uses MOVEFILE_WRITE_THROUGH;
+            // no directory-fsync success is fabricated on Windows.
+            Ok(())
+        }
+        #[cfg(not(windows))]
         sync_state_directory(&self.root)
     }
 }

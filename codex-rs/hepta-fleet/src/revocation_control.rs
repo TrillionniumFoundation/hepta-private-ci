@@ -351,8 +351,23 @@ mod tests {
     use sha2::Digest;
     use sha2::Sha256;
     use std::collections::BTreeSet;
+    use std::fmt::Debug;
     use std::sync::atomic::AtomicU64;
     use std::sync::atomic::Ordering;
+
+    fn must<T, E: Debug>(result: Result<T, E>) -> T {
+        match result {
+            Ok(value) => value,
+            Err(error) => panic!("fleet revocation test fixture failed: {error:?}"),
+        }
+    }
+
+    fn rejected<T: Debug, E>(result: Result<T, E>) -> E {
+        match result {
+            Ok(value) => panic!("rejected fleet revocation mutation succeeded: {value:?}"),
+            Err(error) => error,
+        }
+    }
 
     #[derive(Debug)]
     struct ManualClock(AtomicU64);
@@ -382,13 +397,12 @@ mod tests {
     ) {
         let distributor = SigningKey::from_bytes(&[41; 32]);
         let node = SigningKey::from_bytes(&[42; 32]);
-        let feed = FinalUseRevocationFeedVerifier::new(
+        let feed = must(FinalUseRevocationFeedVerifier::new(
             "revocation-distributor".into(),
             distributor.verifying_key().to_bytes(),
-        )
-        .unwrap();
-        let convergence =
-            FinalUseRevocationConvergenceVerifier::new([FinalUseRevocationNodeTrust {
+        ));
+        let convergence = must(FinalUseRevocationConvergenceVerifier::new([
+            FinalUseRevocationNodeTrust {
                 node_id: "node-a".into(),
                 keys: vec![FinalUseTrustKey {
                     key_id: "node-key".into(),
@@ -396,11 +410,15 @@ mod tests {
                     not_before_authority_epoch: 1,
                     not_after_authority_epoch: 99,
                 }],
-            }])
-            .unwrap();
+            },
+        ]));
         let clock = Arc::new(ManualClock::new(1_100));
-        let coordinator =
-            FleetRevocationCoordinator::new(feed, convergence, clock.clone(), 500).unwrap();
+        let coordinator = must(FleetRevocationCoordinator::new(
+            feed,
+            convergence,
+            clock.clone(),
+            500,
+        ));
         let update = FinalUseRevocationUpdate::new(
             "revocation-distributor".into(),
             FinalUseRevocations {
@@ -413,7 +431,7 @@ mod tests {
         );
         let signed_update = SignedFinalUseRevocationUpdate {
             signature: distributor
-                .sign(&update.signing_bytes().unwrap())
+                .sign(&must(update.signing_bytes()))
                 .to_bytes()
                 .to_vec(),
             update,
@@ -424,7 +442,7 @@ mod tests {
     fn ack_digest(update: &FinalUseRevocationUpdate) -> [u8; 32] {
         let mut hash = Sha256::new();
         hash.update(b"hepta.kernel.authority.revocation-update-digest.v1\0");
-        hash.update(update.signing_bytes().unwrap());
+        hash.update(must(update.signing_bytes()));
         hash.finalize().into()
     }
 
@@ -443,7 +461,7 @@ mod tests {
             applied_at_unix_ms,
         };
         SignedFinalUseRevocationAck {
-            signature: node.sign(&ack.signing_bytes().unwrap()).to_bytes().to_vec(),
+            signature: node.sign(&must(ack.signing_bytes())).to_bytes().to_vec(),
             ack,
         }
     }
@@ -451,23 +469,23 @@ mod tests {
     #[test]
     fn missing_node_moves_from_catchup_to_quarantine_and_stale() {
         let (mut coordinator, clock, _distributor, _node, update) = setup();
-        let status = coordinator.install_update(update).unwrap();
+        let status = must(coordinator.install_update(update));
         assert!(!status.converged);
         assert_eq!(
-            coordinator.node_state("node-a").unwrap(),
+            must(coordinator.node_state("node-a")),
             FleetNodeRevocationState::CatchingUp
         );
         clock.set(1_500);
         assert_eq!(
-            coordinator.node_state("node-a").unwrap(),
+            must(coordinator.node_state("node-a")),
             FleetNodeRevocationState::Quarantined
         );
         clock.set(2_000);
         assert_eq!(
-            coordinator.node_state("node-a").unwrap(),
+            must(coordinator.node_state("node-a")),
             FleetNodeRevocationState::FeedStale
         );
-        let stale = coordinator.status().unwrap();
+        let stale = must(coordinator.status());
         assert!(!stale.feed_fresh);
         assert!(!stale.converged);
     }
@@ -475,15 +493,15 @@ mod tests {
     #[test]
     fn exact_ack_makes_node_ready_and_duplicate_is_idempotent() {
         let (mut coordinator, clock, _distributor, node, update) = setup();
-        coordinator.install_update(update.clone()).unwrap();
+        must(coordinator.install_update(update.clone()));
         clock.set(1_200);
         let ack = signed_ack(&node, &update, 1_200);
-        let first = coordinator.record_ack(ack.clone()).unwrap();
-        let retry = coordinator.record_ack(ack).unwrap();
+        let first = must(coordinator.record_ack(ack.clone()));
+        let retry = must(coordinator.record_ack(ack));
         assert_eq!(first, retry);
         assert!(retry.converged);
         assert_eq!(
-            coordinator.node_state("node-a").unwrap(),
+            must(coordinator.node_state("node-a")),
             FleetNodeRevocationState::Ready
         );
     }
@@ -491,11 +509,9 @@ mod tests {
     #[test]
     fn new_head_forces_catchup_and_same_revision_drift_conflicts() {
         let (mut coordinator, clock, distributor, node, update) = setup();
-        coordinator.install_update(update.clone()).unwrap();
+        must(coordinator.install_update(update.clone()));
         clock.set(1_200);
-        coordinator
-            .record_ack(signed_ack(&node, &update, 1_200))
-            .unwrap();
+        must(coordinator.record_ack(signed_ack(&node, &update, 1_200)));
 
         let mut drifted = update.clone();
         drifted
@@ -504,11 +520,11 @@ mod tests {
             .revoked_grant_ids
             .insert("grant-b".into());
         drifted.signature = distributor
-            .sign(&drifted.update.signing_bytes().unwrap())
+            .sign(&must(drifted.update.signing_bytes()))
             .to_bytes()
             .to_vec();
         assert_eq!(
-            coordinator.install_update(drifted).unwrap_err(),
+            rejected(coordinator.install_update(drifted)),
             FleetRevocationError::ConflictingUpdate
         );
 
@@ -519,11 +535,11 @@ mod tests {
         removed.update.issued_at_unix_ms = 1_250;
         removed.update.expires_at_unix_ms = 2_100;
         removed.signature = distributor
-            .sign(&removed.update.signing_bytes().unwrap())
+            .sign(&must(removed.update.signing_bytes()))
             .to_bytes()
             .to_vec();
         assert_eq!(
-            coordinator.install_update(removed).unwrap_err(),
+            rejected(coordinator.install_update(removed)),
             FleetRevocationError::ConflictingUpdate
         );
 
@@ -532,12 +548,12 @@ mod tests {
         newer.update.issued_at_unix_ms = 1_250;
         newer.update.expires_at_unix_ms = 2_100;
         newer.signature = distributor
-            .sign(&newer.update.signing_bytes().unwrap())
+            .sign(&must(newer.update.signing_bytes()))
             .to_bytes()
             .to_vec();
-        coordinator.install_update(newer).unwrap();
+        must(coordinator.install_update(newer));
         assert_eq!(
-            coordinator.node_state("node-a").unwrap(),
+            must(coordinator.node_state("node-a")),
             FleetNodeRevocationState::CatchingUp
         );
     }

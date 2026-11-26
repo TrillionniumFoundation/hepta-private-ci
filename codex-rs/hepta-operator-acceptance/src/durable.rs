@@ -154,6 +154,39 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
     Ok((format!("{:x}", hasher.finalize()), before.len()))
 }
 
+fn sync_verified_sidecar_parent(parent: &Path) -> Result<(), AcceptanceError> {
+    let before = std::fs::symlink_metadata(parent)?;
+    if before.file_type().is_symlink() || !before.is_dir() {
+        return Err(invalid("durable sidecar parent must be a real directory"));
+    }
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+        // Directory handles require BACKUP_SEMANTICS on Windows.
+        // Do not skip the flush: absence of durable parent support remains
+        // a hard error, never a successful artifact/authority receipt.
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+        let mut options = OpenOptions::new();
+        options.read(true);
+        options.custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT);
+        options.open(parent)?
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(parent)?;
+    if !directory.metadata()?.is_dir() {
+        return Err(invalid("durable sidecar parent handle is not a directory"));
+    }
+    directory.sync_all()?;
+    let after = std::fs::symlink_metadata(parent)?;
+    if after.file_type().is_symlink() || !same_file_identity(&before, &after) {
+        return Err(invalid(
+            "durable sidecar parent changed after synchronization",
+        ));
+    }
+    Ok(())
+}
+
 pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), AcceptanceError> {
     let parent = path
         .parent()
@@ -200,7 +233,7 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
     if parent_after.file_type().is_symlink() || !same_file_identity(&parent_before, &parent_after) {
         return Err(invalid("sidecar parent changed during durable write"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_verified_sidecar_parent(parent)?;
     Ok(())
 }
 
@@ -238,7 +271,7 @@ pub(crate) fn write_private_atomic_replace(
     if persisted != bytes {
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
-    File::open(parent)?.sync_all()?;
+    sync_verified_sidecar_parent(parent)?;
     Ok(())
 }
 
