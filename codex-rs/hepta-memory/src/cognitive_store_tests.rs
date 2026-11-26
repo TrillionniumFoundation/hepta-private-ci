@@ -1111,14 +1111,25 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .expect("migration does not fabricate Notes fence terminals"),
         0
     );
+    let expected_migrations: Vec<_> = sqlx::migrate!("./migrations")
+        .iter()
+        .map(|migration| (migration.version, true))
+        .collect();
     assert_eq!(
-        sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM (SELECT version FROM _sqlx_migrations ORDER BY version)",
+        expected_migrations,
+        (1_i64..=19)
+            .map(|version| (version, true))
+            .collect::<Vec<_>>(),
+        "the compiled migration chain must retain every historical version",
+    );
+    assert_eq!(
+        sqlx::query_as::<_, (i64, bool)>(
+            "SELECT version, success FROM _sqlx_migrations ORDER BY version",
         )
-        .fetch_one(&migrated.pool)
+        .fetch_all(&migrated.pool)
         .await
         .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19"
+        expected_migrations,
     );
 
     let shared_experience_migration =
