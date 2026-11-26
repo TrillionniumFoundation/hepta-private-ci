@@ -48,6 +48,7 @@ use windows_sys::Win32::Security::WinBuiltinAdministratorsSid;
 use windows_sys::Win32::Security::WinCreatorOwnerSid;
 use windows_sys::Win32::Security::WinLocalSystemSid;
 use windows_sys::Win32::Storage::FileSystem::CREATE_NEW;
+#[cfg(test)]
 use windows_sys::Win32::Storage::FileSystem::CreateDirectoryW;
 use windows_sys::Win32::Storage::FileSystem::CreateFileW;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
@@ -55,6 +56,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_APPEND_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_DIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
+#[cfg(test)]
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
@@ -79,6 +81,9 @@ use windows_sys::Win32::System::Threading::OpenProcessToken;
 mod creation_security;
 use creation_security::with_private_security;
 
+#[path = "private_state_windows_directory.rs"]
+mod directory;
+
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const INHERIT_ONLY_ACE: u8 = 0x08;
@@ -96,29 +101,7 @@ pub enum PrivateFileAccess {
 
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
-    let path = wide_path(root)?;
-    // Creation, ancestry validation, and the retained open must use the same
-    // absolute/verbatim spelling, including when callers supply a relative root.
-    let root = PathBuf::from(std::ffi::OsString::from_wide(&path[..path.len() - 1]));
-    with_private_security(|security| {
-        if unsafe { CreateDirectoryW(path.as_ptr(), security) } == 0 {
-            let error = io::Error::last_os_error();
-            if error.kind() != io::ErrorKind::AlreadyExists {
-                return Err(error);
-            }
-        }
-        Ok(())
-    })?;
-    reject_reparse_ancestry(&root)?;
-    let mut options = OpenOptions::new();
-    options.read(true).write(true);
-    let directory = options
-        // Child operations resolve from this retained handle. Refuse delete
-        // sharing so its own path cannot be renamed between resolution and use;
-        // Windows also refuses renaming an ancestor with an open descendant.
-        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
-        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
-        .open(&root)?;
+    let directory = directory::open(root)?;
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
 }
@@ -443,20 +426,6 @@ fn final_path(file: &File) -> io::Result<PathBuf> {
         return Err(io::Error::last_os_error());
     }
     Ok(std::ffi::OsString::from_wide(&buffer[..written as usize]).into())
-}
-
-fn reject_reparse_ancestry(path: &Path) -> io::Result<()> {
-    use std::os::windows::fs::MetadataExt;
-
-    for ancestor in path.ancestors() {
-        let metadata = std::fs::symlink_metadata(ancestor)?;
-        if metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
-            return Err(unsafe_state(
-                "private state ancestry contains a reparse point",
-            ));
-        }
-    }
-    Ok(())
 }
 
 fn wide_path(path: &Path) -> io::Result<Vec<u16>> {
