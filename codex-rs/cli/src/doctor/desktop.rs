@@ -128,10 +128,14 @@ pub(super) async fn collect() -> Option<DesktopDiagnostics> {
     not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
 )))]
 fn native_clock_seconds(now: SystemTime) -> i64 {
-    let elapsed = now
-        .duration_since(std::time::UNIX_EPOCH)
-        .expect("system time before Unix epoch");
-    i64::try_from(elapsed.as_secs()).expect("system time outside desktop log timestamp range")
+    let elapsed = match now.duration_since(std::time::UNIX_EPOCH) {
+        Ok(elapsed) => elapsed,
+        Err(error) => panic!("system time before Unix epoch: {error:?}"),
+    };
+    match i64::try_from(elapsed.as_secs()) {
+        Ok(seconds) => seconds,
+        Err(error) => panic!("system time outside desktop log timestamp range: {error:?}"),
+    }
 }
 
 fn utc_log_day(now: i64) -> String {
@@ -140,7 +144,10 @@ fn utc_log_day(now: i64) -> String {
         not(any(target_os = "emscripten", target_os = "wasi", target_os = "linux"))
     )))]
     assert!(now >= 0, "system time before Unix epoch");
-    let utc = timestamp::checked_utc(now).expect("system time outside desktop log timestamp range");
+    let utc = match timestamp::checked_utc(now) {
+        Some(utc) => utc,
+        None => panic!("system time outside desktop log timestamp range"),
+    };
     let year = timestamp::format_year(utc.year);
     let month = u8::from(utc.within_cycle.month());
     let day = utc.within_cycle.day();

@@ -336,7 +336,10 @@ impl ExecServerHandler {
                 send_headers.await?
             };
             if let Some(pending_stream) = pending_stream {
-                let scope = scope.expect("streamed response has its original request scope");
+                let scope = match scope {
+                    Some(scope) => scope,
+                    None => panic!("streamed response has its original request scope"),
+                };
                 handler.start_http_body_stream(pending_stream, scope);
             }
             Ok(())

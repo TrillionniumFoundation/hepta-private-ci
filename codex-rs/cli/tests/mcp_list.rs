@@ -112,33 +112,32 @@ enabled = true
 }
 
 #[tokio::test]
-async fn list_discovers_local_oauth_server_through_environment_proxy() -> Result<()> {
+async fn list_discovers_oauth_for_configured_local_origin() -> Result<()> {
     let codex_home = TempDir::new()?;
-    configure_http_oauth_server(codex_home.path(), "http://mcp-proxy.invalid/mcp").await?;
-    std::fs::write(codex_home.path().join("environments.toml"), "invalid = [")?;
-
     let listener = TcpListener::bind("127.0.0.1:0")?;
     listener.set_nonblocking(true)?;
-    let proxy_url = format!("http://{}", listener.local_addr()?);
-    let proxy = std::thread::spawn(move || -> Result<Vec<String>> {
+    let resource_origin = format!("http://{}", listener.local_addr()?);
+    let resource_url = format!("{resource_origin}/mcp");
+    configure_http_oauth_server(codex_home.path(), &resource_url).await?;
+    std::fs::write(codex_home.path().join("environments.toml"), "invalid = [")?;
+
+    let proxy = UnexpectedOAuthProxy::start()?;
+    let resource = std::thread::spawn(move || -> Result<Vec<String>> {
         let resource_metadata = json!({
-            "resource": "http://mcp-proxy.invalid/mcp",
-            "authorization_servers": ["http://mcp-proxy.invalid"],
+            "resource": resource_url,
+            "authorization_servers": [resource_origin],
         })
         .to_string();
         let authorization_metadata = json!({
-            "authorization_endpoint": "https://oauth.example/authorize",
-            "token_endpoint": "https://oauth.example/token",
+            "issuer": resource_origin,
+            "authorization_endpoint": format!("{resource_origin}/authorize"),
+            "token_endpoint": format!("{resource_origin}/token"),
         })
         .to_string();
         let responses = [
-            concat!(
-                "HTTP/1.1 401 Unauthorized\r\n",
-                "www-authenticate: Bearer resource_metadata=\"http://mcp-proxy.invalid/oauth-resource\"\r\n",
-                "content-length: 0\r\n",
-                "connection: close\r\n\r\n"
-            )
-            .to_string(),
+            format!(
+                "HTTP/1.1 401 Unauthorized\r\nwww-authenticate: Bearer resource_metadata=\"{resource_origin}/oauth-resource\"\r\ncontent-length: 0\r\nconnection: close\r\n\r\n"
+            ),
             format!(
                 "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\ncontent-length: {}\r\nconnection: close\r\n\r\n{resource_metadata}",
                 resource_metadata.len()
@@ -158,7 +157,7 @@ async fn list_discovers_local_oauth_server_through_environment_proxy() -> Result
                     Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
                         anyhow::ensure!(
                             Instant::now() < deadline,
-                            "proxy did not receive OAuth discovery request {}",
+                            "configured resource did not receive OAuth discovery request {}",
                             requests.len() + 1
                         );
                         std::thread::sleep(Duration::from_millis(10));
@@ -172,11 +171,11 @@ async fn list_discovers_local_oauth_server_through_environment_proxy() -> Result
             let mut buffer = [0_u8; 1024];
             while !request.windows(4).any(|window| window == b"\r\n\r\n") {
                 let bytes_read = stream.read(&mut buffer)?;
-                anyhow::ensure!(bytes_read > 0, "proxy request ended before its headers");
+                anyhow::ensure!(bytes_read > 0, "resource request ended before its headers");
                 request.extend_from_slice(&buffer[..bytes_read]);
                 anyhow::ensure!(
                     request.len() <= 64 * 1024,
-                    "proxy request headers are too large"
+                    "resource request headers are too large"
                 );
             }
             let request = String::from_utf8(request)?;
@@ -189,14 +188,14 @@ async fn list_discovers_local_oauth_server_through_environment_proxy() -> Result
 
     let mut command = codex_command(codex_home.path())?;
     command
-        .env("HTTP_PROXY", &proxy_url)
-        .env("http_proxy", &proxy_url)
+        .env("HTTP_PROXY", proxy.uri())
+        .env("http_proxy", proxy.uri())
         .env_remove("HTTPS_PROXY")
         .env_remove("https_proxy")
         .env_remove("ALL_PROXY")
         .env_remove("all_proxy")
-        .env_remove("NO_PROXY")
-        .env_remove("no_proxy")
+        .env("NO_PROXY", "localhost,127.0.0.1,::1")
+        .env("no_proxy", "localhost,127.0.0.1,::1")
         .args([
             "-c",
             "mcp_oauth_credentials_store=\"file\"",
@@ -210,16 +209,16 @@ async fn list_discovers_local_oauth_server_through_environment_proxy() -> Result
         "mcp list failed: {}",
         String::from_utf8_lossy(&output.stderr)
     );
-    let proxy_requests = proxy
+    let resource_requests = resource
         .join()
-        .expect("OAuth discovery proxy thread should finish")?;
+        .expect("OAuth discovery resource thread should finish")?;
 
     assert_eq!(
-        proxy_requests,
+        resource_requests,
         vec![
-            "GET http://mcp-proxy.invalid/mcp HTTP/1.1",
-            "GET http://mcp-proxy.invalid/oauth-resource HTTP/1.1",
-            "GET http://mcp-proxy.invalid/.well-known/oauth-authorization-server HTTP/1.1",
+            "GET /mcp HTTP/1.1",
+            "GET /oauth-resource HTTP/1.1",
+            "GET /.well-known/oauth-authorization-server HTTP/1.1",
         ]
     );
     let entries: JsonValue = serde_json::from_slice(&output.stdout)?;
@@ -227,9 +226,10 @@ async fn list_discovers_local_oauth_server_through_environment_proxy() -> Result
     assert_eq!(
         entries[0]["auth_status"],
         "not_logged_in",
-        "OAuth discovery failed after proxy requests {proxy_requests:?}; stderr: {}",
+        "OAuth discovery failed after configured resource requests {resource_requests:?}; stderr: {}",
         String::from_utf8_lossy(&output.stderr)
     );
+    proxy.assert_unused()?;
     Ok(())
 }
 
@@ -508,4 +508,95 @@ async fn get_disabled_server_shows_single_line() -> Result<()> {
     assert_eq!(stdout.trim_end(), "docs (disabled)");
 
     Ok(())
+}
+
+#[must_use = "finish the proxy observation with assert_unused"]
+struct UnexpectedOAuthProxy {
+    uri: String,
+    stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    observer: Option<std::thread::JoinHandle<std::io::Result<Vec<String>>>>,
+}
+
+impl UnexpectedOAuthProxy {
+    fn start() -> Result<Self> {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+        listener.set_nonblocking(true)?;
+        let uri = format!("http://{}", listener.local_addr()?);
+        let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let observer_stop = std::sync::Arc::clone(&stop);
+        let observer = std::thread::spawn(move || -> std::io::Result<Vec<String>> {
+            let mut connections = Vec::new();
+            loop {
+                match listener.accept() {
+                    Ok((stream, peer)) => {
+                        // Observe at most one immediately available request-line prefix.
+                        // Never wait for request bytes or let unexpected traffic hang.
+                        stream.set_nonblocking(true)?;
+                        let mut bytes = [0_u8; 256];
+                        let prefix = match stream.peek(&mut bytes) {
+                            Ok(count) => format!(
+                                "first request-line prefix {:?}",
+                                String::from_utf8_lossy(&bytes[..count])
+                                    .lines()
+                                    .next()
+                                    .map(str::to_owned)
+                            ),
+                            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                                "no request bytes immediately available".to_string()
+                            }
+                            Err(error) => format!("request prefix peek failed: {error}"),
+                        };
+                        drop(stream);
+                        connections.push(format!("{peer}: {prefix}"));
+                        if connections.len() >= 16 {
+                            return Err(std::io::Error::other(format!(
+                                "unexpected OAuth proxy connection limit reached: {connections:?}"
+                            )));
+                        }
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        if observer_stop.load(std::sync::atomic::Ordering::Acquire) {
+                            return Ok(connections);
+                        }
+                        std::thread::sleep(std::time::Duration::from_millis(5));
+                    }
+                    Err(error) => return Err(error),
+                }
+            }
+        });
+        Ok(Self {
+            uri,
+            stop,
+            observer: Some(observer),
+        })
+    }
+
+    fn uri(&self) -> &str {
+        &self.uri
+    }
+
+    fn assert_unused(mut self) -> Result<()> {
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        let connections = self
+            .observer
+            .take()
+            .expect("proxy observer must be owned")
+            .join()
+            .expect("proxy observer must not panic")?;
+        assert!(
+            connections.is_empty(),
+            "the explicit direct route unexpectedly reached its configured proxy: {connections:?}"
+        );
+        Ok(())
+    }
+}
+
+impl Drop for UnexpectedOAuthProxy {
+    fn drop(&mut self) {
+        // Early test failures still close the listener and join the bounded observer.
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        if let Some(observer) = self.observer.take() {
+            let _ = observer.join();
+        }
+    }
 }

@@ -45,13 +45,13 @@ use wiremock::matchers::path;
 const PROXY_TEST_SUBPROCESS_ENV_VAR: &str = "CODEX_MCP_HTTP_PROXY_TEST_SUBPROCESS";
 const SKILL_CALLBACK_PORT_ENV_VAR: &str = "CODEX_MCP_SKILL_CALLBACK_PORT";
 const SKILL_GLOBAL_CALLBACK_PORT_ENV_VAR: &str = "CODEX_MCP_SKILL_GLOBAL_CALLBACK_PORT";
+const SKILL_RESOURCE_ORIGIN_ENV_VAR: &str = "CODEX_MCP_SKILL_RESOURCE_ORIGIN";
 const TEST_NAME: &str = "suite::mcp_startup_refresh_http_proxy::local_mcp_startup_and_refresh_use_configured_http_client";
 const SKILL_TEST_NAME: &str =
     "suite::mcp_startup_refresh_http_proxy::skill_mcp_dependency_oauth_uses_configured_http_client";
 const SERVER_NAME: &str = "proxied_mcp";
 const SERVER_URL: &str = "http://mcp-proxy.invalid/api/codex/ps/mcp";
 const DENIED_SERVER_NAME: &str = "denied_mcp";
-const DENIED_SERVER_URL: &str = "http://mcp-proxy.invalid/denied-mcp";
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn local_mcp_startup_and_refresh_use_configured_http_client() -> Result<()> {
@@ -196,37 +196,43 @@ async fn skill_mcp_dependency_oauth_uses_configured_http_client() -> Result<()> 
     skip_if_no_network!(Ok(()));
 
     if std::env::var_os(PROXY_TEST_SUBPROCESS_ENV_VAR).is_none() {
-        let proxy = MockServer::start().await;
-        let _apps_server = AppsTestServer::mount(&proxy).await?;
-        let challenge = "Bearer resource_metadata=\"http://mcp-proxy.invalid/oauth-resource\"";
+        let resource = MockServer::start().await;
+        let proxy = UnexpectedOAuthProxy::start()?;
+        let _apps_server = AppsTestServer::mount(&resource).await?;
+        let resource_origin = resource.uri();
+        let server_url = format!("{resource_origin}/api/codex/ps/mcp");
+        let challenge = format!("Bearer resource_metadata=\"{resource_origin}/oauth-resource\"");
         Mock::given(method("GET"))
             .and(path("/api/codex/ps/mcp"))
-            .respond_with(ResponseTemplate::new(401).insert_header("WWW-Authenticate", challenge))
-            .mount(&proxy)
+            .respond_with(
+                ResponseTemplate::new(401).insert_header("WWW-Authenticate", challenge.as_str()),
+            )
+            .mount(&resource)
             .await;
         Mock::given(method("GET"))
             .and(path("/oauth-resource"))
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-                "resource": SERVER_URL,
-                "authorization_servers": ["http://mcp-proxy.invalid"],
+                "resource": server_url,
+                "authorization_servers": [resource_origin],
             })))
-            .mount(&proxy)
+            .mount(&resource)
             .await;
         Mock::given(method("GET"))
             .and(path("/.well-known/oauth-authorization-server"))
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-                "authorization_endpoint": "http://mcp-proxy.invalid/oauth/authorize",
-                "token_endpoint": "http://mcp-proxy.invalid/oauth/token",
-                "registration_endpoint": "http://mcp-proxy.invalid/oauth/register",
+                "issuer": resource_origin,
+                "authorization_endpoint": format!("{resource_origin}/oauth/authorize"),
+                "token_endpoint": format!("{resource_origin}/oauth/token"),
+                "registration_endpoint": format!("{resource_origin}/oauth/register"),
                 "response_types_supported": ["code"],
                 "code_challenge_methods_supported": ["S256"],
             })))
-            .mount(&proxy)
+            .mount(&resource)
             .await;
         Mock::given(method("POST"))
             .and(path("/oauth/register"))
             .respond_with(ResponseTemplate::new(400))
-            .mount(&proxy)
+            .mount(&resource)
             .await;
 
         let skill_callback_listener = TcpListener::bind("127.0.0.1:0").await?;
@@ -243,23 +249,24 @@ async fn skill_mcp_dependency_oauth_uses_configured_http_client() -> Result<()> 
         command
             .env(PROXY_TEST_SUBPROCESS_ENV_VAR, "1")
             .env(SKILL_CALLBACK_PORT_ENV_VAR, skill_callback_port.to_string())
+            .env(SKILL_RESOURCE_ORIGIN_ENV_VAR, &resource_origin)
             .env(
                 SKILL_GLOBAL_CALLBACK_PORT_ENV_VAR,
                 global_callback_port.to_string(),
             )
             .env("HTTP_PROXY", proxy.uri())
             .env("http_proxy", proxy.uri())
-            .env("NO_PROXY", codex_network_proxy::DEFAULT_NO_PROXY_VALUE)
-            .env("no_proxy", codex_network_proxy::DEFAULT_NO_PROXY_VALUE);
+            .env("NO_PROXY", "localhost,127.0.0.1,::1")
+            .env("no_proxy", "localhost,127.0.0.1,::1");
 
         let output = command.output().await?;
-        let requests = proxy
+        let requests = resource
             .received_requests()
             .await
-            .expect("mock proxy should record MCP OAuth requests");
+            .expect("configured resource should record MCP OAuth requests");
         assert!(
             output.status.success(),
-            "subprocess test `{SKILL_TEST_NAME}` failed\nstdout:\n{}\nstderr:\n{}\nproxy requests:\n{requests:#?}",
+            "subprocess test `{SKILL_TEST_NAME}` failed\nstdout:\n{}\nstderr:\n{}\nresource requests:\n{requests:#?}",
             String::from_utf8_lossy(&output.stdout),
             String::from_utf8_lossy(&output.stderr),
         );
@@ -270,7 +277,7 @@ async fn skill_mcp_dependency_oauth_uses_configured_http_client() -> Result<()> 
             })
             .unwrap_or_else(|| {
                 panic!(
-                    "skill dependency OAuth registration should use the configured proxy: {requests:#?}"
+                    "skill dependency OAuth registration should reach the configured local origin: {requests:#?}"
                 )
             });
         let registration: Value = serde_json::from_slice(&registration_request.body)?;
@@ -286,11 +293,16 @@ async fn skill_mcp_dependency_oauth_uses_configured_http_client() -> Result<()> 
                 .all(|request| request.url.path() != "/denied-mcp"),
             "denied skill dependency must not perform OAuth discovery: {requests:#?}"
         );
+        proxy.assert_unused()?;
         return Ok(());
     }
 
     let skill_callback_port = std::env::var(SKILL_CALLBACK_PORT_ENV_VAR)?.parse::<u16>()?;
     let global_callback_port = std::env::var(SKILL_GLOBAL_CALLBACK_PORT_ENV_VAR)?.parse::<u16>()?;
+    let resource_origin = std::env::var(SKILL_RESOURCE_ORIGIN_ENV_VAR)?;
+    let server_url = format!("{resource_origin}/api/codex/ps/mcp");
+    let denied_server_url = format!("{resource_origin}/denied-mcp");
+    let skill_server_url = server_url.clone();
     let responses_server = responses::start_mock_server().await;
     let mut builder = test_codex()
         .with_config(move |config| {
@@ -318,12 +330,12 @@ async fn skill_mcp_dependency_oauth_uses_configured_http_client() -> Result<()> 
             .await?;
             fs.write_file(
                 &PathUri::from_host_native_path(skill_dir.join("SKILL.md"))?,
-                b"---\nname: proxy-skill\ndescription: Uses a proxied MCP server.\n---\n".to_vec(),
+                b"---\nname: proxy-skill\ndescription: Uses a configured local MCP server.\n---\n".to_vec(),
                 Default::default(), /*sandbox*/ None,
             )
             .await?;
             let metadata = format!(
-                "dependencies:\n  tools:\n    - type: mcp\n      value: {SERVER_NAME}\n      transport: streamable_http\n      url: {SERVER_URL}\n      oauth:\n        callbackPort: {skill_callback_port}\n    - type: mcp\n      value: {DENIED_SERVER_NAME}\n      transport: streamable_http\n      url: {DENIED_SERVER_URL}\n"
+                "dependencies:\n  tools:\n    - type: mcp\n      value: {SERVER_NAME}\n      transport: streamable_http\n      url: {skill_server_url}\n      oauth:\n        callbackPort: {skill_callback_port}\n    - type: mcp\n      value: {DENIED_SERVER_NAME}\n      transport: streamable_http\n      url: {denied_server_url}\n"
             );
             fs.write_file(
                 &PathUri::from_host_native_path(agents_dir.join("openai.yaml"))?,
@@ -367,9 +379,7 @@ async fn skill_mcp_dependency_oauth_uses_configured_http_client() -> Result<()> 
             servers: Some(BTreeMap::from([(
                 SERVER_NAME.to_string(),
                 McpServerRequirement::Identity {
-                    identity: McpServerIdentity::Url {
-                        url: SERVER_URL.to_string(),
-                    },
+                    identity: McpServerIdentity::Url { url: server_url },
                 },
             )])),
             plugins: None,
@@ -416,4 +426,222 @@ async fn skill_mcp_dependency_oauth_uses_configured_http_client() -> Result<()> 
     );
     assert!(!servers.contains_key(DENIED_SERVER_NAME));
     Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn configured_http_proxy_rejects_restricted_requests_before_http_io() -> Result<()> {
+    use codex_exec_server::ExecServerError;
+    use codex_exec_server::HttpClient;
+    use codex_exec_server::HttpRedirectPolicy;
+    use codex_exec_server::HttpRequestParams;
+    use codex_exec_server::HttpRequestRestrictedParams;
+    use codex_exec_server::RouteAwareHttpClient;
+    use codex_http_client::HttpClientFactory;
+    use codex_http_client::OutboundProxyPolicy;
+
+    const CHILD: &str = "CODEX_MCP_RESTRICTED_PROXY_TEST_SUBPROCESS";
+    const RESOURCE: &str = "CODEX_MCP_RESTRICTED_PROXY_TEST_RESOURCE_ORIGIN";
+    const WITNESS: &str = "HEPTA_RESTRICTED_PROXY_NEGATIVE_PASS ";
+    const TEST: &str = "suite::mcp_startup_refresh_http_proxy::configured_http_proxy_rejects_restricted_requests_before_http_io";
+
+    if std::env::var_os(CHILD).is_none() {
+        let destination = std::net::TcpListener::bind("127.0.0.1:0")?;
+        let proxy = std::net::TcpListener::bind("127.0.0.1:0")?;
+        destination.set_nonblocking(true)?;
+        proxy.set_nonblocking(true)?;
+        let resource_origin = format!("http://{}", destination.local_addr()?);
+        let proxy_origin = format!("http://{}", proxy.local_addr()?);
+        let mut command = Command::new(std::env::current_exe()?);
+        command
+            .arg("--exact")
+            .arg(TEST)
+            .arg("--nocapture")
+            .kill_on_drop(true);
+        for &key in codex_network_proxy::PROXY_ENV_KEYS {
+            command.env_remove(key);
+        }
+        command
+            .env(CHILD, "1")
+            .env(RESOURCE, &resource_origin)
+            .env("HTTP_PROXY", &proxy_origin)
+            .env("http_proxy", &proxy_origin)
+            .env("NO_PROXY", "")
+            .env("no_proxy", "");
+        let output = tokio::time::timeout(Duration::from_secs(20), command.output()).await??;
+        assert!(
+            output.status.success(),
+            "restricted proxy refusal subprocess failed\nstdout:\n{}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr),
+        );
+        let stdout = std::str::from_utf8(&output.stdout)?;
+        let stderr = std::str::from_utf8(&output.stderr)?;
+        let expected_witness = format!("{WITNESS}{resource_origin}");
+        let witnesses = stdout
+            .lines()
+            .chain(stderr.lines())
+            .filter(|line| line.starts_with(WITNESS))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            witnesses,
+            vec![expected_witness.as_str()],
+            "child must execute the exact rejection assertion once\nstdout:\n{stdout}\nstderr:\n{stderr}"
+        );
+        assert_eq!(
+            stdout
+                .lines()
+                .filter(|line| *line == "running 1 test")
+                .count(),
+            1,
+            "child must select exactly one test: {stdout}"
+        );
+        let summaries = stdout
+            .lines()
+            .filter(|line| line.starts_with("test result: "))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            summaries.len(),
+            1,
+            "child must emit one test summary: {stdout}"
+        );
+        assert!(
+            summaries[0]
+                .starts_with("test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; ")
+                && summaries[0].contains(" filtered out; finished in "),
+            "child must report one actual pass and no ignored test: {stdout}"
+        );
+        for listener in [destination, proxy] {
+            assert!(
+                matches!(listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock),
+                "proxy refusal must occur before any destination or proxy HTTP connection"
+            );
+        }
+        return Ok(());
+    }
+
+    let resource_origin = std::env::var(RESOURCE)?;
+    let client =
+        RouteAwareHttpClient::new(HttpClientFactory::new(OutboundProxyPolicy::ReqwestDefault));
+    let result = tokio::time::timeout(
+        Duration::from_secs(2),
+        client.http_request_stream_restricted(HttpRequestRestrictedParams {
+            request: HttpRequestParams {
+                method: "GET".to_string(),
+                url: format!("{resource_origin}/oauth-resource"),
+                headers: Vec::new(),
+                body: None,
+                timeout_ms: Some(1000),
+                redirect_policy: HttpRedirectPolicy::Stop,
+                request_id: "restricted-proxy-negative".to_string(),
+                stream_response: true,
+            },
+            configured_resource_origin: resource_origin.clone(),
+        }),
+    )
+    .await?;
+    let error = result
+        .err()
+        .expect("an active ordinary proxy must reject restricted HTTP");
+    assert!(
+        matches!(
+            &error,
+            ExecServerError::HttpRequest(message)
+                if message == "http/request failed: the selected proxy does not support restricted HTTP destination enforcement"
+        ),
+        "unexpected restricted proxy error: {error:?}"
+    );
+    // A fresh, origin-bound witness appears only after the exact error assertion.
+    println!("\n{WITNESS}{resource_origin}");
+    Ok(())
+}
+
+#[must_use = "finish the proxy observation with assert_unused"]
+struct UnexpectedOAuthProxy {
+    uri: String,
+    stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    observer: Option<std::thread::JoinHandle<std::io::Result<Vec<String>>>>,
+}
+
+impl UnexpectedOAuthProxy {
+    fn start() -> Result<Self> {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+        listener.set_nonblocking(true)?;
+        let uri = format!("http://{}", listener.local_addr()?);
+        let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let observer_stop = std::sync::Arc::clone(&stop);
+        let observer = std::thread::spawn(move || -> std::io::Result<Vec<String>> {
+            let mut connections = Vec::new();
+            loop {
+                match listener.accept() {
+                    Ok((stream, peer)) => {
+                        // Observe at most one immediately available request-line prefix.
+                        // Never wait for request bytes or let unexpected traffic hang.
+                        stream.set_nonblocking(true)?;
+                        let mut bytes = [0_u8; 256];
+                        let prefix = match stream.peek(&mut bytes) {
+                            Ok(count) => format!(
+                                "first request-line prefix {:?}",
+                                String::from_utf8_lossy(&bytes[..count])
+                                    .lines()
+                                    .next()
+                                    .map(str::to_owned)
+                            ),
+                            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                                "no request bytes immediately available".to_string()
+                            }
+                            Err(error) => format!("request prefix peek failed: {error}"),
+                        };
+                        drop(stream);
+                        connections.push(format!("{peer}: {prefix}"));
+                        if connections.len() >= 16 {
+                            return Err(std::io::Error::other(format!(
+                                "unexpected OAuth proxy connection limit reached: {connections:?}"
+                            )));
+                        }
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                        if observer_stop.load(std::sync::atomic::Ordering::Acquire) {
+                            return Ok(connections);
+                        }
+                        std::thread::sleep(std::time::Duration::from_millis(5));
+                    }
+                    Err(error) => return Err(error),
+                }
+            }
+        });
+        Ok(Self {
+            uri,
+            stop,
+            observer: Some(observer),
+        })
+    }
+
+    fn uri(&self) -> &str {
+        &self.uri
+    }
+
+    fn assert_unused(mut self) -> Result<()> {
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        let connections = self
+            .observer
+            .take()
+            .expect("proxy observer must be owned")
+            .join()
+            .expect("proxy observer must not panic")?;
+        assert!(
+            connections.is_empty(),
+            "the explicit direct route unexpectedly reached its configured proxy: {connections:?}"
+        );
+        Ok(())
+    }
+}
+
+impl Drop for UnexpectedOAuthProxy {
+    fn drop(&mut self) {
+        // Early test failures still close the listener and join the bounded observer.
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        if let Some(observer) = self.observer.take() {
+            let _ = observer.join();
+        }
+    }
 }

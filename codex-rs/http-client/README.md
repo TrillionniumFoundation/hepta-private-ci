@@ -124,3 +124,21 @@ let transport = ReqwestTransport::from_http_client(client);
 
 If the existing wrapper surface cannot support a use case, extend `codex-http-client` rather than
 adding a direct `reqwest` dependency to another first-party crate.
+
+## Restricted OAuth destinations
+
+OAuth discovery, registration and token requests use the runtime HTTP capability's restricted
+request method. Its address policy comes from the originally configured MCP resource and remains
+attached to the actual connector across redirects. A configured private or loopback address permits
+only that exact origin; a discovered URL cannot add another local address or port to this allowance.
+
+The current restricted transport supports routes that the existing factory resolves to a direct
+connection, including an explicitly configured `NO_PROXY` bypass. When that same factory selects a
+proxy, the restricted request fails before HTTP I/O with `ProxyUnsupported`. It does not send the
+request to the proxy or silently retry a direct or unrestricted route. Ordinary MCP transport
+requests and other HTTP calls retain their existing proxy behavior.
+
+A selected executor receives the original resource origin through `http/requestRestrictedV1`
+and enforces the same rule using its own configured factory. Selecting an executor does not make an
+ordinary proxy support restricted OAuth. OAuth through a selected ordinary proxy is currently
+unsupported; successful direct or executor-direct OAuth flows do not establish proxy support.

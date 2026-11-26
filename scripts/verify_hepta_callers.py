@@ -478,6 +478,33 @@ def _is_ignored(relative: str, fragments: tuple[str, ...]) -> bool:
     return any(fragment in normalized for fragment in fragments)
 
 
+_REQUIRED_METHOD_PREFIXES = (
+    r"(?:\.\s*|[A-Za-z_][A-Za-z0-9_]*\s*::\s*)",
+    r"(?:\.\s*|[A-Za-z_]\w*\s*::\s*)",
+)
+_REQUIRED_METHOD_SUFFIX = r"\s*\("
+
+
+def _required_method_literal(pattern: str) -> str | None:
+    """Return a necessary literal only for two complete, fixed regex shapes."""
+    if not pattern.endswith(_REQUIRED_METHOD_SUFFIX):
+        return None
+    identifier_start = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    identifier_rest = identifier_start + "0123456789"
+    for prefix in _REQUIRED_METHOD_PREFIXES:
+        if not pattern.startswith(prefix):
+            continue
+        method = pattern[len(prefix) : -len(_REQUIRED_METHOD_SUFFIX)]
+        if (
+            method
+            and method[0] in identifier_start
+            and all(char in identifier_rest for char in method)
+            and pattern == prefix + method + _REQUIRED_METHOD_SUFFIX
+        ):
+            return method
+    return None
+
+
 def _verify_boundary(
     root: Path,
     boundary: Boundary,
@@ -498,6 +525,11 @@ def _verify_boundary(
         call_pattern = re.compile(re.escape(boundary.symbol) + r"\s*\(")
     else:
         call_pattern = re.compile(boundary.call_pattern)
+    required_literal = (
+        _required_method_literal(boundary.call_pattern)
+        if boundary.receiver_type is None and boundary.call_pattern is not None
+        else None
+    )
     try:
         fields = (
             authority_fields(source_index, boundary.receiver_type)
@@ -526,7 +558,9 @@ def _verify_boundary(
                     f"{boundary.identifier}: {relative}: {error}"
                 ) from error
         else:
-            matched = bool(call_pattern.search(code))
+            matched = (required_literal is None or required_literal in code) and bool(
+                call_pattern.search(code)
+            )
         if matched:
             observed.add(relative)
     expected = set(boundary.product_callers)

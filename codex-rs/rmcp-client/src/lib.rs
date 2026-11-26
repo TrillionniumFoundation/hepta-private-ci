@@ -15,6 +15,7 @@ mod oauth_client_registration;
 #[path = "../tests/oauth_fixture_capability/mod.rs"]
 mod oauth_fixture_capability;
 mod oauth_http_client;
+mod oauth_reactive_discovery;
 mod perform_oauth_login;
 mod program_resolver;
 mod protocol_mode;
@@ -48,6 +49,7 @@ pub use perform_oauth_login::OAuthProviderError;
 pub use perform_oauth_login::OauthLoginHandle;
 pub use perform_oauth_login::perform_oauth_login;
 pub use perform_oauth_login::perform_oauth_login_return_url;
+pub use perform_oauth_login::perform_oauth_login_return_url_with_protocol_mode;
 pub use perform_oauth_login::perform_oauth_login_silent;
 pub use protocol_mode::McpProtocolMode;
 pub use retained_tool_session::RetainedMcpToolSession;

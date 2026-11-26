@@ -165,6 +165,25 @@ so the connection can process their cleanup without waiting for HTTP headers.
 Existing configured concurrent request limits still govern ordinary admission.
 These lifecycle guarantees do not provide an OAuth destination-address policy.
 
+### Restricted HTTP destinations
+
+`http/requestRestrictedV1` carries an HTTP request and the originally configured MCP resource
+origin as `configuredResourceOrigin`. The origin must not be replaced with the current discovery,
+token or redirect URL. The selected executor enforces this address policy at its actual connector
+and on each redirect, with the same connection-owned stream cancellation. An older executor that
+does not implement this method rejects it; clients must not retry through ordinary HTTP methods.
+
+The current implementation permits the request only when that executor's existing HTTP factory
+selects a direct route, including an explicit `NO_PROXY` bypass. A selected ordinary proxy is
+unsupported for these restricted requests and is rejected before HTTP I/O. The executor does not
+silently bypass that proxy. Its ordinary HTTP methods keep their existing proxy support, and the
+`networkProxyLaunch` execution capability is not evidence of restricted OAuth proxy support.
+
+An explicitly configured loopback or private resource authorizes only its original origin.
+Discovered endpoints on another local host, port or scheme do not gain that authorization.
+Direct OAuth success on a selected executor does not establish OAuth support through an ordinary
+proxy.
+
 ### `initialize`
 
 Initial handshake request.

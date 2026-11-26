@@ -27,10 +27,10 @@ SPEC_PATH = "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json"
 RUNNER_PATH = "scripts/run_chrono_hooks_cli_native_controls_v2.py"
 WORKFLOW_PATH = ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-BASE = "861e4b03dd7615515fbe02f3c236af73e4999d96"
-LOCK_GENERATION_SOURCE = "40d15b4bbba331f28e45889ff00846517b08375a"
+BASE = "b4fa4fdd1d05603c1a091930b70f83ec1af73797"
+LOCK_GENERATION_SOURCE = "b4fa4fdd1d05603c1a091930b70f83ec1af73797"
 ROOT_ACCEPTANCE_SHA256 = (
-    "952cdc4dd2e63ad2277123f5be0738cb2075b00f6cf834a1f13d6d847587e384"
+    "cf3e3d8c41332737d013699ded3c334411a9dfdcea02d222e75cf87b696d9e1f"
 )
 ROSTER_SHA256 = "573a66ecb204d62424187681155d1024e0608a57d22d3301c63b813ab93be09d"
 LOCKS = {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}
@@ -76,7 +76,50 @@ DEADLINE_NS = None
 JOB_START_NS = None
 SOURCE_FILE_LIMIT = 64 * 1024 * 1024
 SOURCE_TOTAL_LIMIT = 4 * 1024 * 1024 * 1024
-PUBLICATION_REQUIRED = {RUNNER_PATH, SPEC_PATH, WORKFLOW_PATH}
+# Exact combined publication paths: Root29 + SQLx continuation8 + native3.
+# Final source pins and the separate Root native admission remain required.
+PUBLICATION_REQUIRED = {
+    ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
+    ".github/workflows/hepta-sqlx-temporal-fixture-continuation-v1.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/agent-identity/src/timestamp.rs",
+    "codex-rs/app-server/src/request_processors.rs",
+    "codex-rs/app-server/src/request_processors/mcp_processor.rs",
+    "codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+    "codex-rs/app-server/tests/suite/v2/plugin_install.rs",
+    "codex-rs/cli/src/doctor/desktop.rs",
+    "codex-rs/cli/tests/mcp_add_remove.rs",
+    "codex-rs/cli/tests/mcp_list.rs",
+    "codex-rs/core/tests/suite/mcp_startup_refresh_http_proxy.rs",
+    "codex-rs/exec-server/README.md",
+    "codex-rs/exec-server/src/server/handler.rs",
+    "codex-rs/hooks/src/types.rs",
+    "codex-rs/http-client/README.md",
+    "codex-rs/network-proxy/src/network_policy.rs",
+    "codex-rs/otel/src/events/shared.rs",
+    "codex-rs/rmcp-client/src/elicitation_client_service.rs",
+    "codex-rs/rmcp-client/src/http_client_adapter_tests.rs",
+    "codex-rs/rmcp-client/src/lib.rs",
+    "codex-rs/rmcp-client/src/oauth_client_registration.rs",
+    "codex-rs/rmcp-client/src/oauth_http_client.rs",
+    "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs",
+    "codex-rs/rmcp-client/src/oauth_reactive_discovery_tests.rs",
+    "codex-rs/rmcp-client/src/perform_oauth_login.rs",
+    "codex-rs/rmcp-client/tests/mcp_2026_discovery.rs",
+    "codex-rs/rmcp-client/tests/mcp_2026_message_limits.rs",
+    "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+    "qa/b4-no-bypass/test_hepta_callers_required_literal.py",
+    "qa/b4-no-bypass/test_sqlx_temporal_fixture_continuation_v1.py",
+    "qualification/SQLX_TEMPORAL_FIXTURE_CONTINUATION_DESIGN.md",
+    "qualification/sqlx_temporal_fixture_continuation_admission_v1.json",
+    "qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
+    "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json",
+    "scripts/hepta_sqlx_temporal_fixture_continuation_contract_v1.py",
+    "scripts/hepta_sqlx_temporal_fixture_continuation_inputs_v1.json",
+    "scripts/run_chrono_hooks_cli_native_controls_v2.py",
+    "scripts/run_sqlx_temporal_fixture_continuation_v1.py",
+    "scripts/verify_hepta_callers.py",
+}
 PUBLICATION_OPTIONAL = set()
 
 
@@ -299,40 +342,65 @@ def source_snapshot(root):
 def read_root_acceptance(spec):
     raw = spec["root_lock_acceptance_original_json"].encode("utf-8")
     require(
-        len(raw) == 6511
+        len(raw) == 16175
         and sha256(raw) == ROOT_ACCEPTANCE_SHA256
         and spec["lock_acceptance_review_sha256"] == ROOT_ACCEPTANCE_SHA256,
-        "the original Root lock acceptance is not bound byte-for-byte",
+        "the original Root partial main-lock reuse acceptance is not bound byte-for-byte",
     )
     accepted = json_value(raw)
+    origin = accepted["origin"]
+    metadata = accepted["main_metadata"]
     require(
-        accepted["schema"] == "root-hepta7110-original-generated-lock-acceptance-v1"
+        accepted["schema"] == "root-hepta7114-partial-main-lock-reuse-acceptance-v1"
         and accepted["status"]
-        == "ORIGINAL_GENERATED_LOCKS_ACCEPTED_FOR_NEW_NATIVE_CANDIDATE"
+        == "ORIGINAL_MAIN_LOCKS_AND_MAIN_GRAPH_ACCEPTED_FOR_EXACT_REUSE_ONLY"
+        and accepted["accepted"] is True
         and accepted["repository"] == REPOSITORY
-        and accepted["head"] == LOCK_GENERATION_SOURCE
-        and accepted["tree"] == "dd412d87f99be786de5fc2cf4e155243fa0d5c71"
-        and accepted["run_id"] == 45718835160
-        and accepted["run_attempt"] == 1
-        and accepted["job_id"] == 139571696076
-        and accepted["artifact_id"] == 15071736247
-        and accepted["qualification"]["generated_lock_candidate"] is True
+        and origin["head"] == LOCK_GENERATION_SOURCE
+        and origin["tree"] == "73e1ccd4245498fb583326667884953dbdfccbf3"
+        and origin["sole_parent"] == "7283cddbb2a3af8c728e9b696de3458acb649b92"
+        and origin["run_id"] == 45738227995
+        and origin["attempt"] == 1
+        and origin["job_id"] == 139636557660
+        and origin["artifact_id"] == 15083760351
+        and origin["original_job_status"] == "failure"
+        and origin["original_generation_status"] == "FAIL"
+        and origin["original_failure_label"] == "default-lock-generate-offline-once"
+        and origin["original_failure_returncode"] == 101
+        and accepted["qualification"]["main_lock_reuse"] is True
         and all(
             value is False
             for name, value in accepted["qualification"].items()
-            if name != "generated_lock_candidate"
+            if name != "main_lock_reuse"
         )
-        and accepted["frozen_E1_E6_training_spent_unchanged"] == 16,
-        "Root acceptance has the wrong original scope or qualifications",
+        and accepted["execution_authorization"] is False
+        and accepted["separate_continuation_engineering_admission_required"] is True
+        and accepted["permitted_reuse"][
+            "repository_and_source_tree_must_be_rebound_for_new_native_work"
+        ]
+        is True
+        and accepted["frozen_E1_E6_training_spent_unchanged"] == 16
+        and metadata["normalized_graph_sha256"]
+        == "4daaf1ebecd76ee8cf4e202f55eec9c23ccdb1c4ad20d9dfd6ab7b86dae772c7"
+        and metadata["packages"] == metadata["resolve_nodes"] == 1525
+        and metadata["workspace_members"] == 193
+        and metadata["targets"] == 6033,
+        "Root partial acceptance has the wrong original scope or promotes a failed generation",
     )
-    require(set(spec["accepted_locks"]) == LOCKS, "both accepted locks are required")
+    require(
+        set(spec["accepted_locks"]) == set(accepted["main_locks"]) == LOCKS,
+        "both independently accepted main locks are required",
+    )
     for path in LOCKS:
         require(
             all(
-                spec["accepted_locks"][path][key] == accepted["locks"][path][key]
-                for key in ("bytes", "sha256", "git_blob")
-            ),
-            "accepted lock differs from the original Root acceptance: " + path,
+                spec["accepted_locks"][path][key] == accepted["main_locks"][path][key]
+                for key in ("bytes", "sha256")
+            )
+            and spec["accepted_locks"][path]["mode"] == "100644"
+            and re.fullmatch(r"[0-9a-f]{40}", spec["accepted_locks"][path]["git_blob"])
+            is not None,
+            "main lock differs from the exact partial Root acceptance: " + path,
         )
     return accepted
 
@@ -427,7 +495,10 @@ def load_inputs(root):
     )
     publication = spec["publication_paths"]
     require(
-        len(publication) == len(set(publication))
+        isinstance(PUBLICATION_REQUIRED, set)
+        and {RUNNER_PATH, SPEC_PATH, WORKFLOW_PATH} <= PUBLICATION_REQUIRED
+        and isinstance(publication, list)
+        and len(publication) == len(set(publication))
         and PUBLICATION_REQUIRED
         <= set(publication)
         <= PUBLICATION_REQUIRED | PUBLICATION_OPTIONAL,

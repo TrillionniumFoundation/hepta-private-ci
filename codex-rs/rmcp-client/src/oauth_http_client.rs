@@ -70,6 +70,18 @@ pub(crate) struct OAuthHttpClientAdapter {
 }
 
 impl OAuthHttpClientAdapter {
+    pub(crate) fn mcp_probe_context(
+        &self,
+    ) -> crate::oauth_reactive_discovery::McpOAuthProbeContext {
+        crate::oauth_reactive_discovery::McpOAuthProbeContext {
+            http_client: Arc::clone(&self.http_client),
+            default_headers: self.default_headers.clone(),
+            configured_resource_origin: self.resource_origin.ascii_serialization(),
+            has_configured_headers: self.has_configured_headers,
+            redirect_mode: self.redirect_mode,
+        }
+    }
+
     #[cfg(test)]
     pub(crate) fn new(
         http_client: Arc<dyn HttpClient>,

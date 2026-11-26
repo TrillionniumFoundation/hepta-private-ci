@@ -7,15 +7,15 @@
       "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892"
     },
     "codex-rs/Cargo.lock": {
-      "bytes": 421800,
-      "git_blob": "076ccdef0072f87ac64a2a020677b52de529b1bd",
+      "bytes": 421756,
+      "git_blob": "8a45110e349a11651f403d534467050ee998af3f",
       "mode": "100644",
-      "sha256": "d30163218a74e0d8246e709a82c2547fa3306515728b4b9784d0df4034b6c312"
+      "sha256": "bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1"
     }
   },
   "activated": true,
   "activation_blockers": [],
-  "branch": "fix/hepta-native-version-format-20261126-7c9e",
+  "branch": "fix/hepta-ci-coherent-continuation-20261126-7c9e",
   "command": [
     "just",
     "test",
@@ -424,6 +424,8 @@
     }
   ],
   "exact_count": 48,
+  "historical_root_7110_lock_acceptance_original_json": "{\n  \"archive_bytes\": 9068345,\n  \"archive_sha256\": \"74bd32416cf5160cab64cf278f147ec3612275bb8029dcbebad71167c3256fac\",\n  \"artifact_id\": 15071736247,\n  \"candidate_commands_by_reader\": 0,\n  \"changed_package_records\": [\n    \"codex-cli\",\n    \"codex-hooks\"\n  ],\n  \"controls\": {\n    \"actual_named_pass\": 9,\n    \"command_wall_seconds\": 0.6244173620000026,\n    \"exact_expected_reason_guards_bound_to_executed_test_sha256\": \"5244761257645be24e623dd74339ecd671d52f116665dc7abb4c3211a2c40694\",\n    \"failure\": 0,\n    \"graph_expected_errors\": [\n      \"complete graph has unapproved identities, links, features, or edge conditions\",\n      \"actual Cargo target roster or target semantics changed\",\n      \"actual Cargo target roster or target semantics changed\",\n      \"actual 193-member workspace roster changed\",\n      \"actual Chrono inverse edges are not the accepted 31 minus the two owners\",\n      \"actual Chrono inverse edges are not the accepted 31 minus the two owners\",\n      \"actual Chrono inverse edges are not the accepted 31 minus the two owners\",\n      \"remaining Chrono identity, checksum, or features changed\",\n      \"remaining Chrono identity, checksum, or features changed\",\n      \"accepted prettyplease alignment changed\",\n      \"actual owner has not made its exact direct-edge replacement: codex-cli\",\n      \"actual owner has not made its exact direct-edge replacement: codex-cli\",\n      \"actual owner has not made its exact direct-edge replacement: codex-hooks\"\n    ],\n    \"graph_mutations\": 13,\n    \"names\": [\n      \"test_bazel_duplicate_keys_and_nonfinite_values_are_rejected\",\n      \"test_bazel_original_full_bytes_must_remain_unchanged\",\n      \"test_full_graph_gate_rejects_roster_target_kind_feature_checksum_drift\",\n      \"test_missing_duplicate_extra_and_reintroduced_chrono_are_rejected\",\n      \"test_normalizer_keeps_target_paths_and_edge_conditions\",\n      \"test_original_time_features_and_exact_wasm_clock_closure_are_required\",\n      \"test_registry_and_old_prettyplease_alignment_cannot_drift\",\n      \"test_source_hash_cannot_authorize_unrelated_manifest_or_feature_changes\",\n      \"test_two_source_manifests_bind_exact_lock_replacements\"\n    ],\n    \"shared_spec_unchanged_assertion_locations\": 4,\n    \"skip\": 0,\n    \"unittest_reported_seconds\": 0.422\n  },\n  \"frozen_E1_E6_training_spent_unchanged\": 16,\n  \"full_source_pins\": 335,\n  \"graph\": {\n    \"members\": 193,\n    \"normalized_sha256\": \"3ccdbcdc6b52d81984d86482e7d087ded1998fc84785624729bc4e9623f41fde\",\n    \"packages\": 1525,\n    \"remaining_chrono_inverse_edges\": 29,\n    \"targets\": 6033\n  },\n  \"head\": \"40d15b4bbba331f28e45889ff00846517b08375a\",\n  \"independent_review\": {\n    \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7110-original-generation-0020/independent-review-v1/REVIEW.json\",\n    \"sha256\": \"672908fbd5c5b83e25dcfb5f6654bd423c8ca1170c433244d0afac82a71456c5\"\n  },\n  \"job_id\": 139571696076,\n  \"locks\": {\n    \"MODULE.bazel.lock\": {\n      \"artifact_path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7110-original-generation-0020/data/candidate-locks/MODULE.bazel.lock\",\n      \"bytes\": 1792663,\n      \"git_blob\": \"bb7fb6827f138ca47c750d6c88aec6f5c3bb2775\",\n      \"sha256\": \"288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892\"\n    },\n    \"codex-rs/Cargo.lock\": {\n      \"artifact_path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7110-original-generation-0020/data/candidate-locks/Cargo.lock\",\n      \"bytes\": 421800,\n      \"git_blob\": \"076ccdef0072f87ac64a2a020677b52de529b1bd\",\n      \"sha256\": \"d30163218a74e0d8246e709a82c2547fa3306515728b4b9784d0df4034b6c312\"\n    }\n  },\n  \"member_bytes_verified\": 47092654,\n  \"members_verified\": 145,\n  \"original_7108_failure_preserved\": true,\n  \"original_cost\": {\n    \"alternate_data_retention_seconds\": 4.028837125049904,\n    \"alternate_download_seconds\": 3.920968292048201,\n    \"commands\": [\n      {\n        \"cap_seconds\": 5,\n        \"label\": \"init-isolated-copy\",\n        \"wall_seconds\": 0.003930312999997909\n      },\n      {\n        \"cap_seconds\": 15,\n        \"label\": \"checkout-local-copy\",\n        \"wall_seconds\": 1.0410070069999975\n      },\n      {\n        \"cap_seconds\": 5,\n        \"label\": \"new-lock-contract-controls-once\",\n        \"wall_seconds\": 0.6244173620000026\n      },\n      {\n        \"cap_seconds\": 100,\n        \"label\": \"hooks-cli-workspace-cargo-update-once\",\n        \"wall_seconds\": 6.904061880999997\n      },\n      {\n        \"cap_seconds\": 30,\n        \"label\": \"actual-locked-all-features-graph\",\n        \"wall_seconds\": 8.048381173000003\n      },\n      {\n        \"cap_seconds\": 120,\n        \"label\": \"original-bazel-lock-update-once\",\n        \"wall_seconds\": 15.845745713\n      },\n      {\n        \"cap_seconds\": 20,\n        \"label\": \"bazel-error-mode-check\",\n        \"wall_seconds\": 3.0006388469999905\n      },\n      {\n        \"cap_seconds\": 5,\n        \"label\": \"two-lock-diff\",\n        \"wall_seconds\": 0.0417404429999948\n      }\n    ],\n    \"failed_initial_read_seconds\": 90.01256662490778,\n    \"generation_children_cpu_seconds\": 58.854085,\n    \"generation_seconds\": 45.208852705999995,\n    \"generation_self_cpu_seconds\": 7.5953349999999995,\n    \"job_seconds\": 80.0,\n    \"phase_command_timings_are_nested_not_summed\": true,\n    \"queue_seconds\": 245.0,\n    \"run_created_to_updated_seconds\": 327.0,\n    \"tool_preparation_full_cpu_seconds\": null,\n    \"tool_preparation_seconds\": 16.797125326,\n    \"whole_job_cpu_seconds\": null\n  },\n  \"pr\": 7110,\n  \"published_root_proof_sha256\": \"a2e38a6f17ec5fa82966cc4491651385a418ab70005038df999f6c6be1693c89\",\n  \"qualification\": {\n    \"adoption\": false,\n    \"chrono_remediated\": false,\n    \"final_use\": false,\n    \"generated_lock_candidate\": true,\n    \"native48\": false,\n    \"ordinary_locked_ci\": false,\n    \"science\": false,\n    \"security\": false,\n    \"speed\": false\n  },\n  \"recorded_utc\": \"2026-11-26T00:33:35.721541+00:00\",\n  \"repository\": \"TrillionniumFoundation/hepta-private-ci\",\n  \"root_data_reader_seconds\": 0.1125244579743594,\n  \"run_attempt\": 1,\n  \"run_id\": 45718835160,\n  \"schema\": \"root-hepta7110-original-generated-lock-acceptance-v1\",\n  \"scope\": \"Accept only these exact generated lock bytes for a separately admitted native/ordinary-CI candidate; no execution or qualification transfer.\",\n  \"sole_parent\": \"5a047e7ac8669860d60584f2319db9519ed00244\",\n  \"source_git_entries\": 16086,\n  \"status\": \"ORIGINAL_GENERATED_LOCKS_ACCEPTED_FOR_NEW_NATIVE_CANDIDATE\",\n  \"tree\": \"dd412d87f99be786de5fc2cf4e155243fa0d5c71\",\n  \"unchanged_external_records\": 1324,\n  \"unchanged_package_records\": 1523\n}\n",
+  "historical_root_7110_lock_acceptance_sha256": "952cdc4dd2e63ad2277123f5be0738cb2075b00f6cf834a1f13d6d847587e384",
   "junit_classname_basis": {
     "git_blob": "81496258585a9445d96266c2acbd672c4f05ac8b",
     "meaning": "Original tagged implementation sets testcase classname to suite_info.binary_id and testsuite name to the binary ID; main Rust binary kind IDs are package::bin/name.",
@@ -432,14 +434,14 @@
     "repository": "nextest-rs/nextest"
   },
   "junit_original_path": "codex-rs/target/nextest/local/junit.xml",
-  "lock_acceptance_review_sha256": "952cdc4dd2e63ad2277123f5be0738cb2075b00f6cf834a1f13d6d847587e384",
-  "lock_generation_source": "40d15b4bbba331f28e45889ff00846517b08375a",
+  "lock_acceptance_review_sha256": "cf3e3d8c41332737d013699ded3c334411a9dfdcea02d222e75cf87b696d9e1f",
+  "lock_generation_source": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
   "log_provenance": "Original hepta_ci_exec.py merges stdout and stderr. Exact PASS pairs and unique nextest summary are verified from this retained original combined log. No independent stderr original is claimed.",
   "native_cap_seconds": 2400,
   "new_count": 33,
   "old_native48_original_bytes_recovered": false,
   "old_native48_roster_recovered": false,
-  "parent": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+  "parent": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
   "prior_native_original_failure": {
     "artifact_id": 15077517081,
     "artifact_sha256": "3ce28e05b244a00a20bd926681a8a3ecaad11b557ef65e04b031072cc8c753f9",
@@ -452,11 +454,388 @@
     "run_attempt": 1,
     "run_id": 45732991292
   },
-  "proposed_parent": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+  "prior_native_original_success": {
+    "artifact_id": 15079606366,
+    "attempt": 1,
+    "cost": {
+      "archive_data_retention_seconds": 6.5898070831317455,
+      "archive_download_seconds": 6.530180790927261,
+      "collect_phase_seconds": 1.6236967810000351,
+      "collect_reaped_children_cpu_seconds": 0.065233,
+      "collect_self_cpu_seconds": 1.564025,
+      "execute_phase_seconds": 667.9623759229999,
+      "execute_reaped_children_cpu_seconds": 1287.338601,
+      "execute_self_cpu_seconds": 4.454318,
+      "job_seconds": 715,
+      "native_command_seconds": 661.1546280270001,
+      "native_nextest_only_seconds": 0.256,
+      "original_7111_version_failure_and_all_prior_costs_preserved": true,
+      "original_steps": [
+        {
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "seconds": 1
+        },
+        {
+          "conclusion": "success",
+          "name": "Claim the unique original native evidence directory",
+          "number": 2,
+          "seconds": 0
+        },
+        {
+          "conclusion": "success",
+          "name": "Check out the exact accepted-lock candidate",
+          "number": 3,
+          "seconds": 10
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the exact repository Rust version",
+          "number": 4,
+          "seconds": 6
+        },
+        {
+          "conclusion": "success",
+          "name": "Install the original just and nextest versions",
+          "number": 5,
+          "seconds": 3
+        },
+        {
+          "conclusion": "success",
+          "name": "Install native build prerequisites",
+          "number": 6,
+          "seconds": 19
+        },
+        {
+          "conclusion": "success",
+          "name": "Execute the 48 fixed binary-ID controls once with accepted locks",
+          "number": 7,
+          "seconds": 668
+        },
+        {
+          "conclusion": "success",
+          "name": "Retain and verify the fresh 48-pair native JUnit original",
+          "number": 8,
+          "seconds": 2
+        },
+        {
+          "conclusion": "success",
+          "name": "Retain original admission, command, failures, and native JUnit",
+          "number": 9,
+          "seconds": 2
+        },
+        {
+          "conclusion": "success",
+          "name": "Check for a clean source checkout",
+          "number": 10,
+          "seconds": 0
+        },
+        {
+          "conclusion": "success",
+          "name": "Post Check out the exact accepted-lock candidate",
+          "number": 20,
+          "seconds": 0
+        },
+        {
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 21,
+          "seconds": 1
+        }
+      ],
+      "queue_seconds": 92,
+      "run_created_to_updated_seconds": 809,
+      "setup_full_cpu_seconds": null,
+      "timings_are_nested_not_to_be_summed": true,
+      "version_command_seconds": {
+        "cargo": 0.08479159699999173,
+        "just": 0.07158407800000077,
+        "nextest": 0.0849023129999864,
+        "rustc": 0.09259191300003522
+      },
+      "version_phase_seconds": 0.35497336299999915,
+      "whole_at_collect_seconds": 707.361718653,
+      "whole_job_cpu_seconds": null
+    },
+    "head": "7283cddbb2a3af8c728e9b696de3458acb649b92",
+    "independent_review": {
+      "bytes": 14663,
+      "path": "7112-original-native48-v1/INDEPENDENT_NATIVE48_REVIEW_V2.json",
+      "sha256": "2eec1b224dfcc6814b4d704c05e7972774f15ef48e9473258d94ba352f40c0ed"
+    },
+    "job_id": 139628283180,
+    "observed": {
+      "count": 48,
+      "duplicates": 0,
+      "exact_pass_pairs": [
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_four_digit_calendar_keeps_utc_boundary_crossings"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_keeps_original_rejection_categories_and_messages"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_keeps_original_syntax_offsets_and_fraction_truncation"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_order_keeps_leap_seconds_nanos_and_offset_ties"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp_tests::desktop_handshake_order_keeps_nanos_and_absolute_offset_time"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp_tests::desktop_handshake_ties_and_leap_seconds_keep_existing_selection"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp_tests::desktop_log_directory_uses_utc_date_and_existing_year_format"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop::timestamp_tests::desktop_native_log_clock_keeps_pre_epoch_refusal"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop_tests::current_desktop_session_reports_the_latest_local_handshake"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop_tests::failed_handshake_does_not_expose_sensitive_log_fields"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop_tests::handshake_failure_in_the_middle_of_a_log_segment_is_detected"
+        },
+        {
+          "binary_id": "codex-cli::bin/codex",
+          "name": "doctor::desktop_tests::stopped_desktop_does_not_report_a_failure"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_four_digit_calendar_keeps_utc_boundary_crossings"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_keeps_original_rejection_categories_and_messages"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_keeps_original_syntax_offsets_and_fraction_truncation"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp::tests::rfc3339_order_keeps_leap_seconds_nanos_and_offset_ties"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp_tests::desktop_handshake_order_keeps_nanos_and_absolute_offset_time"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp_tests::desktop_handshake_ties_and_leap_seconds_keep_existing_selection"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp_tests::desktop_log_directory_uses_utc_date_and_existing_year_format"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop::timestamp_tests::desktop_native_log_clock_keeps_pre_epoch_refusal"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop_tests::current_desktop_session_reports_the_latest_local_handshake"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop_tests::failed_handshake_does_not_expose_sensitive_log_fields"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop_tests::handshake_failure_in_the_middle_of_a_log_segment_is_detected"
+        },
+        {
+          "binary_id": "codex-cli::bin/hepta",
+          "name": "doctor::desktop_tests::stopped_desktop_does_not_report_a_failure"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "tests::log_level_accepts_canonical_values_case_insensitively"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "tests::log_level_rejects_aliases_and_unknown_values"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "tests::log_level_threshold_includes_more_severe_levels"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp::tests::rfc3339_four_digit_calendar_keeps_utc_boundary_crossings"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp::tests::rfc3339_keeps_original_rejection_categories_and_messages"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp::tests::rfc3339_keeps_original_syntax_offsets_and_fraction_truncation"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp::tests::rfc3339_order_keeps_leap_seconds_nanos_and_offset_ties"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp_tests::log_display_keeps_nanosecond_conversion_and_raw_fallback"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp_tests::log_display_keeps_signed_years_and_original_calendar_limits"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp_tests::log_display_keeps_utc_millis_compact_time_and_leap_second"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp_tests::log_filter_errors_keep_flag_context_and_original_parse_cause"
+        },
+        {
+          "binary_id": "codex-cli::bin/logs_client",
+          "name": "timestamp_tests::log_filters_keep_whole_i64_seconds_and_negative_fraction_floor"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "legacy_notify::tests::legacy_notify_command_replays_session_snapshot_and_scrubs_credentials"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "legacy_notify::tests::legacy_notify_json_matches_historical_wire_shape"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "legacy_notify::tests::test_user_notification"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::hook_payload_serializes_stable_wire_shape"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::hook_timestamp_fractional_seconds_are_truncated_without_rounding"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::hook_timestamp_keeps_original_calendar_bounds"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::hook_timestamp_preserves_zero_negative_and_expanded_years"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::hook_timestamp_rejects_invalid_components_without_fallback"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::hook_timestamp_retains_leap_second_wire_values"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::hook_timestamp_uses_the_utc_instant_for_offset_inputs"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::native_hook_clock_keeps_original_seconds_and_nanoseconds"
+        },
+        {
+          "binary_id": "codex-hooks",
+          "name": "types::tests::native_hook_clock_keeps_pre_epoch_rejection"
+        }
+      ],
+      "extra_pairs": 0,
+      "filter_excluded_other_tests": 677,
+      "junit_bytes": 10809,
+      "junit_freshness_time_and_uuid_bound": true,
+      "junit_sha256": "67bfdf4566a3919260dc2f519745ffb125f1ddc41cf4c150d6575d6ca80c8a1a",
+      "new": 33,
+      "nextest_uuid": "88725d49-4908-4ded-be37-2c77032f40bc",
+      "original_merged_log_bytes": 106898,
+      "original_merged_log_sha256": "b4cf738ae7d2f155b50feabc52e07f2ec116ddef98632c69aa57cae962b4d165",
+      "pass_pair_counts_and_xml_pair_counts_equal_frozen_roster": true,
+      "retained": 15,
+      "roster_sha256": "573a66ecb204d62424187681155d1024e0608a57d22d3301c63b813ab93be09d",
+      "selected_skips": 0,
+      "stream_provenance": "original WNOWAIT owner merged stdout+stderr"
+    },
+    "prior_7111_failure": {
+      "artifact_id": 15077517081,
+      "artifact_sha256": "3ce28e05b244a00a20bd926681a8a3ecaad11b557ef65e04b031072cc8c753f9",
+      "error": "ValueError: unexpected extra lines in tool-version observation",
+      "head": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+      "job_id": 139619309481,
+      "native_execution_entered": false,
+      "qualified_native48": false,
+      "rerun_requested": false,
+      "run_attempt": 1,
+      "run_id": 45732991292
+    },
+    "run_id": 45735703334,
+    "sole_parent": "861e4b03dd7615515fbe02f3c236af73e4999d96",
+    "transferred_to_new_source": false,
+    "tree": "112bd47a9d7bb5616db2ca918abfa5a388f34241"
+  },
+  "proposed_parent": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
   "publication_paths": [
     ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
+    ".github/workflows/hepta-sqlx-temporal-fixture-continuation-v1.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/agent-identity/src/timestamp.rs",
+    "codex-rs/app-server/src/request_processors.rs",
+    "codex-rs/app-server/src/request_processors/mcp_processor.rs",
+    "codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+    "codex-rs/app-server/tests/suite/v2/plugin_install.rs",
+    "codex-rs/cli/src/doctor/desktop.rs",
+    "codex-rs/cli/tests/mcp_add_remove.rs",
+    "codex-rs/cli/tests/mcp_list.rs",
+    "codex-rs/core/tests/suite/mcp_startup_refresh_http_proxy.rs",
+    "codex-rs/exec-server/README.md",
+    "codex-rs/exec-server/src/server/handler.rs",
+    "codex-rs/hooks/src/types.rs",
+    "codex-rs/http-client/README.md",
+    "codex-rs/network-proxy/src/network_policy.rs",
+    "codex-rs/otel/src/events/shared.rs",
+    "codex-rs/rmcp-client/src/elicitation_client_service.rs",
+    "codex-rs/rmcp-client/src/http_client_adapter_tests.rs",
+    "codex-rs/rmcp-client/src/lib.rs",
+    "codex-rs/rmcp-client/src/oauth_client_registration.rs",
+    "codex-rs/rmcp-client/src/oauth_http_client.rs",
+    "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs",
+    "codex-rs/rmcp-client/src/oauth_reactive_discovery_tests.rs",
+    "codex-rs/rmcp-client/src/perform_oauth_login.rs",
+    "codex-rs/rmcp-client/tests/mcp_2026_discovery.rs",
+    "codex-rs/rmcp-client/tests/mcp_2026_message_limits.rs",
+    "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+    "qa/b4-no-bypass/test_hepta_callers_required_literal.py",
+    "qa/b4-no-bypass/test_sqlx_temporal_fixture_continuation_v1.py",
+    "qualification/SQLX_TEMPORAL_FIXTURE_CONTINUATION_DESIGN.md",
+    "qualification/sqlx_temporal_fixture_continuation_admission_v1.json",
+    "qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
     "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json",
-    "scripts/run_chrono_hooks_cli_native_controls_v2.py"
+    "scripts/hepta_sqlx_temporal_fixture_continuation_contract_v1.py",
+    "scripts/hepta_sqlx_temporal_fixture_continuation_inputs_v1.json",
+    "scripts/run_chrono_hooks_cli_native_controls_v2.py",
+    "scripts/run_sqlx_temporal_fixture_continuation_v1.py",
+    "scripts/verify_hepta_callers.py"
   ],
   "reconstructed_roster_basis": "New roster derived from exact 40d15 13 Rust migration files and their actual module/target entry sources; four actual test binaries each contribute 12 instances. The previous unavailable native48 owner/roster is not reconstructed evidence.",
   "retained_count": 15,
@@ -504,11 +883,11 @@
       "sha256": "e18e65ee676346f988c44a52dca9243322d114e11942a9c8dc263e9b1e1f234b"
     },
     {
-      "bytes": 5391,
-      "git_blob": "16040d9ff7269eb9340ceb4cae4dc3febd914725",
+      "bytes": 5394,
+      "git_blob": "4761fe94a9219c2f6a6dcdc0cebd0bf220671128",
       "mode": "100644",
       "path": ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
-      "sha256": "7786bfcc421f11686cdb2f27c89cd26f950943a90d83137b5ff786dff9c7ca07"
+      "sha256": "6291f756ddb6b95315d6ad07ba2aceaced10ea6ed1e71b97fa850ed4379a2a5a"
     },
     {
       "bytes": 7666,
@@ -523,6 +902,13 @@
       "mode": "100644",
       "path": ".github/workflows/hepta-security-lock-candidate-v1.yml",
       "sha256": "118b892896ee850b4e95e1323fcfdfeea430f71b65e467e990457161773a60ac"
+    },
+    {
+      "bytes": 5959,
+      "git_blob": "077a001c299cee35975610f375acc17dcc06adbf",
+      "mode": "100644",
+      "path": ".github/workflows/hepta-sqlx-temporal-fixture-continuation-v1.yml",
+      "sha256": "33866c5eb38abf5152926104270b02ad705d8ad4a0925e2dadd531e478f983ac"
     },
     {
       "bytes": 22519,
@@ -609,18 +995,18 @@
       "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
     },
     {
-      "bytes": 421800,
-      "git_blob": "076ccdef0072f87ac64a2a020677b52de529b1bd",
+      "bytes": 421756,
+      "git_blob": "8a45110e349a11651f403d534467050ee998af3f",
       "mode": "100644",
       "path": "codex-rs/Cargo.lock",
-      "sha256": "d30163218a74e0d8246e709a82c2547fa3306515728b4b9784d0df4034b6c312"
+      "sha256": "bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1"
     },
     {
-      "bytes": 23124,
-      "git_blob": "949cc8b52f89e5efef8b35387f0df1376b1398d8",
+      "bytes": 23110,
+      "git_blob": "ed963f9f36eda9f5f634ea7f3ebdf6091a73915d",
       "mode": "100644",
       "path": "codex-rs/Cargo.toml",
-      "sha256": "f8d784ee95b8568f032b3138bf9b520ee7f7e6d5708194c9c72bbab2f167d4a5"
+      "sha256": "9c055a48d9833d2e2baebbec88cb8dc30a5f666beba7bdaf104290625a667986"
     },
     {
       "bytes": 713,
@@ -644,11 +1030,11 @@
       "sha256": "13cb793704e1ccb7e8c8f69c468254c312764a29e51639d206d47c68bfeb1d55"
     },
     {
-      "bytes": 778,
-      "git_blob": "ff4d38409972b10dde999019b65dfaec609aeea2",
+      "bytes": 884,
+      "git_blob": "b9156bab4ece1d43a9c99fce857eabfe4b24fcbe",
       "mode": "100644",
       "path": "codex-rs/agent-identity/src/timestamp.rs",
-      "sha256": "c4406d5f2bdad7eee253f7ac3c5f61b9627219ec549385eede08621310a18b96"
+      "sha256": "409721b5eb385078006e789f77936aa26400437dad680a7d230ce68956d6524f"
     },
     {
       "bytes": 2667,
@@ -721,6 +1107,20 @@
       "sha256": "3ab26711af9a5e81fa51468507a9c893ea4b147530c180a0670a866a79623d9f"
     },
     {
+      "bytes": 34086,
+      "git_blob": "e0b3bb52e756b65671791a35bd32d8bc86908448",
+      "mode": "100644",
+      "path": "codex-rs/app-server/src/request_processors.rs",
+      "sha256": "88f2b4cadd29573b65aadd693a2e89c9ee4f32d8b7c5813eb71b9e46e86d203a"
+    },
+    {
+      "bytes": 21116,
+      "git_blob": "89de44d018d78e934a646f69315b1d24519fc1b0",
+      "mode": "100644",
+      "path": "codex-rs/app-server/src/request_processors/mcp_processor.rs",
+      "sha256": "a835f31ddda012b2d8dcf648dc456b3999f151be655d961641660e02abe96d5d"
+    },
+    {
       "bytes": 1186,
       "git_blob": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
       "mode": "100644",
@@ -742,11 +1142,11 @@
       "sha256": "e69671f74bf8a38884f591097fa73e021bd5be8df95a2bb97cb0687e704d18d5"
     },
     {
-      "bytes": 48137,
-      "git_blob": "c2260b2abe7c3bae3bf3dbb17628450fd1e7f4ec",
+      "bytes": 48442,
+      "git_blob": "544e35f2e771905fbdae9fea168547ff8249e4bd",
       "mode": "100644",
       "path": "codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
-      "sha256": "b7fffa9612a4d9ac5eddf6328863d23a79f3acaa266bfe8e20fab5784b919163"
+      "sha256": "8e0cb3a3781d5daa168afd5f9b521a17a3de5e19ed56674d7a632e374a1459c9"
     },
     {
       "bytes": 39216,
@@ -777,11 +1177,11 @@
       "sha256": "7303047a633a697a39d067dd318b8a397f9acbfaf18cd45f9b5032f97bb4a893"
     },
     {
-      "bytes": 103581,
-      "git_blob": "7e9784eb6b284fa832ad5e88956d1a28899303f7",
+      "bytes": 107577,
+      "git_blob": "ead01510fa6efd491cedcd2e2f03c56f12046138",
       "mode": "100644",
       "path": "codex-rs/app-server/tests/suite/v2/plugin_install.rs",
-      "sha256": "f3b125e3c018b03a291334ea5a7775f0c21593ff55a9baf781cf9c999367c521"
+      "sha256": "9100eccc825f06c2e646057715bb2874a72d771d6efd18586a1ca4b1502b6fef"
     },
     {
       "bytes": 846,
@@ -868,11 +1268,11 @@
       "sha256": "b1f4b54e7a2f31482924d9351939049d02c5a21942ac044922d3b9d05142ff15"
     },
     {
-      "bytes": 11212,
-      "git_blob": "2cc63a897757fcbf3fbb07af0af6fdd9afc44dc4",
+      "bytes": 11411,
+      "git_blob": "abd4db6766bb6daa9706ce8be7dd6596ea702d52",
       "mode": "100644",
       "path": "codex-rs/cli/src/doctor/desktop.rs",
-      "sha256": "a3ac44980de485217fb590b556576508706af1aa0de5ce0323e4aa445733188d"
+      "sha256": "a8eb82358fa0bb654d2f1a2bccf33f783488ae2333fa7d4e475d849ca7d29161"
     },
     {
       "bytes": 3658,
@@ -936,6 +1336,20 @@
       "mode": "100644",
       "path": "codex-rs/cli/src/timestamp_tests.rs",
       "sha256": "5c8c2ecd38d8a3d5cb708a8a9a27d0d84f3a28966b0005cb439de132a6fd38ae"
+    },
+    {
+      "bytes": 16957,
+      "git_blob": "d94a5a1420b916052c66e6452c211d568f562a7a",
+      "mode": "100644",
+      "path": "codex-rs/cli/tests/mcp_add_remove.rs",
+      "sha256": "fd6b74dc4250d745214227000598bb1c372552cf2841084868e76f8f85ec7352"
+    },
+    {
+      "bytes": 21329,
+      "git_blob": "2655723f6e10796064dabfa2c5ce9f9c1dad7042",
+      "mode": "100644",
+      "path": "codex-rs/cli/tests/mcp_list.rs",
+      "sha256": "ed3785afeacc783c53d8a40196b5e87edd8b105bf2eeefc567c44f56e36f9b1d"
     },
     {
       "bytes": 3100,
@@ -1127,6 +1541,13 @@
       "sha256": "f96f988488fa3b982ae33ab11365b534a1d4d542d5b0cb1140eb3a43e3d4e5ef"
     },
     {
+      "bytes": 27160,
+      "git_blob": "25431aa0c44dba70cbbdaf47798369399f4e048e",
+      "mode": "100644",
+      "path": "codex-rs/core/tests/suite/mcp_startup_refresh_http_proxy.rs",
+      "sha256": "59f477c054a32ecf10a8a02a6e7a4665b311326d0476483af682866c4bdb8cca"
+    },
+    {
       "bytes": 18908,
       "git_blob": "17c0cd77fd1dd5c6433015e85efeaf9c1551be57",
       "mode": "100644",
@@ -1153,6 +1574,20 @@
       "mode": "100644",
       "path": "codex-rs/exec-server/Cargo.toml",
       "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14"
+    },
+    {
+      "bytes": 17749,
+      "git_blob": "168382889e662aa9f6348da108b6a6606916679c",
+      "mode": "100644",
+      "path": "codex-rs/exec-server/README.md",
+      "sha256": "65a52b5d73721c58c4ed30e7ef07cadf0818c4937692f9f7c111c62b0c252e15"
+    },
+    {
+      "bytes": 19574,
+      "git_blob": "e3f7f494c2b6060ff99d780a38f7c5dc8adfaa67",
+      "mode": "100644",
+      "path": "codex-rs/exec-server/src/server/handler.rs",
+      "sha256": "b1d6760433bfb3775c8e0c0a884778ae1d33972e73b434a224ff8941f76fc481"
     },
     {
       "bytes": 7855,
@@ -1883,11 +2318,11 @@
       "sha256": "63ce0d8a39cc126ba91aeb3d9c96818215e5dd5e3c5c4f2ecdcc8f2b08a060cf"
     },
     {
-      "bytes": 14472,
-      "git_blob": "62a826d315e7e86b44882eaa199e3c8d05acbd7e",
+      "bytes": 14766,
+      "git_blob": "381d02278994e7cbb6fdd918f208e54dc1b00e42",
       "mode": "100644",
       "path": "codex-rs/hooks/src/types.rs",
-      "sha256": "c3e67db9e1f42e02e53a3215b425a668e9db8155fef4eea0926d5f13b3aabf66"
+      "sha256": "af490b3ae4460d79455748c4bc238d10b473ac5bdcaee75a0bcdb35aa3bd24df"
     },
     {
       "bytes": 1497,
@@ -1895,6 +2330,13 @@
       "mode": "100644",
       "path": "codex-rs/http-client/Cargo.toml",
       "sha256": "a1ecc8c95555c33ee7ea290ec99b62e8ef36729766a55c673d7d5d6bbb289435"
+    },
+    {
+      "bytes": 7237,
+      "git_blob": "4f55a34e240ad9ca3d545098ff77e9bd8931dce5",
+      "mode": "100644",
+      "path": "codex-rs/http-client/README.md",
+      "sha256": "30444f47134f542e4c08bc274d7e138827b47499706d477a90a5a41ebaf83826"
     },
     {
       "bytes": 9783,
@@ -2065,11 +2507,11 @@
       "sha256": "656dce95d264bff38fefe3bf5c88cbcb5b5c8df471c00f387551259e4a070dec"
     },
     {
-      "bytes": 38817,
-      "git_blob": "2dd83c1a54420798e3a5d2877010cfd5c3032d54",
+      "bytes": 38923,
+      "git_blob": "5f362cd64c7e05413b617b863c4f14744da62d3e",
       "mode": "100644",
       "path": "codex-rs/network-proxy/src/network_policy.rs",
-      "sha256": "beb97c56a88d583f1dcec15fc23e6a1840946e9c1aa2dd4a61645f52f84dad39"
+      "sha256": "789148238ad19675ea4dcfc4ef4cccbcf4aa6e07bff95f0a012a0d9f11b41705"
     },
     {
       "bytes": 835,
@@ -2086,11 +2528,11 @@
       "sha256": "714895a267b809ccf2a8adb9b7bedbfecb6b465b9c23c4495cd4911b3ce5e366"
     },
     {
-      "bytes": 2836,
-      "git_blob": "960e8c68fe9c99efed616676b4df60cc51f19923",
+      "bytes": 2942,
+      "git_blob": "0bfcf95feb0971543a1639aec78720caa20652cd",
       "mode": "100644",
       "path": "codex-rs/otel/src/events/shared.rs",
-      "sha256": "db9fbaf9c764265f3e9dc010ec08707ed472be3ef00b7c88e1741f771711789f"
+      "sha256": "3e704a31895a49af0c1ce08fc1f7f79dbcdf1533a846299cc57332cb6e7aa1b0"
     },
     {
       "bytes": 993,
@@ -2177,11 +2619,11 @@
       "sha256": "8d9f1536e20d4b8ef3940022d7b350f285672839ed765aa7481ab7a3b43f170e"
     },
     {
-      "bytes": 18660,
-      "git_blob": "d373428e91802ffe9960e3dfc7e9af7316a26d56",
+      "bytes": 28923,
+      "git_blob": "822361b3452a3243a95f7f086a9d40c97d953c63",
       "mode": "100644",
       "path": "codex-rs/rmcp-client/src/elicitation_client_service.rs",
-      "sha256": "59b33c85908f8b83984e6f3daf33fd09393b882e099d799e1eecea9d1731e6f1"
+      "sha256": "3ae5a05bfd8e8d5f2674668b728d9e06ed10629f70176e8614b2f0a75c667903"
     },
     {
       "bytes": 42331,
@@ -2191,11 +2633,18 @@
       "sha256": "5a54b54ac3ca302e01d5a3dad5c93cef790c3c8f146b98228f80fda881ef8360"
     },
     {
-      "bytes": 12875,
-      "git_blob": "743fac2fb95b4a4699cf16cb0cbd48ab7cfc094c",
+      "bytes": 17253,
+      "git_blob": "f4fda4ec0265acbc0b7aa7ace422c643fedb2028",
       "mode": "100644",
       "path": "codex-rs/rmcp-client/src/http_client_adapter_tests.rs",
-      "sha256": "fc6fe95226063cc5ff2ea5132a8c35e96d56187be166cd19a38984ce49f27335"
+      "sha256": "a30206fe26f3f444050348cb64802807c252c5343da245d98a87bf191be75f93"
+    },
+    {
+      "bytes": 2664,
+      "git_blob": "8a7c892c315e28756eb74604945df84c9aa5096c",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/src/lib.rs",
+      "sha256": "44c00726dc6bf02744b6e4d84c4555ff3621704190446d0bab70cc9196c08942"
     },
     {
       "bytes": 4283,
@@ -2212,11 +2661,60 @@
       "sha256": "4d652b16797355bd4ec1f24cca897ef991f808df3695a789c70a9b1d906fc23f"
     },
     {
-      "bytes": 60351,
-      "git_blob": "ed3d4f749066c1baed2bde3ad18d07e650e71cbd",
+      "bytes": 5162,
+      "git_blob": "60fea2cae91e0a38809c0490c2973f6bf67adb6f",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/src/oauth_client_registration.rs",
+      "sha256": "b7415eb0fd387096b73536174271e45459c069a7fdcafa564ca1d6d8aa31a42c"
+    },
+    {
+      "bytes": 14975,
+      "git_blob": "914554d5c84e1732da2b68471fc02755efc70da9",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/src/oauth_http_client.rs",
+      "sha256": "257540d1bd0d70bf7388b9c5a511127d629e842772725929ab3957b71cd02156"
+    },
+    {
+      "bytes": 8987,
+      "git_blob": "194c49a44eb8bf75cc658d39080d9e59ba0508e3",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs",
+      "sha256": "a7ff6f4214952a84adca4bc582d0ae00b0efefd688be725912f94b04e21e3702"
+    },
+    {
+      "bytes": 33295,
+      "git_blob": "a9e0fce071422327f9717734bf6d4d892716c04c",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/src/oauth_reactive_discovery_tests.rs",
+      "sha256": "06c1f418ea127b1bbdf50f2bd5c8c3dc7ff17ad5f93a81ec69bb5128baa5f419"
+    },
+    {
+      "bytes": 51290,
+      "git_blob": "92263e31071dcdbc6d9032176c60e090e867f71e",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/src/perform_oauth_login.rs",
+      "sha256": "e6dc5b83ba4eb5361a65793dc7447c25e75f348260d40677bf148e3977a06e04"
+    },
+    {
+      "bytes": 61251,
+      "git_blob": "da7b5e290c749bbf798d95bb714620b1f85abc98",
       "mode": "100644",
       "path": "codex-rs/rmcp-client/tests/mcp_2026_discovery.rs",
-      "sha256": "b5050f9518b77fe10334c97d72e0c80ef800c6e969dd42d3705fa35d4b721897"
+      "sha256": "24fc9d9d709bf37d095f16b259b6dd140458026c2884fbfe2a68d8224fc50c3c"
+    },
+    {
+      "bytes": 10996,
+      "git_blob": "0410a61c57b3c05b8d05d7c63b01197b34981f9a",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_message_limits.rs",
+      "sha256": "5ef16e2180624d60dd4276ac60cf05d403f83136e9ba0e18679a87eabd94ab45"
+    },
+    {
+      "bytes": 28418,
+      "git_blob": "bfe7ca01b30934c20ceb0d54da0b75b783c07b48",
+      "mode": "100644",
+      "path": "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "sha256": "efe7ded1b9bfbe0de3d4a067ce240af881cb9eee440d8f054ddbdd5d17a4e9ff"
     },
     {
       "bytes": 620,
@@ -2730,6 +3228,27 @@
       "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
     },
     {
+      "bytes": 11676,
+      "git_blob": "481128f32f258ed693dadcd22692bdf95af00ddf",
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_hepta_callers_required_literal.py",
+      "sha256": "b4ba5b501f80deb2c3294e6e46f7b676ac1975492dc95231adae24468ff4eacd"
+    },
+    {
+      "bytes": 14200,
+      "git_blob": "3b06f49bc15f1f0a113491d85d7eb6facb43cb6b",
+      "mode": "100644",
+      "path": "qa/b4-no-bypass/test_sqlx_temporal_fixture_continuation_v1.py",
+      "sha256": "93731167c05e7c39807d977aefeccf2a58222f71afba8c5ace7a83a7bb2adaff"
+    },
+    {
+      "bytes": 6129,
+      "git_blob": "6b00a72401a501edf008dae099da275c74c90852",
+      "mode": "100644",
+      "path": "qualification/SQLX_TEMPORAL_FIXTURE_CONTINUATION_DESIGN.md",
+      "sha256": "d32c4f2f47c3858f588b9a18dc11227c0fb18a7103c41439c3eda510ee3222de"
+    },
+    {
       "bytes": 397,
       "git_blob": "3c0ddaa8aca3ae679a7b0c4f46fe95d46addbb6b",
       "mode": "100644",
@@ -2756,6 +3275,20 @@
       "mode": "100644",
       "path": "qualification/lane-f-shadow/Cargo.toml",
       "sha256": "b09e5044c6c0f7e17cfe220bc641f8ce4950917d786451fa8ef9c24627627ce2"
+    },
+    {
+      "bytes": 5719,
+      "git_blob": "3ca00dc6a5066bed656c562db2de31f0067458eb",
+      "mode": "100644",
+      "path": "qualification/sqlx_temporal_fixture_continuation_admission_v1.json",
+      "sha256": "d0f5b0f1ef57bd5ddf58cbcb88e7beac0ab83715c64f37ca4aa229f1d5cfca73"
+    },
+    {
+      "bytes": 16175,
+      "git_blob": "ffca64eddb634c7c08075f4ecbe96cc314578e7b",
+      "mode": "100644",
+      "path": "qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
+      "sha256": "cf3e3d8c41332737d013699ded3c334411a9dfdcea02d222e75cf87b696d9e1f"
     },
     {
       "bytes": 19740,
@@ -2786,6 +3319,20 @@
       "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
     },
     {
+      "bytes": 12233,
+      "git_blob": "237ff1a88b6adc2c5ce0eae0d9b6a359e7d48950",
+      "mode": "100644",
+      "path": "scripts/hepta_sqlx_temporal_fixture_continuation_contract_v1.py",
+      "sha256": "e236e6bb5d871c7716b26d40e7c0f53096a9c7b16f7566606c0c8b01325b79a4"
+    },
+    {
+      "bytes": 112357,
+      "git_blob": "315cf51ca42a8e12a8d68242aea6650d5ff912aa",
+      "mode": "100644",
+      "path": "scripts/hepta_sqlx_temporal_fixture_continuation_inputs_v1.json",
+      "sha256": "9395d13278895a3189653a1c5aaa447822d0ac7a42faec7ea6fde6f4a3ce95d3"
+    },
+    {
       "bytes": 2030,
       "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
       "mode": "100644",
@@ -2807,11 +3354,11 @@
       "sha256": "9f7611b839ebe6518260e40cae81344169e7037a8551b1be00a2f20f28513ac2"
     },
     {
-      "bytes": 40215,
-      "git_blob": "94b5d768ddf62c2a6111964773ae48cc68c8af35",
+      "bytes": 44019,
+      "git_blob": "f3a9e70fa6597fbb8af7d01d812933eb26188b1a",
       "mode": "100644",
       "path": "scripts/run_chrono_hooks_cli_native_controls_v2.py",
-      "sha256": "64e51fbc0908c0f12639dedd4ac771fc6a9d837c802569326f81cb9e3de12f64"
+      "sha256": "eaabb9f5546782aefa4223c9d3b176af245a87a3da62b88641485359e275821a"
     },
     {
       "bytes": 51236,
@@ -2828,6 +3375,13 @@
       "sha256": "a6e69676dd9738d94312224d0578c99e8c0e1338159111a86da74e2179b4f936"
     },
     {
+      "bytes": 37629,
+      "git_blob": "00788c9ce173babbded419f038f04a0de8d86307",
+      "mode": "100644",
+      "path": "scripts/run_sqlx_temporal_fixture_continuation_v1.py",
+      "sha256": "b51c438aeba9b490ab0e13cc9a9fb0d82957d269ba8d169d5f5c824dd366047d"
+    },
+    {
       "bytes": 21114,
       "git_blob": "d3b9717f305b6f69600726314c5da755eb703c10",
       "mode": "100644",
@@ -2840,6 +3394,13 @@
       "mode": "100644",
       "path": "scripts/test_hepta_chrono_lock_contract_v1.py",
       "sha256": "62c3ec7fc80d69b6866e18ed338c262d4d1cadc1153065e39e7915a1327fa47e"
+    },
+    {
+      "bytes": 32922,
+      "git_blob": "1a82d2b7a87ae5adcf1e3c5f850f516b1143adcf",
+      "mode": "100644",
+      "path": "scripts/verify_hepta_callers.py",
+      "sha256": "22db8a01a7862a8f2ee143ed85c81939a2a65fdf48611059621051987ac3959b"
     },
     {
       "bytes": 221,
@@ -2856,7 +3417,77 @@
       "sha256": "a08ff6b2e444e84a06cf621907621d565fb81476b79e6b1f7ef756b1270b1a70"
     }
   ],
-  "root_lock_acceptance_original_json": "{\n  \"archive_bytes\": 9068345,\n  \"archive_sha256\": \"74bd32416cf5160cab64cf278f147ec3612275bb8029dcbebad71167c3256fac\",\n  \"artifact_id\": 15071736247,\n  \"candidate_commands_by_reader\": 0,\n  \"changed_package_records\": [\n    \"codex-cli\",\n    \"codex-hooks\"\n  ],\n  \"controls\": {\n    \"actual_named_pass\": 9,\n    \"command_wall_seconds\": 0.6244173620000026,\n    \"exact_expected_reason_guards_bound_to_executed_test_sha256\": \"5244761257645be24e623dd74339ecd671d52f116665dc7abb4c3211a2c40694\",\n    \"failure\": 0,\n    \"graph_expected_errors\": [\n      \"complete graph has unapproved identities, links, features, or edge conditions\",\n      \"actual Cargo target roster or target semantics changed\",\n      \"actual Cargo target roster or target semantics changed\",\n      \"actual 193-member workspace roster changed\",\n      \"actual Chrono inverse edges are not the accepted 31 minus the two owners\",\n      \"actual Chrono inverse edges are not the accepted 31 minus the two owners\",\n      \"actual Chrono inverse edges are not the accepted 31 minus the two owners\",\n      \"remaining Chrono identity, checksum, or features changed\",\n      \"remaining Chrono identity, checksum, or features changed\",\n      \"accepted prettyplease alignment changed\",\n      \"actual owner has not made its exact direct-edge replacement: codex-cli\",\n      \"actual owner has not made its exact direct-edge replacement: codex-cli\",\n      \"actual owner has not made its exact direct-edge replacement: codex-hooks\"\n    ],\n    \"graph_mutations\": 13,\n    \"names\": [\n      \"test_bazel_duplicate_keys_and_nonfinite_values_are_rejected\",\n      \"test_bazel_original_full_bytes_must_remain_unchanged\",\n      \"test_full_graph_gate_rejects_roster_target_kind_feature_checksum_drift\",\n      \"test_missing_duplicate_extra_and_reintroduced_chrono_are_rejected\",\n      \"test_normalizer_keeps_target_paths_and_edge_conditions\",\n      \"test_original_time_features_and_exact_wasm_clock_closure_are_required\",\n      \"test_registry_and_old_prettyplease_alignment_cannot_drift\",\n      \"test_source_hash_cannot_authorize_unrelated_manifest_or_feature_changes\",\n      \"test_two_source_manifests_bind_exact_lock_replacements\"\n    ],\n    \"shared_spec_unchanged_assertion_locations\": 4,\n    \"skip\": 0,\n    \"unittest_reported_seconds\": 0.422\n  },\n  \"frozen_E1_E6_training_spent_unchanged\": 16,\n  \"full_source_pins\": 335,\n  \"graph\": {\n    \"members\": 193,\n    \"normalized_sha256\": \"3ccdbcdc6b52d81984d86482e7d087ded1998fc84785624729bc4e9623f41fde\",\n    \"packages\": 1525,\n    \"remaining_chrono_inverse_edges\": 29,\n    \"targets\": 6033\n  },\n  \"head\": \"40d15b4bbba331f28e45889ff00846517b08375a\",\n  \"independent_review\": {\n    \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7110-original-generation-0020/independent-review-v1/REVIEW.json\",\n    \"sha256\": \"672908fbd5c5b83e25dcfb5f6654bd423c8ca1170c433244d0afac82a71456c5\"\n  },\n  \"job_id\": 139571696076,\n  \"locks\": {\n    \"MODULE.bazel.lock\": {\n      \"artifact_path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7110-original-generation-0020/data/candidate-locks/MODULE.bazel.lock\",\n      \"bytes\": 1792663,\n      \"git_blob\": \"bb7fb6827f138ca47c750d6c88aec6f5c3bb2775\",\n      \"sha256\": \"288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892\"\n    },\n    \"codex-rs/Cargo.lock\": {\n      \"artifact_path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7110-original-generation-0020/data/candidate-locks/Cargo.lock\",\n      \"bytes\": 421800,\n      \"git_blob\": \"076ccdef0072f87ac64a2a020677b52de529b1bd\",\n      \"sha256\": \"d30163218a74e0d8246e709a82c2547fa3306515728b4b9784d0df4034b6c312\"\n    }\n  },\n  \"member_bytes_verified\": 47092654,\n  \"members_verified\": 145,\n  \"original_7108_failure_preserved\": true,\n  \"original_cost\": {\n    \"alternate_data_retention_seconds\": 4.028837125049904,\n    \"alternate_download_seconds\": 3.920968292048201,\n    \"commands\": [\n      {\n        \"cap_seconds\": 5,\n        \"label\": \"init-isolated-copy\",\n        \"wall_seconds\": 0.003930312999997909\n      },\n      {\n        \"cap_seconds\": 15,\n        \"label\": \"checkout-local-copy\",\n        \"wall_seconds\": 1.0410070069999975\n      },\n      {\n        \"cap_seconds\": 5,\n        \"label\": \"new-lock-contract-controls-once\",\n        \"wall_seconds\": 0.6244173620000026\n      },\n      {\n        \"cap_seconds\": 100,\n        \"label\": \"hooks-cli-workspace-cargo-update-once\",\n        \"wall_seconds\": 6.904061880999997\n      },\n      {\n        \"cap_seconds\": 30,\n        \"label\": \"actual-locked-all-features-graph\",\n        \"wall_seconds\": 8.048381173000003\n      },\n      {\n        \"cap_seconds\": 120,\n        \"label\": \"original-bazel-lock-update-once\",\n        \"wall_seconds\": 15.845745713\n      },\n      {\n        \"cap_seconds\": 20,\n        \"label\": \"bazel-error-mode-check\",\n        \"wall_seconds\": 3.0006388469999905\n      },\n      {\n        \"cap_seconds\": 5,\n        \"label\": \"two-lock-diff\",\n        \"wall_seconds\": 0.0417404429999948\n      }\n    ],\n    \"failed_initial_read_seconds\": 90.01256662490778,\n    \"generation_children_cpu_seconds\": 58.854085,\n    \"generation_seconds\": 45.208852705999995,\n    \"generation_self_cpu_seconds\": 7.5953349999999995,\n    \"job_seconds\": 80.0,\n    \"phase_command_timings_are_nested_not_summed\": true,\n    \"queue_seconds\": 245.0,\n    \"run_created_to_updated_seconds\": 327.0,\n    \"tool_preparation_full_cpu_seconds\": null,\n    \"tool_preparation_seconds\": 16.797125326,\n    \"whole_job_cpu_seconds\": null\n  },\n  \"pr\": 7110,\n  \"published_root_proof_sha256\": \"a2e38a6f17ec5fa82966cc4491651385a418ab70005038df999f6c6be1693c89\",\n  \"qualification\": {\n    \"adoption\": false,\n    \"chrono_remediated\": false,\n    \"final_use\": false,\n    \"generated_lock_candidate\": true,\n    \"native48\": false,\n    \"ordinary_locked_ci\": false,\n    \"science\": false,\n    \"security\": false,\n    \"speed\": false\n  },\n  \"recorded_utc\": \"2026-11-26T00:33:35.721541+00:00\",\n  \"repository\": \"TrillionniumFoundation/hepta-private-ci\",\n  \"root_data_reader_seconds\": 0.1125244579743594,\n  \"run_attempt\": 1,\n  \"run_id\": 45718835160,\n  \"schema\": \"root-hepta7110-original-generated-lock-acceptance-v1\",\n  \"scope\": \"Accept only these exact generated lock bytes for a separately admitted native/ordinary-CI candidate; no execution or qualification transfer.\",\n  \"sole_parent\": \"5a047e7ac8669860d60584f2319db9519ed00244\",\n  \"source_git_entries\": 16086,\n  \"status\": \"ORIGINAL_GENERATED_LOCKS_ACCEPTED_FOR_NEW_NATIVE_CANDIDATE\",\n  \"tree\": \"dd412d87f99be786de5fc2cf4e155243fa0d5c71\",\n  \"unchanged_external_records\": 1324,\n  \"unchanged_package_records\": 1523\n}\n",
+  "root_lock_acceptance_original_json": "{\n  \"schema\": \"root-hepta7114-partial-main-lock-reuse-acceptance-v1\",\n  \"status\": \"ORIGINAL_MAIN_LOCKS_AND_MAIN_GRAPH_ACCEPTED_FOR_EXACT_REUSE_ONLY\",\n  \"accepted\": true,\n  \"reviewer\": \"root\",\n  \"repository\": \"TrillionniumFoundation/hepta-private-ci\",\n  \"origin\": {\n    \"head\": \"b4fa4fdd1d05603c1a091930b70f83ec1af73797\",\n    \"tree\": \"73e1ccd4245498fb583326667884953dbdfccbf3\",\n    \"sole_parent\": \"7283cddbb2a3af8c728e9b696de3458acb649b92\",\n    \"run_id\": 45738227995,\n    \"attempt\": 1,\n    \"job_id\": 139636557660,\n    \"artifact_id\": 15083760351,\n    \"archive\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/original.zip\",\n      \"bytes\": 8701664,\n      \"sha256\": \"72ac667a262d873b00ac81334673d959f7db1b1aaf754561f10f0bd7f9447012\"\n    },\n    \"original_job_status\": \"failure\",\n    \"original_generation_status\": \"FAIL\",\n    \"original_failure_label\": \"default-lock-generate-offline-once\",\n    \"original_failure_returncode\": 101,\n    \"original_failure_stderr_sha256\": \"085d2702f03d35199d22c976b69101bc599ccd08b66dfd1ff48c67ac728440d2\",\n    \"created_at\": \"2026-11-26T01:48:32Z\",\n    \"started_at\": \"2026-11-26T02:57:12Z\",\n    \"completed_at\": \"2026-11-26T02:58:50Z\"\n  },\n  \"main_locks\": {\n    \"codex-rs/Cargo.lock\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/failed-partial-locks/codex-rs/Cargo.lock\",\n      \"bytes\": 421756,\n      \"sha256\": \"bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1\"\n    },\n    \"MODULE.bazel.lock\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/failed-partial-locks/MODULE.bazel.lock\",\n      \"bytes\": 1792663,\n      \"sha256\": \"288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892\"\n    }\n  },\n  \"main_metadata\": {\n    \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/generate-18-main-locked-all-features-graph-once.stdout\",\n    \"bytes\": 9322850,\n    \"sha256\": \"837c6d8b6266dc1a495040b58d5d56e57bfffaf8c3c58f9f64cceb040db84e60\",\n    \"normalized_graph_sha256\": \"4daaf1ebecd76ee8cf4e202f55eec9c23ccdb1c4ad20d9dfd6ab7b86dae772c7\",\n    \"scope\": \"Original exact b4fa --locked --all-features graph, not a new default-feature or native observation\",\n    \"packages\": 1525,\n    \"resolve_nodes\": 1525,\n    \"workspace_members\": 193,\n    \"targets\": 6033\n  },\n  \"source_binding\": {\n    \"head\": \"b4fa4fdd1d05603c1a091930b70f83ec1af73797\",\n    \"tree\": \"73e1ccd4245498fb583326667884953dbdfccbf3\",\n    \"all_tracked_entries\": 16106,\n    \"original_source_before_after_copy_equal\": true,\n    \"original_published_mapping\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/sqlx-generation-final-v1/POSTIMAGE_MAPPING.json\",\n      \"bytes\": 4225809,\n      \"sha256\": \"93f2fb20a452346e9617d16d8a06ed12a438be1ae5ff9005ce6b7bbc3de952b4\"\n    },\n    \"root_actual_published_readback\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/ROOT_ACTUAL_PUBLISHED_READBACK_7114.json\",\n      \"bytes\": 7193,\n      \"sha256\": \"73d576d9dfed3ddee3899e7dbd937bca8d31c62fc794872cc04f58c5e77b1368\"\n    }\n  },\n  \"verified_changes\": {\n    \"lock_package_identity_count\": 1525,\n    \"external_versions_sources_checksums_and_all_other_lock_attributes_unchanged\": true,\n    \"only_lock_dependency_edges_removed\": [\n      {\n        \"added_dependencies\": [],\n        \"identity\": [\n          \"sqlx-core\",\n          \"0.9.1\",\n          \"registry+https://github.com/rust-lang/crates.io-index\"\n        ],\n        \"removed_dependency\": \"chrono\"\n      },\n      {\n        \"added_dependencies\": [],\n        \"identity\": [\n          \"sqlx-mysql\",\n          \"0.9.1\",\n          \"registry+https://github.com/rust-lang/crates.io-index\"\n        ],\n        \"removed_dependency\": \"chrono\"\n      },\n      {\n        \"added_dependencies\": [],\n        \"identity\": [\n          \"sqlx-postgres\",\n          \"0.9.1\",\n          \"registry+https://github.com/rust-lang/crates.io-index\"\n        ],\n        \"removed_dependency\": \"chrono\"\n      },\n      {\n        \"added_dependencies\": [],\n        \"identity\": [\n          \"sqlx-sqlite\",\n          \"0.9.1\",\n          \"registry+https://github.com/rust-lang/crates.io-index\"\n        ],\n        \"removed_dependency\": \"chrono\"\n      }\n    ],\n    \"graph_nodes_changed\": 7,\n    \"package_declarations_changed\": 12,\n    \"only_graph_changes\": \"SQLx chrono feature removed on seven SQLx nodes, four SQLx-to-Chrono typed edges removed; twelve inherited workspace SQLx declarations remove only the chrono feature\",\n    \"other_normalized_metadata_fields_identical\": true,\n    \"all_targets_identical\": true,\n    \"normalization\": {\n      \"identity\": \"Every package uses [name,version,source] for external packages; path packages use repository-relative Cargo.toml. No IDs are matched by name alone.\",\n      \"paths\": \"Only absolute package directory and absolute repository source root strings are renamed to <package-root>/<source-root>, longest root first. Declared paths and target src paths retain their relative suffixes.\",\n      \"ordering\": \"Node feature/dependency sets, typed edges and target arrays are sorted only for comparison. The actual package field records are retained in the full diff.\",\n      \"no_other_fields_removed\": true,\n      \"complete_pairs_compared\": 1525\n    },\n    \"bazel_byte_and_full_json_identity\": true,\n    \"chrono_direct_reverse_edges_before\": 29,\n    \"chrono_direct_reverse_edges_after\": 25,\n    \"remaining_workspace_edges\": 21,\n    \"remaining_external_families\": [\n      \"rmcp\",\n      \"oauth2\",\n      \"schemars\",\n      \"serde_with\"\n    ]\n  },\n  \"successful_original_commands\": [\n    {\n      \"label\": \"sqlx-lock-data-controls-once\",\n      \"argv\": [\n        \"/usr/bin/python3\",\n        \"-m\",\n        \"unittest\",\n        \"-v\",\n        \"test_hepta_sqlx_temporal_lock_contract_v1\"\n      ],\n      \"elapsed_seconds\": 0.061262202000001764,\n      \"execution\": {\n        \"log_bytes\": 0,\n        \"log_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"observed_failed_tests\": 0,\n        \"observed_passed_tests\": 0,\n        \"output_limit_exceeded\": false,\n        \"returncode\": 0,\n        \"timed_out\": false\n      },\n      \"files\": {\n        \"generate-16-sqlx-lock-data-controls-once.stderr\": {\n          \"bytes\": 2019,\n          \"sha256\": \"c4aa0525877519c3ab55b770121f56eda95ecc3c8472b52f72a411a8f10c13bd\"\n        },\n        \"generate-16-sqlx-lock-data-controls-once.stdout\": {\n          \"bytes\": 0,\n          \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n        }\n      }\n    },\n    {\n      \"label\": \"main-workspace-update-once\",\n      \"argv\": [\n        \"/home/runner/.cargo/bin/cargo\",\n        \"+1.96.0\",\n        \"update\",\n        \"--workspace\",\n        \"--manifest-path\",\n        \"/home/runner/work/_temp/sqlx-temporal-lock-b4fa4fdd1d05603c1a091930b70f83ec1af73797-45738227995-1/work/codex-rs/Cargo.toml\"\n      ],\n      \"elapsed_seconds\": 6.731561280000001,\n      \"execution\": {\n        \"log_bytes\": 0,\n        \"log_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"observed_failed_tests\": 0,\n        \"observed_passed_tests\": 0,\n        \"output_limit_exceeded\": false,\n        \"returncode\": 0,\n        \"timed_out\": false\n      },\n      \"files\": {\n        \"generate-17-main-workspace-update-once.stderr\": {\n          \"bytes\": 1489,\n          \"sha256\": \"4405c97a46cf35ddea9b1a74af84786bb3a9faca0281b4bf84b4c34e9bfc5eb1\"\n        },\n        \"generate-17-main-workspace-update-once.stdout\": {\n          \"bytes\": 0,\n          \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n        }\n      }\n    },\n    {\n      \"label\": \"main-locked-all-features-graph-once\",\n      \"argv\": [\n        \"/home/runner/.cargo/bin/cargo\",\n        \"+1.96.0\",\n        \"metadata\",\n        \"--manifest-path\",\n        \"/home/runner/work/_temp/sqlx-temporal-lock-b4fa4fdd1d05603c1a091930b70f83ec1af73797-45738227995-1/work/codex-rs/Cargo.toml\",\n        \"--locked\",\n        \"--all-features\",\n        \"--format-version\",\n        \"1\"\n      ],\n      \"elapsed_seconds\": 9.789976044,\n      \"execution\": {\n        \"log_bytes\": 9322850,\n        \"log_sha256\": \"837c6d8b6266dc1a495040b58d5d56e57bfffaf8c3c58f9f64cceb040db84e60\",\n        \"observed_failed_tests\": 0,\n        \"observed_passed_tests\": 0,\n        \"output_limit_exceeded\": false,\n        \"returncode\": 0,\n        \"timed_out\": false\n      },\n      \"files\": {\n        \"generate-18-main-locked-all-features-graph-once.stderr\": {\n          \"bytes\": 59985,\n          \"sha256\": \"9899ba05f4a0a0788a891434e89fb6696ed5e10a1a49f6fef6daf19e2047931a\"\n        },\n        \"generate-18-main-locked-all-features-graph-once.stdout\": {\n          \"bytes\": 9322850,\n          \"sha256\": \"837c6d8b6266dc1a495040b58d5d56e57bfffaf8c3c58f9f64cceb040db84e60\"\n        }\n      }\n    },\n    {\n      \"label\": \"main-bazel-lock-update-once\",\n      \"argv\": [\n        \"/home/runner/.cargo/bin/just\",\n        \"bazel-lock-update\"\n      ],\n      \"elapsed_seconds\": 21.459641410999993,\n      \"execution\": {\n        \"log_bytes\": 18,\n        \"log_sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\",\n        \"observed_failed_tests\": 0,\n        \"observed_passed_tests\": 0,\n        \"output_limit_exceeded\": false,\n        \"returncode\": 0,\n        \"timed_out\": false\n      },\n      \"files\": {\n        \"generate-19-main-bazel-lock-update-once.stderr\": {\n          \"bytes\": 3247,\n          \"sha256\": \"4a769991fefa318ec12d7f386d28486c91e72c01f7fea5ea0f1113fb0276b3d8\"\n        },\n        \"generate-19-main-bazel-lock-update-once.stdout\": {\n          \"bytes\": 18,\n          \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n        }\n      }\n    },\n    {\n      \"label\": \"main-bazel-error-mode-once\",\n      \"argv\": [\n        \"/home/runner/work/_temp/sqlx-temporal-lock-b4fa4fdd1d05603c1a091930b70f83ec1af73797-45738227995-1/bin/bazel\",\n        \"mod\",\n        \"deps\",\n        \"--lockfile_mode=error\"\n      ],\n      \"elapsed_seconds\": 3.021225126999994,\n      \"execution\": {\n        \"log_bytes\": 18,\n        \"log_sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\",\n        \"observed_failed_tests\": 0,\n        \"observed_passed_tests\": 0,\n        \"output_limit_exceeded\": false,\n        \"returncode\": 0,\n        \"timed_out\": false\n      },\n      \"files\": {\n        \"generate-20-main-bazel-error-mode-once.stderr\": {\n          \"bytes\": 947,\n          \"sha256\": \"56b67880f79f0f9a4941eb9e0d03789a9c906eb3524d1455d93764a6c569ee80\"\n        },\n        \"generate-20-main-bazel-error-mode-once.stdout\": {\n          \"bytes\": 18,\n          \"sha256\": \"3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3\"\n        }\n      }\n    }\n  ],\n  \"failure_preserved\": {\n    \"original_job_failed\": true,\n    \"default_empty_lock_resolution_failed_on_yanked_clipboard_win_5_4_1\": true,\n    \"default_fixture_lock_absent\": true,\n    \"compatibility_fixture_lock_absent\": true,\n    \"both_fixture_graphs_absent\": true,\n    \"native12_plus3_never_started\": true,\n    \"unexecuted_steps\": [\n      \"default locked metadata\",\n      \"compatibility lock generation\",\n      \"compatibility locked metadata\",\n      \"native 12+3\"\n    ],\n    \"failed_partial_evidence_not_reclassified_as_four_lock_success\": true\n  },\n  \"permitted_reuse\": {\n    \"publish_exact_main_cargo_lock_as_necessary_manifest_coherent_postimage\": true,\n    \"keep_exact_main_bazel_lock\": true,\n    \"create_only_fixture_seeds_from_exact_main_cargo_lock\": true,\n    \"reference_original_main_graph_and_successful_command_receipts\": true,\n    \"repeat_main_update_metadata_bazel_or_twelve_controls\": false,\n    \"source_manifest_equivalence_must_be_proved_for_later_source\": true,\n    \"repository_and_source_tree_must_be_rebound_for_new_native_work\": true\n  },\n  \"cost\": {\n    \"original_generation_seconds\": 50.812052642000005,\n    \"original_generation_cap_seconds\": 900,\n    \"remaining_generation_seconds\": 849.187947358,\n    \"original_generation_self_cpu_seconds\": 6.824364,\n    \"original_generation_reaped_children_cpu_seconds\": 65.43951200000001,\n    \"original_whole_at_generation_result_seconds\": 79.047161147,\n    \"original_whole_at_workflow_readback_seconds\": 79.133119422,\n    \"original_complete_job_seconds\": 98,\n    \"original_whole_job_cap_seconds\": 1320,\n    \"remaining_whole_job_seconds\": 1222,\n    \"original_queue_seconds\": 4120,\n    \"run_created_to_updated_seconds\": 4219,\n    \"all_intervals_nested_not_summed\": true,\n    \"queue_is_separate_from_runtime_budget\": true,\n    \"full_job_cpu_seconds\": null,\n    \"archive_acquisition_wall_seconds\": 7.293639542069286,\n    \"archive_acquisition_child_cpu_seconds\": 0.145701,\n    \"archive_acquisition_self_cpu_seconds\": 0.14277399999999998,\n    \"independent_data_reader_wall_seconds\": 0.4389580830466002,\n    \"independent_data_reader_cpu_seconds\": 0.426798\n  },\n  \"review_evidence\": {\n    \"independent_full_archive_and_locks\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/independent-review-v1/RESULT.json\",\n      \"bytes\": 9336,\n      \"sha256\": \"bb1b89210c26bc72a44ab867fd37ba5cff7115c97a84d9c9f9266a4396c95d0e\"\n    },\n    \"full_main_graph_diff\": {\n      \"bytes\": 399084,\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/independent-review-v1/FULL_MAIN_METADATA_DIFF.json\",\n      \"sha256\": \"e5bcce3919189eb9119ea0482b4ed9b742d419dad10796d21c77fd15c9d25432\"\n    },\n    \"complete_field_synopsis\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/independent-review-v1/COMPACT_MAIN_GRAPH_REVIEW.json\",\n      \"bytes\": 14629,\n      \"sha256\": \"2ffc8877954fbfb8f50d1c291e0bbcd873287b7e3da1adbfd6d313289c2b736e\"\n    },\n    \"original_generate_result\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/data/generate.RESULT.json\",\n      \"bytes\": 47598,\n      \"sha256\": \"18d92686bf03299aeab61903d2d8b552e0743080e95d9277eacef7d9c0bcff2e\"\n    },\n    \"archive_members\": {\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/7114-original-sqlx-four-lock-v1/MEMBERS.json\",\n      \"bytes\": 55688,\n      \"sha256\": \"a04d4db30566dc742529b9bca10edeb9cfb23c6c7fe3bcbf9b34cb2b5aedf1f5\"\n    },\n    \"independent_reader_terminal\": {\n      \"at_unix_ms\": 1795662570012,\n      \"audit_recorded\": true,\n      \"automatic_retry\": false,\n      \"cancelled\": false,\n      \"exit_code\": 0,\n      \"job_id\": \"1a215d45f02-ffbe-434a\",\n      \"launch_nonce\": \"d56cbe7f3f588fb9ad17d85ef751957a\",\n      \"log_bytes\": {\n        \"stderr\": {\n          \"seen\": 0,\n          \"stored\": 0\n        },\n        \"stdout\": {\n          \"seen\": 445,\n          \"stored\": 445\n        }\n      },\n      \"log_errors\": {\n        \"stderr\": null,\n        \"stdout\": null\n      },\n      \"log_synced\": {\n        \"stderr\": true,\n        \"stdout\": true\n      },\n      \"log_truncated\": {\n        \"stderr\": false,\n        \"stdout\": false\n      },\n      \"output_complete\": true,\n      \"output_durable\": true,\n      \"state\": \"succeeded\",\n      \"terminal_publication_confirmed\": true,\n      \"terminal_publication_protocol\": 1,\n      \"timed_out\": false\n    },\n    \"root_review_scope\": \"Root independently read original GitHub jobs/artifacts, full generation command receipt, immutable archive/lock/metadata pins, complete 7-node/12-declaration synopsis, source-readback and independent full-data proof. Full 177-member/1525-package/6033-target byte parsing was performed by the retained independent reader; Root did not repeat any resolver or test.\"\n  },\n  \"qualification\": {\n    \"main_lock_reuse\": true,\n    \"four_locks\": false,\n    \"two_fixture_graphs\": false,\n    \"native12_plus3\": false,\n    \"new_native48\": false,\n    \"ordinary_locked_CI\": false,\n    \"advisory_closed\": false,\n    \"SDK_HTTP_modes\": false,\n    \"science\": false,\n    \"speed\": false,\n    \"adoption\": false,\n    \"final_use\": false\n  },\n  \"execution_authorization\": false,\n  \"separate_continuation_engineering_admission_required\": true,\n  \"frozen_E1_E6_training_spent_unchanged\": 16,\n  \"E6_compile_remaining_seconds_unchanged\": 1.9960488015785813\n}\n",
+  "root_source_activation": {
+    "activated_source_requested": true,
+    "actual_native_engineering_admission_still_separate": true,
+    "authorizer": "root",
+    "branch": "fix/hepta-ci-coherent-continuation-20261126-7c9e",
+    "exact_count": 48,
+    "native_cap_seconds": 2400,
+    "native_execution_authorized_by_this_binder": false,
+    "new_count": 33,
+    "original21_acceptance": {
+      "bytes": 8746,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/sqlx-fixture-continuation-21-root-v1/ROOT_ACCEPTANCE.json",
+      "sha256": "ce16e43b3fc444423ae7c989d169a5c4d02bac8d54fbbf43fdba570afef936c7"
+    },
+    "original21_result": {
+      "bytes": 5414,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/sqlx-fixture-continuation-21-root-v1/RESULT.json",
+      "sha256": "e54e976bde8ebb11797e7e64521a2f5e404b5299c3bb561658f4d0c51dda18fc"
+    },
+    "parent": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
+    "publication_authorized": false,
+    "publication_paths": [
+      ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
+      ".github/workflows/hepta-sqlx-temporal-fixture-continuation-v1.yml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/agent-identity/src/timestamp.rs",
+      "codex-rs/app-server/src/request_processors.rs",
+      "codex-rs/app-server/src/request_processors/mcp_processor.rs",
+      "codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "codex-rs/app-server/tests/suite/v2/plugin_install.rs",
+      "codex-rs/cli/src/doctor/desktop.rs",
+      "codex-rs/cli/tests/mcp_add_remove.rs",
+      "codex-rs/cli/tests/mcp_list.rs",
+      "codex-rs/core/tests/suite/mcp_startup_refresh_http_proxy.rs",
+      "codex-rs/exec-server/README.md",
+      "codex-rs/exec-server/src/server/handler.rs",
+      "codex-rs/hooks/src/types.rs",
+      "codex-rs/http-client/README.md",
+      "codex-rs/network-proxy/src/network_policy.rs",
+      "codex-rs/otel/src/events/shared.rs",
+      "codex-rs/rmcp-client/src/elicitation_client_service.rs",
+      "codex-rs/rmcp-client/src/http_client_adapter_tests.rs",
+      "codex-rs/rmcp-client/src/lib.rs",
+      "codex-rs/rmcp-client/src/oauth_client_registration.rs",
+      "codex-rs/rmcp-client/src/oauth_http_client.rs",
+      "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs",
+      "codex-rs/rmcp-client/src/oauth_reactive_discovery_tests.rs",
+      "codex-rs/rmcp-client/src/perform_oauth_login.rs",
+      "codex-rs/rmcp-client/tests/mcp_2026_discovery.rs",
+      "codex-rs/rmcp-client/tests/mcp_2026_message_limits.rs",
+      "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "qa/b4-no-bypass/test_hepta_callers_required_literal.py",
+      "qa/b4-no-bypass/test_sqlx_temporal_fixture_continuation_v1.py",
+      "qualification/SQLX_TEMPORAL_FIXTURE_CONTINUATION_DESIGN.md",
+      "qualification/sqlx_temporal_fixture_continuation_admission_v1.json",
+      "qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
+      "scripts/hepta_chrono_hooks_cli_native_inputs_v2.json",
+      "scripts/hepta_sqlx_temporal_fixture_continuation_contract_v1.py",
+      "scripts/hepta_sqlx_temporal_fixture_continuation_inputs_v1.json",
+      "scripts/run_chrono_hooks_cli_native_controls_v2.py",
+      "scripts/run_sqlx_temporal_fixture_continuation_v1.py",
+      "scripts/verify_hepta_callers.py"
+    ],
+    "retained_count": 15,
+    "root21_acceptance_sha256": "ce16e43b3fc444423ae7c989d169a5c4d02bac8d54fbbf43fdba570afef936c7",
+    "root21_original_result_sha256": "e54e976bde8ebb11797e7e64521a2f5e404b5299c3bb561658f4d0c51dda18fc",
+    "roster_sha256": "573a66ecb204d62424187681155d1024e0608a57d22d3301c63b813ab93be09d",
+    "source_preparation_only": true,
+    "whole_job_cap_seconds": 3600
+  },
   "roster_sha256": "573a66ecb204d62424187681155d1024e0608a57d22d3301c63b813ab93be09d",
   "schema": "hepta.chrono-hooks-cli-native-reconstruction-inputs.v2",
   "scope_limits": {
@@ -2866,38 +3497,132 @@
     "explicit_lock_update_executions": 0,
     "fence_qualified_by_native48": false,
     "final_use_qualified": false,
+    "native_execution_authorized_by_this_binder": false,
+    "new_changed_source_native_admission_pending": true,
+    "new_native_qualification_inherited": false,
     "no_runtime_qualification_yet": true,
     "old_scientific_budget_used": 0,
     "old_scopes_reopened": false,
     "ordinary_locked_ci_qualified": false,
     "original_E1_E6_spent": 16,
     "original_E6_compile_seconds": 1.9960488015785813,
+    "partial_main_lock_acceptance_is_execution_authorization": false,
     "rmcp_qualified_by_native48": false,
     "science_qualified": false,
     "source_only_preparation": true,
+    "source_preparation_only": true,
     "speed_qualified": false
   },
   "skip_interpretation": "All 48 selected instances must PASS exactly once and appear in fresh JUnit. Nextest's terminal count of filter-excluded unselected tests is recorded separately; it is not treated as a skipped selected test.",
-  "source_only_revision_note": "New three-file stacked candidate on the actual #7111 head. Corrects only version-output parsing and the publication/lock-origin distinction. Original #7111 run 45732991292 attempt 1 failed before native execution because nextest 0.9.103 correctly emits five lines; the original failure, artifacts, and all costs remain retained. This proposal is inactive and has not been imported, formatted, or executed.",
+  "source_only_revision_note": "Exact40 source binding is complete on actual b4fa, including the final SQLx continuation spec. Root explicitly requested activated source for review; publication and native execution remain separately unapproved by this binder. Original failures, historical N2 success and all cost records remain unchanged.",
   "source_pin_basis": {
-    "accepted_generation_head": "40d15b4bbba331f28e45889ff00846517b08375a",
-    "accepted_original_source_tree": "dd412d87f99be786de5fc2cf4e155243fa0d5c71",
+    "accepted_main_lock_origin_head": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
+    "accepted_main_lock_origin_tree": "73e1ccd4245498fb583326667884953dbdfccbf3",
+    "accepted_main_lock_scope": "Partial original main two locks only; original generation remains FAIL.",
+    "b4fa_parent_pin_drift": [
+      {
+        "old": {
+          "bytes": 23124,
+          "git_blob": "949cc8b52f89e5efef8b35387f0df1376b1398d8",
+          "mode": "100644",
+          "path": "codex-rs/Cargo.toml",
+          "sha256": "f8d784ee95b8568f032b3138bf9b520ee7f7e6d5708194c9c72bbab2f167d4a5"
+        },
+        "parent": {
+          "bytes": 23110,
+          "git_blob": "ed963f9f36eda9f5f634ea7f3ebdf6091a73915d",
+          "mode": "100644",
+          "sha256": "9c055a48d9833d2e2baebbec88cb8dc30a5f666beba7bdaf104290625a667986"
+        },
+        "path": "codex-rs/Cargo.toml"
+      }
+    ],
+    "byte_pin_dependency_order": "Final product sources, both owners and workflows first; SQLx spec next with only the named native spec peer exemption; native spec last pins the final SQLx spec. Native spec never self-pins.",
+    "final_four_python_format_result_sha256": "093fb459c9e52dcf7d3e026a816702b94e90404bc30ef5028e1583906cb76262",
+    "final_publication_source_pin_count": 39,
+    "final_root29_result_sha256": "4cbe6aa2a086851adb081c8eb8406cb46adc189250ff237ef6f9b20ae91a1f5d",
+    "final_source_pin_count": 368,
+    "final_sqlx_continuation_pins_pending": false,
+    "final_sqlx_continuation_spec_sha256": "9395d13278895a3189653a1c5aaa447822d0ac7a42faec7ea6fde6f4a3ce95d3",
+    "historical_original_generated_lock_source": {
+      "head": "40d15b4bbba331f28e45889ff00846517b08375a",
+      "root_acceptance_sha256": "952cdc4dd2e63ad2277123f5be0738cb2075b00f6cf834a1f13d6d847587e384",
+      "tree": "dd412d87f99be786de5fc2cf4e155243fa0d5c71"
+    },
     "inherited_prior_postimage_pins": [
       ".github/workflows/blob-size-policy.yml",
-      "codex-rs/Cargo.lock",
       "codex-rs/rmcp-client/src/auth_status.rs"
+    ],
+    "known_staged_source_pin_count": 360,
+    "new_file_mode_intentions": [
+      {
+        "basis": "new ordinary non-executable Rust/test source; final Root publication must preserve this explicit mode",
+        "path": "qa/b4-no-bypass/test_hepta_callers_required_literal.py",
+        "proposed_mode": "100644"
+      },
+      {
+        "basis": "new ordinary non-executable Rust/test source; final Root publication must preserve this explicit mode",
+        "path": "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs",
+        "proposed_mode": "100644"
+      },
+      {
+        "basis": "new ordinary non-executable Rust/test source; final Root publication must preserve this explicit mode",
+        "path": "codex-rs/rmcp-client/src/oauth_reactive_discovery_tests.rs",
+        "proposed_mode": "100644"
+      }
     ],
     "new_postimage_pins": [
       ".github/workflows/hepta-chrono-hooks-cli-native-controls-v2.yml",
-      "scripts/run_chrono_hooks_cli_native_controls_v2.py"
+      ".github/workflows/hepta-sqlx-temporal-fixture-continuation-v1.yml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/agent-identity/src/timestamp.rs",
+      "codex-rs/app-server/src/request_processors.rs",
+      "codex-rs/app-server/src/request_processors/mcp_processor.rs",
+      "codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "codex-rs/app-server/tests/suite/v2/plugin_install.rs",
+      "codex-rs/cli/src/doctor/desktop.rs",
+      "codex-rs/cli/tests/mcp_add_remove.rs",
+      "codex-rs/cli/tests/mcp_list.rs",
+      "codex-rs/core/tests/suite/mcp_startup_refresh_http_proxy.rs",
+      "codex-rs/exec-server/README.md",
+      "codex-rs/exec-server/src/server/handler.rs",
+      "codex-rs/hooks/src/types.rs",
+      "codex-rs/http-client/README.md",
+      "codex-rs/network-proxy/src/network_policy.rs",
+      "codex-rs/otel/src/events/shared.rs",
+      "codex-rs/rmcp-client/src/elicitation_client_service.rs",
+      "codex-rs/rmcp-client/src/http_client_adapter_tests.rs",
+      "codex-rs/rmcp-client/src/lib.rs",
+      "codex-rs/rmcp-client/src/oauth_client_registration.rs",
+      "codex-rs/rmcp-client/src/oauth_http_client.rs",
+      "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs",
+      "codex-rs/rmcp-client/src/oauth_reactive_discovery_tests.rs",
+      "codex-rs/rmcp-client/src/perform_oauth_login.rs",
+      "codex-rs/rmcp-client/tests/mcp_2026_discovery.rs",
+      "codex-rs/rmcp-client/tests/mcp_2026_message_limits.rs",
+      "codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs",
+      "qa/b4-no-bypass/test_hepta_callers_required_literal.py",
+      "qa/b4-no-bypass/test_sqlx_temporal_fixture_continuation_v1.py",
+      "qualification/SQLX_TEMPORAL_FIXTURE_CONTINUATION_DESIGN.md",
+      "qualification/sqlx_temporal_fixture_continuation_admission_v1.json",
+      "qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
+      "scripts/hepta_sqlx_temporal_fixture_continuation_contract_v1.py",
+      "scripts/hepta_sqlx_temporal_fixture_continuation_inputs_v1.json",
+      "scripts/run_chrono_hooks_cli_native_controls_v2.py",
+      "scripts/run_sqlx_temporal_fixture_continuation_v1.py",
+      "scripts/verify_hepta_callers.py"
     ],
     "original_335_source_pins": 335,
+    "original_native_source_pin_count": 342,
     "original_nextest_0_9_103_capsule_sha256": "b72acb7e709088a60c13305d0edc4a976c35c04f1f3e13870db605fc75a2fbcd",
+    "prepared_reactive_final_format_result_sha256": "8d4af49900d380d0acd505312f91a598f2b3f5a3b140f5194b321c6e23e25bb2",
+    "prepared_twenty_input_sha256": "4f070edea378999fb6846674fad4645d6d18b489f8587fb8175ae06205ce9845",
     "primary_original_capsule_sha256": "5c2e010cc7e327e6beae17ddc997da3ca8c11eb602df5c332c0f72f7a859777a",
-    "prior_published_spec_git_blob": "48e08fd726498597c44c8274f2df6d0bc7faa74f",
+    "prior_published_spec_git_blob": "bfac4b8ee2bdf5d5211fbe56e59bad6f6dec0045",
+    "publication_roster_finalized": true,
     "spec_self_pin_omitted_to_avoid_circular_hash": true,
-    "stacked_parent_head": "861e4b03dd7615515fbe02f3c236af73e4999d96",
-    "stacked_parent_tree": "040d42dd05eb6d62c4837dd8668d0b78c7e1f0f4"
+    "stacked_parent_head": "b4fa4fdd1d05603c1a091930b70f83ec1af73797",
+    "stacked_parent_tree": "73e1ccd4245498fb583326667884953dbdfccbf3"
   },
   "template_basis": {
     "git_blob": "1d0c1fc533b081cc2668f1bd5cee17ce27aea632",

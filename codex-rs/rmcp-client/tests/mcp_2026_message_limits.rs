@@ -28,6 +28,7 @@ use wiremock::matchers::method;
 use wiremock::matchers::path;
 
 const MAX_MCP_MESSAGE_BYTES: usize = 8 * 1024 * 1024;
+const MAX_MCP_HTTP_ERROR_BODY_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum OversizedHttpResponse {
@@ -126,7 +127,12 @@ async fn modern_http_rejects_oversized_json_error_and_sse_bodies() -> anyhow::Re
         OversizedHttpResponse::ToolSseEvent,
     ] {
         let server = MockServer::start().await;
-        let padding = Arc::new("x".repeat(MAX_MCP_MESSAGE_BYTES + 1));
+        let maximum_bytes = if oversized == OversizedHttpResponse::ToolError {
+            MAX_MCP_HTTP_ERROR_BODY_BYTES
+        } else {
+            MAX_MCP_MESSAGE_BYTES
+        };
+        let padding = Arc::new("x".repeat(maximum_bytes + 1));
         Mock::given(method("POST"))
             .and(path("/mcp"))
             .respond_with(move |request: &Request| {
@@ -149,8 +155,9 @@ async fn modern_http_rejects_oversized_json_error_and_sse_bodies() -> anyhow::Re
                     Some("tools/list") if oversized == OversizedHttpResponse::ToolSseEvent => {
                         ResponseTemplate::new(200).set_body_raw(
                             format!(
-                                "event: message\ndata: {}\n\n",
+                                "event: message\ndata: {}\n\nevent: message\ndata: {}\n\n",
                                 tools_response(&body, &padding),
+                                tools_response(&body, ""),
                             ),
                             "text/event-stream; charset=utf-8",
                         )
@@ -177,12 +184,17 @@ async fn modern_http_rejects_oversized_json_error_and_sse_bodies() -> anyhow::Re
                 .await
                 .expect_err("oversized tools response must be rejected");
             let error = format!("{error:#}");
-            assert!(
-                error.contains("8388608 bytes")
-                    || (oversized == OversizedHttpResponse::ToolSseEvent
-                        && (error.contains("timed out") || error.contains("Transport closed"))),
-                "unexpected {oversized:?} error: {error}"
-            );
+            if oversized == OversizedHttpResponse::ToolSseEvent {
+                assert_eq!(
+                    error, "Transport closed",
+                    "oversized SSE must terminate before any later valid response"
+                );
+            } else {
+                assert!(
+                    error.contains(&format!("MCP response body exceeds {maximum_bytes} bytes")),
+                    "unexpected {oversized:?} error: {error}"
+                );
+            }
         }
         client.shutdown().await;
     }

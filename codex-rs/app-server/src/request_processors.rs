@@ -469,7 +469,7 @@ use codex_protocol::user_input::MAX_USER_INPUT_TEXT_CHARS;
 use codex_protocol::user_input::UserInput as CoreInputItem;
 use codex_rmcp_client::McpOAuthClientRegistration;
 use codex_rmcp_client::StreamableHttpRedirectMode;
-use codex_rmcp_client::perform_oauth_login_return_url;
+use codex_rmcp_client::perform_oauth_login_return_url_with_protocol_mode;
 use codex_rollout::InitialHistory;
 use codex_rollout::ResumedHistory;
 use codex_rollout::RolloutItem;
