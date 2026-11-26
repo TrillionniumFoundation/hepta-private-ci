@@ -1,0 +1,205 @@
+{
+  "baseline_commit": "25c2cb2b60446a5f7692945bd154b0d8deb485f3",
+  "historical_training_repeated": false,
+  "immutable_binary_evidence": [
+    {
+      "bytes": 129859,
+      "decoded_bytes": 343412,
+      "decoded_sha256": "4aa26b3ca41f57f284ce65e9875eceed7dab5cd19f315a708e0cbf47d585dddc",
+      "expected_git_blob": "7f53ec3a945e63ce7e118556e309ad941030138f",
+      "git_blob": "7f53ec3a945e63ce7e118556e309ad941030138f",
+      "has_null_first1024": false,
+      "matches": true,
+      "path": "/workspace/scratch/8a32fcb41ccf/discovery/codespell/pft2_multihost_ai395.json.zlib",
+      "sha256": "e46ad691e039d03e3d626b66161c1e5b8a9d8304ef62df174d20e1de6ddfaec0"
+    },
+    {
+      "bytes": 129826,
+      "decoded_bytes": 343255,
+      "decoded_sha256": "ecadbb6990842d93b2648ceec3658ca9b0d96a28af1cef6a79b43953c999c07d",
+      "expected_git_blob": "539c5425f46b2d8bc1ccacd00e640b8d282737eb",
+      "git_blob": "539c5425f46b2d8bc1ccacd00e640b8d282737eb",
+      "has_null_first1024": false,
+      "matches": true,
+      "path": "/workspace/scratch/8a32fcb41ccf/discovery/codespell/pft2_multihost_pocket4.json.zlib",
+      "sha256": "6aa18040d90ac9175c38d3993ce78eaf8016dbbd045e7a48ff7ff5e714a04f5d"
+    }
+  ],
+  "native_statement_regression": {
+    "baseline_commit": "25c2cb2b60446a5f7692945bd154b0d8deb485f3",
+    "compiler": "/usr/bin/cc",
+    "exit_code": 0,
+    "passed": true,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "schema": "pft.continuation.native-statement-regression.v1",
+    "scope": "real C ELF fixtures and process groups; no Hepta model or user qualification",
+    "source_sha256": "158dfa628541eabda828948624e0de0e2a640dfdf20ddec893855dfe00976eec",
+    "stderr": "test_each_output_limit_rejects_real_bytes (__main__.NativeStatementProcesses.test_each_output_limit_rejects_real_bytes) ... ok\ntest_exact_both_stream_limits (__main__.NativeStatementProcesses.test_exact_both_stream_limits) ... ok\ntest_group_stops_on_overflow_timeout_and_leader_exit (__main__.NativeStatementProcesses.test_group_stops_on_overflow_timeout_and_leader_exit) ... ok\ntest_pin_and_authority_refusals_survive (__main__.NativeStatementProcesses.test_pin_and_authority_refusals_survive) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.678s\n\nOK\n",
+    "stdout": "",
+    "test_sha256": "7549fd0bfd8f2589acfebbdb14c0764c93f39b25acfc54a6d9eb9e408aadb96b",
+    "wall_s": 0.7465008270000908
+  },
+  "original_E1_E6_budget_reopened": false,
+  "rank_regression": {
+    "baseline_commit": "25c2cb2b60446a5f7692945bd154b0d8deb485f3",
+    "checks": [
+      {
+        "exit_code": 1,
+        "expected_exit_code": 1,
+        "name": "baseline_rank_zero_failure",
+        "source_sha256": "710dd8c9aaf91945a9e9271f69c4400e63c09e3d00408a31dbfae7788ac183ca",
+        "stderr": "test_nonzero_spectrum_and_parameter_rank_are_unchanged (__main__.IdentifiabilityRankZeroTests.test_nonzero_spectrum_and_parameter_rank_are_unchanged) ... ok\ntest_zero_rank_serializes_as_unidentifiable (__main__.IdentifiabilityRankZeroTests.test_zero_rank_serializes_as_unidentifiable) ... ERROR\n\n======================================================================\nERROR: test_zero_rank_serializes_as_unidentifiable (__main__.IdentifiabilityRankZeroTests.test_zero_rank_serializes_as_unidentifiable)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/tmp/pft-rank-regression-trjbizkk/test_identifiability_rank_zero.py\", line 32, in test_zero_rank_serializes_as_unidentifiable\n    result = self.measurement(np.zeros((2, 3)))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pft-rank-regression-trjbizkk/test_identifiability_rank_zero.py\", line 29, in measurement\n    return SUBJECT.fit_and_measure(design, targets, weight, tests, 0.001)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/pft-rank-regression-trjbizkk/identifiability.py\", line 95, in fit_and_measure\n    \"nonzero_condition_number\": float(singular[0] / singular[rank - 1]),\n                                      ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~\nRuntimeWarning: invalid value encountered in scalar divide\n\n----------------------------------------------------------------------\nRan 2 tests in 0.002s\n\nFAILED (errors=1)\n",
+        "stdout": "",
+        "test_sha256": "46cbef084c78c0322bb2b3dde599fe2ec0bd0b5e31897c5f570b470532c18d68",
+        "wall_s": 0.15653743599978043
+      },
+      {
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "name": "candidate_rank_diagnostics",
+        "source_sha256": "ac77dc19eef5e092e83489baa0a62c95c81b954b5cc5c95e7d0a1928052ac46b",
+        "stderr": "test_nonzero_spectrum_and_parameter_rank_are_unchanged (__main__.IdentifiabilityRankZeroTests.test_nonzero_spectrum_and_parameter_rank_are_unchanged) ... ok\ntest_zero_rank_serializes_as_unidentifiable (__main__.IdentifiabilityRankZeroTests.test_zero_rank_serializes_as_unidentifiable) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK\n",
+        "stdout": "",
+        "test_sha256": "46cbef084c78c0322bb2b3dde599fe2ec0bd0b5e31897c5f570b470532c18d68",
+        "wall_s": 0.15471126400007051
+      }
+    ],
+    "passed": true,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "schema": "pft.continuation.rank-regression.v1",
+    "scope": "deterministic diagnostic regression; no historical matrix or optimizer run"
+  },
+  "repository_gates": {
+    "baseline_commit": "25c2cb2b60446a5f7692945bd154b0d8deb485f3",
+    "baseline_index_entries": 9238,
+    "binary_evidence_sha256": {
+      "qualification/pft_six_experiments_20261125/results/pft2_multihost_ai395.json.zlib": "e46ad691e039d03e3d626b66161c1e5b8a9d8304ef62df174d20e1de6ddfaec0",
+      "qualification/pft_six_experiments_20261125/results/pft2_multihost_pocket4.json.zlib": "6aa18040d90ac9175c38d3993ce78eaf8016dbbd045e7a48ff7ff5e714a04f5d"
+    },
+    "checks": [
+      {
+        "argv": [
+          "/Users/qianqi/work/hepta-pft-continuation-20261126-8a32/tooling/bin/codespell",
+          "--count",
+          "--ignore-words",
+          ".codespellignore",
+          "--skip",
+          "./.git"
+        ],
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log_bytes": 2,
+        "log_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "name": "codespell_scoped_candidate",
+        "output": "0\n",
+        "wall_s": 1.3859227921348065
+      },
+      {
+        "argv": [
+          "/Users/qianqi/work/hepta-pft-continuation-20261126-8a32/tooling/bin/codespell",
+          "--count",
+          "--ignore-words",
+          ".codespellignore",
+          "--skip",
+          "./.git"
+        ],
+        "exit_code": 65,
+        "expected_exit_code": 65,
+        "log_bytes": 82,
+        "log_sha256": "f94e862ad2a6a17f90d5365154216c42e037b8452d4cfa79d114ef6cf2115f03",
+        "name": "codespell_neighbor_negative",
+        "output": "1\n./qualification/pft_six_experiments_20261125/results/control.txt:1: teh ==> the\n",
+        "wall_s": 0.09013258293271065
+      },
+      {
+        "argv": [
+          "/opt/homebrew/bin/just",
+          "fmt"
+        ],
+        "exit_code": 0,
+        "expected_exit_code": 0,
+        "log_bytes": 73,
+        "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+        "name": "official_just_fmt",
+        "output": "No changed files need formatting. Use --all for a full repository check.\n",
+        "wall_s": 0.08985737501643598
+      }
+    ],
+    "code_and_test_sha256": {
+      ".codespellrc": "c1962b64c41e083c46f43d4a0fb44061fab109e8a81c4712b104cd3541db20a2",
+      "qualification/pft_six_experiments_20261125/adoption_closure_v2/native_adapter.py": "158dfa628541eabda828948624e0de0e2a640dfdf20ddec893855dfe00976eec",
+      "qualification/pft_six_experiments_20261125/adoption_closure_v2/test_native_adapter_process.py": "7549fd0bfd8f2589acfebbdb14c0764c93f39b25acfc54a6d9eb9e408aadb96b",
+      "qualification/pft_six_experiments_20261125/identifiability.py": "ac77dc19eef5e092e83489baa0a62c95c81b954b5cc5c95e7d0a1928052ac46b",
+      "qualification/pft_six_experiments_20261125/test_identifiability_rank_zero.py": "46cbef084c78c0322bb2b3dde599fe2ec0bd0b5e31897c5f570b470532c18d68"
+    },
+    "formatter_reported_scoped_noop": true,
+    "formatter_scope": "configured dispatcher; qualification Python is outside its families",
+    "materialization": {
+      "baseline_commit": "25c2cb2b60446a5f7692945bd154b0d8deb485f3",
+      "baseline_index_entries": 9238,
+      "complete_repository_materialized": false,
+      "full_checkout_failures": [
+        {
+          "job_id": "1a2156872e6-ffbe-4283",
+          "reason": "read-tree child timed out after 210 seconds; only private checkout Git work reconciled"
+        },
+        {
+          "job_id": "1a2156e9200-ffbe-428d",
+          "reason": "GitHub HTTPS connection failed; checkout exit 128"
+        }
+      ],
+      "full_repository_codespell_local": false,
+      "materialized_baseline_files": 13,
+      "mode": "identity_checked_sparse_checkout",
+      "quarantined_partial_checkout_residue": {
+        "bytes": 0,
+        "path": ".g1/requests/trillionnium-os/pr41-l1-attestation-request.manifest.json",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "schema": "pft.source-materialization.v1",
+      "source_blob_identities_verified": true
+    },
+    "schema": "pft.continuation.repository-gates.v1",
+    "scope": "pinned sparse source checkout; all modified sources, formatter drivers and both original binaries; full repository Codespell not run locally",
+    "status": "PASSED"
+  },
+  "retained_archives": {
+    "archive_count": 190,
+    "archive_index_sha256": "37736a1b054eb4dc5e6160dbdc5b02a01de8bd44a5ba57635eb1c97c3ecc74c4",
+    "candidate_git_anchor_reported_by_orchestrator": "7dfd1deb8b70867a7875ef1fc99cd1a6b20f4953",
+    "candidates": 168,
+    "capsule": {
+      "expected_sha256": "7ebe8aed55ce2e209f8be5dd016b4b13a8bb3fe6243b918d9648dd9a7114fe96",
+      "requested": false
+    },
+    "evaluated_rows": 168,
+    "execution_scope": "read_only_original_archives_no_training_no_model_forward",
+    "external_git_commit_existence_requeried": false,
+    "original_result_file_bytes": 1212,
+    "original_result_file_sha256": "cebaba46768192ee22841d13cd5033384f76939dc42730c8d849ac36098e7f34",
+    "process_cpu_s": 1.058455323,
+    "protocol_sha256": "aad9b709d3ee6a32597487f5ae1eb2c1fc490f74d05320c4d32349fe7f09e7b8",
+    "readback_execution": {
+      "exit_code": 0,
+      "host": "pocket4",
+      "job_id": "1a2155dc7a3-ffbe-426a",
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "stderr_eof": true,
+      "stdout_eof": true,
+      "terminal_publication_confirmed": true
+    },
+    "recovery_head": "25c2cb2b60446a5f7692945bd154b0d8deb485f3",
+    "scope": "raw bytes, local source and receipt bindings; no Torch deserialization or scientific retraining",
+    "seal_sha256": "a447b724f6459625b0e9c5e15e9dca5bbaad439af5c433391c7b34e9a9df88ee",
+    "source_git_anchor": "221c4fb6a6ece0fba3d0052a66c9beeca7d1dcd3",
+    "status": "BYTE_AND_BINDING_CHECKS_PASSED",
+    "unique_members": 981,
+    "verifier_source_sha256": "d1add757e88ff873470b87896acac774fe4947ae4362cf6fba0ea0494a16cdbc",
+    "wall_s": 1.0570188970305026,
+    "whole_wall_s": 1.0683377609821036
+  },
+  "schema": "pft.continuation.validation.v1",
+  "scope": "engineering repairs and retained-evidence readback; no new scientific matrix"
+}
