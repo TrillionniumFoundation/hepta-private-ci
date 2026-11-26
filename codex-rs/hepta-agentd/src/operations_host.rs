@@ -12,8 +12,8 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_operations::DispatchEffect;
 use codex_hepta_operations::DurableOperationError;
+use codex_hepta_operations::DurableOperationIntentV1;
 use codex_hepta_operations::DurableOperationStore;
-use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_operations::ReconciliationOutcome;
 use codex_hepta_operations::ReconciliationReceiptV1;
 use codex_hepta_types::Digest32;
@@ -28,7 +28,7 @@ const QUEUE_RETRY: Duration = Duration::from_millis(50);
 const DISPATCH_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-dispatch.v1\0";
 const ACK_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-ack.v1\0";
 const NOT_APPLIED_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-not-applied.v1\0";
-const QUARANTINE_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-quarantined.v1\0";
+const UNKNOWN_EFFECT_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-unknown-effect.v1\0";
 
 /// Independent grant source. Implementations may talk to an external issuer or
 /// consume an already authenticated owner channel, but agentd never receives a
@@ -36,7 +36,7 @@ const QUARANTINE_DOMAIN: &[u8] = b"hepta.agentd.automation-owner-queue-quarantin
 pub trait AutomationGrantProvider: Send + Sync {
     fn signed_grant(
         &self,
-        intent: &OperationIntentV1,
+        intent: &DurableOperationIntentV1,
     ) -> Result<SignedFinalUseGrant, AgentdOperationsError>;
 }
 
@@ -69,7 +69,7 @@ pub struct AgentdOperationsHost {
 }
 
 struct AutomationApplyRequest {
-    operation: OperationIntentV1,
+    operation: DurableOperationIntentV1,
     draft: AutomationTaskDraft,
     response: oneshot::Sender<Result<AutomationTask, AgentdOperationsError>>,
 }
@@ -218,7 +218,7 @@ async fn apply_and_reconcile(
     automation: &AutomationStore,
     observer_id: &StableId,
     generation: Generation,
-    operation: &OperationIntentV1,
+    operation: &DurableOperationIntentV1,
     draft: &AutomationTaskDraft,
 ) -> Result<AutomationTask, AgentdOperationsError> {
     match automation
@@ -248,22 +248,7 @@ async fn apply_and_reconcile(
                     }
                 }
                 Ok(None) => {
-                    let outcome = if matches!(
-                        error,
-                        AutomationError::Invalid
-                            | AutomationError::AccessDenied
-                            | AutomationError::Conflict
-                            | AutomationError::Corrupt
-                    ) {
-                        ReconciliationOutcome::Quarantined
-                    } else {
-                        ReconciliationOutcome::NotApplied
-                    };
-                    let evidence_digest = match outcome {
-                        ReconciliationOutcome::Quarantined => Digest32::of_bytes(QUARANTINE_DOMAIN),
-                        ReconciliationOutcome::NotApplied => Digest32::of_bytes(NOT_APPLIED_DOMAIN),
-                        ReconciliationOutcome::Applied => unreachable!(),
-                    };
+                    let (outcome, evidence_digest) = classify_destination_absence(&error);
                     source
                         .observe_terminal(
                             &operation.scope_id,
@@ -336,7 +321,28 @@ async fn reconcile_reopened_operations(
     }
 }
 
-fn queue_digest(domain: &[u8], intent: &OperationIntentV1, fence: u64) -> Digest32 {
+/// Preserve uncertainty after an owner error and a missing receipt observation.
+///
+/// An error label is not an authenticated absence proof: even `AccessDenied`
+/// can arise while reading the task after its transaction has committed. The
+/// caller handles a present authoritative receipt before reaching this path.
+/// A missing receipt snapshot alone does not fence an outstanding effect, so
+/// no error here authorizes another dispatch.
+///
+/// `Quarantined` is an immutable terminal state in the current source store.
+/// Reopen reconciliation skips it, and a later destination receipt cannot
+/// replace it through this host. An authenticated quarantine-recovery path is
+/// still missing; this terminal marker is not proof that no effect committed.
+fn classify_destination_absence(error: &AutomationError) -> (ReconciliationOutcome, Digest32) {
+    let mut bytes = UNKNOWN_EFFECT_DOMAIN.to_vec();
+    bytes.extend_from_slice(error.to_string().as_bytes());
+    (
+        ReconciliationOutcome::Quarantined,
+        Digest32::of_bytes(&bytes),
+    )
+}
+
+fn queue_digest(domain: &[u8], intent: &DurableOperationIntentV1, fence: u64) -> Digest32 {
     let mut bytes = domain.to_vec();
     bytes.extend_from_slice(intent.semantic_digest().as_array());
     bytes.extend_from_slice(&fence.to_be_bytes());
@@ -344,12 +350,16 @@ fn queue_digest(domain: &[u8], intent: &OperationIntentV1, fence: u64) -> Digest
 }
 
 fn task_id_from_operation(
-    operation: &OperationIntentV1,
+    operation: &DurableOperationIntentV1,
 ) -> Option<codex_hepta_automation::AutomationTaskId> {
     let value = operation.operation_id.as_str();
     let raw = value.strip_prefix("automation.task.create:")?;
     raw.parse().ok()
 }
+
+#[cfg(test)]
+#[path = "operations_host_classification_tests.rs"]
+mod classification_tests;
 
 #[cfg(test)]
 #[path = "operations_host_tests.rs"]
