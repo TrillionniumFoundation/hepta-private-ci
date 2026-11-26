@@ -266,3 +266,94 @@ fn borrowed_shadow_rejects_bad_replacements_and_still_checks_original_tick() {
         Some(PopulationSparseError::ScopeDrift)
     );
 }
+
+#[test]
+fn prepared_v2_64_tick_replay_is_byte_identical_to_unprepared() {
+    let cfg = config();
+    let prepared = checked(PreparedPopulationSparseConfigV2::new(cfg.clone()));
+    assert_eq!(prepared.digest(), checked(cfg.digest()));
+    assert_eq!(prepared.generation(), cfg.generation);
+    let mut legacy = None;
+    let mut optimized = None;
+    for sequence in 1..=64_u64 {
+        let mut input = tick(sequence, sequence * 20);
+        input.temporal_drive_q24 = if sequence % 2 == 0 {
+            vec![-Q / 2, Q]
+        } else {
+            vec![Q, -Q / 4]
+        };
+        let slow = checked(population_sparse_tick_v2(&cfg, &input, legacy.as_ref()));
+        let fast = checked(prepared.tick(&input, optimized.as_ref()));
+        assert_eq!(fast, slow);
+        legacy = Some(slow.0);
+        optimized = Some(fast.0);
+    }
+}
+
+#[test]
+fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
+    let cfg = config();
+    let prepared = checked(PreparedPopulationSparseConfigV2::new(cfg.clone()));
+    let mut legacy_config = cfg.clone();
+    legacy_config.temporal_decay_q24 = 0;
+    let mut legacy = None;
+    let mut optimized = None;
+    for sequence in 1..=64_u64 {
+        let original = tick(sequence, sequence * 20);
+        let forwarded = if sequence % 2 == 0 {
+            vec![-Q / 2, Q / 4]
+        } else {
+            vec![Q / 2, -Q / 3]
+        };
+        let mut old_input = original.clone();
+        old_input.temporal_drive_q24 = forwarded.clone();
+        let slow = checked(population_sparse_tick_v2(
+            &legacy_config,
+            &old_input,
+            legacy.as_ref(),
+        ));
+        let fast = checked(prepared.tick_from_temporal_override(
+            &original,
+            &forwarded,
+            optimized.as_ref(),
+        ));
+        assert_eq!(fast, slow);
+        legacy = Some(slow.0);
+        optimized = Some(fast.0);
+    }
+    let mut changed = cfg;
+    changed.generation = generation(9);
+    let new_prepared = checked(PreparedPopulationSparseConfigV2::new(changed));
+    assert_ne!(new_prepared.digest(), prepared.digest());
+    assert_eq!(
+        new_prepared.tick(&tick(65, 65 * 20), None).err(),
+        Some(PopulationSparseError::Sequence)
+    );
+    let old_state = legacy.expect("64 old checkpoints");
+    assert_eq!(
+        new_prepared
+            .tick_from_temporal_override(&tick(65, 65 * 20), &[Q, Q], Some(&old_state),)
+            .err(),
+        Some(PopulationSparseError::ConfigDrift)
+    );
+}
+
+#[test]
+fn prepared_configuration_owns_immutable_parameters() {
+    let mut source = config();
+    let prepared = checked(PreparedPopulationSparseConfigV2::new(source.clone()));
+    let old_digest = prepared.digest();
+    source.projection[0].weight_q24 -= 1;
+    let changed = checked(PreparedPopulationSparseConfigV2::new(source));
+    assert_ne!(changed.digest(), old_digest);
+    assert_eq!(prepared.digest(), old_digest);
+    let valid = checked(prepared.tick(&tick(1, 10), None));
+    assert_eq!(
+        changed.tick(&tick(2, 20), Some(&valid.0)).err(),
+        Some(PopulationSparseError::ConfigDrift)
+    );
+    assert_eq!(
+        prepared.tick(&tick(2, 10), Some(&valid.0)).err(),
+        Some(PopulationSparseError::Clock)
+    );
+}

@@ -16,6 +16,7 @@ use crate::population_v2::PopulationSparseCheckpointV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::PopulationSparseTickV2;
+use crate::population_v2::PreparedPopulationSparseConfigV2;
 use crate::population_v2::population_sparse_tick_v2_from_temporal_override;
 
 const Q: i64 = 1 << 24;
@@ -149,6 +150,45 @@ impl LowRankMinGruConfigV1 {
     }
 }
 
+/// Prepared immutable low-rank minGRU shadow configuration. Does not train,
+/// change selected tensors or authorize routes. For each generation, the
+/// private config and its cached hashes are frozen together.
+#[derive(Clone, Debug)]
+pub struct PreparedLowRankMinGruConfigV1 {
+    config: LowRankMinGruConfigV1,
+    prepared_base: PreparedPopulationSparseConfigV2,
+    config_digest: Digest32,
+}
+
+impl PreparedLowRankMinGruConfigV1 {
+    pub fn new(config: LowRankMinGruConfigV1) -> Result<Self, LowRankMinGruErrorV1> {
+        let config_digest = config.digest()?;
+        let prepared_base = PreparedPopulationSparseConfigV2::new(config.base.clone())?;
+        Ok(Self {
+            config,
+            prepared_base,
+            config_digest,
+        })
+    }
+
+    pub fn digest(&self) -> Digest32 {
+        self.config_digest
+    }
+
+    pub fn tick(
+        &self,
+        input: &PopulationSparseTickV2,
+        previous: Option<&LowRankMinGruCheckpointV1>,
+    ) -> Result<(LowRankMinGruCheckpointV1, LowRankMinGruReceiptV1), LowRankMinGruErrorV1> {
+        low_rank_min_gru_tick_v1_inner(
+            &self.config,
+            input,
+            previous,
+            Some((&self.prepared_base, self.config_digest)),
+        )
+    }
+}
+
 impl LowRankMinGruCheckpointV1 {
     pub fn digest(&self) -> Digest32 {
         self.digest
@@ -241,7 +281,19 @@ pub fn low_rank_min_gru_tick_v1(
     input: &PopulationSparseTickV2,
     previous: Option<&LowRankMinGruCheckpointV1>,
 ) -> Result<(LowRankMinGruCheckpointV1, LowRankMinGruReceiptV1), LowRankMinGruErrorV1> {
-    let config_digest = config.digest()?;
+    low_rank_min_gru_tick_v1_inner(config, input, previous, None)
+}
+
+fn low_rank_min_gru_tick_v1_inner(
+    config: &LowRankMinGruConfigV1,
+    input: &PopulationSparseTickV2,
+    previous: Option<&LowRankMinGruCheckpointV1>,
+    prepared: Option<(&PreparedPopulationSparseConfigV2, Digest32)>,
+) -> Result<(LowRankMinGruCheckpointV1, LowRankMinGruReceiptV1), LowRankMinGruErrorV1> {
+    let config_digest = match prepared {
+        Some((_, digest)) => digest,
+        None => config.digest()?,
+    };
     let width = config.base.temporal_width;
     if input.temporal_drive_q24.len() != width
         || input.prediction_q24.len() != config.base.activation_width
@@ -322,12 +374,17 @@ pub fn low_rank_min_gru_tick_v1(
         successor.push(next);
     }
 
-    let (inner, v2_receipt) = population_sparse_tick_v2_from_temporal_override(
-        &config.base,
-        input,
-        &successor,
-        previous.map(|prior| &prior.inner),
-    )?;
+    let (inner, v2_receipt) = match prepared {
+        Some((base, _)) => {
+            base.tick_from_temporal_override(input, &successor, previous.map(|prior| &prior.inner))?
+        }
+        None => population_sparse_tick_v2_from_temporal_override(
+            &config.base,
+            input,
+            &successor,
+            previous.map(|prior| &prior.inner),
+        )?,
+    };
     let original_input = original_input_digest(input);
     let mut checkpoint = LowRankMinGruCheckpointV1 {
         config: config_digest,
