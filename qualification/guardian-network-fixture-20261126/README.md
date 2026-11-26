@@ -19,13 +19,24 @@ input, and the existing one-second yield. There are at most nine polls. A new
 user prompt ends the previous command's matching scope. One shared request log
 retains the existing request invariant checks without recording rejected routes.
 
-Completion requires a typed process-exit header before Output:, and each turn
-must leave no background terminal. Arbitrary dispatch errors and status-like
-lines printed by the command cannot count as completion. Original action-count,
-full action, exact trigger, command, and denial assertions remain in force; the
-outcome assertions read the final exec or poll output. Command arguments,
-network deadlines, approval policy, and production code are unchanged.
+The next normal source build exposed an incorrect completion assumption: a
+Guardian rejection is terminal without a process-exit header. The routing case
+returned the intended ProcessFailed rejection, but the fixture rejected it as an
+unknown dispatch error. This failure remains part of the qualification record.
+
+Completion now requires the outcome declared by that specific test: a typed
+process-exit header before Output: for approval, or the exact Guardian rejection
+prefix and expected rationale for denial. exec_command's Debug envelope and
+write_stdin's Display envelope are distinguished by the original or poll call ID.
+Wrong rationales, wrong envelopes, unrelated calls, malformed or out-of-range
+poll IDs, ordinary dispatch errors, and status-like lines in stdout cannot count
+as the required denial. A successful process exit cannot satisfy a denial case.
+Each turn must still leave no background terminal. Original action-count, full
+action, exact trigger, command, and denial assertions remain in force. Command
+arguments, network deadlines, approval policy, the nine-poll bound, and
+production code are unchanged.
 
 This is a source correction, not a successful native qualification. The two
-original cases and the surrounding network approval suite remain required on
-the normal source build. No failed CI attempt is rerun to produce this evidence.
+original cases, the terminal-output parser controls, and the surrounding network
+approval suite remain required on the normal source build. No failed CI attempt
+is rerun to produce this evidence.

@@ -127,6 +127,7 @@ async fn guardian_network_approval_preserves_action_and_outcome_routing() -> Res
         &server,
         &responses,
         first_call_id,
+        command_fixture::ExpectedCompletion::ProcessExit,
         sse(vec![
             ev_response_created("resp-guardian-network-allow"),
             ev_assistant_message(
@@ -163,6 +164,7 @@ async fn guardian_network_approval_preserves_action_and_outcome_routing() -> Res
         &server,
         &responses,
         second_call_id,
+        command_fixture::ExpectedCompletion::GuardianDenial(denial),
         sse(vec![
             ev_response_created("resp-guardian-network-deny"),
             ev_assistant_message(
@@ -227,9 +229,17 @@ async fn guardian_network_approval_preserves_action_and_outcome_routing() -> Res
         Some(second_command.as_str())
     );
 
-    let approved_output = command_fixture::completed_output(&responses, first_call_id)?;
+    let approved_output = command_fixture::completed_output(
+        &responses,
+        first_call_id,
+        command_fixture::ExpectedCompletion::ProcessExit,
+    )?;
     assert!(!approved_output.contains("rejected"));
-    let denied_output = command_fixture::completed_output(&responses, second_call_id)?;
+    let denied_output = command_fixture::completed_output(
+        &responses,
+        second_call_id,
+        command_fixture::ExpectedCompletion::GuardianDenial(denial),
+    )?;
     assert!(denied_output.contains(denial));
     Ok(())
 }
@@ -1700,6 +1710,9 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
         &server,
         &responses,
         "exec-network-single",
+        command_fixture::ExpectedCompletion::GuardianDenial(
+            "Auto-reviewer denied the action without a specific rationale.",
+        ),
         sse(vec![
             ev_response_created("resp-network-guardian"),
             ev_assistant_message("msg-network-guardian", r#"{"outcome":"deny"}"#),
@@ -1719,7 +1732,13 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
     .await?;
     wait_for_turn_complete(&test).await;
     assert!(test.codex.list_background_terminals().await.is_empty());
-    command_fixture::completed_output(&responses, "exec-network-single")?;
+    command_fixture::completed_output(
+        &responses,
+        "exec-network-single",
+        command_fixture::ExpectedCompletion::GuardianDenial(
+            "Auto-reviewer denied the action without a specific rationale.",
+        ),
+    )?;
 
     assert_eq!(
         guardian_network_triggers(&[&responses])?,

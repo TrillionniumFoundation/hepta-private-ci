@@ -22,6 +22,21 @@ use wiremock::matchers::path_regex;
 
 const MAX_POLLS: usize = 9;
 
+#[derive(Clone, Copy, Debug)]
+pub(super) enum ExpectedCompletion {
+    ProcessExit,
+    GuardianDenial(&'static str),
+}
+
+#[derive(Debug, PartialEq, Eq)]
+enum CommandProgress {
+    Running(i32),
+    Completed,
+}
+
+#[path = "network_approval_command_progress_tests.rs"]
+mod progress_tests;
+
 fn latest_output(body: &Value, call_id: &str) -> Option<(String, String)> {
     if body
         .pointer("/client_metadata/x-openai-subagent")
@@ -59,15 +74,69 @@ fn request_output(request: &Request, call_id: &str) -> Option<(String, String)> 
 
 fn process_header_value(output: &str, prefix: &str) -> Option<i32> {
     let (header, _) = output.split_once("\nOutput:")?;
+    // ExecCommandToolOutput starts with an optional chunk ID, then wall time.
+    // Status-looking lines inside an unrelated tool error are not process headers.
+    if !header.starts_with("Chunk ID: ") && !header.starts_with("Wall time: ") {
+        return None;
+    }
     header
         .lines()
         .find_map(|line| line.strip_prefix(prefix)?.parse().ok())
+}
+
+fn command_progress(
+    output: &str,
+    output_id: &str,
+    call_id: &str,
+    expected: ExpectedCompletion,
+) -> Option<CommandProgress> {
+    if output_id != call_id {
+        let poll = output_id
+            .strip_prefix(&format!("{call_id}-poll-"))?
+            .parse::<usize>()
+            .ok()?;
+        if !(1..=MAX_POLLS).contains(&poll) {
+            return None;
+        }
+    }
+    let session_id = process_header_value(output, "Process running with session ID ");
+    let exit_code = process_header_value(output, "Process exited with code ");
+    match (session_id, exit_code) {
+        (Some(session_id), None) => Some(CommandProgress::Running(session_id)),
+        (None, Some(_)) if matches!(expected, ExpectedCompletion::ProcessExit) => {
+            Some(CommandProgress::Completed)
+        }
+        (None, None) => {
+            let ExpectedCompletion::GuardianDenial(rationale) = expected else {
+                return None;
+            };
+            // exec_command formats ProcessFailed with Debug; write_stdin uses Display.
+            // Neither an arbitrary dispatch error nor words in process stdout are a denial.
+            let message = if output_id == call_id {
+                let (_, encoded_message) = output
+                    .strip_prefix("exec_command failed for `")?
+                    .rsplit_once("`: ProcessFailed { message: ")?;
+                serde_json::from_str::<String>(encoded_message.strip_suffix(" }")?).ok()?
+            } else {
+                output
+                    .strip_prefix("write_stdin failed: Unified exec process failed: ")?
+                    .to_string()
+            };
+            message
+                .starts_with(&format!(
+                    "This action was rejected due to unacceptable risk.\nReason: {rationale}\n"
+                ))
+                .then_some(CommandProgress::Completed)
+        }
+        (Some(_), Some(_)) | (None, Some(_)) => None,
+    }
 }
 
 pub(super) async fn mount_command_followups(
     server: &MockServer,
     responses: &ResponseMock,
     call_id: &'static str,
+    expected: ExpectedCompletion,
     guardian_response: String,
     completion: &'static str,
 ) {
@@ -90,14 +159,9 @@ pub(super) async fn mount_command_followups(
             let (output_id, output) =
                 request_output(request, call_id).expect("matched current network command output");
             let response_id = format!("response-after-{output_id}");
-            let session_id = process_header_value(&output, "Process running with session ID ");
-            let exit_code = process_header_value(&output, "Process exited with code ");
-            assert_ne!(
-                session_id.is_some(),
-                exit_code.is_some(),
-                "expected exactly one real process status header, not a tool dispatch error"
-            );
-            let item = if let Some(session_id) = session_id {
+            let progress = command_progress(&output, &output_id, call_id, expected)
+                .expect("expected a live process or the specified terminal network outcome");
+            let item = if let CommandProgress::Running(session_id) = progress {
                 let body: Value = serde_json::from_slice(
                     &decoded_request_body(request).expect("decoded parent request"),
                 )
@@ -153,16 +217,20 @@ pub(super) async fn mount_command_followups(
         .await;
 }
 
-pub(super) fn completed_output(responses: &ResponseMock, call_id: &str) -> Result<String> {
+pub(super) fn completed_output(
+    responses: &ResponseMock,
+    call_id: &str,
+    expected: ExpectedCompletion,
+) -> Result<String> {
     responses
         .requests()
         .iter()
         .rev()
         .find_map(|request| latest_output(&request.body_json(), call_id))
-        .map(|(_, output)| output)
-        .filter(|output| {
-            process_header_value(output, "Process exited with code ").is_some()
-                && process_header_value(output, "Process running with session ID ").is_none()
+        .filter(|(output_id, output)| {
+            command_progress(output, output_id, call_id, expected)
+                == Some(CommandProgress::Completed)
         })
-        .context("expected the network command's completed exec or write_stdin output")
+        .map(|(_, output)| output)
+        .context("expected the network command's specified terminal outcome")
 }
