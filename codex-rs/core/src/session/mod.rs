@@ -4900,6 +4900,7 @@ impl Session {
         state.history.conversation_history_snapshot()
     }
 
+    #[cfg(test)]
     pub(crate) async fn current_window_id(&self) -> String {
         self.current_window().await.0
     }
