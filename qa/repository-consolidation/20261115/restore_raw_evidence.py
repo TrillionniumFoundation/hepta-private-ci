@@ -68,7 +68,9 @@ REVIEWED_BRANCH_DIFF_INDEX = "qa/repository-consolidation/20261125/reviewed-bran
 CORE_MEMORY_REVIEWED_SOURCE_INDEX = "qa/repository-consolidation/20261125/core-memory-reviewed-source-custody/raw-evidence-storage.json"
 HCSN_ARCHITECTURE_SOURCE_CONSOLE_INDEX = "qa/repository-consolidation/20261125/hcsn-architecture-source-console/raw-evidence-storage.json"
 REGISTERED_HISTORICAL_CONSOLE_INDEX = "qa/repository-consolidation/20261125/registered-historical-console/raw-evidence-storage.json"
+REGISTERED_NATIVE_READBACK_CONSOLE_INDEX = "qa/repository-consolidation/20261125/registered-native-readback-console/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    REGISTERED_NATIVE_READBACK_CONSOLE_INDEX: "8e0a2e13c7854389c2718ac5a38e0d8acf10205e11237fb513607848d1d6defa",
     REGISTERED_HISTORICAL_CONSOLE_INDEX: "2b71a73fe4d51d86baf853086a0088122979f81ed57bcf2fb6ee9f2b14295473",
     HCSN_ARCHITECTURE_SOURCE_CONSOLE_INDEX: "8acf741b49278909b811fed997ca6cb5958b246b9e5bbe6bd2b48a0ec5280142",
     CORE_MEMORY_REVIEWED_SOURCE_INDEX: "68fa2232ea0f288ad6453edec7c5e5aa8b03b62278d8dae1a290337322417cc3",
