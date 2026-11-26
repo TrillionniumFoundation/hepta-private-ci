@@ -121,11 +121,22 @@ jobs:
     secrets: inherit
 
   hepta-scoped:
-    name: Hepta scoped native checks
+    name: Hepta scoped native checks / shard ${{ matrix.shard }}
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    env:
+      # Preserve debug assertions and all selected package tests, but avoid
+      # multi-gigabyte debug-symbol tables from 130+ reverse consumers.
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -153,22 +164,24 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test affected owners and reverse consumers, not a hand-written package list
+      - name: Test exact affected-owner and reverse-consumer shard
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
+          SHARD_INDEX: ${{ matrix.shard }}
         run: >-
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --shard-count 4 --shard-index "$SHARD_INDEX"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*

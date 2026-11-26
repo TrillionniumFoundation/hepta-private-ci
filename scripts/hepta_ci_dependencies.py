@@ -12,6 +12,7 @@ never means 'no tests'. The plan is execution input, not a qualification receipt
 from __future__ import annotations
 
 import argparse
+import hashlib
 import fnmatch
 import json
 import posixpath
@@ -592,13 +593,40 @@ def plan(
     )
 
 
-def execution_command(selected: dict, action: str) -> list[str] | None:
+def deterministic_shard(selected: dict, index: int, count: int) -> dict:
+    """Partition the complete exact-graph set without dropping any native test."""
+    if (type(index) is not int or type(count) is not int
+            or not 1 <= count <= 4 or not 0 <= index < count):
+        raise ValueError("invalid bounded Cargo impact shard")
+    packages = selected["packages"]
+    if packages != sorted(set(packages)):
+        raise ValueError("noncanonical full Cargo impact package list")
+    if selected["full_workspace"] and count != 1:
+        raise ValueError("full workspace fallback cannot be silently sharded")
+    parts = [packages[i::count] for i in range(count)]
+    if sorted(p for part in parts for p in part) != packages:
+        raise ValueError("Cargo impact shards lost or duplicated packages")
+    return {
+        "index": index,
+        "count": count,
+        "packages": parts[index],
+        "full_selected_packages": len(packages),
+        "coverage_digest": hashlib.sha256(
+            json.dumps(packages, separators=(",", ":")).encode("utf-8")
+        ).hexdigest(),
+    }
+
+
+def execution_command(
+    selected: dict, action: str, *, shard: dict | None = None
+) -> list[str] | None:
     """Apply one exact-revision impact plan to each native check."""
-    if action == "plan" or not selected["packages"]:
+    target = selected["packages"] if shard is None else shard["packages"]
+    if action == "plan" or not target:
         return None
     packages = []
     if not selected["full_workspace"]:
-        for package in selected["packages"]:
+        for package in target:
             packages.extend(["-p", package])
     if action == "test":
         return [
@@ -638,6 +666,8 @@ def main() -> None:
     parser.add_argument(
         "--run", action="store_true", help="execute the plan with just test --locked"
     )
+    parser.add_argument("--shard-count", type=int, default=1)
+    parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument(
         "--action", choices=["plan", "test", "fmt", "clippy"], default="plan"
     )
@@ -661,7 +691,10 @@ def main() -> None:
         parser.error("checkout differs from --tested")
     git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
     selected = plan(args.root, args.base, args.tested, force_full=args.full)
+    shard = deterministic_shard(selected, args.shard_index, args.shard_count)
     payload = {"tested_sha": args.tested, "base_sha": args.base, **selected}
+    if args.shard_count > 1:
+        payload["execution_shard"] = shard
     text = json.dumps(payload, sort_keys=True) + "\n"
     print(text, end="")
     if args.output:
@@ -670,7 +703,9 @@ def main() -> None:
     if args.github_output:
         with args.github_output.open("a", encoding="utf-8") as stream:
             stream.write(f"has_packages={str(bool(selected['packages'])).lower()}\n")
-    command = execution_command(selected, "test" if args.run else args.action)
+    command = execution_command(
+        selected, "test" if args.run else args.action, shard=shard
+    )
     if command is not None:
         if args.record_output:
             command = [
