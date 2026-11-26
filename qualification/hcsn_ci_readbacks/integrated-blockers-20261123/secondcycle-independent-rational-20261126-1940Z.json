@@ -1,0 +1,70 @@
+{
+  "observed_utc": "2026-11-26T19:40:12Z",
+  "source": "1d5c953d545d9c46009f480b852ebad40fb490fc",
+  "path": "qualification/hcsn_secondcycle/evidence/references-attempt001/ROWS.json",
+  "source_blob": "6fbd1264afefd4babfa50fb141ffffb6181aef6a",
+  "source_text_length": 517709,
+  "method": "Independent ECMAScript BigInt rational arithmetic, exact IEEE754 binary64 decode; decimal inputs parsed as rational; original relative tolerance 1e-36 with 1e-2000 floor.",
+  "native_job": {
+    "run": 45873843309,
+    "job": 140095802303,
+    "conclusion": "success",
+    "retained_kernel_calls": 72,
+    "retained_series_terms": 2127264,
+    "retained_query_rows": 24,
+    "quantity_error_rows": 336,
+    "ineligible_relative_rows": 43,
+    "status": "HOLD_NO_GO"
+  },
+  "result": {
+    "counts": {
+      "absolute": 336,
+      "eligibility": 336,
+      "relative": 293,
+      "series_bound_flag": 336,
+      "uncertified_roundoff": 336,
+      "reference_mode": 336,
+      "mapping": 168,
+      "spatial_mapping": 168,
+      "spatial_upper": 168,
+      "noncancelling": 168,
+      "null_relative": 43
+    },
+    "cases": {
+      "near800": {
+        "rows": 6,
+        "absolute": 84,
+        "relative": 63,
+        "ineligible": 21
+      },
+      "near960": {
+        "rows": 6,
+        "absolute": 84,
+        "relative": 63,
+        "ineligible": 21
+      },
+      "control_erlang": {
+        "rows": 6,
+        "absolute": 84,
+        "relative": 84,
+        "ineligible": 0
+      },
+      "control_mixed": {
+        "rows": 6,
+        "absolute": 84,
+        "relative": 83,
+        "ineligible": 1
+      }
+    },
+    "failures": [],
+    "maxAbs": 0.0000013317385823232924,
+    "maxRel": 0.013280968380833305,
+    "query_rows": 24,
+    "total_checks": 2688
+  },
+  "new_model_calls": 0,
+  "new_kernel_calls": 0,
+  "new_reference_calls": 0,
+  "scope": "Only retained ROWS.json arithmetic independently checked, not NPZ mass or Poisson transcendental bound regeneration; original continuous/scientific gate remains HOLD_NO_GO.",
+  "reproduction_js": "function audit(rows){\n  const abs=x=>x<0n?-x:x;\n  function gcd(a,b){a=abs(a);while(b){const t=a%b;a=b;b=t;}return a}\n  function rat(n,d=1n){if(d<0n){n=-n;d=-d}const g=gcd(n,d);return [n/g,d/g]}\n  function dec(s){const m=String(s).match(/^([+-]?)(\\d+)(?:\\.(\\d*))?(?:e([+-]?\\d+))?$/i);if(!m)throw Error(String(s));const f=m[3]||\"\", e=Number(m[4]||0)-f.length;let n=BigInt(m[2]+f)*(m[1]===\"-\"?-1n:1n);return e>=0?rat(n*10n**BigInt(e)):rat(n,10n**BigInt(-e))}\n  function fp(x){if(!Number.isFinite(x))throw Error(\"nonfinite\");const v=new DataView(new ArrayBuffer(8));v.setFloat64(0,x);const b=v.getBigUint64(0),p=Number((b>>52n)&2047n),m=(b&((1n<<52n)-1n))+(p?1n<<52n:0n),e=(p?p-1023:-1022)-52;const n=(b>>63n)?-m:m;return e>=0?rat(n<<BigInt(e)):rat(n,1n<<BigInt(-e))}\n  const plus=(a,b)=>rat(a[0]*b[1]+b[0]*a[1],a[1]*b[1]), neg=a=>[-a[0],a[1]], sub=(a,b)=>plus(a,neg(b)), mag=a=>[abs(a[0]),a[1]], div=(a,b)=>rat(a[0]*b[1],a[1]*b[0]), cmp=(a,b)=>a[0]*b[1]-b[0]*a[1], max=(a,b)=>cmp(a,b)>=0n?a:b, floor=dec(\"1e-2000\"), relfloor=fp(1e-12);\n  const close=(given,expected)=>{const delta=mag(sub(dec(given),expected)),scale=max(mag(expected),floor);return delta[0]*scale[1]*10n**36n<=scale[0]*delta[1]};\n  const approx=a=>{if(a[0]===0n)return 0;let n=String(abs(a[0])),d=String(a[1]);return (a[0]<0n?-1:1)*Number(n.slice(0,16))/Number(d.slice(0,16))*10**(Math.max(0,n.length-16)-Math.max(0,d.length-16))};\n  const counts={}, failures=[], cases={};let maxAbs=0,maxRel=0;function check(kind,ok,row,name){counts[kind]=(counts[kind]||0)+1;if(!ok)failures.push([kind,row.case,row.time,name])}\n  for(const row of rows){const c=cases[row.case]??={rows:0,absolute:0,relative:0,ineligible:0};c.rows++;for(const [name,q] of Object.entries(row.comparisons)){\n    const actual=fp(q.actual),ref=dec(q.reference_value),error=mag(sub(actual,ref)),eligible=cmp(mag(ref),relfloor)>=0n;\n    check(\"absolute\",close(q.absolute_error,error),row,name);c.absolute++;maxAbs=Math.max(maxAbs,approx(error));\n    check(\"eligibility\",q.relative_reference_floor===1e-12&&q.relative_diagnostic_eligible===eligible,row,name);\n    if(eligible){const rel=div(error,mag(ref));check(\"relative\",close(q.relative_error,rel),row,name);c.relative++;maxRel=Math.max(maxRel,approx(rel))}else{check(\"null_relative\",q.relative_error===null,row,name);c.ineligible++}\n    check(\"series_bound_flag\",q.series_bound_exceeds_reference===(cmp(dec(q.ideal_series_truncation_bound),mag(ref))>=0n),row,name);\n    check(\"uncertified_roundoff\",q.roundoff_certified===false,row,name);\n    check(\"reference_mode\",row.kind===\"matrix\"?q.reference_precision_mode===\"FP64-expm-quad\"&&q.precision80_vs120_relative===null:q.reference_precision_mode===\"independent80/120\",row,name);\n    if(row.kind===\"domain\"){const mapping=sub(ref,dec(q.unquantized_reference120)),upper=dec(q.continuum_upper_bound);\n      check(\"mapping\",close(q.reset_law_difference,mapping),row,name);\n      check(\"spatial_mapping\",close(q.conservative_absolute_spatial_plus_mapping,plus(error,mag(mapping))),row,name);\n      check(\"spatial_upper\",close(q.spatial_vs_finite_continuum_bound,plus(error,upper)),row,name);\n      check(\"noncancelling\",close(q.noncancelling_error_bound_via_upper_bracket,plus(plus(error,mag(mapping)),plus(upper,upper))),row,name)\n    }\n  }}\n  return {counts,cases,failures,maxAbs,maxRel,query_rows:rows.length,total_checks:Object.values(counts).reduce((a,b)=>a+b,0)}\n}"
+}
