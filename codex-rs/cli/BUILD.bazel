@@ -4,6 +4,13 @@ load("//bazel/rules:e2e_benchmark.bzl", "codex_e2e_benchmark")
 
 codex_rust_crate(
     name = "cli",
+    # These are the actual Cargo [[bin]] roots. The shared main.rs is an
+    # include! body, not a binary root, and cannot own an inner crate attr.
+    binary_crate_root_overrides = {
+        "codex": "src/codex.rs",
+        "codex-cli": "src/codex.rs",
+        "hepta": "src/hepta.rs",
+    },
     crate_name = "codex_cli",
     extra_binaries = [
         "//codex-rs/bwrap:bwrap",

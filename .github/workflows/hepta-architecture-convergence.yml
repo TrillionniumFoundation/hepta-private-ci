@@ -157,14 +157,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          set +e
-          cargo metadata --locked --format-version=1 >/dev/null
-          locked_status=$?
-          set -e
-          if [ "$locked_status" -eq 0 ]; then
-            exit 0
-          fi
-          echo "::error::Cargo.lock differs from the exact candidate manifests"
+          # The exact locked resolution MUST pass. Retry only a clearly
+          # diagnosed registry transport failure (e.g. crates.io HTTP/2
+          # framing), not a manifest, checksum or resolver discrepancy.
+          export CARGO_HTTP_MULTIPLEXING=false
+          locked_before="$(sha256sum Cargo.lock | cut -d ' ' -f 1)"
+          locked_status=1
+          for attempt in 1 2 3; do
+            set +e
+            cargo metadata --locked --format-version=1 >/dev/null 2>"$RUNNER_TEMP/cargo-metadata.err"
+            locked_status=$?
+            set -e
+            if [ "$locked_status" -eq 0 ]; then
+              test "$(sha256sum Cargo.lock | cut -d ' ' -f 1)" = "$locked_before" || {
+                echo "::error::Cargo.lock changed during verified resolution"
+                exit 1
+              }
+              exit 0
+            fi
+            cat "$RUNNER_TEMP/cargo-metadata.err"
+            if [ "$attempt" -eq 3 ] || ! grep -Eiq               'curl failed|HTTP.?2 framing|timed out|network failure|connection reset|download of .* failed|failed to fetch'               "$RUNNER_TEMP/cargo-metadata.err"; then
+              break
+            fi
+            echo "::warning::transient crates.io transport error; retrying the same locked manifest ($attempt/3)"
+            sleep "$((attempt * 3))"
+          done
+          echo "::error::Cargo --locked resolution did not pass (transport or manifest failure)"
           set +e
           cargo metadata --offline --format-version=1 >/dev/null
           offline_status=$?
