@@ -383,6 +383,9 @@ pub enum TurnItemsView {
     /// `items` contains every ThreadItem available from persisted app-server history for this turn.
     #[default]
     Full,
+    /// Request-only opt-in for thread/turns/list. Success returns Full; refusal returns a typed error.
+    /// Unsupported on thread/resume. Older servers reject this variant instead of reading unbounded history.
+    BoundedFull,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS, Error)]
@@ -395,3 +398,6 @@ pub struct TurnError {
     #[serde(default)]
     pub additional_details: Option<String>,
 }
+
+/// Complete bounded history could not be read. Error data identifies the refusal reason.
+pub const HISTORY_READ_UNAVAILABLE_ERROR_CODE: i64 = -32002;

@@ -71,6 +71,7 @@ pub use types::DeleteThreadParams;
 pub use types::DeleteThreadsParams;
 pub use types::ExtraConfig;
 pub use types::ForkBoundary;
+pub use types::FullTurnPage;
 pub use types::GitInfoPatch;
 pub use types::ItemPage;
 pub use types::ItemSortKey;

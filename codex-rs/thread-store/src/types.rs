@@ -1060,3 +1060,14 @@ mod tests {
         })
     }
 }
+
+/// Complete persisted turn payloads returned only when the cumulative read budget permits.
+#[derive(Debug)]
+pub struct FullTurnPage {
+    /// Turn shells paired with all their persisted items.
+    pub turns: Vec<(StoredTurn, Vec<StoredThreadItem>)>,
+    /// Cursor for the next page.
+    pub next_cursor: Option<String>,
+    /// Cursor for the opposite direction.
+    pub backwards_cursor: Option<String>,
+}

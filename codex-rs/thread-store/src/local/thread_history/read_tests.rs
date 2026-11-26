@@ -1173,3 +1173,6 @@ fn item_ids(page: &ItemPage) -> Vec<&str> {
         .map(|item| item.item_id.as_str())
         .collect()
 }
+
+#[path = "bounded_tests.rs"]
+mod bounded_tests;

@@ -711,7 +711,8 @@
       "enum": [
         "started",
         "interacted",
-        "interrupted"
+        "interrupted",
+        "completed"
       ],
       "type": "string"
     },
@@ -1656,6 +1657,13 @@
           "description": "`items` contains every ThreadItem available from persisted app-server history for this turn.",
           "enum": [
             "full"
+          ],
+          "type": "string"
+        },
+        {
+          "description": "Request-only opt-in for thread/turns/list. Success returns Full; refusal returns a typed error. Unsupported on thread/resume. Older servers reject this variant instead of reading unbounded history.",
+          "enum": [
+            "boundedFull"
           ],
           "type": "string"
         }

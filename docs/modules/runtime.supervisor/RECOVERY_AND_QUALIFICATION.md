@@ -50,7 +50,7 @@ The signed path runs inside `with_slot()`, which temporarily removes the agent s
 
 The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
 
-The repository-controlled recovery ceremony currently supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not support an operator command that simply marks the target successful.
+The daemon remains reachable while the affected Agent is quarantined. Startup may reconcile an already terminal durable release transaction only when its exact grant, source/target, transition kind and observed release state match the intent. Explicitly resolving a still-ambiguous `RecoveryRequired` transaction requires an independently signed `ProductionRecoveryDecision`; an operator cannot merely mark the target successful.
 
 ### 3.1 Inspect
 
@@ -73,29 +73,29 @@ Record at minimum:
 
 Do not proceed if the run root or agent binding is uncertain.
 
-### 3.2 Authorize abort
+### 3.2 Preserve quarantine and obtain a signed decision
 
-Use the exact `intent_sha256` returned by the immediately preceding inspection:
+The legacy `hepta-supervisor-intent-recovery abort` command writes a digest-only
+`supervisor-signed-intent-recovery.json` file. Current production recovery does
+not consume that file as authority. Even an exact intent digest cannot clear
+`RecoveryRequired` or authorize a terminal outcome.
 
-```text
-hepta-supervisor-intent-recovery abort <agent-run-root> <intent-sha256>
-```
-
-The tool publishes `supervisor-signed-intent-recovery.json`. The directive is digest-bound to the exact unresolved intent; if the intent changes, the stale directive does not apply.
+Use the signed `ProductionRecoveryDecision` path through
+`Supervisor::resolve_production_recovery`. It requires a matching
+`RecoveryRequired` release transaction, exact intent/grant/transaction digests,
+registered release bindings, lifecycle generation and authority epoch, and an
+independently verified decision. The observed durable current release must agree
+with the permitted committed or rolled-back outcome. Missing evidence remains
+quarantined; do not invent a transaction or delete the intent/lease.
 
 ### 3.3 Restart supervisord and reconcile
 
-On recovery, supervisord:
-
-- refuses to infer target success;
-- fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
-- then permits normal supervisor recovery to continue.
-
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
-
-`Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
+On recovery, supervisord keeps status/recovery access available while fencing
+ambiguous processes and blocking ordinary mutation for the affected Agent.
+A successful daemon recovery is not evidence that the signed intent is terminal.
+Inspect `production_recovery_required` and the persisted intent after restart.
+A digest-only directive must leave both unchanged. Target-host signed-decision
+qualification remains required before deployment acceptance.
 
 ## 4. Crash-consistency qualification matrix
 
@@ -157,7 +157,7 @@ Repository-controlled verification for this change includes at least:
 - `restart_policy` unit tests for exponential delay, fixed budget and window reset;
 - `restart_journal` unit tests for durable round-trip and conservative clock rollback handling;
 - `tests/restart_budget.rs` for real supervisor crash/restart scheduling behavior inside one daemon lifetime;
-- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and exact-digest abort terminalization;
+- `tests/signed_intent_recovery.rs` for fail-closed unresolved intent and digest-only directives preserving recovery quarantine;
 - the existing release-transition, Matrix companion, lease/adoption, daemon protocol and production-authority tests.
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.

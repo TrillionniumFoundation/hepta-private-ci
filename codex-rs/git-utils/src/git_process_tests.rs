@@ -4,6 +4,7 @@ use pretty_assertions::assert_eq;
 #[cfg(windows)]
 use std::process::Stdio;
 use std::time::Duration;
+use tokio::io::AsyncReadExt;
 use tokio::process::Command;
 
 #[derive(Clone, Copy)]
@@ -71,8 +72,53 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
             tokio::time::sleep(Duration::from_millis(25)).await;
         }
     })
-    .await
-    .expect("wait for Git wrapper child readiness");
+    .await;
+    let child_pid = match child_pid {
+        Ok(child_pid) => child_pid,
+        Err(error) => {
+            let wrapper_pid = wrapper.id();
+            let wrapper_status = wrapper.try_wait();
+            let pid_file = std::fs::read_to_string(&child_pid_file);
+            let child_ready = child_ready_file.try_exists();
+            // Only the failed setup path releases containment and drains pipes.
+            // The success path must retain them to test descendant-held output.
+            drop(process_tree);
+            let kill_result = wrapper.start_kill();
+            let mut stdout = Vec::new();
+            let mut stderr = Vec::new();
+            let stdout_pipe = wrapper.stdout.take();
+            let stderr_pipe = wrapper.stderr.take();
+            let capture = tokio::time::timeout(Duration::from_secs(2), async {
+                let (out, err) = tokio::join!(
+                    async {
+                        if let Some(pipe) = stdout_pipe {
+                            pipe.take(8_192).read_to_end(&mut stdout).await?;
+                        }
+                        Ok::<(), std::io::Error>(())
+                    },
+                    async {
+                        if let Some(pipe) = stderr_pipe {
+                            pipe.take(8_192).read_to_end(&mut stderr).await?;
+                        }
+                        Ok::<(), std::io::Error>(())
+                    },
+                );
+                out?;
+                err?;
+                Ok::<(), std::io::Error>(())
+            })
+            .await;
+            panic!(
+                "wait for Git wrapper child readiness: {error}; wrapper_pid={wrapper_pid:?}; \
+                 wrapper_status={wrapper_status:?}; pid_path={child_pid_file:?}; \
+                 pid_file={pid_file:?}; ready_path={child_ready_file:?}; \
+                 child_ready={child_ready:?}; kill={kill_result:?}; capture={capture:?}; \
+                 stdout={}; stderr={}",
+                String::from_utf8_lossy(&stdout),
+                String::from_utf8_lossy(&stderr),
+            );
+        }
+    };
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");
