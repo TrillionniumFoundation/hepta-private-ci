@@ -17,9 +17,11 @@ struct Connection {
 
 #[test]
 fn test_anchor_alias_deserialization() {
-    let yaml_input = r#"
-# Here we define "default configuration"    
-defaults: &defaults
+    let yaml_input = concat!(
+        r#"
+# Here we define "default configuration""#,
+        "\x20\x20\x20\x20\n",
+        r#"defaults: &defaults
   adapter: postgres
   host: localhost
 
@@ -30,7 +32,8 @@ development:
 production:
   <<: *defaults
   database: prod_db
-"#;
+"#,
+    );
 
     // Deserialize YAML with anchors, aliases and merge keys into the Config struct
     let parsed: Config = serde_saphyr::from_str(yaml_input).expect("Failed to deserialize YAML");
