@@ -43,11 +43,11 @@ pub(crate) async fn maybe_prompt_and_install_mcp_dependencies(
     cancellation_token: &CancellationToken,
     mentioned_skills: &[SkillMetadata],
     elicitation_reviewer: Option<ElicitationReviewerHandle>,
-) {
+) -> anyhow::Result<()> {
     let originator_value = originator().value;
     if !is_first_party_originator(originator_value.as_str()) {
         // Only support first-party clients for now.
-        return;
+        return Ok(());
     }
 
     let config = turn_context.config.clone();
@@ -56,13 +56,13 @@ pub(crate) async fn maybe_prompt_and_install_mcp_dependencies(
             .features
             .enabled(codex_features::Feature::SkillMcpDependencyInstall)
     {
-        return;
+        return Ok(());
     }
 
     let installed = sess.runtime_mcp_servers(config.as_ref()).await;
     let missing = collect_missing_mcp_dependencies(mentioned_skills, &installed);
     if missing.is_empty() {
-        return;
+        return Ok(());
     }
 
     let unprompted_missing = filter_prompted_mcp_dependencies(sess, &missing).await;
@@ -70,7 +70,7 @@ pub(crate) async fn maybe_prompt_and_install_mcp_dependencies(
     let unprompted_missing =
         admit_mcp_dependencies(sess, config.as_ref(), unprompted_missing).await;
     if unprompted_missing.is_empty() {
-        return;
+        return Ok(());
     }
 
     if should_install_mcp_dependencies(sess, turn_context, &unprompted_missing, cancellation_token)
@@ -78,8 +78,9 @@ pub(crate) async fn maybe_prompt_and_install_mcp_dependencies(
     {
         // Policy may have changed while waiting for the installation prompt.
         let missing = admit_mcp_dependencies(sess, config.as_ref(), unprompted_missing).await;
-        maybe_install_mcp_dependencies(sess, turn_context, missing, elicitation_reviewer).await;
+        maybe_install_mcp_dependencies(sess, turn_context, missing, elicitation_reviewer).await?;
     }
+    Ok(())
 }
 
 // Resolve proposed servers through the existing policy-aware catalog before installing them.
@@ -117,9 +118,9 @@ async fn maybe_install_mcp_dependencies(
     turn_context: &TurnContext,
     missing: HashMap<String, McpServerConfig>,
     elicitation_reviewer: Option<ElicitationReviewerHandle>,
-) {
+) -> anyhow::Result<()> {
     if missing.is_empty() {
-        return;
+        return Ok(());
     }
 
     let config = turn_context.config.as_ref();
@@ -128,7 +129,7 @@ async fn maybe_install_mcp_dependencies(
         Ok(servers) => servers,
         Err(err) => {
             warn!("failed to load MCP servers while installing skill dependencies: {err}");
-            return;
+            return Ok(());
         }
     };
 
@@ -142,7 +143,7 @@ async fn maybe_install_mcp_dependencies(
     }
 
     if added.is_empty() {
-        return;
+        return Ok(());
     }
 
     if let Err(err) = ConfigEditsBuilder::new(&codex_home)
@@ -151,7 +152,7 @@ async fn maybe_install_mcp_dependencies(
         .await
     {
         warn!("failed to persist MCP dependencies for mentioned skills: {err}");
-        return;
+        return Ok(());
     }
 
     let (_, runtime_context) = sess.runtime_mcp_config_and_context(config).await;
@@ -245,10 +246,10 @@ async fn maybe_install_mcp_dependencies(
     }
     if let Err(err) = refresh_config.mcp_servers.set(configured_servers) {
         warn!("failed to refresh MCP dependencies for mentioned skills: {err}");
-        return;
+        return Ok(());
     }
     sess.refresh_mcp_servers_now(turn_context, &refresh_config, elicitation_reviewer)
-        .await;
+        .await
 }
 
 async fn should_install_mcp_dependencies(

@@ -226,6 +226,9 @@ mod mcp;
 mod mcp_prewarm;
 mod mcp_refresh;
 mod mcp_runtime;
+#[cfg(test)]
+#[path = "mcp_runtime_result_tests.rs"]
+mod mcp_runtime_result_tests;
 pub(crate) mod multi_agents;
 mod review;
 mod rollout_budget;
@@ -3583,17 +3586,21 @@ impl Session {
         required_servers: &'a [String],
     ) -> BoxFuture<
         'a,
-        (
+        anyhow::Result<(
             Arc<codex_mcp::McpBinding>,
             turn::PreparedToolRecommendations,
-        ),
+        )>,
     > {
         let mcp = self
             .mcp_runtime_for_step(turn_context, selected_capability_roots, required_servers)
             .boxed();
         let recommendations =
             turn::prepare_tool_recommendations(self.as_ref(), turn_context).boxed();
-        async move { tokio::join!(mcp, recommendations) }.boxed()
+        async move {
+            let (mcp, recommendations) = tokio::join!(mcp, recommendations);
+            Ok((mcp?, recommendations))
+        }
+        .boxed()
     }
 
     #[inline(never)]
@@ -3682,7 +3689,8 @@ impl Session {
                 required_servers,
             )
             .or_cancel(cancellation_token)
-            .await?;
+            .await?
+            .map_err(|error| CodexErr::Fatal(format!("MCP runtime refresh failed: {error:#}")))?;
         step_store.insert(mcp.selected_plugins().as_ref().clone());
         let tool_router = self
             .build_tools_future(

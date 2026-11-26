@@ -176,11 +176,12 @@ impl Session {
 
     /// Publishes changed MCP state, waiting for any refresh already in progress.
     #[tracing::instrument(name = "mcp.runtime.refresh_if_dirty", skip_all)]
-    pub(crate) async fn refresh_mcp_if_dirty(self: &Arc<Self>) {
-        let Ok(_refresh) = self.mcp_refresh.acquire().await else {
-            error!("MCP runtime refresh semaphore closed");
-            return;
-        };
+    pub(crate) async fn refresh_mcp_if_dirty(self: &Arc<Self>) -> anyhow::Result<()> {
+        let _refresh = self
+            .mcp_refresh
+            .acquire()
+            .await
+            .map_err(|_| anyhow::anyhow!("MCP runtime refresh semaphore closed"))?;
         loop {
             let auth = self.services.auth_manager.auth_cached();
             if !self
@@ -192,7 +193,7 @@ impl Session {
             }
 
             if !self.mcp_refresh.claim() {
-                return;
+                return Ok(());
             }
             let mut refresh_invalidation = McpRefreshInvalidationGuard {
                 refresh: &self.mcp_refresh,
@@ -235,10 +236,10 @@ impl Session {
                 &ready_selected_capability_roots,
                 Some(self.mcp_elicitation_reviewer()),
             )
-            .await;
+            .await?;
             refresh_invalidation.published = true;
             if !self.mcp_refresh.is_pending() {
-                return;
+                return Ok(());
             }
         }
     }
@@ -247,7 +248,7 @@ impl Session {
     pub(crate) async fn hard_refresh_latest_codex_apps_tools(
         self: &Arc<Self>,
     ) -> anyhow::Result<Vec<codex_mcp::ToolInfo>> {
-        self.refresh_mcp_if_dirty().await;
+        self.refresh_mcp_if_dirty().await?;
         let _refresh = self
             .mcp_refresh
             .acquire()
@@ -303,9 +304,14 @@ impl Session {
             input.mcp_servers.contains_key(CODEX_APPS_MCP_SERVER_NAME),
             "unknown MCP server '{CODEX_APPS_MCP_SERVER_NAME}'"
         );
-        let refreshed = self.services.mcp_runtime.replace_fresh(input).await;
+        let mut refresh_invalidation = McpRefreshInvalidationGuard {
+            refresh: &self.mcp_refresh,
+            published: false,
+        };
+        let refreshed = self.services.mcp_runtime.replace_fresh(input).await?;
+        refresh_invalidation.published = true;
         self.services.thread_extension_data.insert(selected_plugins);
-        refreshed
+        Ok(refreshed)
     }
 
     pub(super) fn mark_mcp_runtime_dirty(&self) {
@@ -318,7 +324,7 @@ impl Session {
         turn_context: &TurnContext,
         selected_capability_roots: &[ResolvedSelectedCapabilityRoot],
         required_servers: &[String],
-    ) -> Arc<codex_mcp::McpBinding> {
+    ) -> anyhow::Result<Arc<codex_mcp::McpBinding>> {
         let ready_selected_capability_roots =
             Self::ready_selected_capability_roots(selected_capability_roots);
         if self
@@ -345,7 +351,7 @@ impl Session {
         {
             self.mark_mcp_runtime_dirty();
         }
-        self.refresh_mcp_if_dirty().await;
+        self.refresh_mcp_if_dirty().await?;
         let required_servers = required_servers
             .iter()
             .chain(&recovered_oauth_servers)
@@ -357,10 +363,10 @@ impl Session {
             .current_binding_with_required_servers(&required_servers)
             .await
         {
-            return binding;
+            return Ok(binding);
         }
         let config = Arc::new(self.runtime_mcp_config(&turn_context.config).await);
-        Arc::new(codex_mcp::McpBinding::empty(config))
+        Ok(Arc::new(codex_mcp::McpBinding::empty(config)))
     }
 
     #[tracing::instrument(
@@ -663,10 +669,15 @@ impl Session {
         turn_context: &TurnContext,
         refresh_config: &Config,
         elicitation_reviewer: Option<ElicitationReviewerHandle>,
-    ) {
-        let Ok(_refresh) = self.mcp_refresh.acquire().await else {
-            error!("MCP runtime refresh semaphore closed");
-            return;
+    ) -> anyhow::Result<()> {
+        let _refresh = self
+            .mcp_refresh
+            .acquire()
+            .await
+            .map_err(|_| anyhow::anyhow!("MCP runtime refresh semaphore closed"))?;
+        let mut refresh_invalidation = McpRefreshInvalidationGuard {
+            refresh: &self.mcp_refresh,
+            published: false,
         };
         let auth = self.services.auth_manager.auth().await;
         {
@@ -712,7 +723,9 @@ impl Session {
             &ready_selected_capability_roots,
             elicitation_reviewer,
         )
-        .await;
+        .await?;
+        refresh_invalidation.published = true;
+        Ok(())
     }
 
     pub(crate) fn ready_selected_capability_roots(

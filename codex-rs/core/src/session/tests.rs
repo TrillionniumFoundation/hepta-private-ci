@@ -9241,7 +9241,8 @@ async fn refresh_mcp_servers_uses_latest_state_for_existing_turns() {
             /*selected_capability_roots*/ &[],
             /*required_servers*/ &[],
         )
-        .await;
+        .await
+        .expect("current MCP binding should rematerialize");
 
     let configured_servers = codex_mcp::configured_mcp_servers(new_step.mcp.config());
     assert_eq!(
@@ -9293,7 +9294,10 @@ async fn refreshed_mcp_binding_captures_current_approval_authority() {
         })
         .await
         .expect("approval settings should update");
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
 
     let binding = session
         .services
@@ -9363,7 +9367,10 @@ async fn mcp_elicitation_reviewer_uses_latest_runtime_authority() {
         })
         .await
         .expect("reviewer settings should update");
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
 
     let request = codex_mcp::ElicitationReviewRequest {
         server_name: "browser-use".to_string(),
@@ -9405,7 +9412,10 @@ async fn mcp_elicitation_reviewer_uses_latest_runtime_authority() {
         })
         .await
         .expect("approval policy should update");
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
     assert_eq!(
         session
             .mcp_elicitation_reviewer()
@@ -9426,7 +9436,10 @@ async fn mcp_elicitation_reviewer_uses_latest_runtime_authority() {
         })
         .await
         .expect("permission profile should update");
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
     assert_eq!(
         session
             .mcp_elicitation_reviewer()
@@ -9466,7 +9479,10 @@ async fn cancelled_mcp_refresh_remains_pending() {
         "a cancelled refresh must leave the runtime dirty"
     );
 
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
     assert!(
         !session.mcp_refresh.is_pending(),
         "the next refresh should publish the pending runtime"
@@ -9480,7 +9496,10 @@ async fn mcp_elicitation_reviewer_is_reused_across_runtime_refreshes() {
     let previous = session.mcp_elicitation_reviewer();
 
     session.mark_mcp_runtime_dirty();
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
 
     assert!(Arc::ptr_eq(&previous, &session.mcp_elicitation_reviewer()));
 }
@@ -9513,7 +9532,10 @@ async fn mcp_refresh_detects_shared_auth_manager_changes() {
         session.services.plugins_manager.auth_mode(),
         Some(codex_protocol::auth::AuthMode::ApiKey)
     );
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
     assert!(
         session
             .services
@@ -9535,7 +9557,10 @@ async fn mcp_refresh_detects_shared_auth_manager_changes() {
             .current_auth_matches(session.services.auth_manager.auth_cached().as_ref())
     );
 
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
 
     assert!(
         session
@@ -9716,7 +9741,7 @@ async fn step_context_keeps_its_mcp_runtime_for_tools() -> anyhow::Result<()> {
             &refresh_config,
             /*elicitation_reviewer*/ None,
         )
-        .await;
+        .await?;
 
     let next_step = session
         .capture_step_context(Arc::clone(&step_context.turn), &CancellationToken::new())
@@ -9725,7 +9750,10 @@ async fn step_context_keeps_its_mcp_runtime_for_tools() -> anyhow::Result<()> {
     assert!(codex_mcp::configured_mcp_servers(next_step.mcp.config()).contains_key("newer"));
 
     session.mark_mcp_runtime_dirty();
-    session.refresh_mcp_if_dirty().await;
+    session
+        .refresh_mcp_if_dirty()
+        .await
+        .expect("MCP runtime refresh should succeed");
     let current = session
         .services
         .mcp_runtime

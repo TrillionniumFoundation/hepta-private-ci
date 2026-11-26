@@ -1196,7 +1196,7 @@ impl CodexThread {
         server: &str,
         params: ReadResourceRequestParams,
     ) -> anyhow::Result<serde_json::Value> {
-        self.session.refresh_mcp_if_dirty().await;
+        self.session.refresh_mcp_if_dirty().await?;
         let result = self
             .session
             .services
@@ -1213,7 +1213,7 @@ impl CodexThread {
         call_id: &str,
         uri: &str,
     ) -> anyhow::Result<serde_json::Value> {
-        self.session.refresh_mcp_if_dirty().await;
+        self.session.refresh_mcp_if_dirty().await?;
         let result = self
             .session
             .services
@@ -1238,7 +1238,7 @@ impl CodexThread {
             None => None,
         };
         let _ = self.session.services.auth_manager.auth().await;
-        self.session.refresh_mcp_if_dirty().await;
+        self.session.refresh_mcp_if_dirty().await?;
         codex_mcp::McpResourceClient::new(Arc::clone(&self.session.services.mcp_runtime))
             .open_event_stream(name, &arguments, meta)
             .await
@@ -1261,7 +1261,7 @@ impl CodexThread {
                 "direct App Server MCP tool calls are disabled while an active tool policy is installed"
             );
         }
-        self.session.refresh_mcp_if_dirty().await;
+        self.session.refresh_mcp_if_dirty().await?;
         self.session
             .services
             .mcp_runtime

@@ -238,9 +238,14 @@ impl CoreToolRuntime for McpHandler {
 
     fn wait_until_ready<'a>(&'a self, session: &'a Arc<Session>) -> Option<BoxFuture<'a, ()>> {
         Some(Box::pin(async move {
-            session
+            if let Err(error) = session
                 .wait_for_mcp_server(&self.tool_info.server_name)
-                .await;
+                .await
+            {
+                // Readiness is a hint; prepare_mcp_call returns this failure through
+                // the normal tool lifecycle before any MCP dispatch is admitted.
+                tracing::warn!(%error, "MCP readiness refresh failed");
+            }
         }))
     }
 

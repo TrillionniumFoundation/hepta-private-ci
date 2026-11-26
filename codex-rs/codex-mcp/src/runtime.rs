@@ -239,14 +239,14 @@ impl McpRuntime {
         origin.read(&binding, thread_id, uri).await
     }
 
-    pub async fn new(input: McpRuntimeInput) -> Self {
+    pub async fn new(input: McpRuntimeInput) -> anyhow::Result<Self> {
         let runtime = Self::empty(input.config.prefix_mcp_tool_names);
-        runtime.replace(input).await;
-        runtime
+        runtime.replace(input).await?;
+        Ok(runtime)
     }
 
     /// Reconciles configured servers and publishes their immutable runtime snapshot.
-    pub async fn replace(&self, input: McpRuntimeInput) {
+    pub async fn replace(&self, input: McpRuntimeInput) -> anyhow::Result<()> {
         let current = self.current.load_full();
         let mut reconnect = McpReconnectGuard {
             pending: &self.reconnect_pending,
@@ -256,17 +256,22 @@ impl McpRuntime {
             input,
             (!reconnect.claimed).then_some(current.connections.as_ref()),
         )
-        .await;
+        .await?;
         reconnect.claimed = false;
+        Ok(())
     }
 
     /// Starts fresh connections and returns their complete, refreshed Apps catalog.
     pub async fn replace_fresh(&self, input: McpRuntimeInput) -> anyhow::Result<Vec<ToolInfo>> {
-        self.publish(input, /*previous*/ None).await;
+        self.publish(input, /*previous*/ None).await?;
         self.latest_hard_refresh_codex_apps_tools_cache().await
     }
 
-    async fn publish(&self, input: McpRuntimeInput, previous: Option<&McpConnectionSet>) {
+    async fn publish(
+        &self,
+        input: McpRuntimeInput,
+        previous: Option<&McpConnectionSet>,
+    ) -> anyhow::Result<()> {
         let (publish, publication_gate) = McpPublicationGate::pending();
         let config = Arc::clone(&input.config);
         let auth = input.auth.clone();
@@ -306,6 +311,7 @@ impl McpRuntime {
         if !hosted_event_server_retained {
             self.hosted_event_server_removals.send_replace(());
         }
+        Ok(())
     }
 
     /// Ensures the next refresh creates fresh connections for every configured server.

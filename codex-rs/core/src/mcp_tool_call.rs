@@ -146,24 +146,35 @@ pub(crate) async fn handle_mcp_tool_call(
         arguments: arguments_value.clone(),
     };
 
-    let Some(prepared_call) = sess.prepare_mcp_call(&server, &tool_name).await else {
-        let item_metadata =
-            McpToolCallItemMetadata::from_tool_metadata(&server, /*metadata*/ None);
-        let result = notify_mcp_tool_call_skip(
-            sess.as_ref(),
-            turn_context.as_ref(),
-            &call_id,
-            invocation,
-            item_metadata,
-            format!("MCP tool `{server}/{tool_name}` is not available to the model"),
-            /*already_started*/ false,
-        )
-        .await;
-        return HandledMcpToolCall {
-            result: CallToolResult::from_result(result),
-            tool_input: arguments_value
-                .unwrap_or_else(|| JsonValue::Object(serde_json::Map::new())),
-        };
+    let prepared_call = match sess
+        .prepare_mcp_call(&server, &tool_name)
+        .await
+        .map_err(|error| format!("MCP runtime refresh failed before tool dispatch: {error:#}"))
+        .and_then(|prepared| {
+            prepared.ok_or_else(|| {
+                format!("MCP tool `{server}/{tool_name}` is not available to the model")
+            })
+        }) {
+        Ok(prepared_call) => prepared_call,
+        Err(message) => {
+            let item_metadata =
+                McpToolCallItemMetadata::from_tool_metadata(&server, /*metadata*/ None);
+            let result = notify_mcp_tool_call_skip(
+                sess.as_ref(),
+                turn_context.as_ref(),
+                &call_id,
+                invocation,
+                item_metadata,
+                message,
+                /*already_started*/ false,
+            )
+            .await;
+            return HandledMcpToolCall {
+                result: CallToolResult::from_result(result),
+                tool_input: arguments_value
+                    .unwrap_or_else(|| JsonValue::Object(serde_json::Map::new())),
+            };
+        }
     };
     let metadata = mcp_tool_metadata(&prepared_call);
     let item_metadata = McpToolCallItemMetadata::from_tool_metadata(&server, Some(&metadata));
