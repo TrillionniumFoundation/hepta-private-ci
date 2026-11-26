@@ -1,0 +1,23 @@
+name: Hepta P0 Granite mmBERT physical PR caller (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/p0_compact_paired.py'
+      - 'experiments/ndu_tree_fbsde_gates/p0_compact_score.py'
+      - 'experiments/ndu_tree_fbsde_gates/test_p0_compact_paired.py'
+      - 'experiments/ndu_tree_fbsde_gates/P0_COMPACT_REAL_EXECUTION.md'
+      - '.github/workflows/hepta-p0-compact-physical.yml'
+      - '.github/workflows/hepta-p0-compact-pr-trigger.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-p0-physical-caller-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-compact-comparison:
+    uses: ./.github/workflows/hepta-p0-compact-physical.yml
+    permissions:
+      contents: read
+      actions: read
