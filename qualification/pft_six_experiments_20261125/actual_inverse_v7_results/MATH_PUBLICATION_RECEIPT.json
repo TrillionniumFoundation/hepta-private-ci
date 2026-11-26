@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.pft.v7.math-publish-receipt.v1",
+  "status": {
+    "at_unix_ms": 1795699682488,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a2180a3a39-ffbe-479c",
+    "launch_nonce": "7733f3a4699bea76a1b720d5d2dfd76e",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 244,
+        "stored": 244
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "read": {
+    "stdout": {
+      "eof": true,
+      "next_offset": 244,
+      "offset": 0,
+      "size": 244,
+      "text": "{\"status\": \"VERIFIED_OPEN_DRAFT\", \"commit\": \"97239878a7f239161a3e7ce0846456b9a621ef0e\", \"tree\": \"b40dc50fde8a4afd2c7ea2316510329310c837bd\", \"pr\": {\"number\": 7137, \"url\": \"https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7137\"}}\n\n"
+    },
+    "stderr": {
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    }
+  },
+  "verified_publication": {
+    "status": "VERIFIED_OPEN_DRAFT",
+    "commit": "97239878a7f239161a3e7ce0846456b9a621ef0e",
+    "tree": "b40dc50fde8a4afd2c7ea2316510329310c837bd",
+    "pr": {
+      "number": 7137,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7137"
+    }
+  }
+}

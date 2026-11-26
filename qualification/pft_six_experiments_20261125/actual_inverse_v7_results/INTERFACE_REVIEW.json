@@ -1,0 +1,199 @@
+{
+  "schema": "hepta.pft.actual-profile-admission-source-review.v7",
+  "status": "IMPLEMENTATION_BLOCKED_BY_MISSING_ORIGINAL_AUTHORITY_AND_TASK_SEMANTICS",
+  "exact_current_head": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+  "source_review_only": true,
+  "model_loads": 0,
+  "model_forwards": 0,
+  "tests_run": 0,
+  "formatters_run": 0,
+  "remote_writes": 0,
+  "candidate": {
+    "sha256": "981304e53920d71cf95672df6317a4f81b0aff4f7b380f6d3bdd8b3e4033ee1c",
+    "profile_schema": "hepta.smallhcsn.numeric-profile.v1",
+    "family": "hepta.smallhcsn.population",
+    "scope": "research_numeric_inference",
+    "profile_file": "publication/v7/baseline_v5/evidence/aggregate_cold_01/CANDIDATE_PROFILE.json",
+    "task_file": "publication/v7/baseline_v5/evidence/aggregate_cold_01/NUMERIC_TASK.json"
+  },
+  "findings": [
+    {
+      "id": "current_native_authorizer",
+      "source": "native_adapter.py:authorize_owner",
+      "fact": "The current exact source unconditionally raises ORIGINAL_TURN_VERIFIER_REQUIRED. invoke only admits --help and --print-statement on the pinned Linux ELF.",
+      "implication": "No data field, callback or legacy receipt can safely supply the missing authority."
+    },
+    {
+      "id": "protected_intake_does_not_read_objects",
+      "source": "intake_contract.py:verify_private_objects",
+      "fact": "protected_original_owner scope is rejected before opening the supplied private object root. Metadata-stage hashes and sequence fields remain unauthenticated declarations.",
+      "implication": "A syntactically complete ten-role manifest is not original-person or original-turn evidence."
+    },
+    {
+      "id": "historical_loader_absent_at_current_head",
+      "fact": "The current scripts directory listing contains no cell_experiments directory. Direct current-ref reads of paired_cold.py, paired_people.py and paired_freeze.py return 404.",
+      "implication": "A patch to the historical loader cannot be represented as an integrated current-head runtime adapter."
+    },
+    {
+      "id": "historical_native_binary_absent_at_current_head",
+      "fact": "Direct current-ref read of hepta-paired-consent.rs returns 404; the current Agentd src/bin listing contains only hepta-agentd-browser.rs.",
+      "implication": "The retained qualification adapter does not establish that the old consent CLI is a buildable current product entry."
+    },
+    {
+      "id": "historical_loader_semantic_mismatch",
+      "source": "paired_cold.py:loader_for,checked_models,checked_panels,frozen_tokenizer,cold_arm,compare",
+      "fact": "The reviewed historical loader supports Coding Cell and Circuit profiles, text/chat tokenizer inputs, answer verification and manifest-bound file inventories. SmallHCSN currently consumes numeric time/batch/channel tensors and initial margins and returns numerical margins.",
+      "implication": "Changing a family label would omit original task encoding, prediction decoding, answer verification, and equivalent parent/candidate visible inputs."
+    },
+    {
+      "id": "current_authbus_not_turn_consent",
+      "source": "current_authbus_ingress.rs:submit,status_response",
+      "fact": "The source authenticates signed text admission against current trust and a replay frontier. Acked delivery is reported as QueueAccepted. It does not verify a Core original turn or exact paired learning consent.",
+      "implication": "Signature validity or queue acknowledgement cannot be relabeled as an original human learning authorization."
+    },
+    {
+      "id": "current_owner_evidence_domains",
+      "source": "current_plasticity_owner_evidence.rs:ConcretePlasticityOwnerEvidenceResolverV1;current_intelligence_ingress.rs:AgentdIntelligenceInvocationV1",
+      "fact": "Concrete owner evidence binds DatasetSnapshotReceiptV3 and immutable Policy artifacts; dynamic signal ownership is delegated. Intelligence invocation binds a durable RunStart and generation. The inspected methods do not authenticate paired-person enrollment and task-scoped original-turn consent.",
+      "implication": "Existing learning owner interfaces can supply their declared facts, but do not fill the separate A/B authorization domain."
+    },
+    {
+      "id": "candidate_lineage_not_retroactive",
+      "source": "V5 aggregate trial/cold records and V6 retained bridge",
+      "fact": "The fixed candidate is derived from the preserved engineering fixture and explicitly excludes genuine independent users and natural-task benefit.",
+      "implication": "Later enrollment or task receipts cannot make its historical generation into learning from a real A contribution. A genuine A-to-B study needs its own prospectively frozen candidate generation chain."
+    }
+  ],
+  "minimum_dependencies": [
+    {
+      "id": "trusted_original_turn_reader",
+      "required": "An actual deployed owner API that resolves the original Core turn from an authoritative identifier and binds exact statement bytes, person/principal, allowed use, study, task/freeze/candidate, original delivery, current queue/checkpoint and revocation frontier. Its trust source must come from the operator's established runtime, not request JSON or a new arbitrary callback."
+    },
+    {
+      "id": "original_person_registry",
+      "required": "Original A/B enrollment material from the same accountable person registry, proving different people across accounts and binding their task-specific original consents."
+    },
+    {
+      "id": "original_A_learning_lineage",
+      "required": "Authorized original A failure/correction, a completed learner update, fixed parent/candidate identity, source/training exposure and freeze registered before B's task arrival. Existing synthetic 9813 evidence remains scoped as recorded."
+    },
+    {
+      "id": "task_semantics_for_smallhcsn",
+      "required": "A fixed real task family, deterministic original-task-to-x/initial codec and candidate-margin-to-answer decoder, and an independent task outcome evaluator. Bind every transform's code/data identity before tasks are admitted; exclude targets and A examples from inference inputs."
+    },
+    {
+      "id": "paired_runner",
+      "required": "An integrated current runtime loader for the exact SmallHCSN profile with material hashing, bounded input/state shapes, frozen runtime, two isolated parent/candidate executions, input equality, complete forward counts and unchanged source/model state checks."
+    },
+    {
+      "id": "prospective_B_and_keep",
+      "required": "Original B task after freeze, independent keep panel, same-candidate first and repeated distinct task use including cold reuse, original output/effect acceptance, current-authority checks, and complete costs."
+    }
+  ],
+  "required_acceptance_cases_for_future_implementation": [
+    "Reject the current engineering archive as protected original-owner evidence.",
+    "Reject invalid or revoked original-turn authority even when text signatures or SQLite acknowledgement exist.",
+    "Reject one person relabeled as A/B via different accounts, hosts, keys or hashes.",
+    "Reject altered task codec, decoder, model source, checkpoint, runtime, freeze, or answer evaluator.",
+    "Reject original task replay, task arrival before freeze, target leakage, and A-sample retrieval.",
+    "Reject parent/candidate effective-input mismatch and stale same-candidate reuse claims.",
+    "Require parent paired performance and keep outcomes under predeclared thresholds; preserve failed outcomes.",
+    "A success path must originate from real authenticated owner records and new prospective tasks, with the same candidate identity through both authorized uses."
+  ],
+  "disposition": "No success-authorizing adapter patch is proposed because no inspected protected original-turn API or task-semantic codec can be bound without inventing a trust boundary. Source-level dependencies and exact incompatibilities are retained for the root; all existing refusal gates remain unchanged.",
+  "scientific_claim_closed": false,
+  "production_authorization_created": false,
+  "sources": [
+    {
+      "local_path": "discovery/admission_v7/original/native_adapter.py",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "qualification/pft_six_experiments_20261125/adoption_closure_v2/native_adapter.py",
+      "git_blob_sha": "1c98ac8f91223648f0379d64aad4882b5ae56a9a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/qualification/pft_six_experiments_20261125/adoption_closure_v2/native_adapter.py"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/intake_contract.py",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "qualification/pft_six_experiments_20261125/adoption_closure_v2/intake_contract.py",
+      "git_blob_sha": "a82e459fb46d46b5c291db94eed12d837daefdb7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/qualification/pft_six_experiments_20261125/adoption_closure_v2/intake_contract.py"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/paired_cold.py",
+      "commit": "477afcddffa755164469618ace9f4737bd4dd681",
+      "repository_path": "scripts/cell_experiments/paired_cold.py",
+      "git_blob_sha": "3a615b70c099ef4026b284d987ad374eae95c0c2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/477afcddffa755164469618ace9f4737bd4dd681/scripts/cell_experiments/paired_cold.py"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/paired_people.py",
+      "commit": "477afcddffa755164469618ace9f4737bd4dd681",
+      "repository_path": "scripts/cell_experiments/paired_people.py",
+      "git_blob_sha": "423c95b09ee0345bd7cde5da648d9d2ed48dc6b6",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/477afcddffa755164469618ace9f4737bd4dd681/scripts/cell_experiments/paired_people.py"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/paired_freeze.py",
+      "commit": "477afcddffa755164469618ace9f4737bd4dd681",
+      "repository_path": "scripts/cell_experiments/paired_freeze.py",
+      "git_blob_sha": "c8b958731a823e06a4020e516e647a8174b9775f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/477afcddffa755164469618ace9f4737bd4dd681/scripts/cell_experiments/paired_freeze.py"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/native_consent_historical.rs",
+      "commit": "fe249567feae227a362d354c1df3499a2995af40",
+      "repository_path": "codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs",
+      "git_blob_sha": "2fa99d56f10e492be8ce0fdb3b15ef632dae6284",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/fe249567feae227a362d354c1df3499a2995af40/codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/paired_intake_historical.py",
+      "commit": "477afcddffa755164469618ace9f4737bd4dd681",
+      "repository_path": "scripts/cell_experiments/paired_intake.py",
+      "git_blob_sha": "e1dfd89e714d333afdcb02782eada790d50adf96",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/477afcddffa755164469618ace9f4737bd4dd681/scripts/cell_experiments/paired_intake.py"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/current_plasticity_owner_evidence.rs",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "git_blob_sha": "c3db02b42db094556889774b40306198292dc27e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/current_plasticity_learning_producer.rs",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "codex-rs/hepta-agentd/src/plasticity_learning_producer.rs",
+      "git_blob_sha": "507dc9a4e89399a3a67dc48c8f8b12f2a1a46a67",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/codex-rs/hepta-agentd/src/plasticity_learning_producer.rs"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/current_plasticity_process_bootstrap.rs",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "git_blob_sha": "f44c8858a55886c7997562a02ba87b9a7d359bf2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/current_intelligence_ingress.rs",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "codex-rs/hepta-agentd/src/intelligence_ingress.rs",
+      "git_blob_sha": "e162e4ca58540072ebcdccb58f3d7c3df5e41c2b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/codex-rs/hepta-agentd/src/intelligence_ingress.rs"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/current_authbus_ingress.rs",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "git_blob_sha": "f2872a21e8eb91207565ab0c19c1dd5425bae58d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/codex-rs/hepta-agentd/src/authbus_ingress.rs"
+    },
+    {
+      "local_path": "discovery/admission_v7/original/current_authbus_trust.rs",
+      "commit": "bb4c8029c2fdfff503ff0c902e6d17d8338f8104",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_trust.rs",
+      "git_blob_sha": "efbe883077bbbcca8ae1c88cce1f351286f53cd3",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bb4c8029c2fdfff503ff0c902e6d17d8338f8104/codex-rs/hepta-agentd/src/authbus_trust.rs"
+    }
+  ]
+}

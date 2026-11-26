@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.pft.scoped-closure-review.v7",
+  "status": "SCOPED_MATHEMATICS_AND_ALGEBRA_CONFIRMED_OTHER_BLOCKERS_REMAIN",
+  "all_blockers_closed": false,
+  "review_method": "Independent source and retained-record review; file reads and SHA256 checks only. Root execution records were inspected, not replayed.",
+  "reviewer_execution_counts": {"tests": 0, "solves": 0, "model_loads": 0, "model_forwards": 0, "builds": 0, "formatters": 0, "api_mutations": 0},
+  "newly_closed_scopes": [
+    {
+      "id": "actual_source_mapping", "status": "SOURCE_MAPPING_REVIEWED",
+      "finding": "SmallHCSN control clock, remap, mark write, finite-state transport, discounted value, first-hit risk and non-recurrent readout match the inspected source. The actual forward is not itself an adapted FBSDE solution.",
+      "sources": ["model", "generator", "uniformization", "derivation", "preparation"]
+    },
+    {
+      "id": "nominal_exact_root_and_flow", "status": "PROVED_WITH_EXPLICIT_IDEALIZATION",
+      "finding": "With displayed decimal constants interpreted as exact reals, mu is in (-7/20,-1/20); the QVI root is unique with d in (1/6,11/6) and endpoint gaps exceeding 59/7200 and 31/2400. The conservative generator has inverse resolvent infinity norm 1/rho.",
+      "limit": "This proves the nominal fixed-configuration model. Cached binary64 coefficients, finite bisection, custom implicit backward and FP64 forward need separate enclosures/error arguments.",
+      "sources": ["derivation", "model", "generator"]
+    },
+    {
+      "id": "two_coordinate_inverse", "status": "EXACT_DECLARED_AFFINE_PROBLEM_SOLVED",
+      "finding": "With all body/configuration/buffer/input/initial-state quantities frozen, the two selected readout increments obey delta_margin=-feature0*delta_weight-delta_bias. Distinct retained features identify these two coordinates; no upstream QVI derivative or ridge is needed.",
+      "limit": "The cached binary64 baseline is the declared exact intercept. Zero algebraic residual does not establish a new physical candidate's output or retention.",
+      "sources": ["derivation", "request", "solver", "proposal", "result", "common", "row_ai395", "row_pocket4"]
+    },
+    {
+      "id": "implementation_and_registered_equation_merge", "status": "ROOT_EXECUTION_PASSED_WITHIN_SCOPE",
+      "finding": "Root ran one new standard-library suite: 14 tests, zero failures/errors/skips; one retained-request solve produced exact residual 0/1. Tests exercise weighted interpolation, order-invariant full statistics and refusal paths for incompatible, duplicate, missing, rank-deficient, malformed and nonfinite inputs.",
+      "limit": "This new execution establishes local exact equation aggregation for two registered contributions, not a new two-host trial or a Byzantine/private/liveness protocol. External expected request digest must come from a separately reviewed freeze.",
+      "sources": ["admission", "result", "test_log", "solver", "tests", "request", "proposal"]
+    }
+  ],
+  "root_execution_observed": {
+    "status": "PASSED_NEW_ALGEBRA_SCOPE", "test_suite_executions": 1, "test_count": 14, "failures": 0, "errors": 0, "skipped": 0, "retained_request_solves": 1,
+    "exact_max_abs_residual": {"numerator": "0", "denominator": "1"},
+    "binary64_delta_projection_max_abs_residual": {"numerator": "55166171733969", "denominator": "324518553658426726783156020576256"},
+    "projection_scope": "Delta rounding only; excludes baseline/intercept error, parameter-addition error and new physical readout arithmetic.",
+    "model_loads": 0, "model_forwards": 0, "candidate_exports": 0, "source_unchanged": true,
+    "admission_chain": "RESULT admission_sha256 matches ROOT_ADMISSION; RESULT proposal_sha256 matches READOUT_PROPOSAL; source pins match the reviewed solver, tests and request."
+  },
+  "candidate_identity_boundary": {
+    "request_reference_candidate_sha256": "0127a056c779930fc5ab27558e84aecbd242caa64951f21e47d7885465f0b86f",
+    "request_reference_state_sha256": "136026bde0867265b040f679e60fb991b131b6d8403127fa7b2a94237da5f907",
+    "source_binding_sha256": "3146e2c56757ff7c818670aa3a9c229b26271c7336d573b1692b91ac8e7a00e9",
+    "previous_aggregate_candidate_sha256": "981304e53920d71cf95672df6317a4f81b0aff4f7b380f6d3bdd8b3e4033ee1c",
+    "previous_aggregate_state_sha256": "15ad379aa068a2917692d0334b1f0b5e8641a6c995bd87a0199842d93516d59c",
+    "finding": "The new two-coordinate proposal is not the previous six-coordinate aggregate or the 87ed31 candidate. V5 trial/cold records explicitly preserve FAILED original smooth status and exclude genuine independent users and natural-task benefit.",
+    "sources": ["request", "proposal", "common", "v5_trial", "v5_edit", "v5_cold", "v5_profile"]
+  },
+  "remaining_blockers": [
+    {
+      "id": "original_authority_and_people", "status": "MISSING_AUTHENTIC_ORIGINALS_AND_VERIFIER",
+      "requirement": "At audited head bb4c8029c2fdfff503ff0c902e6d17d8338f8104, authorize_owner refuses with ORIGINAL_TURN_VERIFIER_REQUIRED and protected intake refuses before reading objects. Need an established original-turn owner API, current authority/revocation binding, authentic distinct-person A/B enrollment and scoped consents. Hashes, host identities, signatures or queue acceptance alone cannot substitute.",
+      "sources": ["interface_review", "native_adapter", "intake_contract"]
+    },
+    {
+      "id": "real_A_to_B_causal_chain", "status": "UNPROVEN",
+      "requirement": "Need authentic authorized A failure/correction and completed update, prospectively frozen candidate before independent B task arrival, no retrieval of A examples, equivalent parent/candidate inputs, independent keep outcomes and two original distinct uses of that same candidate including cold reuse. Later declarations cannot retroactively turn the synthetic 981304 archive into this lineage.",
+      "sources": ["interface_review", "v5_trial", "v5_cold"]
+    },
+    {
+      "id": "original_task_semantics_and_runtime_adapter", "status": "INTERFACE_NOT_IMPLEMENTABLE_FROM_CURRENT_ORIGINALS",
+      "requirement": "Need a frozen real-task encoder to numeric x/initial state, margin decoder, independent outcome oracle and integrated current SmallHCSN paired runtime. The inspected historical loader handles Coding Cell/Circuit text profiles, not this numeric family; changing a family label cannot supply these semantics.",
+      "sources": ["interface_review", "paired_cold", "v5_profile"]
+    },
+    {
+      "id": "new_physical_edit_and_numerical_certificate", "status": "NOT_EXECUTED_OR_INHERITED",
+      "requirement": "The readout proposal has no exported model, physical forward, cold comparison or retention result. Exact-root bounds do not certify binary64 dynamics; the failed six-coordinate derivative gate is not repaired or inherited by this algebra result.",
+      "sources": ["derivation", "result", "proposal", "v5_trial"]
+    },
+    {
+      "id": "full_parameter_field_identification", "status": "UNDERDETERMINED_UNDER_CURRENT_OBSERVATIONS",
+      "requirement": "Two endpoint rows have rank two in the six-coordinate surrogate, leaving four data-null directions. The full N=8 model also masks 48 recurrent weights and has a real-arithmetic common-readout shift symmetry. Unique recovery needs explicit gauge/parameter restrictions and additional identifying observations or interventions; endpoint-only recovery is not established.",
+      "sources": ["derivation", "model", "common"]
+    },
+    {
+      "id": "decentralized_training_generality_and_structure", "status": "UNPROVEN_BEYOND_RETAINED_BOUNDED_SCOPES",
+      "requirement": "Exact two-row sums do not prove general decentralized foundation-model training. Still need representation learning, compatible participant updates, communication and credit-assignment costs, adoption cost, same-budget structural advantage, and learned-connection ablations. Existing V5 two-host evidence remains its original bounded experiment.",
+      "sources": ["derivation", "solver", "result", "v5_trial", "v5_cold"]
+    }
+  ],
+  "ci_publication_boundary": {
+    "pr": 7136, "head": "172e70bd43e9d54c9a298bc6ada7aea9a8287aae", "identity_source": "Root-provided exact PR/head for this review; no fresh CI API query by reviewer.",
+    "status": "CI_NOT_YET_ACCEPTED", "ci_pass_claim": false, "merge_or_release_claim": false,
+    "source_review_only": "Prior independent review found no blocking source issue in patch a6d0feea25d01d855570503110874375ab5b56a590ce0012093b31eb895a926d; source review is not exact-head CI acceptance.",
+    "sources": ["ci_review"]
+  },
+  "claim_rule": "Only the explicitly bounded new scopes above are closed. Authentic humans, consent, prospective tasks, scientific generality and CI success cannot be created by this audit's declarations. Old gates were not replayed by this reviewer.",
+  "sources": {
+    "derivation": {"path": "discovery/math_v7/ACTUAL_MODEL_INVERSE.md", "sha256": "531c8d351d5857f9ae3da906594e57c33fb47a99b47d8b395a5eab0477259440"},
+    "preparation": {"path": "discovery/math_v7/SOURCE_PREPARATION.json", "sha256": "7f6fc57f8e374b07cbf6567a4f0f2dba720246de47ccf1d942f0a7c2a15c97ac"},
+    "model": {"path": "discovery/retention_v6/original_model.py", "sha256": "aabc7a29ebfdaed592ebd4a16d7e4db927a6a88cb7247d4b334fd7299eab8576"},
+    "generator": {"path": "discovery/math_v7/population_generator.py", "sha256": "a41e840088282586545b4f84cccbbf0fe22471dd158b45283cda8002fc25d876"},
+    "uniformization": {"path": "discovery/math_v7/uniformized_flow.py", "sha256": "951dfb512ac721417f706631b0d12d62bc305c08fe4ce00ffc42feda61d0f1ae"},
+    "solver": {"path": "discovery/math_v7/readout_inverse.py", "sha256": "5b5142c9fef66412bb72efc9ede18e04b1c18a2afae1d546679ec5d947d92d3e"},
+    "tests": {"path": "discovery/math_v7/readout_inverse_tests.py", "sha256": "2b8447fea74e6ab5a96a07bfb67989560ea1c8f82e2dcbd383570d7efcdf7422"},
+    "request": {"path": "discovery/math_v7/READOUT_REQUEST.json", "sha256": "e6c8e04059737337d8cdde5db97d1358b2b3fcce908a1d5d7488fd309cddf07c"},
+    "admission": {"path": "publication/v7/algebra_execution_01/ROOT_ADMISSION.json", "sha256": "906159f1e687ae4142d0e363a8c0361d51d1f415364cf7462edf59fa885c1a92"},
+    "result": {"path": "publication/v7/algebra_execution_01/RESULT.json", "sha256": "beb24084e900f0772763f7ef706d040a4504318327d22a42160a655cdab7e892"},
+    "proposal": {"path": "publication/v7/algebra_execution_01/READOUT_PROPOSAL.json", "sha256": "c3f8e003b73bdcf4d18e2101354313e4598771c505396af31ef437495deec3a7"},
+    "test_log": {"path": "publication/v7/algebra_execution_01/TEST_LOG.txt", "sha256": "8818795fc95e2b2fccde9fbd06a55292dd46897e5d6fe1c6f92e7037add876aa"},
+    "common": {"path": "publication/v7/baseline_v5/evidence/peer_bootstrap_01/common.json", "sha256": "cf04461f394e123ccb9599b094ec2f0b150aa087fe11e4aa39d5dd4c44de0f10"},
+    "row_ai395": {"path": "publication/v7/baseline_v5/evidence/peer_bootstrap_01/ai395/row.json", "sha256": "7e0946d79ae2069178cdea466b6ec12b90ba27afbaf651ace5921794883af8be"},
+    "row_pocket4": {"path": "publication/v7/baseline_v5/evidence/peer_bootstrap_01/pocket4/row.json", "sha256": "cad4b3c7f03dc3d2154fe93ff81611b4b4d98250c0c8764efbde021ffeef9972"},
+    "interface_review": {"path": "discovery/admission_v7/INTERFACE_REVIEW.json", "sha256": "4bd2529110cba9a24caed916e76a2587c6c020e5f3a8b1868c0a769fcd7f4a76"},
+    "native_adapter": {"path": "discovery/admission_v7/original/native_adapter.py", "sha256": "158dfa628541eabda828948624e0de0e2a640dfdf20ddec893855dfe00976eec"},
+    "intake_contract": {"path": "discovery/admission_v7/original/intake_contract.py", "sha256": "9dc25aef47ebed27eedf8aa902d2fe69d9a6ebff86940e542ab06d31684b883e"},
+    "paired_cold": {"path": "discovery/admission_v7/original/paired_cold.py", "sha256": "0deff557af7e021639ad80736540336fdf5c4922d2f985d01ee4e9e2bc968655"},
+    "v5_trial": {"path": "publication/v7/baseline_v5/evidence/aggregate_trial_01/TRIAL_EVIDENCE.json", "sha256": "2ec033151588182806c0f611d4899596f399471b287ae0efb82dbdac9e10a1ff"},
+    "v5_edit": {"path": "publication/v7/baseline_v5/evidence/aggregate_trial_01/EDIT_RECEIPT.json", "sha256": "48f77b6bb044ba1266cffa88dda7874667cb8c50db0d1013f3360cc1ab1712ee"},
+    "v5_cold": {"path": "publication/v7/baseline_v5/evidence/aggregate_cold_01/RESULT.json", "sha256": "7aa229753977326011de4242cea6b199e44d08234fb19247413cd0a777b09e73"},
+    "v5_profile": {"path": "publication/v7/baseline_v5/evidence/aggregate_cold_01/CANDIDATE_PROFILE.json", "sha256": "3c628f2e9eac40fa51e0087a7bd9ab86fb9bc8a37c8120cd50641aa7f1ca904f"},
+    "ci_review": {"path": "discovery/admission_v7/CI_PEER_REVIEW.json", "sha256": "f41588e385dca1eb87cfa2c29965a1278b2fca9ed44d5d489c536b30354ec0e4"}
+  }
+}
