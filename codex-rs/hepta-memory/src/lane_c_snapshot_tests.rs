@@ -484,6 +484,17 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
     let current = store.lane_c_snapshot(&access, &scope, 200).await.unwrap();
     let retained_witness = current.cut_digest().to_string();
     store.pool.close().await;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        // VACUUM creates this fixture's new backup with the process umask.
+        // Restore a valid private bundle; opening must not repair unsafe files.
+        std::fs::set_permissions(&backup, std::fs::Permissions::from_mode(/*mode*/ 0o600)).unwrap();
+        assert_eq!(
+            std::fs::metadata(&backup).unwrap().permissions().mode() & 0o7777,
+            0o600
+        );
+    }
     std::fs::copy(&backup, layout.cognitive_root().join("cognitive_1.sqlite3")).unwrap();
     // Legacy open verifies internal integrity, but cannot know which backup is latest.
     let reopened = CognitiveStore::open(&layout).await.unwrap();
