@@ -955,7 +955,7 @@ impl LearningArtifactOwnerHost {
         self.read_view().discover_current_head(now)
     }
 
-    pub(crate) fn require_recovery_head_identity(
+    pub(crate) fn verify_live_publication_head(
         &self,
         signed: &SignedCurrentArtifactHeadV1,
         expected_predecessor: Digest32,

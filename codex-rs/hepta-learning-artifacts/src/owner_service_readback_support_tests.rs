@@ -107,9 +107,17 @@ impl OriginalPublicationReadbackFixture {
 
     pub(super) fn begin_pending(&mut self) -> (LearningArtifactPublishRequestV1, Digest32) {
         let (request, intent) = self.pending_request();
-        let mut failed = request.clone();
-        failed.payload = b"wrong-original-payload".to_vec();
-        assert!(self.service.publish(failed).is_err());
+        let manifest = &request.admission.validated_manifest.manifest;
+        let obstruction = self.directory.0.join("payloads").join(format!(
+            "{}-{}.bin",
+            manifest.artifact_id, manifest.bytes_digest
+        ));
+        // Allow valid admission, then fail the actual payload write. Invalid
+        // requests now stop before Prepared and cannot represent a crash cut.
+        fs::create_dir(&obstruction).fixture("block this fixture's payload write");
+        let result = self.service.publish(request.clone());
+        fs::remove_dir(&obstruction).fixture("clear fixture obstruction");
+        assert!(result.is_err());
         assert_eq!(
             self.service.recovery_required(),
             Some(&request.operation_id)

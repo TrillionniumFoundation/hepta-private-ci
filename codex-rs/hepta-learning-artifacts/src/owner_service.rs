@@ -466,6 +466,17 @@ impl LearningArtifactOwnerService {
             return Err(LearningArtifactOwnerServiceError::NonMonotonicTime);
         }
         self.host.check_current_writer(request.now)?;
+        self.host.verify_live_publication_head(
+            &request.signed_current_head,
+            request.expected_registry_predecessor_head,
+            request.now,
+        )?;
+        if checkpoint.is_none() {
+            if request.now < request.admission.admitted_at {
+                return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+            }
+            validate_request_material(request, request.admission.withdrawal_head_digest)?;
+        }
         self.last_admission_ms = request.now;
 
         let predecessor = self
@@ -500,11 +511,6 @@ impl LearningArtifactOwnerService {
             if staged.snapshot().head_digest != request.signed_current_head.witness.head_digest {
                 return Err(LearningArtifactOwnerServiceError::RequestMismatch);
             }
-            self.host.require_recovery_head_identity(
-                &request.signed_current_head,
-                request.expected_registry_predecessor_head,
-                request.now,
-            )?;
             durable_inputs::verify_durable_inputs(
                 self.host.original_store_root(),
                 &staged,
@@ -572,12 +578,18 @@ fn validate_request_against_checkpoint(
     {
         return Err(LearningArtifactOwnerServiceError::RequestMismatch);
     }
-    // Revalidate the immutable admission at its original time and head.
+    validate_request_material(request, checkpoint.withdrawal_head_digest)
+}
+
+fn validate_request_material(
+    request: &LearningArtifactPublishRequestV1,
+    original_withdrawal_head: Digest32,
+) -> Result<(), LearningArtifactOwnerServiceError> {
     // An acknowledged replay observes an old fact, not new publication
     // authority: a later expiry or withdrawal must not erase that receipt.
     crate::verify_artifact_admission_v3(
         &request.admission,
-        checkpoint.withdrawal_head_digest,
+        original_withdrawal_head,
         request.admission.admitted_at,
     )
     .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
@@ -958,6 +970,23 @@ mod tests {
             predecessor,
             staged.snapshot().head_digest,
         );
+
+        let mut invalid_signature = request.clone();
+        invalid_signature.signed_current_head.signature[0] ^= 1;
+        let mut invalid_payload = request.clone();
+        invalid_payload.payload[0] ^= 1;
+        for invalid in [invalid_signature, invalid_payload] {
+            assert!(service.publish(invalid).is_err());
+            assert!(
+                service
+                    .host
+                    .recover_publication(&request.operation_id)
+                    .fixture("preflight must not create a checkpoint")
+                    .is_none()
+            );
+            assert_eq!(service.registry().snapshot().head_digest, predecessor);
+            assert!(service.recovery_required().is_none());
+        }
 
         let receipt = service.publish(request.clone()).fixture("publish");
         let mut changed_payload = request.clone();
