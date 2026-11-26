@@ -1,0 +1,55 @@
+{
+  "archive": {
+    "bytes": 423464,
+    "git_blob": "ddab07ac7490995ee994eb69d4f90cd582a0b4ae",
+    "manifest_sha256": "040218253f9a3de60ab8e5506ec38022e685aa2ee763829920b824e7eddb5b71",
+    "members": 94,
+    "path": "HOSTED_CTRL13_PREPARATION.tar.xz",
+    "sha256": "0f2e9375ac33ba50e258b443cfefd247df5673b7940053f74d1d8e9969ce52b1"
+  },
+  "archive_members": 94,
+  "binary_source_files": 1,
+  "branch": "fix/hosted-source-carryforward-20261126-0198a7",
+  "carry_source": "32153753a33a86a30d5d38a53483146c66161acd",
+  "ctrl_fixed_source_qualification": false,
+  "extra_members": [
+    "publication/PUBLISHER.py",
+    "publication/INPUT.json",
+    "publication/FROZEN_HELPER.py",
+    "MANIFEST.json"
+  ],
+  "helper_sha256": "162b5687247840084351973e44ca156655cc0946564081c087de63c7e2de532c",
+  "n256_numerical_qualification": false,
+  "new_host_validator_calls": 0,
+  "new_metadata_observations": 0,
+  "new_models": 0,
+  "new_optimizer_calls": 0,
+  "new_tests": 0,
+  "ordered_parts": [
+    "HOSTED_CTRL13_PREPARATION.tar.xz"
+  ],
+  "preparation_base": "6ca37caad90259aaad76c89d4f6a5a64715ab041",
+  "preparation_status": "FORMATTED_EXACT_BYTES_READY_NO_EXECUTION_QUALIFICATION",
+  "prepared_source_additions": 463,
+  "prepared_source_deletions": 1,
+  "production_adoption": false,
+  "publication_base": "6ca37caad90259aaad76c89d4f6a5a64715ab041",
+  "raw_files": 90,
+  "ready_sha256": "5b47138263594a48ea775932e6d045febb55e03906d933379d72115214d56f3e",
+  "resource_admitted": false,
+  "runtime_admitted": false,
+  "schema": "hepta.hosted-ctrl-source-publication-index.v1",
+  "scientific_and_production_hold_unchanged": true,
+  "source_paths": [
+    ".github/workflows/ctrl-dependency-proposal.yml",
+    ".github/workflows/hepta-hcsn-n256-host-metadata-20261126.yml",
+    "qualification/hcsn_ci_readbacks/engineering_repairs_20261126_0198a7/n256_host_profile/LEGACY_SOURCE.index.json",
+    "qualification/hcsn_ci_readbacks/engineering_repairs_20261126_0198a7/n256_host_profile/LEGACY_SOURCE.tar.xz",
+    "qualification/hcsn_ci_readbacks/engineering_repairs_20261126_0198a7/n256_host_profile/PROFILE.json",
+    "qualification/hcsn_ci_readbacks/engineering_repairs_20261126_0198a7/n256_host_profile/README.md",
+    "qualification/hcsn_ci_readbacks/engineering_repairs_20261126_0198a7/n256_host_profile/SOURCE_FREEZE.json",
+    "qualification/hcsn_ci_readbacks/engineering_repairs_20261126_0198a7/n256_host_profile/requirements.txt",
+    "qualification/hcsn_ci_readbacks/engineering_repairs_20261126_0198a7/n256_host_profile/run_profile.py"
+  ],
+  "validation_sha256": "7decab0ad92643291869e7eec3a6ccf39b42d84a0db7766e120beb6ef57baaf9"
+}
