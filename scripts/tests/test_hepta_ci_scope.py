@@ -9,6 +9,12 @@ from scripts.hepta_ci_scope import GROUPS, changed_paths, select
 
 
 class ScopeTests(unittest.TestCase):
+    def test_shared_git_object_reader_keeps_full_repository_coverage(self):
+        selected = select(["scripts/hepta_ci_git_objects.py"])
+        self.assertTrue(selected["full_repo"])
+        self.assertTrue(selected["native"])
+        self.assertTrue(selected["derived"])
+
     def test_repository_policy_regressions_keep_their_python_scope(self):
         paths = [
             "scripts/hepta_repository_controls.py",
@@ -32,6 +38,20 @@ class ScopeTests(unittest.TestCase):
                 "native"
             ]
         )
+
+    def test_workflow_guide_and_script_index_keep_only_applicable_checks(self):
+        prose = [".github/workflows/README.md", "scripts/ENTRYPOINTS.md"]
+        self.assertEqual(select(prose), select([]))
+        for changed in (
+            "codex-rs/hepta-infer-core/src/lib.rs",
+            ".github/workflows/blocking-ci.yml",
+            "scripts/ENTRYPOINTS.json",
+            ".github/workflows/unknown.md",
+            "scripts/unknown.md",
+        ):
+            with self.subTest(changed=changed):
+                self.assertEqual(select(prose + [changed]), select([changed]))
+        self.assertTrue(all(select(prose, force_full=True).values()))
 
     def test_inference_local_change_does_not_run_browser_learning_or_objective(self):
         scope = select(["codex-rs/hepta-infer-core/src/durable_control.rs"])

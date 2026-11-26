@@ -23,6 +23,22 @@ import tempfile
 import time
 
 
+class CommandInterrupted(KeyboardInterrupt):
+    def __init__(self, signal_number: int):
+        super().__init__(f"command interrupted by signal {signal_number}")
+        self.signal_number = signal_number
+
+
+class CommandCancellation:
+    signal_number: int | None = None
+
+    def request(self, signal_number: int, _frame) -> None:
+        # A signal records intent instead of throwing through Popen, wait, log
+        # fsync or result replacement. The first signal owns the terminal code.
+        if self.signal_number is None:
+            self.signal_number = signal_number
+
+
 def git(*args: str) -> str:
     return subprocess.check_output(["git", *args], text=True).strip()
 
@@ -84,6 +100,7 @@ def execute_logged(
     *,
     maximum_bytes: int = 64 * 1024 * 1024,
     timeout_seconds: float = 3600,
+    cancellation: CommandCancellation | None = None,
 ) -> dict:
     """Bound a POSIX command group, retain raw output, and reap its direct child.
 
@@ -104,9 +121,12 @@ def execute_logged(
     if os.name != "posix":
         raise ValueError("bounded CI execution requires a POSIX process-group host")
     timed_out = exceeded = False
+    interrupted_signal = None
     data = bytearray()
     started = time.monotonic()
     with log.open("xb") as stream:
+        if cancellation is not None and cancellation.signal_number is not None:
+            raise CommandInterrupted(cancellation.signal_number)
         process = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
@@ -122,6 +142,12 @@ def execute_logged(
                 selector.register(descriptor, selectors.EVENT_READ)
                 eof = False
                 while not (eof and process.poll() is not None):
+                    if (
+                        cancellation is not None
+                        and cancellation.signal_number is not None
+                    ):
+                        interrupted_signal = cancellation.signal_number
+                        break
                     if time.monotonic() - started >= timeout_seconds:
                         timed_out = True
                         break
@@ -160,7 +186,10 @@ def execute_logged(
                     and process.poll() is not None
                     and not timed_out
                     and not exceeded
+                    and interrupted_signal is None
                 )
+        except KeyboardInterrupt as error:
+            interrupted_signal = getattr(error, "signal_number", signal.SIGINT)
         finally:
             if not completed:
                 try:
@@ -171,9 +200,12 @@ def execute_logged(
             process.stdout.close()
             stream.flush()
             os.fsync(stream.fileno())
+    if cancellation is not None and cancellation.signal_number is not None:
+        interrupted_signal = cancellation.signal_number
     passed, failed = observed_test_counts(data.decode("utf-8", errors="replace"))
     return {
         "returncode": process.returncode,
+        "interrupted_signal": interrupted_signal,
         "timed_out": timed_out,
         "output_limit_exceeded": exceeded,
         "log_bytes": len(data),
@@ -189,6 +221,7 @@ def run(
     *,
     minimum_tests: int = 0,
     timeout_seconds: float = 3600,
+    cancellation: CommandCancellation | None = None,
 ) -> int:
     if not command or type(minimum_tests) is not int or minimum_tests < 0:
         raise ValueError("a command and nonnegative minimum test count are required")
@@ -251,7 +284,9 @@ def run(
             raise ValueError("an explicit source-head or base-merge lane is required")
         log = output.with_name(output.name + "." + uuid.uuid4().hex + ".log")
         record["log_file"] = log.name
-        execution = execute_logged(command, log, timeout_seconds=timeout_seconds)
+        execution = execute_logged(
+            command, log, timeout_seconds=timeout_seconds, cancellation=cancellation
+        )
         record.update(execution)
         record["log_file"] = log.name
         record["minimum_tests"] = minimum_tests
@@ -263,7 +298,9 @@ def run(
             if execution["returncode"] >= 0
             else 128 - execution["returncode"]
         )
-        if execution["timed_out"]:
+        if execution["interrupted_signal"] is not None:
+            exit_code = 128 + execution["interrupted_signal"]
+        elif execution["timed_out"]:
             exit_code = 124
         elif execution["output_limit_exceeded"]:
             exit_code = exit_code or 1
@@ -276,14 +313,25 @@ def run(
         if after != before:
             record["error"] = "source identity or bytes changed during execution"
             exit_code = exit_code or 1
-        record["status"] = "passed" if exit_code == 0 else "failed"
-    except KeyboardInterrupt:
+        record["status"] = (
+            "interrupted"
+            if execution["interrupted_signal"] is not None
+            else "passed"
+            if exit_code == 0
+            else "failed"
+        )
+    except KeyboardInterrupt as error:
+        record["interrupted_signal"] = getattr(error, "signal_number", signal.SIGINT)
         record["status"] = "interrupted"
-        exit_code = 130
+        exit_code = 128 + record["interrupted_signal"]
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         record["status"] = "failed" if record.get("log_file") else "rejected"
         record["error"] = str(error)
     finally:
+        if cancellation is not None and cancellation.signal_number is not None:
+            record["interrupted_signal"] = cancellation.signal_number
+            record["status"] = "interrupted"
+            exit_code = 128 + cancellation.signal_number
         record["finished_at"] = datetime.now(timezone.utc).isoformat()
         record["elapsed_seconds"] = time.monotonic() - started
         record["exit_code"] = exit_code
@@ -312,16 +360,25 @@ def main() -> int:
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
+    previous_handlers = {}
+    cancellation = CommandCancellation()
     try:
+        if os.name == "posix":
+            for number in (signal.SIGINT, signal.SIGTERM):
+                previous_handlers[number] = signal.signal(number, cancellation.request)
         return run(
             args.output,
             command,
             minimum_tests=args.minimum_tests,
             timeout_seconds=args.timeout_seconds,
+            cancellation=cancellation,
         )
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print(f"CI command not dispatched: {error}", file=sys.stderr)
         return 2
+    finally:
+        for number, handler in previous_handlers.items():
+            signal.signal(number, handler)
 
 
 if __name__ == "__main__":

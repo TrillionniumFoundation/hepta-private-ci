@@ -1,13 +1,17 @@
 use assert_matches::assert_matches;
+use codex_app_server_protocol::ThreadHistoryBuilder;
 use codex_core::StartThreadOptions;
 use codex_core::SuspendTurnOutcome;
 use codex_core::TurnInputRequest;
 use codex_features::Feature;
+use codex_history::InitialHistory;
+use codex_history::ResumedHistory;
 use codex_history::RolloutItem;
 use codex_history::RolloutLine;
 use std::sync::Arc;
 use std::time::Duration;
 
+use codex_protocol::mcp::ClientMcpExtensions;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::protocol::SessionSource;
@@ -16,7 +20,7 @@ use codex_protocol::user_input::UserInput;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_function_call;
 use core_test_support::responses::ev_response_created;
-use core_test_support::responses::mount_response_once;
+use core_test_support::responses::mount_response_sequence;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::mount_sse_sequence;
 use core_test_support::responses::sse;
@@ -77,13 +81,19 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
     // Waiting on the mocked response keeps the turn active on local and remote executors
     // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
+    let response_mock = mount_response_sequence(
         &server,
-        sse_response(sse(vec![
-            ev_response_created("suspended_response"),
-            ev_completed("suspended_response"),
-        ]))
-        .set_delay(Duration::from_secs(60)),
+        vec![
+            sse_response(sse(vec![
+                ev_response_created("suspended_response"),
+                ev_completed("suspended_response"),
+            ]))
+            .set_delay(Duration::from_secs(60)),
+            sse_response(sse(vec![
+                ev_response_created("recovered_response"),
+                ev_completed("recovered_response"),
+            ])),
+        ],
     )
     .await;
     let test = test_codex()
@@ -120,6 +130,14 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    tokio::time::timeout(Duration::from_secs(5), async {
+        while response_mock.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("the original turn should reach its durable provider-send boundary");
+    let environments = codex.environment_selections().await;
 
     assert_eq!(
         codex
@@ -165,35 +183,49 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         item,
         RolloutItem::EventMsg(EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_))
     )));
+    let mut history_builder = ThreadHistoryBuilder::new();
+    for item in &items {
+        history_builder.handle_rollout_item(item);
+    }
+    assert_eq!(
+        history_builder.recovery_candidate_turn_id(),
+        Some(turn_id.as_str()),
+        "the closed rollout must retain a current Ready candidate and its binding"
+    );
     test.thread_manager
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
-    mount_sse_once(
-        &recovery_server,
-        sse(vec![
-            ev_response_created("recovered_response"),
-            ev_completed("recovered_response"),
-        ]),
-    )
-    .await;
-    let resumed = test_codex()
-        .with_config(|config| {
-            let _ = config.features.enable(Feature::HeptaTurnRecovery);
-        })
-        .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+    // Rebuild a replacement session from the closed durable history, keeping
+    // its original provider and local/remote executor selection intact.
+    let resumed = test
+        .thread_manager
+        .resume_thread_with_history_and_environments(
+            test.config.clone(),
+            InitialHistory::Resumed(ResumedHistory {
+                conversation_id: test.session_configured.thread_id,
+                history: Arc::new(items),
+                rollout_path: Some(rollout_path),
+            }),
+            test.thread_manager.auth_manager(),
+            /*parent_trace*/ None,
+            ClientMcpExtensions::default(),
+            Some(environments),
+        )
         .await
         .expect("resume the suspended root on a replacement runtime");
+    assert!(!Arc::ptr_eq(&codex, &resumed.thread));
+    let expected_epoch = resumed
+        .thread
+        .recovery_epoch_if_idle(&turn_id)
+        .await
+        .expect("the replacement session should expose its recovery authority");
     assert_eq!(
         resumed
-            .codex
+            .thread
             .recover_turn_if_idle(codex_core::RecoverTurnRequest {
                 turn_id: turn_id.clone(),
-                // The suspended rollout is the initial recovery generation;
-                // no in-memory epoch is exposed until admission succeeds.
-                expected_epoch: 0,
+                expected_epoch,
                 thread_settings: Default::default(),
                 trace: None,
             })
@@ -203,7 +235,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
             turn_id: turn_id.clone(),
         },
     );
-    let completed = wait_for_event(&resumed.codex, |event| {
+    let completed = wait_for_event(&resumed.thread, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
@@ -211,6 +243,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         unreachable!("wait_for_event returned unexpected event");
     };
     assert_eq!(completed.turn_id, turn_id);
+    assert_eq!(response_mock.requests().len(), 2);
 }
 
 /// After an interrupt we expect the next request to the model to include both

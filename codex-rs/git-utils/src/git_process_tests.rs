@@ -6,6 +6,11 @@ use std::process::Stdio;
 use std::time::Duration;
 use tokio::process::Command;
 
+#[cfg(windows)]
+const WINDOWS_PROCESS_ROLE: &str = "CODEX_GIT_UTILS_PROCESS_TREE_ROLE";
+#[cfg(windows)]
+const WINDOWS_PROCESS_FIXTURE: &str = "git_process::tests::windows_git_wrapper_fixture";
+
 #[derive(Clone, Copy)]
 enum GitWrapperLifetime {
     WaitForChild,
@@ -37,19 +42,15 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
+        let mut command =
+            Command::new(std::env::current_exe().expect("find current test executable"));
+        let role = match wrapper_lifetime {
+            GitWrapperLifetime::WaitForChild => "wait-wrapper",
+            GitWrapperLifetime::ExitBeforeTimeout => "exit-wrapper",
         };
         command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .args(["--exact", WINDOWS_PROCESS_FIXTURE, "--nocapture"])
+            .env(WINDOWS_PROCESS_ROLE, role);
         command
     };
     command
@@ -115,6 +116,50 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .stderr(Stdio::null())
         .status();
     panic!("Git wrapper child process {child_pid} survived timeout cleanup");
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_git_wrapper_fixture() {
+    let Some(role) = std::env::var_os(WINDOWS_PROCESS_ROLE) else {
+        return;
+    };
+    if role == "child" {
+        let ready = std::env::var_os("CHILD_READY_FILE").expect("child ready path");
+        let release = std::env::var_os("RELEASE_CHILD_FILE").expect("child release path");
+        let survived = std::env::var_os("CHILD_SURVIVED_FILE").expect("child survived path");
+        std::fs::write(ready, "ready").expect("publish child readiness");
+        while !std::path::Path::new(&release).exists() {
+            std::thread::sleep(Duration::from_millis(25));
+        }
+        std::thread::sleep(Duration::from_secs(1));
+        std::fs::write(survived, "survived").expect("publish child survival");
+        std::thread::sleep(Duration::from_secs(60));
+        return;
+    }
+
+    assert!(role == "wait-wrapper" || role == "exit-wrapper");
+    let mut child =
+        std::process::Command::new(std::env::current_exe().expect("find current test executable"))
+            .args(["--exact", WINDOWS_PROCESS_FIXTURE, "--nocapture"])
+            .env(WINDOWS_PROCESS_ROLE, "child")
+            .stdin(Stdio::null())
+            // The descendant must retain both pipes after the wrapper exits.
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("spawn Git wrapper child");
+    let child_pid_file = std::env::var_os("CHILD_PID_FILE").expect("child PID path");
+    std::fs::write(child_pid_file, child.id().to_string()).expect("publish child PID");
+    if role == "wait-wrapper" {
+        let status = child.wait().expect("wait for Git wrapper child");
+        assert!(status.success(), "Git wrapper child failed: {status}");
+    } else {
+        let release = std::env::var_os("RELEASE_WRAPPER_FILE").expect("wrapper release path");
+        while !std::path::Path::new(&release).exists() {
+            std::thread::sleep(Duration::from_millis(25));
+        }
+    }
 }
 
 #[tokio::test]

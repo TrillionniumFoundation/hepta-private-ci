@@ -182,12 +182,24 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
                 /* path */ socket_path,
                 /* source */ error,
+            ));
+        }
+    }
+    // Windows can report ConnectionRefused for a path that does not exist.
+    // Inspect the entry itself so lookup errors and dangling links stay errors.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(io_context(
+                "inspect agentd control socket path",
+                socket_path,
+                error,
             ));
         }
     }
@@ -230,3 +242,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;

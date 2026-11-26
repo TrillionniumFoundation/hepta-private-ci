@@ -667,6 +667,7 @@ fn hex_nibble(value: u8) -> Option<u8> {
 }
 
 #[cfg(all(test, unix))]
+#[allow(clippy::expect_used)]
 mod tests {
     use std::collections::BTreeSet;
     use std::os::unix::fs::PermissionsExt;

@@ -69,11 +69,18 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-        with:
-          toolchain: nightly-2025-09-18
-          targets: ${{ matrix.target }}
-          components: llvm-tools-preview, rustc-dev, rust-src
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
+      - name: Install nightly argument-comment-lint toolchain
+        shell: bash
+        run: |
+          rustup toolchain install nightly-2025-09-18 \
+            --profile minimal \
+            --component llvm-tools-preview \
+            --component rustc-dev \
+            --component rust-src \
+            --target "${{ matrix.target }}" \
+            --no-self-update
+          rustup default nightly-2025-09-18
 
       - name: Install tooling
         shell: bash

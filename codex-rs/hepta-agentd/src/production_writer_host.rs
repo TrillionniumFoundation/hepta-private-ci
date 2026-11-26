@@ -205,6 +205,8 @@ pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
     dispatchers: BTreeMap<String, ProductionFinalUseOutboxDispatcher>,
     grants: Option<Arc<dyn AgentdFinalUseGrantProvider>>,
+    // Scheduling state only, shared by clones of one immutable target set.
+    reconciliation_schedule: Arc<reconcile_schedule::ReconcileSchedule>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
     // exposing ProductionDurableWriter's crate-private raw-store handle.
@@ -293,6 +295,7 @@ impl AgentdProductionWriterHost {
             mutation: Some(mutation),
             dispatchers: BTreeMap::new(),
             grants: None,
+            reconciliation_schedule: Arc::default(),
         })
     }
 
@@ -319,6 +322,7 @@ impl AgentdProductionWriterHost {
             writer: Arc::new(writer),
             dispatchers: BTreeMap::new(),
             grants: None,
+            reconciliation_schedule: Arc::default(),
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
             )),
@@ -421,6 +425,7 @@ impl AgentdProductionWriterHost {
             ProductionFinalUseOutboxDispatcher::attach(final_use, target),
         );
         self.grants = Some(grants);
+        self.reconciliation_schedule = Arc::default();
         Ok(self)
     }
 
@@ -439,6 +444,9 @@ impl AgentdProductionWriterHost {
             destination,
             ProductionFinalUseOutboxDispatcher::attach(final_use, target),
         );
+        // A changed target-set snapshot must not perturb an earlier clone's
+        // round-robin cursor. Unchanged clones retain shared progress.
+        self.reconciliation_schedule = Arc::default();
         Ok(self)
     }
 
@@ -504,25 +512,23 @@ impl AgentdProductionWriterHost {
 
     /// Bounded observer-only reconciliation. This never invokes target
     /// dispatch, so an acknowledgement-loss/restart cannot become a resend.
+    /// The total observer-call budget is reserved across a rotating destination
+    /// subset; unused quotas are not redistributed. Owner errors still propagate.
     pub async fn reconcile(&self, limit: usize) -> Result<usize, AgentdError> {
-        if !(1..=256).contains(&limit) {
-            return Err(AgentdError::Protocol(
-                "production operation reconcile limit must be 1..=256".to_string(),
-            ));
-        }
-        if self.dispatchers.is_empty() {
-            return Err(AgentdError::Protocol(
-                "production final-use outbox dispatcher is not explicitly attached".to_string(),
-            ));
-        }
+        let plan = self
+            .reconciliation_schedule
+            .reserve(self.dispatchers.len(), limit)?;
         let mut total = 0_usize;
-        for dispatcher in self.dispatchers.values() {
-            if total >= limit {
-                break;
-            }
-            total += dispatcher
-                .reconcile(self.writer.as_ref(), limit - total)
-                .await?;
+        for (dispatcher, quota) in self
+            .dispatchers
+            .values()
+            .cycle()
+            .skip(plan.start)
+            .zip(plan.quotas)
+        {
+            // Reserve observer capacity, not only successful settlements.
+            // Unavailable observations must not amplify the caller's budget.
+            total += dispatcher.reconcile(self.writer.as_ref(), quota).await?;
         }
         Ok(total)
     }
@@ -547,3 +553,6 @@ impl AgentdProductionWriterHost {
             .await?)
     }
 }
+
+#[path = "production_reconcile_schedule.rs"]
+mod reconcile_schedule;

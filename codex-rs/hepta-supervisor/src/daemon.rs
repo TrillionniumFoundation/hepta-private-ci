@@ -1297,7 +1297,13 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), SupervisorError> {
         }
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
+        Err(error) => return Err(error.into()),
+    }
+    // Windows can report ConnectionRefused for a path that does not exist.
+    // Inspect the entry itself so lookup errors and dangling links stay errors.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
         Err(error) => return Err(error.into()),
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
@@ -1313,6 +1319,10 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), SupervisorError> {
         )))
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "daemon_socket_tests.rs"]
+mod socket_tests;
 
 #[cfg(unix)]
 async fn set_owner_only(path: &Path) -> Result<(), SupervisorError> {

@@ -24,6 +24,10 @@ use sha2::Sha256;
 use crate::FleetRegistry;
 use crate::FleetRegistryError;
 
+#[cfg(unix)]
+#[path = "release_publication.rs"]
+mod publication;
+
 pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
 pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
 const RELEASE_MANIFEST_FILE: &str = "release.json";
@@ -227,6 +231,11 @@ impl FleetRegistry {
     /// when configured, its exact matrixd companion. Control clients still
     /// select only the opaque [`ReleaseId`]; executable paths never cross the
     /// supervisor wire.
+    ///
+    /// On Unix, interrupted publication stays quarantined for operator review.
+    /// `ReleasePublicationDurabilityUncertain` means admission has committed,
+    /// but the final directory sync failed: the release may already be in use,
+    /// and this error must not be treated as a rollback or permission to replace it.
     pub fn install_release_bundle(
         &self,
         release_id: ReleaseId,
@@ -245,11 +254,8 @@ impl FleetRegistry {
         let source_agentd = validate_source_program(source_agentd)?;
         let source_matrixd = source_matrixd.map(validate_source_program).transpose()?;
         let final_root = self.layout().releases_root().join(release_id.as_str());
-        if final_root.exists() {
-            return Err(FleetRegistryError::Invalid(format!(
-                "release {release_id} is already installed"
-            )));
-        }
+        reject_pending_install(self.layout().releases_root(), &release_id)?;
+        require_absent_release(&final_root, &release_id)?;
         let staging = self.layout().releases_root().join(format!(
             ".staging-{release_id}-{}-{}",
             std::process::id(),
@@ -293,17 +299,31 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
-            sync_directory(self.layout().releases_root())?;
-            Ok(())
+            #[cfg(unix)]
+            {
+                let expected_manifest = sha256_file(&manifest)?;
+                publication::publish(
+                    self.layout().releases_root(),
+                    &staging,
+                    &release_id,
+                    &expected_manifest,
+                )
+            }
+            #[cfg(not(unix))]
+            {
+                set_mode(&staging, /*mode*/ 0o555)?;
+                std::fs::rename(&staging, &final_root)?;
+                sync_directory(self.layout().releases_root())?;
+                resolve_catalog_release(self.layout().releases_root(), &release_id)
+            }
         })();
-        if let Err(error) = result {
+        if result.is_err() {
+            // Never make a renamed candidate writable or remove its fence here.
+            // A post-commit durability error also must not promise rollback.
             make_tree_removable(&staging);
             let _ = std::fs::remove_dir_all(&staging);
-            return Err(error);
         }
-        resolve_catalog_release(self.layout().releases_root(), &release_id)
+        result
     }
 
     /// Allows one registered agent to use an already installed release. The
@@ -596,6 +616,18 @@ fn resolve_catalog_release(
     catalog_root: &Path,
     release_id: &ReleaseId,
 ) -> Result<RegisteredRelease, FleetRegistryError> {
+    reject_pending_install(catalog_root, release_id)?;
+    let release = validate_catalog_release(catalog_root, release_id)?;
+    reject_pending_install(catalog_root, release_id)?;
+    Ok(release)
+}
+
+// Structural validation alone is not admission. Only the installer uses this
+// while holding the pending fence; all catalog consumers use the wrapper above.
+fn validate_catalog_release(
+    catalog_root: &Path,
+    release_id: &ReleaseId,
+) -> Result<RegisteredRelease, FleetRegistryError> {
     validate_physical_directory(catalog_root, /*immutable*/ false)?;
     let release_root = catalog_root.join(release_id.as_str());
     let bin_root = release_root.join("bin");
@@ -823,6 +855,32 @@ fn revocation_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
 
 fn release_manifest_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
     root.join(release_id.as_str()).join(RELEASE_MANIFEST_FILE)
+}
+
+fn pending_install_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
+    // '@' cannot occur in a ReleaseId, so fences never collide with a valid
+    // legacy release name or reserve a previously accepted identity.
+    root.join(format!(".pending-install@{release_id}"))
+}
+
+fn reject_pending_install(root: &Path, release_id: &ReleaseId) -> Result<(), FleetRegistryError> {
+    match std::fs::symlink_metadata(pending_install_path(root, release_id)) {
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error.into()),
+        Ok(_) => Err(FleetRegistryError::Corrupt(format!(
+            "release {release_id} has an incomplete installation; operator review required"
+        ))),
+    }
+}
+
+fn require_absent_release(path: &Path, release_id: &ReleaseId) -> Result<(), FleetRegistryError> {
+    match std::fs::symlink_metadata(path) {
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error.into()),
+        Ok(_) => Err(FleetRegistryError::Invalid(format!(
+            "release {release_id} is already installed"
+        ))),
+    }
 }
 
 fn release_state_path(root: &Path, generation: u64) -> PathBuf {

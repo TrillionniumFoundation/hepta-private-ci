@@ -182,7 +182,7 @@ async fn request_dynamic_tool(
     let prev_entry = {
         let mut active = session.active_turn.lock().await;
         if session.shutdown_started()
-            || session.has_pending_task_terminalization()
+            || session.has_task_terminalization_admission_fence()
             || active
                 .as_ref()
                 .is_none_or(|current| current.task_terminalization.is_some())

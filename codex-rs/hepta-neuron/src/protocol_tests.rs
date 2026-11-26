@@ -11,6 +11,9 @@ use crate::SparseConfig;
 use crate::SparseTick;
 use crate::sparse_tick;
 
+#[path = "protocol_shape_tests.rs"]
+mod wire_shapes;
+
 const Q: i64 = 1 << 24;
 
 fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {

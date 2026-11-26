@@ -2615,6 +2615,10 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "keep allowed states, resulting state and exact-replay policy explicit at the existing transaction boundary"
+    )]
     async fn append_outcome_in_transaction(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

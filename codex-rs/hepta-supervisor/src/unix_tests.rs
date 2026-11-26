@@ -236,31 +236,72 @@ fn health_probe_requires_exact_agent_generation_pid_and_roots() {
     let expected_agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
     let other_agent =
         AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dd3").expect("other agent id");
+    let process_id = std::process::id();
     let identity = AgentHealthProbeIdentity {
         agent_id: expected_agent.clone(),
         spawn_generation: 7,
-        process_id: 41,
+        process_id,
         workspace: temp.path().join("workspace"),
         home_root: temp.path().join("home"),
         run_root: temp.path().join("run"),
         control_socket: temp.path().join("probe.sock"),
     };
 
-    let exact = health_response(&identity, expected_agent.clone(), 7, 7, 41);
-    assert!(serve_and_probe(&identity, 1, exact));
+    let exact = health_response(
+        &identity,
+        expected_agent.clone(),
+        /*spawn_generation*/ 7,
+        /*current_generation*/ 7,
+        process_id,
+    );
+    assert!(serve_and_probe(&identity, /*request_id*/ 1, exact));
 
-    let wrong_agent = health_response(&identity, other_agent, 7, 7, 41);
-    assert!(!serve_and_probe(&identity, 2, wrong_agent));
+    let wrong_agent = health_response(
+        &identity,
+        other_agent,
+        /*spawn_generation*/ 7,
+        /*current_generation*/ 7,
+        process_id,
+    );
+    assert!(!serve_and_probe(
+        &identity,
+        /*request_id*/ 2,
+        wrong_agent
+    ));
 
-    let wrong_generation = health_response(&identity, expected_agent.clone(), 7, 8, 41);
-    assert!(!serve_and_probe(&identity, 3, wrong_generation));
+    let wrong_generation = health_response(
+        &identity,
+        expected_agent.clone(),
+        /*spawn_generation*/ 7,
+        /*current_generation*/ 8,
+        process_id,
+    );
+    assert!(!serve_and_probe(
+        &identity,
+        /*request_id*/ 3,
+        wrong_generation
+    ));
 
-    let wrong_pid = health_response(&identity, expected_agent, 7, 7, 42);
-    assert!(!serve_and_probe(&identity, 4, wrong_pid));
+    let wrong_pid = health_response(
+        &identity,
+        expected_agent,
+        /*spawn_generation*/ 7,
+        /*current_generation*/ 7,
+        /*process_id*/ 0,
+    );
+    assert!(!serve_and_probe(
+        &identity, /*request_id*/ 4, wrong_pid
+    ));
 
-    let running = running_health_response(&identity, 7, 8, 41);
-    assert!(serve_and_probe(&identity, 5, running.clone()));
-    assert!(serve_and_probe(&identity, 6, running));
+    let running = running_health_response(
+        &identity, /*spawn_generation*/ 7, /*current_generation*/ 8, process_id,
+    );
+    assert!(serve_and_probe(
+        &identity,
+        /*request_id*/ 5,
+        running.clone()
+    ));
+    assert!(serve_and_probe(&identity, /*request_id*/ 6, running));
 }
 
 #[test]
@@ -275,7 +316,7 @@ fn matrix_health_transport_rejects_response_larger_than_one_mib() {
         release_id: "matrixd-v1".to_string(),
         process_incarnation: "matrixd-incarnation-1".to_string(),
         plane_epoch: 13,
-        process_id: 41,
+        process_id: std::process::id(),
         control_socket: socket.clone(),
     };
     let listener = UnixListener::bind(&socket).expect("bind Matrix probe socket");
@@ -295,9 +336,20 @@ fn matrix_health_transport_rejects_response_larger_than_one_mib() {
         let _ = reader.into_inner().write_all(&oversized);
     });
 
-    let observation = query_matrix_health_once(&identity, 1).expect("Matrix health probe");
-    assert!(!observation.exact_identity);
-    assert!(!observation.ready);
+    let observation = query_matrix_health_once(&identity, /*request_id*/ 1);
+    #[cfg(any(target_os = "linux", target_os = "android", target_vendor = "apple"))]
+    {
+        let observation = observation.expect("Matrix health probe");
+        assert!(!observation.exact_identity);
+        assert!(!observation.ready);
+    }
+    #[cfg(not(any(target_os = "linux", target_os = "android", target_vendor = "apple")))]
+    assert_eq!(
+        observation
+            .expect_err("unsupported peer identity must fail closed")
+            .to_string(),
+        "exact control socket peer process identity is unavailable on this platform"
+    );
     worker.join().expect("Matrix probe server joins");
     remove_socket(&socket);
 }

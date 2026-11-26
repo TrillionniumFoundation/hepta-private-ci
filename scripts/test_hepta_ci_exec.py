@@ -276,6 +276,14 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             RUNNER.with_name("hepta_ci_dependencies.py"),
             self.repo / "scripts/hepta_ci_dependencies.py",
         )
+        shutil.copyfile(
+            RUNNER.with_name("hepta_ci_module_paths.py"),
+            self.repo / "scripts/hepta_ci_module_paths.py",
+        )
+        shutil.copyfile(
+            RUNNER.with_name("hepta_ci_git_objects.py"),
+            self.repo / "scripts/hepta_ci_git_objects.py",
+        )
         (self.repo / "codex-rs/Cargo.toml").write_text(
             '[workspace]\nmembers=["one", "two", "unrelated"]\n'
         )

@@ -2,7 +2,6 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -17,6 +16,7 @@ use super::TrustPolicy;
 use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
+use crate::test_support::TestSshKey;
 use crate::test_support::private_tempdir;
 
 #[test]
@@ -50,6 +50,40 @@ fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
 
     let wrong = fixture.sign(statement, "hepta-operator-acceptance-v1", "wrong-namespace");
     assert!(anchor.verify(statement, &wrong).is_err());
+}
+
+#[test]
+fn mutable_binding_cannot_replace_the_privately_pinned_signer() {
+    let fixture = TrustFixture::new();
+    let other = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.key_fingerprint = other.policy_value.key_fingerprint.clone();
+    let statement = b"pinned signer must survive mutable display metadata";
+    let signature = other.sign(statement, SSHSIG_NAMESPACE, "other-signer");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn mutable_binding_cannot_relabel_the_pinned_principal() {
+    let fixture = TrustFixture::new();
+    let mut anchor = fixture.load_anchor();
+    anchor.binding.principal = "other@example".to_string();
+    let statement = b"pinned principal must survive mutable display metadata";
+    let signature = fixture.sign(statement, SSHSIG_NAMESPACE, "other-principal");
+    assert!(anchor.verify(statement, &signature).is_err());
+}
+
+#[test]
+fn stored_signature_base64_is_bounded_before_decoding() {
+    let fixture = TrustFixture::new();
+    let anchor = fixture.load_anchor();
+    let encoded = STANDARD.encode(vec![0; super::MAX_SIGNATURE_BYTES + 4]);
+    let error = anchor
+        .verify_base64(b"statement", &encoded)
+        .err()
+        .expect("reject oversized persisted signature before base64 allocation");
+    assert!(matches!(error, crate::AcceptanceError::Invalid(message)
+        if message == "stored SSHSIG base64 exceeds its read bound"));
 }
 
 #[test]
@@ -112,7 +146,7 @@ fn weak_ed25519_public_key_is_rejected_before_openssh() {
 struct TrustFixture {
     _temporary: TempDir,
     allowed_signers: PathBuf,
-    key: PathBuf,
+    key: TestSshKey,
     policy: PathBuf,
     policy_sha256: String,
     policy_value: TrustPolicy,
@@ -126,37 +160,13 @@ impl TrustFixture {
             .path()
             .canonicalize()
             .expect("canonical trust root");
-        let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
-            .args(["-q", "-t", "ed25519", "-N", "", "-f"])
-            .arg(&key)
-            .status()
-            .expect("start ssh-keygen");
-        assert!(generated.success(), "generate test-only Ed25519 key");
-
-        let public =
-            std::fs::read_to_string(key.with_extension("pub")).expect("read generated public key");
-        let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
-        assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
+        let key = TestSshKey::new();
         let allowed_signers = root.join("allowed_signers");
         write_private(
             &allowed_signers,
-            format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
+            format!("operator@example {}\n", key.public_key()).as_bytes(),
         );
-
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
-            .args(["-E", "sha256", "-lf"])
-            .arg(key.with_extension("pub"))
-            .output()
-            .expect("fingerprint generated public key");
-        assert!(fingerprint_output.status.success());
-        let fingerprint_line =
-            std::str::from_utf8(&fingerprint_output.stdout).expect("UTF-8 fingerprint output");
-        let fingerprint = fingerprint_line
-            .split_ascii_whitespace()
-            .nth(1)
-            .expect("OpenSSH fingerprint field")
-            .to_string();
+        let fingerprint = key.fingerprint();
 
         let policy_value = TrustPolicy {
             acceptance_store_root: root.to_string_lossy().into_owned(),
@@ -209,16 +219,8 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
-            .args(["-Y", "sign", "-f"])
-            .arg(&self.key)
-            .args(["-n", namespace])
-            .arg(&statement_path)
-            .status()
-            .expect("start SSHSIG signer for test fixture");
-        assert!(signed.success(), "create test-only SSHSIG");
         let signature = PathBuf::from(format!("{}.sig", statement_path.display()));
-        set_private_permissions(&signature);
+        write_private(&signature, &self.key.sign(statement, namespace));
         signature
     }
 }
@@ -242,13 +244,4 @@ fn write_private(path: &Path, bytes: &[u8]) {
     }
     let mut file = options.open(path).expect("create private test file");
     file.write_all(bytes).expect("write private test file");
-}
-
-fn set_private_permissions(path: &Path) {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-            .expect("secure test signature permissions");
-    }
 }

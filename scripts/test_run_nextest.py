@@ -313,6 +313,44 @@ class ScopedNextestTests(unittest.TestCase):
             )
         self.assertNotIn("--cargo-metadata", self.commands[-1])
 
+    def test_native_failure_policy_stops_work_but_never_relabels_a_failure(self):
+        (self.root / "src/lib.rs").write_text(
+            "\n".join(
+                f'#[test] fn policy_{index}() {{ std::fs::write(concat!(env!("CARGO_MANIFEST_DIR"), "/executed-{index}"), b"ran").unwrap(); assert!(!cfg!(feature = "negative")); }}'
+                for index in range(5)
+            )
+        )
+        common = [
+            "-p",
+            "hepta-nextest-fixture",
+            "--offline",
+            "--lib",
+            "--test-threads=1",
+            "--retries=0",
+        ]
+        cases = [
+            ([], [], "0", 0, 5),
+            (["--fail-fast"], [], "0", 0, 5),
+            ([], ["--features=negative"], "0", 100, 5),
+            (["--fail-fast"], ["--features=negative"], "0", 100, 1),
+            (["--fail-fast"], ["--features=negative"], "1", 100, 1),
+        ]
+        for policy, features, full_metadata, expected_status, expected_runs in cases:
+            with self.subTest(
+                policy=policy, features=features, full_metadata=full_metadata
+            ):
+                for marker in self.root.glob("executed-*"):
+                    marker.unlink()
+                with patch.dict(
+                    os.environ, {"HEPTA_NEXTTEST_FULL_METADATA": full_metadata}
+                ):
+                    status = RUNNER.run([*common, *policy, *features])
+                self.assertEqual(status, expected_status)
+                self.assertEqual(len(list(self.root.glob("executed-*"))), expected_runs)
+                self.assertEqual(
+                    "--cargo-metadata" in self.commands[-1], full_metadata == "0"
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

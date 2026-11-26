@@ -57,6 +57,8 @@ impl MatrixSdkPaths {
         config: &MatrixSidecarConfig,
     ) -> Result<Self, MatrixSidecarConfigError> {
         config.validate(layout)?;
+        // Keep the existing on-disk root across SDK upgrades so sessions and
+        // encryption keys are reopened and migrated in place.
         let root = layout.matrix_root().join("matrix-sdk-0.18");
         let state = root.join("state");
         let cache = root.join("cache");

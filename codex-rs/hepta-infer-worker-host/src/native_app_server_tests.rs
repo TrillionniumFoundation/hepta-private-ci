@@ -399,7 +399,11 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 
 #[test]
 fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
+    // Bind the current token-owning send path without depending on rustfmt line breaks.
+    let source: String = include_str!("native_app_server.rs")
+        .chars()
+        .filter(|character| !character.is_whitespace())
+        .collect();
     let durable_dispatch = source
         .find("control.dispatch_native_with_pre_effect_abort(")
         .expect("durable native dispatch");
@@ -407,7 +411,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
+        .find("send_authorized_turn_start(&mutclient,entered_use,turn_params)")
         .expect("physical turn start");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
@@ -415,6 +419,15 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    let send_helper = source
+        .split_once("asyncfnsend_authorized_turn_start(")
+        .expect("token-owning physical send helper")
+        .1;
+    assert!(send_helper.starts_with(
+        "client:&mutRemoteAppServerClient,_entered:EnteredUseToken,params:TurnStartParams,"
+    ));
+    assert_eq!(source.matches("ClientRequest::TurnStart{").count(), 1);
+    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart{"));
 }
 
 #[cfg(unix)]
@@ -450,8 +463,21 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // core_test_support installs real arg0 helper dispatch in this executable.
+    // A default path tuple leaves App Server unable to start its exec environment.
+    #[cfg(target_os = "linux")]
+    let sandbox_exe = Some(core_test_support::find_codex_linux_sandbox_exe()?);
+    #[cfg(not(target_os = "linux"))]
+    let sandbox_exe = None;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::env::current_exe()?,
+        sandbox_exe,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;

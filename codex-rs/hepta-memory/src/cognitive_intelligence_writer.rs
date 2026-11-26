@@ -153,6 +153,10 @@ impl CognitiveStore {
         Ok(receipt)
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "keep correction authority, expected revision, source and KG facts explicit within the caller-owned transaction"
+    )]
     pub(crate) async fn correct_with_kg_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,

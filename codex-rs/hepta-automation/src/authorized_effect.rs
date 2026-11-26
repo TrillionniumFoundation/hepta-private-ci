@@ -537,6 +537,10 @@ pub enum AuthorizedEffectRecovery {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "Return one owned receipt without an extra recovery allocation or public API change"
+)]
 pub enum AuthorizedEffectRecoveryResult {
     ProvenAbsent,
     Observed(TaskFlowStepReceipt),
@@ -641,6 +645,10 @@ impl AutomationStore {
     ///
     /// If a process dies after step 3, a subsequent call returns
     /// `RecoveryRequired` and cannot re-dispatch even with a fresh grant.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Keep authority, driver, wire bytes, fence, signed grant and expected binding explicit"
+    )]
     pub async fn execute_authorized_taskflow_effect<D: AuthorizedEffectDriver>(
         &self,
         authority: &FinalUseAuthority,
@@ -863,6 +871,10 @@ impl AutomationStore {
     /// provider-stable logical key is then derived from destination + run +
     /// step, deliberately excluding the local attempt so a safely retried
     /// attempt reuses the same provider occurrence identity.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Keep authority, driver, wire bytes, fence, signed grant and expected binding explicit"
+    )]
     pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
         &self,
         authority: &FinalUseAuthority,

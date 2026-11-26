@@ -2,6 +2,14 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-supervisor",
+    binary_required_features = {
+        "hepta-authority-signer": ["production-authority"],
+        "hepta-final-use-approver": ["production-authority"],
+        "hepta-final-use-revocation-signer": ["production-authority"],
+        "hepta-final-use-signer": ["production-authority"],
+        "hepta-supervisor-intent-recovery": [],
+        "hepta-supervisord": [],
+    },
     crate_name = "codex_hepta_supervisor",
 )
 
