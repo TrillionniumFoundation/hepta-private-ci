@@ -2,10 +2,11 @@
 from collections import Counter
 import json
 from pathlib import Path
+from file_update_oracle import historical
 
-from .common import bind, DRIVER_SHA, snapshot
+from .common import BASE, bind, DRIVER_SHA, snapshot
 from .corpus import prepare_cases
-from .original import extract_original, original_args, options
+from .original import extract_original, historical_args, original_args, options
 
 
 def verify(context):
@@ -45,9 +46,12 @@ def verify(context):
         native_library = next(x for x in receipt['artifacts'] if x['path'].endswith('.rlib'))
         actual, verified = helper.select_receipt(cfg, native_library['path'], 'consumer')
         assert actual == native_library and verified['policy_mode'] == mode
+        original_graph, _, dependency_baseline = historical.capture(
+            context.args.original_root, BASE, RUSTC, env,
+            directory / 'historical-dependencies', overflow_mode=mode)
         original_environment = dict(env, CARGO_MANIFEST_DIR=str(root), CARGO_PKG_NAME='codex-apply-patch',
                                     CARGO_PKG_VERSION='0.0.0')
-        source_args = original_args(receipt, root, directory)
+        source_args = historical_args(original_args(receipt, root, directory), root, original_graph)
         mutation_checks = []
         for name, mutated in [
             ('missing', [x for x in receipt['argv'] if x != 'apply-patch/src/lib.rs']),
@@ -86,14 +90,21 @@ def verify(context):
         policy = {'mode': mode, 'actual_owner_receipt': positive['actual_owner_receipt'],
                   'native_library': native_library, 'original_library': original_library,
                   'actual_owner_extern_inputs': positive['actual_owner_extern_inputs'],
-                  'direct_dependency_rlibs': direct, 'public_executions': []}
+                  'direct_dependency_rlibs': direct, 'public_executions': [],
+                  'dependency_baseline': dependency_baseline,
+                  'historical_direct_dependency_rlibs': {name: common.bind(
+                      Path(original_graph['direct'][name]['path'])) for name in direct}}
         transcripts = []
         for label, library in [('original', original_library), ('native', native_library)]:
             binary = directory / label
+            paths = dependency_paths if label == 'native' else [
+                '-L', 'dependency=' + original_graph['stage'],
+                *(item for path in original_graph['native_paths'] for item in ('-L', path))]
+            selected_direct = direct if label == 'native' else policy['historical_direct_dependency_rlibs']
             command = [RUSTC, '--crate-name', 'public_owner_driver', '--edition=2024', DRIVER,
                        '--check-cfg', 'cfg(hia_count)', '-C', 'debuginfo=0', '-C', 'opt-level=0',
-                       '--extern', 'codex_apply_patch=' + library['path'], *dependency_paths, '-o', binary]
-            for name, bound in direct.items():
+                       '--extern', 'codex_apply_patch=' + library['path'], *paths, '-o', binary]
+            for name, bound in selected_direct.items():
                 command.extend(['--extern', name + '=' + bound['path']])
             if label == 'native':
                 command.extend(['--cfg', 'hia_count', '-C', 'link-arg=-Wl,--wrap=codex_hia_unified_diff'])
@@ -130,10 +141,13 @@ def verify(context):
     REPORT['paired_public_results'] = 2 * len(cases)
     REPORT['actual_hia_calls'] = sum(x['actual_hia_calls'] for x in REPORT['policies'])
     for policy in REPORT['policies']:
+        historical.verify(policy['dependency_baseline'])
         rebound, verified = helper.select_receipt(cfg, policy['native_library']['path'], 'consumer')
         assert rebound == policy['native_library'] and verified['policy_mode'] == policy['mode']
         assert common.bind(Path(policy['original_library']['path'])) == policy['original_library']
         for bound in policy['direct_dependency_rlibs'].values():
+            assert common.bind(Path(bound['path'])) == bound
+        for bound in policy['historical_direct_dependency_rlibs'].values():
             assert common.bind(Path(bound['path'])) == bound
         for dependency in policy['actual_owner_extern_inputs'].values():
             for field in ('selected', 'link_library'):

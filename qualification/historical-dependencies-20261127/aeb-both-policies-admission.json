@@ -1,0 +1,174 @@
+{
+  "schema": "codex.hia.historical-formatter-dependency-qualification.v1",
+  "scope": "Unchanged aeb88 original dependency graphs under checked and wrapping overflow policies; complete formatter equivalence remains required.",
+  "passed": true,
+  "complete_formatter_comparison_qualified": false,
+  "whole_product_qualified": false,
+  "original_commit": "aeb88f596b83186456caac577080bcb2f253ad32",
+  "helper_source_sha256": "6df660812bf28a278da72b6fc0f95d489d3ae82d9fff5d553808ccb3d8d2467d",
+  "helper_archive_sha256": "ed9287dd74c3743e19fd345b74b2931ebc5e6e18579f4db0529b383212c331fd",
+  "execution": {
+    "host": "rog",
+    "session_id": "dpty-d443bbdc63f1179aa8ea86c7d60f439113f208e9bc0a47529ed42de605abec00",
+    "state": "exited",
+    "exit_code": 0,
+    "output_complete": true
+  },
+  "raw_archive": {
+    "path": "aeb-both-policies-actual-cargo.tar.gz",
+    "bytes": 1672930,
+    "sha256": "4964ed7b776fc67948b0e98c4c5073ac91fdb35b2480323c28e59a6ef75d0f90"
+  },
+  "policies": [
+    {
+      "status": "passed",
+      "mode": 0,
+      "started": 1795782207.887317,
+      "helper_archive_sha256": "ed9287dd74c3743e19fd345b74b2931ebc5e6e18579f4db0529b383212c331fd",
+      "scope": "historical dependency graph only; complete formatter comparison remains required",
+      "qualification": {
+        "schema": "codex.hia.historical-dependency-graph.v1",
+        "source": {
+          "root": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original",
+          "commit": "aeb88f596b83186456caac577080bcb2f253ad32",
+          "tree": "29386bcac408706d83ee0aa2a51107bb115a1295",
+          "crate_tree": "df2e05444c0768915f267c7aa5ba65f896a54ec5",
+          "declarations": {
+            "codex-rs/Cargo.toml": {
+              "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original/codex-rs/Cargo.toml",
+              "bytes": 22551,
+              "sha256": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7"
+            },
+            "codex-rs/Cargo.lock": {
+              "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original/codex-rs/Cargo.lock",
+              "bytes": 422290,
+              "sha256": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955"
+            },
+            "codex-rs/apply-patch/Cargo.toml": {
+              "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original/codex-rs/apply-patch/Cargo.toml",
+              "bytes": 954,
+              "sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a"
+            }
+          }
+        },
+        "rustc": {
+          "path": "/home/qian-qi/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "bytes": 646024,
+          "sha256": "4a84e05991ad6f2a84c1361c29b52b38c390365bd1fc269b1936c88d482a8928"
+        },
+        "cargo": {
+          "path": "/home/qian-qi/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+          "bytes": 42878680,
+          "sha256": "a73b2c25573d251489101c0d8f19ad3702eb9761166de5ed8437b472b6c038ce"
+        },
+        "graph": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-aeb-mode0-v1/dependency-manifest.json",
+          "bytes": 1395784,
+          "sha256": "6e6b8df862a1bd61ca3dc48fc47baadfd2e16837a83c9f4427e671e8542adeb2"
+        },
+        "metadata": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-aeb-mode0-v1/metadata-source-inputs.json",
+          "bytes": 611511,
+          "sha256": "006f1d984711a5eae321673d07131bc9f2ad4891bc3bd0eebe6aca7dbe8b8d68"
+        },
+        "commands": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-aeb-mode0-v1/commands/commands.json",
+          "bytes": 1834,
+          "sha256": "d3ed724023f07e33b95db8d2ce017f00fac7859cc418687939c30c79ff163241"
+        },
+        "overflow_mode": 0,
+        "configuration": null,
+        "excluded_producer_wrapper_environment": {
+          "RUSTC_WRAPPER": null,
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "CODEX_HIA_SIMILAR_POLICY_CONFIG": null,
+          "CODEX_HIA_NATIVE_LIB_DIR": null
+        },
+        "codegen_environment_overrides": {},
+        "actual_target_directory": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/target/historical-originals/aeb88f596b83186456caac577080bcb2f253ad32/0",
+        "actual_ordinary_cargo_build_succeeded": true,
+        "native_features_enabled": false
+      },
+      "library_units": 666,
+      "library_files": 1284,
+      "finished": 1795782566.273369
+    },
+    {
+      "status": "passed",
+      "mode": 1,
+      "started": 1795782566.2756875,
+      "helper_archive_sha256": "ed9287dd74c3743e19fd345b74b2931ebc5e6e18579f4db0529b383212c331fd",
+      "scope": "historical dependency graph only; complete formatter comparison remains required",
+      "qualification": {
+        "schema": "codex.hia.historical-dependency-graph.v1",
+        "source": {
+          "root": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original",
+          "commit": "aeb88f596b83186456caac577080bcb2f253ad32",
+          "tree": "29386bcac408706d83ee0aa2a51107bb115a1295",
+          "crate_tree": "df2e05444c0768915f267c7aa5ba65f896a54ec5",
+          "declarations": {
+            "codex-rs/Cargo.toml": {
+              "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original/codex-rs/Cargo.toml",
+              "bytes": 22551,
+              "sha256": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7"
+            },
+            "codex-rs/Cargo.lock": {
+              "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original/codex-rs/Cargo.lock",
+              "bytes": 422290,
+              "sha256": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955"
+            },
+            "codex-rs/apply-patch/Cargo.toml": {
+              "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/unified-original/codex-rs/apply-patch/Cargo.toml",
+              "bytes": 954,
+              "sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a"
+            }
+          }
+        },
+        "rustc": {
+          "path": "/home/qian-qi/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+          "bytes": 646024,
+          "sha256": "4a84e05991ad6f2a84c1361c29b52b38c390365bd1fc269b1936c88d482a8928"
+        },
+        "cargo": {
+          "path": "/home/qian-qi/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+          "bytes": 42878680,
+          "sha256": "a73b2c25573d251489101c0d8f19ad3702eb9761166de5ed8437b472b6c038ce"
+        },
+        "graph": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-aeb-mode1-v1/dependency-manifest.json",
+          "bytes": 1395788,
+          "sha256": "d86abc60615af063ea64b96023a84edab8033afc620dad595d92683ee302035e"
+        },
+        "metadata": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-aeb-mode1-v1/metadata-source-inputs.json",
+          "bytes": 611511,
+          "sha256": "081733d44ddfc948162a89c8b2977612f91592bbd391b55e88cc58c358e5fc1b"
+        },
+        "commands": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-aeb-mode1-v1/commands/commands.json",
+          "bytes": 1957,
+          "sha256": "b0c41d8dccaaa1302e214f3ce2f79afa70705070df33f7cd81d0a5e8ec994278"
+        },
+        "overflow_mode": 1,
+        "configuration": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-aeb-mode1-v1/wrapping.toml",
+          "bytes": 114,
+          "sha256": "a8a5d1dcec408721fd7f16ceb18bfcb8951e0ed3ae5776a2bc67465f3eee95a8"
+        },
+        "excluded_producer_wrapper_environment": {
+          "RUSTC_WRAPPER": null,
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "CODEX_HIA_SIMILAR_POLICY_CONFIG": null,
+          "CODEX_HIA_NATIVE_LIB_DIR": null
+        },
+        "codegen_environment_overrides": {},
+        "actual_target_directory": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/target/historical-originals/aeb88f596b83186456caac577080bcb2f253ad32/1",
+        "actual_ordinary_cargo_build_succeeded": true,
+        "native_features_enabled": false
+      },
+      "library_units": 666,
+      "library_files": 1284,
+      "finished": 1795782912.402595
+    }
+  ]
+}

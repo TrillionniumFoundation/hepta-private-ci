@@ -49,3 +49,31 @@ original/native owner comparisons, both formatter overflow policies and the
 remaining full product/platform matrix still require their actual executions.
 The first CI failures are retained as failures, and no skipped gate is admitted
 as passing.
+
+## Complete formatter dependency graphs
+
+Both unchanged `aeb88f596b83186456caac577080bcb2f253ad32` original
+Cargo graphs completed naturally on ROG using the fixed Rust 1.96.1
+compiler. Checked mode took 358.386 seconds and wrapping mode took
+346.127 seconds. Each admitted 666 actual library units and 1,284 library
+files. Separate target directories and the exact reviewed wrapping
+configuration bind each policy. `aeb-both-policies-actual-cargo.tar.gz`
+retains both original receipts, Cargo metadata, command streams, graph
+manifests and the wrapping configuration.
+
+The formatter runner now builds the complete unchanged original against
+its own admitted dependency graph, and builds each public observation
+driver against the same graph as its owner. Native owners retain their
+current actual Cargo libraries and existing policy admission. The 109
+original source files, 3,974 cases per mode, literal transcript comparison,
+native call counts, source-entry negative controls and eight native
+policy negative controls are unchanged. These dependency build receipts
+do not qualify the full formatter comparison.
+
+The existing fourteen complete-owner/formatter CI steps move unchanged
+into an independent 60-minute job, with the original six compiler and
+policy setup steps copied unchanged. The remaining main steps, the
+exec-stdin job, the legacy ABI job and workflow triggers are unchanged.
+This retains the original per-job time bound while allowing the three
+new historical dependency builds without consuming the main job budget.
+Original diagnostics and all owner/formatter result paths are retained.

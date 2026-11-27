@@ -13,7 +13,7 @@ def main():
     args = arguments(__doc__, public=True)
     context = None
     try:
-        context = Context(args, "codex.hia.unified-diff-canonical-public.v1")
+        context = Context(args, "codex.hia.unified-diff-canonical-public.v2")
         verify(context)
         return context.finish()
     except Exception:
