@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/e0bf6e4e8dc1/rsicd-study/cold_replay.py", line 83, in <module>
+    else:worker(sys.argv[1],int(sys.argv[2]),int(sys.argv[3]))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/e0bf6e4e8dc1/rsicd-study/cold_replay.py", line 11, in worker
+    prepare.main()
+  File "/workspace/scratch/e0bf6e4e8dc1/verified/qualification/hcsn_continuous_20261127/paired_catalog/prepare.py", line 13, in main
+    start=time.perf_counter(); manifest=json.loads((ROOT/'source.json').read_bytes())
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/e0bf6e4e8dc1/verified/qualification/hcsn_continuous_20261127/paired_catalog/paired_catalog/source.json'

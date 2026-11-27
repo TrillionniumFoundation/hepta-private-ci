@@ -1,0 +1,23 @@
+{
+ "capture_utc": "2026-11-27T22:39:59.320297+00:00",
+ "cpu_model": "INTEL(R) XEON(R) PLATINUM 8573C",
+ "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+ "python": "3.12.14",
+ "main_fit_cpu": 7,
+ "warm_and_inputreplay_cpu": 5,
+ "initial_warm_seed109_and_part_seed271_cpu": 6,
+ "base_environment": [
+  "torch2.8.0+cpu",
+  "numpy2.3.5",
+  "scipy1.17.0",
+  "pyarrow20.0.0",
+  "sklearn1.8.0"
+ ],
+ "single_thread_env": [
+  "OMP_NUM_THREADS=1",
+  "MKL_NUM_THREADS=1",
+  "OPENBLAS_NUM_THREADS=1"
+ ],
+ "host_isolation": "shared compute and filesystem; one allowed logical CPU and one numerical thread per training process; no physical isolation claim",
+ "exception": "a single before-fit raw replay failed through an incorrect import path; log retained; fixed module path and restarted this verification without changing original trained states"
+}
