@@ -3,7 +3,9 @@
 Windows Clippy job [140378293622](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45960650092/job/140378293622)
 failed while the real rules_rust process wrapper copied
 `hepta-supervisor-paired_process_product-test.exe` into its private dependency
-directory. The full decoded original log is retained alongside this record.
+directory. The full decoded original log is retained losslessly as `.log.gz` alongside
+this record. Its original CRLF bytes and checksum are unchanged. The unit-test
+stdout is likewise retained as `.stdout.gz`; `scope.json` binds both archives.
 
 The existing temporary-output patch now also excludes case-insensitive
 `.exe` suffixes. Executables beside dependency libraries are build products.

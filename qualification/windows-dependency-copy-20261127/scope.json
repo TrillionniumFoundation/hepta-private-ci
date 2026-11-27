@@ -8,7 +8,14 @@
     "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45960650092/job/140378293622",
     "representation": "complete decoded log returned by GitHub connector",
     "utf8_bytes": 583845,
-    "sha256": "8cf18ba192b43d3c0bd95930203ab6066f6a3e2da705ad8caf0a838cdac1b6ce"
+    "sha256": "8cf18ba192b43d3c0bd95930203ab6066f6a3e2da705ad8caf0a838cdac1b6ce",
+    "stored_archive": {
+      "path": "original-windows-clippy-140378293622.log.gz",
+      "compressed_sha256": "36bb95740c710e663ba53b6f95682c3d6a26e3a7ab14e24fc54da532de9526c0",
+      "compressed_bytes": 60673,
+      "original_sha256": "8cf18ba192b43d3c0bd95930203ab6066f6a3e2da705ad8caf0a838cdac1b6ce",
+      "original_bytes": 583845
+    }
   },
   "native_windows_qualified": false,
   "whole_rewrite_qualified": false,
@@ -48,7 +55,14 @@
     {
       "name": "wrapper-unit-tests.stdout",
       "sha256": "931bc223cbb8e0c55aa3995fee637ed8124b5e4ec0f555c1f24337a727c83b6a",
-      "bytes": 1383
+      "bytes": 1383,
+      "stored_archive": {
+        "path": "wrapper-unit-tests.stdout.gz",
+        "compressed_sha256": "223a9669497f7f6d7594d7f1b6e02b20d2a3f3640631e22b17875e0ec37fa06a",
+        "compressed_bytes": 463,
+        "original_sha256": "931bc223cbb8e0c55aa3995fee637ed8124b5e4ec0f555c1f24337a727c83b6a",
+        "original_bytes": 1383
+      }
     },
     {
       "name": "candidate-portable-behaviors.stderr",
