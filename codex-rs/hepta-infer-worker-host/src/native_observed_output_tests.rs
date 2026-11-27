@@ -197,7 +197,10 @@ fn streaming_delta_requires_exact_connection_version_and_home() {
             Some(home.to_string()),
         );
         let reason = observe_event(&mut output, &wrong, &binding).unwrap_err();
-        assert!(reason.contains("invalid App Server delta witness"), "{reason}");
+        assert!(
+            reason.contains("invalid App Server delta witness"),
+            "{reason}"
+        );
         assert!(output.output.is_empty());
         assert!(!output.terminal_observed);
         assert_eq!(output.owner_authority, NativeOwnerAuthority::Unverified);
@@ -235,7 +238,10 @@ fn token_usage_requires_exact_transport_identity_before_accounting() {
     let mut output = empty_output();
     let wrong = observed(token_usage_notification(10), 8);
     let reason = observe_event(&mut output, &wrong, &binding).unwrap_err();
-    assert!(reason.contains("invalid App Server usage witness"), "{reason}");
+    assert!(
+        reason.contains("invalid App Server usage witness"),
+        "{reason}"
+    );
     assert_eq!(output.observed_output_tokens, None);
     assert!(!output.terminal_observed);
 
