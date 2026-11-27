@@ -59,7 +59,10 @@ async fn unavailable_enable_events_preserve_config_and_report_failure() -> Resul
             other => panic!("expected refusal notice, got {other:?}"),
         };
         let rendered = lines_to_single_string(&cell.display_lines(/*width*/ 512));
-        insta::assert_snapshot!(rendered, @"■ Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted");
+        // Both modes visit this inline snapshot call site.
+        insta::allow_duplicates! {
+            insta::assert_snapshot!(rendered, @"■ Windows managed filesystem execution is unavailable: the current token backends cannot enforce deletion restrictions; the requested child was not launched and no elevation or unsandboxed fallback is permitted");
+        }
         assert!(
             events.try_recv().is_err(),
             "no success or permission-update event"
