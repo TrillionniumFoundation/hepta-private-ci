@@ -312,6 +312,13 @@ pub async fn submit_thread_settings(
     use tokio::time::Duration;
     use tokio::time::timeout;
 
+    // A terminal event can precede release of its persistence/admission fence.
+    if let Some(completion) = codex.pending_admission_fence_completion() {
+        timeout(Duration::from_secs(10), completion)
+            .await
+            .context("timeout waiting for turn terminalization before updating thread settings")?;
+    }
+
     let submission_id = codex.submit(Op::ThreadSettings { thread_settings }).await?;
     loop {
         let ev = timeout(Duration::from_secs(10), codex.next_event())
