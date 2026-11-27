@@ -1299,7 +1299,8 @@ fn windows_canonical_root_without_reparse(
     requested: &Path,
 ) -> std::io::Result<bool> {
     use std::os::windows::fs::MetadataExt;
-    use std::path::{Component, Prefix};
+    use std::path::Component;
+    use std::path::Prefix;
 
     let mut resolved = canonical.components();
     let mut supplied = requested.components();
