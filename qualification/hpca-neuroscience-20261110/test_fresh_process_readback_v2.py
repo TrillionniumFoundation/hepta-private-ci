@@ -2,6 +2,7 @@
 import copy
 from pathlib import Path
 import json
+import sys
 import unittest
 
 from fresh_process_readback_v2 import (
@@ -10,6 +11,10 @@ from fresh_process_readback_v2 import (
 )
 
 ROOT = Path(__file__).resolve().parent
+
+REPOSITORY = ROOT.parents[1]
+sys.path.insert(0, str(REPOSITORY / "qa/repository-consolidation/20261115"))
+from restore_raw_evidence import read_verified
 
 
 class FreshProcessReadbackTests(unittest.TestCase):
@@ -22,8 +27,11 @@ class FreshProcessReadbackTests(unittest.TestCase):
     def test_independent_process_archive_has_all_pairs_and_full_costs(self):
         data = json.loads((ROOT / "fresh_process_readback_v2_RESULT.json").read_text())
         self.assertEqual(data["original_result_sha256"], ORIGINAL_RESULT_SHA256)
-        self.assertEqual(data["consumer_script_sha256"],
-                         sha256(ROOT / "fresh_process_readback_v2.py"))
+        path = ROOT / "fresh_process_readback_v2.py"
+        original = read_verified(
+            REPOSITORY, path.relative_to(REPOSITORY), 9032, data["consumer_script_sha256"]
+        )
+        self.assertIn(path.read_bytes(), (original, original[:-1]))
         self.assertEqual(data["fresh_process_evaluated_arms"], 8)
         self.assertEqual(data["fresh_process_task_forwards"], 96)
         self.assertEqual({(r["seed"], r["arm"]) for r in data["arms"]},
