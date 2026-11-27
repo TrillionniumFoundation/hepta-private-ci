@@ -1,0 +1,1236 @@
+{
+  "matched_speed": {
+    "dense": [
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9990717871415364,
+          "24203": 1.000196196938565,
+          "39827": 0.9995765867111476
+        },
+        "target": 4.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9990717871415364,
+          "24203": 1.000196196938565,
+          "39827": 0.9995765867111476
+        },
+        "target": 4.141103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9990717871415364,
+          "24203": 1.000196196938565,
+          "39827": 0.9995765867111476
+        },
+        "target": 3.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9995106840898444,
+          "24203": 0.9997202099917146,
+          "39827": 0.9999218184829336
+        },
+        "target": 3.141103388464435
+      },
+      {
+        "n": 0,
+        "paired_control_over_hcsn": {},
+        "target": 2.641103388464435
+      }
+    ],
+    "lif": [
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9991371261700867,
+          "24203": 0.9984855368828931,
+          "39827": 0.9992799550201995
+        },
+        "target": 4.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9991371261700867,
+          "24203": 0.9984855368828931,
+          "39827": 0.9992799550201995
+        },
+        "target": 4.141103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9991371261700867,
+          "24203": 0.9984855368828931,
+          "39827": 0.9992799550201995
+        },
+        "target": 3.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9995315584692008,
+          "24203": 0.9998871418042555,
+          "39827": 1.000027846773981
+        },
+        "target": 3.141103388464435
+      },
+      {
+        "n": 0,
+        "paired_control_over_hcsn": {},
+        "target": 2.641103388464435
+      }
+    ],
+    "mean": [
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9987214797796921,
+          "24203": 0.9992436611878205,
+          "39827": 0.9997737800618566
+        },
+        "target": 4.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9987214797796921,
+          "24203": 0.9992436611878205,
+          "39827": 0.9997737800618566
+        },
+        "target": 4.141103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9987214797796921,
+          "24203": 0.9992436611878205,
+          "39827": 0.9997737800618566
+        },
+        "target": 3.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.999471148272495,
+          "24203": 0.9996479175775631,
+          "39827": 0.9999055657411867
+        },
+        "target": 3.141103388464435
+      },
+      {
+        "n": 0,
+        "paired_control_over_hcsn": {},
+        "target": 2.641103388464435
+      }
+    ],
+    "smooth": [
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9990237159343845,
+          "24203": 0.9997547589262853,
+          "39827": 1.000956832788939
+        },
+        "target": 4.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9990237159343845,
+          "24203": 0.9997547589262853,
+          "39827": 1.000956832788939
+        },
+        "target": 4.141103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9990237159343845,
+          "24203": 0.9997547589262853,
+          "39827": 1.000956832788939
+        },
+        "target": 3.641103388464435
+      },
+      {
+        "n": 3,
+        "paired_control_over_hcsn": {
+          "17011": 0.9995438273542444,
+          "24203": 0.9998853939745385,
+          "39827": 1.0001375240786339
+        },
+        "target": 3.141103388464435
+      },
+      {
+        "n": 0,
+        "paired_control_over_hcsn": {},
+        "target": 2.641103388464435
+      }
+    ]
+  },
+  "models": {
+    "dense": {
+      "pooled_named_seeds": {
+        "test": {
+          "conditioning_gain": 0.15248886968192715,
+          "conditioning_image_95": [
+            0.14112703862731663,
+            0.16357857198623652
+          ],
+          "nll": 2.909587486688521,
+          "nll_image_95": [
+            2.871687626561586,
+            2.946746850974599
+          ],
+          "ppl": 18.349227704900954
+        },
+        "validation": {
+          "conditioning_gain": 0.14458276603763165,
+          "conditioning_image_95": [
+            0.13294076732310342,
+            0.15573442980748398
+          ],
+          "nll": 2.9550755860009237,
+          "nll_image_95": [
+            2.9169224335924633,
+            2.9925589005104944
+          ],
+          "ppl": 19.20317415611784
+        }
+      }
+    },
+    "dense-17011": {
+      "crossings": [
+        {
+          "actual_nll": 3.245120408601856,
+          "dev_s": 0.11489647207781672,
+          "first_observed_s": 20.122388516087085,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1604,
+          "tokens": 657917,
+          "train_s": 20.00749204400927
+        },
+        {
+          "actual_nll": 3.245120408601856,
+          "dev_s": 0.11489647207781672,
+          "first_observed_s": 20.122388516087085,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1604,
+          "tokens": 657917,
+          "train_s": 20.00749204400927
+        },
+        {
+          "actual_nll": 3.245120408601856,
+          "dev_s": 0.11489647207781672,
+          "first_observed_s": 20.122388516087085,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1604,
+          "tokens": 657917,
+          "train_s": 20.00749204400927
+        },
+        {
+          "actual_nll": 2.9623998059776016,
+          "dev_s": 0.23032781528308988,
+          "first_observed_s": 120.11971061397344,
+          "lower_observed_s": 20.122388516087085,
+          "reached": true,
+          "steps": 9258,
+          "tokens": 3804128,
+          "train_s": 119.88938279869035
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.066971679684
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.15312924281739887,
+          "nll": 2.9198841947986858,
+          "ppl": 18.539140406542334
+        },
+        "validation": {
+          "conditioning_gain": 0.1461183113592561,
+          "nll": 2.964272500431734,
+          "ppl": 19.38059873437002
+        }
+      }
+    },
+    "dense-24203": {
+      "crossings": [
+        {
+          "actual_nll": 3.2712080518014663,
+          "dev_s": 0.12823207210749388,
+          "first_observed_s": 20.1389602557756,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1490,
+          "tokens": 612069,
+          "train_s": 20.010728183668107
+        },
+        {
+          "actual_nll": 3.2712080518014663,
+          "dev_s": 0.12823207210749388,
+          "first_observed_s": 20.1389602557756,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1490,
+          "tokens": 612069,
+          "train_s": 20.010728183668107
+        },
+        {
+          "actual_nll": 3.2712080518014663,
+          "dev_s": 0.12823207210749388,
+          "first_observed_s": 20.1389602557756,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1490,
+          "tokens": 612069,
+          "train_s": 20.010728183668107
+        },
+        {
+          "actual_nll": 2.949627658816109,
+          "dev_s": 0.23710788507014513,
+          "first_observed_s": 120.11576961586252,
+          "lower_observed_s": 20.1389602557756,
+          "reached": true,
+          "steps": 8985,
+          "tokens": 3693979,
+          "train_s": 119.87866173079237
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.0692385984585
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.1412848450527984,
+          "nll": 2.9132974530273783,
+          "ppl": 18.41742915634853
+        },
+        "validation": {
+          "conditioning_gain": 0.1381624912355547,
+          "nll": 2.955692451800326,
+          "ppl": 19.215023591874797
+        }
+      }
+    },
+    "dense-39827": {
+      "crossings": [
+        {
+          "actual_nll": 3.2550105916095213,
+          "dev_s": 0.11442689504474401,
+          "first_observed_s": 20.11804706417024,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1535,
+          "tokens": 629742,
+          "train_s": 20.003620169125497
+        },
+        {
+          "actual_nll": 3.2550105916095213,
+          "dev_s": 0.11442689504474401,
+          "first_observed_s": 20.11804706417024,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1535,
+          "tokens": 629742,
+          "train_s": 20.003620169125497
+        },
+        {
+          "actual_nll": 3.2550105916095213,
+          "dev_s": 0.11442689504474401,
+          "first_observed_s": 20.11804706417024,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1535,
+          "tokens": 629742,
+          "train_s": 20.003620169125497
+        },
+        {
+          "actual_nll": 2.9342284377319587,
+          "dev_s": 0.23344208113849163,
+          "first_observed_s": 120.13281307416037,
+          "lower_observed_s": 20.11804706417024,
+          "reached": true,
+          "steps": 8520,
+          "tokens": 3500050,
+          "train_s": 119.89937099302188
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.082366627641
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.16305252117558422,
+          "nll": 2.895580812239499,
+          "ppl": 18.094007610988466
+        },
+        "validation": {
+          "conditioning_gain": 0.14946749551808408,
+          "nll": 2.9452618057707123,
+          "ppl": 19.01564013916004
+        }
+      }
+    },
+    "hcsn": {
+      "pooled_named_seeds": {
+        "test": {
+          "conditioning_gain": 0.10336255419253006,
+          "conditioning_image_95": [
+            0.09397142557656327,
+            0.11255507947732654
+          ],
+          "nll": 2.9080119845531884,
+          "nll_image_95": [
+            2.871559435254504,
+            2.944475050631035
+          ],
+          "ppl": 18.320341218805623
+        },
+        "validation": {
+          "conditioning_gain": 0.09713382611269798,
+          "conditioning_image_95": [
+            0.08814882251824296,
+            0.10592467276408644
+          ],
+          "nll": 2.9579951213290756,
+          "nll_image_95": [
+            2.920493580743066,
+            2.9949307395213287
+          ],
+          "ppl": 19.25932042210173
+        }
+      }
+    },
+    "hcsn-17011": {
+      "crossings": [
+        {
+          "actual_nll": 3.291348739470572,
+          "dev_s": 0.13410993618890643,
+          "first_observed_s": 20.141083728987724,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1276,
+          "tokens": 523768,
+          "train_s": 20.006973792798817
+        },
+        {
+          "actual_nll": 3.291348739470572,
+          "dev_s": 0.13410993618890643,
+          "first_observed_s": 20.141083728987724,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1276,
+          "tokens": 523768,
+          "train_s": 20.006973792798817
+        },
+        {
+          "actual_nll": 3.291348739470572,
+          "dev_s": 0.13410993618890643,
+          "first_observed_s": 20.141083728987724,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1276,
+          "tokens": 523768,
+          "train_s": 20.006973792798817
+        },
+        {
+          "actual_nll": 2.9640381671067937,
+          "dev_s": 0.3039146061055362,
+          "first_observed_s": 120.17851587384939,
+          "lower_observed_s": 20.141083728987724,
+          "reached": true,
+          "steps": 8351,
+          "tokens": 3431171,
+          "train_s": 119.87460126774386
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.0818425831385
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.11052042737725482,
+          "nll": 2.908975753552458,
+          "ppl": 18.33800630689313
+        },
+        "validation": {
+          "conditioning_gain": 0.10398038899424653,
+          "nll": 2.958600590683447,
+          "ppl": 19.270984881283276
+        }
+      }
+    },
+    "hcsn-24203": {
+      "crossings": [
+        {
+          "actual_nll": 3.2489071667761755,
+          "dev_s": 0.13424680521711707,
+          "first_observed_s": 20.135009828489274,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1476,
+          "tokens": 606423,
+          "train_s": 20.000763023272157
+        },
+        {
+          "actual_nll": 3.2489071667761755,
+          "dev_s": 0.13424680521711707,
+          "first_observed_s": 20.135009828489274,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1476,
+          "tokens": 606423,
+          "train_s": 20.000763023272157
+        },
+        {
+          "actual_nll": 3.2489071667761755,
+          "dev_s": 0.13424680521711707,
+          "first_observed_s": 20.135009828489274,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1476,
+          "tokens": 606423,
+          "train_s": 20.000763023272157
+        },
+        {
+          "actual_nll": 2.9649269718354656,
+          "dev_s": 0.2689342722296715,
+          "first_observed_s": 120.14938621362671,
+          "lower_observed_s": 20.135009828489274,
+          "reached": true,
+          "steps": 8324,
+          "tokens": 3421610,
+          "train_s": 119.88045194139704
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.08312059287
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.09982290007985874,
+          "nll": 2.9177145443364805,
+          "ppl": 18.49896055586801
+        },
+        "validation": {
+          "conditioning_gain": 0.09686755737510874,
+          "nll": 2.9661225834767233,
+          "ppl": 19.416487639981373
+        }
+      }
+    },
+    "hcsn-39827": {
+      "crossings": [
+        {
+          "actual_nll": 3.263300025096366,
+          "dev_s": 0.1173598631285131,
+          "first_observed_s": 20.12656892091036,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1408,
+          "tokens": 577505,
+          "train_s": 20.009209057781845
+        },
+        {
+          "actual_nll": 3.263300025096366,
+          "dev_s": 0.1173598631285131,
+          "first_observed_s": 20.12656892091036,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1408,
+          "tokens": 577505,
+          "train_s": 20.009209057781845
+        },
+        {
+          "actual_nll": 3.263300025096366,
+          "dev_s": 0.1173598631285131,
+          "first_observed_s": 20.12656892091036,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1408,
+          "tokens": 577505,
+          "train_s": 20.009209057781845
+        },
+        {
+          "actual_nll": 2.945364471589165,
+          "dev_s": 0.2512686583213508,
+          "first_observed_s": 120.14220597408712,
+          "lower_observed_s": 20.12656892091036,
+          "reached": true,
+          "steps": 7579,
+          "tokens": 3113741,
+          "train_s": 119.89093731576577
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.067563097924
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.09974433512047663,
+          "nll": 2.8973456557706267,
+          "ppl": 18.12596889831274
+        },
+        "validation": {
+          "conditioning_gain": 0.09055353196873868,
+          "nll": 2.949262189827056,
+          "ppl": 19.09186236022373
+        }
+      }
+    },
+    "lif": {
+      "pooled_named_seeds": {
+        "test": {
+          "conditioning_gain": 0.11158664972695552,
+          "conditioning_image_95": [
+            0.10154055397118121,
+            0.1213241746421048
+          ],
+          "nll": 2.9205950250598964,
+          "nll_image_95": [
+            2.8835635021007047,
+            2.957604544181632
+          ],
+          "ppl": 18.552323273395395
+        },
+        "validation": {
+          "conditioning_gain": 0.10525161906402294,
+          "conditioning_image_95": [
+            0.09514667015853437,
+            0.11502621417765016
+          ],
+          "nll": 2.969210526810363,
+          "nll_image_95": [
+            2.931369153871529,
+            3.0067131223069525
+          ],
+          "ppl": 19.476537320841356
+        }
+      }
+    },
+    "lif-17011": {
+      "crossings": [
+        {
+          "actual_nll": 3.209650314347223,
+          "dev_s": 0.11249377485364676,
+          "first_observed_s": 20.123704514931887,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1586,
+          "tokens": 650594,
+          "train_s": 20.01121074007824
+        },
+        {
+          "actual_nll": 3.209650314347223,
+          "dev_s": 0.11249377485364676,
+          "first_observed_s": 20.123704514931887,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1586,
+          "tokens": 650594,
+          "train_s": 20.01121074007824
+        },
+        {
+          "actual_nll": 3.209650314347223,
+          "dev_s": 0.11249377485364676,
+          "first_observed_s": 20.123704514931887,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1586,
+          "tokens": 650594,
+          "train_s": 20.01121074007824
+        },
+        {
+          "actual_nll": 2.9740456377687843,
+          "dev_s": 0.22418901789933443,
+          "first_observed_s": 120.12221926590428,
+          "lower_observed_s": 20.123704514931887,
+          "reached": true,
+          "steps": 9137,
+          "tokens": 3754649,
+          "train_s": 119.89803024800494
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.07361915987
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.11437317480299035,
+          "nll": 2.9238778200383218,
+          "ppl": 18.61332682336422
+        },
+        "validation": {
+          "conditioning_gain": 0.11338350178267938,
+          "nll": 2.972864324789845,
+          "ppl": 19.547830820258195
+        }
+      }
+    },
+    "lif-24203": {
+      "crossings": [
+        {
+          "actual_nll": 3.244998188432206,
+          "dev_s": 0.1013247356750071,
+          "first_observed_s": 20.104516098741442,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1528,
+          "tokens": 627727,
+          "train_s": 20.003191363066435
+        },
+        {
+          "actual_nll": 3.244998188432206,
+          "dev_s": 0.1013247356750071,
+          "first_observed_s": 20.104516098741442,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1528,
+          "tokens": 627727,
+          "train_s": 20.003191363066435
+        },
+        {
+          "actual_nll": 3.244998188432206,
+          "dev_s": 0.1013247356750071,
+          "first_observed_s": 20.104516098741442,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1528,
+          "tokens": 627727,
+          "train_s": 20.003191363066435
+        },
+        {
+          "actual_nll": 2.9592247479753837,
+          "dev_s": 0.2271451805718243,
+          "first_observed_s": 120.13582637067884,
+          "lower_observed_s": 20.104516098741442,
+          "reached": true,
+          "steps": 8943,
+          "tokens": 3676745,
+          "train_s": 119.90868119010702
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.0681611942127
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.10871872945458899,
+          "nll": 2.9202850320491422,
+          "ppl": 18.546573074154225
+        },
+        "validation": {
+          "conditioning_gain": 0.09712238273708164,
+          "nll": 2.969880732108164,
+          "ppl": 19.489594974502175
+        }
+      }
+    },
+    "lif-39827": {
+      "crossings": [
+        {
+          "actual_nll": 3.2328608179546374,
+          "dev_s": 0.1080986219458282,
+          "first_observed_s": 20.11207688599825,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1528,
+          "tokens": 626891,
+          "train_s": 20.00397826405242
+        },
+        {
+          "actual_nll": 3.2328608179546374,
+          "dev_s": 0.1080986219458282,
+          "first_observed_s": 20.11207688599825,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1528,
+          "tokens": 626891,
+          "train_s": 20.00397826405242
+        },
+        {
+          "actual_nll": 3.2328608179546374,
+          "dev_s": 0.1080986219458282,
+          "first_observed_s": 20.11207688599825,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1528,
+          "tokens": 626891,
+          "train_s": 20.00397826405242
+        },
+        {
+          "actual_nll": 2.974309859791279,
+          "dev_s": 0.24294361006468534,
+          "first_observed_s": 120.14555154694244,
+          "lower_observed_s": 20.11207688599825,
+          "reached": true,
+          "steps": 8576,
+          "tokens": 3523071,
+          "train_s": 119.90260793687776
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.076848450117
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.11166804492328725,
+          "nll": 2.9176222230922244,
+          "ppl": 18.497252787644907
+        },
+        "validation": {
+          "conditioning_gain": 0.10524897267230783,
+          "nll": 2.964886523533079,
+          "ppl": 19.39250252393771
+        }
+      }
+    },
+    "mean": {
+      "pooled_named_seeds": {
+        "test": {
+          "conditioning_gain": 0.1192283640292434,
+          "conditioning_image_95": [
+            0.10903824199641692,
+            0.1292808693397687
+          ],
+          "nll": 2.923126587955501,
+          "nll_image_95": [
+            2.8850018324253535,
+            2.9609127067556034
+          ],
+          "ppl": 18.599349145983684
+        },
+        "validation": {
+          "conditioning_gain": 0.11095188514717481,
+          "conditioning_image_95": [
+            0.10097559465266263,
+            0.12083442542303183
+          ],
+          "nll": 2.9746127624208083,
+          "nll_image_95": [
+            2.935791564096441,
+            3.012606619203567
+          ],
+          "ppl": 19.5820388798828
+        }
+      }
+    },
+    "mean-17011": {
+      "crossings": [
+        {
+          "actual_nll": 3.1845950349967107,
+          "dev_s": 0.10575316520407796,
+          "first_observed_s": 20.115332946181297,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1666,
+          "tokens": 683533,
+          "train_s": 20.00957978097722
+        },
+        {
+          "actual_nll": 3.1845950349967107,
+          "dev_s": 0.10575316520407796,
+          "first_observed_s": 20.115332946181297,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1666,
+          "tokens": 683533,
+          "train_s": 20.00957978097722
+        },
+        {
+          "actual_nll": 3.1845950349967107,
+          "dev_s": 0.10575316520407796,
+          "first_observed_s": 20.115332946181297,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1666,
+          "tokens": 683533,
+          "train_s": 20.00957978097722
+        },
+        {
+          "actual_nll": 2.9858099991370137,
+          "dev_s": 0.21396474726498127,
+          "first_observed_s": 120.1149592581205,
+          "lower_observed_s": 20.115332946181297,
+          "reached": true,
+          "steps": 10022,
+          "tokens": 4118701,
+          "train_s": 119.90099451085553
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.06263777148
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.1291535820619773,
+          "nll": 2.9233088770766837,
+          "ppl": 18.60273991403475
+        },
+        "validation": {
+          "conditioning_gain": 0.12008167696946556,
+          "nll": 2.9728526000263518,
+          "ppl": 19.547601627908634
+        }
+      }
+    },
+    "mean-24203": {
+      "crossings": [
+        {
+          "actual_nll": 3.2188263475018664,
+          "dev_s": 0.11845053918659687,
+          "first_observed_s": 20.11978093907237,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1602,
+          "tokens": 658181,
+          "train_s": 20.001330399885774
+        },
+        {
+          "actual_nll": 3.2188263475018664,
+          "dev_s": 0.11845053918659687,
+          "first_observed_s": 20.11978093907237,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1602,
+          "tokens": 658181,
+          "train_s": 20.001330399885774
+        },
+        {
+          "actual_nll": 3.2188263475018664,
+          "dev_s": 0.11845053918659687,
+          "first_observed_s": 20.11978093907237,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1602,
+          "tokens": 658181,
+          "train_s": 20.001330399885774
+        },
+        {
+          "actual_nll": 2.973074177090157,
+          "dev_s": 0.22091329284012318,
+          "first_observed_s": 120.10708372667432,
+          "lower_observed_s": 20.11978093907237,
+          "reached": true,
+          "steps": 9204,
+          "tokens": 3783794,
+          "train_s": 119.8861704338342
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.070074963849
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.10412699354256547,
+          "nll": 2.9248124557846746,
+          "ppl": 18.630731636285052
+        },
+        "validation": {
+          "conditioning_gain": 0.09675243210674511,
+          "nll": 2.9761970391046515,
+          "ppl": 19.613086835284196
+        }
+      }
+    },
+    "mean-39827": {
+      "crossings": [
+        {
+          "actual_nll": 3.208750918085275,
+          "dev_s": 0.11279669078066945,
+          "first_observed_s": 20.12201588973403,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1651,
+          "tokens": 677269,
+          "train_s": 20.00921919895336
+        },
+        {
+          "actual_nll": 3.208750918085275,
+          "dev_s": 0.11279669078066945,
+          "first_observed_s": 20.12201588973403,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1651,
+          "tokens": 677269,
+          "train_s": 20.00921919895336
+        },
+        {
+          "actual_nll": 3.208750918085275,
+          "dev_s": 0.11279669078066945,
+          "first_observed_s": 20.12201588973403,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1651,
+          "tokens": 677269,
+          "train_s": 20.00921919895336
+        },
+        {
+          "actual_nll": 2.947323840724888,
+          "dev_s": 0.23477652482688427,
+          "first_observed_s": 120.13086043391377,
+          "lower_observed_s": 20.12201588973403,
+          "reached": true,
+          "steps": 9192,
+          "tokens": 3776036,
+          "train_s": 119.89608390908688
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.0719357295893
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.12440451648318744,
+          "nll": 2.921258431005145,
+          "ppl": 18.5646350783639
+        },
+        "validation": {
+          "conditioning_gain": 0.11602154636531377,
+          "nll": 2.974788648131423,
+          "ppl": 19.585483383617085
+        }
+      }
+    },
+    "smooth": {
+      "pooled_named_seeds": {
+        "test": {
+          "conditioning_gain": 0.1112518045090962,
+          "conditioning_image_95": [
+            0.10134344281315011,
+            0.12109186595635597
+          ],
+          "nll": 2.9111981434615273,
+          "nll_image_95": [
+            2.8738368241703243,
+            2.9483325076605524
+          ],
+          "ppl": 18.378805826489884
+        },
+        "validation": {
+          "conditioning_gain": 0.1020986813055621,
+          "conditioning_image_95": [
+            0.09227797052919302,
+            0.11149802513554967
+          ],
+          "nll": 2.9601893888917523,
+          "nll_image_95": [
+            2.922676793106643,
+            2.9973098832997773
+          ],
+          "ppl": 19.301626923099747
+        }
+      }
+    },
+    "smooth-17011": {
+      "crossings": [
+        {
+          "actual_nll": 3.230181289195928,
+          "dev_s": 0.12128188507631421,
+          "first_observed_s": 20.121420309878886,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1496,
+          "tokens": 613690,
+          "train_s": 20.00013842480257
+        },
+        {
+          "actual_nll": 3.230181289195928,
+          "dev_s": 0.12128188507631421,
+          "first_observed_s": 20.121420309878886,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1496,
+          "tokens": 613690,
+          "train_s": 20.00013842480257
+        },
+        {
+          "actual_nll": 3.230181289195928,
+          "dev_s": 0.12128188507631421,
+          "first_observed_s": 20.121420309878886,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1496,
+          "tokens": 613690,
+          "train_s": 20.00013842480257
+        },
+        {
+          "actual_nll": 2.964859209038361,
+          "dev_s": 0.239681638777256,
+          "first_observed_s": 120.12369372230023,
+          "lower_observed_s": 20.121420309878886,
+          "reached": true,
+          "steps": 8921,
+          "tokens": 3665738,
+          "train_s": 119.88401208352298
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.084212775342
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.11613901943860162,
+          "nll": 2.918923945468104,
+          "ppl": 18.521346753916166
+        },
+        "validation": {
+          "conditioning_gain": 0.1067021410496152,
+          "nll": 2.9704037962195047,
+          "ppl": 19.499791948781056
+        }
+      }
+    },
+    "smooth-24203": {
+      "crossings": [
+        {
+          "actual_nll": 3.2465238115317234,
+          "dev_s": 0.12012413190677762,
+          "first_observed_s": 20.13007189705968,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1493,
+          "tokens": 613271,
+          "train_s": 20.0099477651529
+        },
+        {
+          "actual_nll": 3.2465238115317234,
+          "dev_s": 0.12012413190677762,
+          "first_observed_s": 20.13007189705968,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1493,
+          "tokens": 613271,
+          "train_s": 20.0099477651529
+        },
+        {
+          "actual_nll": 3.2465238115317234,
+          "dev_s": 0.12012413190677762,
+          "first_observed_s": 20.13007189705968,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1493,
+          "tokens": 613271,
+          "train_s": 20.0099477651529
+        },
+        {
+          "actual_nll": 2.9731051594102076,
+          "dev_s": 0.25150633696466684,
+          "first_observed_s": 120.13561637001112,
+          "lower_observed_s": 20.13007189705968,
+          "reached": true,
+          "steps": 8499,
+          "tokens": 3493808,
+          "train_s": 119.88411003304645
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.083219059743
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.11339862788690769,
+          "nll": 2.921137221559852,
+          "ppl": 18.562385005611777
+        },
+        "validation": {
+          "conditioning_gain": 0.10686454119142513,
+          "nll": 2.9651088826414873,
+          "ppl": 19.396815102961586
+        }
+      }
+    },
+    "smooth-39827": {
+      "crossings": [
+        {
+          "actual_nll": 3.2724895000348435,
+          "dev_s": 0.13164586294442415,
+          "first_observed_s": 20.145826681982726,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1384,
+          "tokens": 567655,
+          "train_s": 20.0141808190383
+        },
+        {
+          "actual_nll": 3.2724895000348435,
+          "dev_s": 0.13164586294442415,
+          "first_observed_s": 20.145826681982726,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1384,
+          "tokens": 567655,
+          "train_s": 20.0141808190383
+        },
+        {
+          "actual_nll": 3.2724895000348435,
+          "dev_s": 0.13164586294442415,
+          "first_observed_s": 20.145826681982726,
+          "lower_observed_s": 0,
+          "reached": true,
+          "steps": 1384,
+          "tokens": 567655,
+          "train_s": 20.0141808190383
+        },
+        {
+          "actual_nll": 2.9599070309795135,
+          "dev_s": 0.2768744630739093,
+          "first_observed_s": 120.15872842026874,
+          "lower_observed_s": 20.145826681982726,
+          "reached": true,
+          "steps": 7614,
+          "tokens": 3128172,
+          "train_s": 119.88185395719483
+        },
+        {
+          "reached": false,
+          "right_censored_s": 2520.0639263023622
+        }
+      ],
+      "scores": {
+        "test": {
+          "conditioning_gain": 0.10421776620177926,
+          "nll": 2.893533263356626,
+          "ppl": 18.056997149213114
+        },
+        "validation": {
+          "conditioning_gain": 0.09272936167564594,
+          "nll": 2.9450554878142645,
+          "ppl": 19.01171727583847
+        }
+      }
+    }
+  },
+  "target_nats": [
+    4.641103388464435,
+    4.141103388464435,
+    3.641103388464435,
+    3.141103388464435,
+    2.641103388464435
+  ],
+  "training_entropy": 5.141103388464435
+}
