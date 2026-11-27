@@ -1,0 +1,7 @@
+# Windows Fleet provisioning and original seven-package gate
+
+The actual Windows run at `ea3aa59502f9f1eee89f730ebe5d0afc556eec2f` compiled and executed all seven original package targets with test caching disabled. Fleet, path-utils, state, memory, prompt-registry, and intelligence passed. Agentd passed 166 of 167 cases; the remaining case reached its real control socket bind after the prior fourteen failing cases' directory, ACL and retained-handle checks succeeded.
+
+The remaining first bind failed because Windows returned ConnectionRefused for a missing socket path, and the existing probe classified that result as an existing stale endpoint before checking physical absence. This successor checks symlink_metadata after a failed connection: only NotFound admits an absent path, other metadata failures remain errors, and an existing live endpoint still refuses replacement. It preserves the original cognitive-ranker test body and adds real missing-path, live-endpoint and directory-preservation controls.
+
+The complete original job log is retained, including its failure and successful clean-worktree gate. `readback.json` binds the original run, head, targets, log hashes and reported Bazel artifact identity. The initial artifact ZIP download failed with a network timeout; that ZIP is not claimed verified. The source repair still requires its next actual seven-package Windows run. Existing Windows stale-object type and private-parent boundaries remain a separate required production repair, not an authority claim made by this record.
