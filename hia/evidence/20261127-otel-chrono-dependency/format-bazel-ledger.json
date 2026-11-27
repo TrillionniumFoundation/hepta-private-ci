@@ -1,0 +1,75 @@
+{
+  "base": "5c07ad6792d73357f3678a27874d0565a479d474",
+  "tree": "a3fdd93245527d9b812e4b8dca412c1ca13d78a2",
+  "prior_ledger_sha": "40ba6a6436195e06370f8fa44bae283ef52efd23cf6ef2f4c8bf26a3132e4d20",
+  "source_before": {
+    "codex-rs/Cargo.lock": "a15c40f90ec29252277f2803f0cf4f01d660d6ce9a571feca9ecd8ba78d379fa",
+    "codex-rs/otel/Cargo.toml": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f",
+    "codex-rs/otel/src/events/shared.rs": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9",
+    "codex-rs/otel/src/events/shared_tests.rs": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+  },
+  "python": "Python 3.14.3",
+  "module_before": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+  "steps": [
+    {
+      "name": "format",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "returncode": 0,
+      "seconds": 0.251702375,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "bazel-lock-update",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "bazel-lock-update"
+      ],
+      "returncode": 0,
+      "seconds": 4.60498175,
+      "log_bytes": 1308,
+      "log_sha256": "226b878431832a29862e0052484898670e874f2789b25dd5726ac32fda75978f"
+    },
+    {
+      "name": "bazel-lock-check",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "bazel-lock-check"
+      ],
+      "returncode": 0,
+      "seconds": 1.85567525,
+      "log_bytes": 721,
+      "log_sha256": "bf7d5b569501a738ee58cea6ebfced20ce1a22c3d1c6b8642e85a3faf92c76bb"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 0.017821832999999287,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope_qualified": true,
+  "whole": false,
+  "source_after": {
+    "codex-rs/Cargo.lock": "a15c40f90ec29252277f2803f0cf4f01d660d6ce9a571feca9ecd8ba78d379fa",
+    "codex-rs/otel/Cargo.toml": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f",
+    "codex-rs/otel/src/events/shared.rs": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9",
+    "codex-rs/otel/src/events/shared_tests.rs": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+  },
+  "changed_paths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/otel/Cargo.toml",
+    "codex-rs/otel/src/events/shared.rs",
+    "codex-rs/otel/src/events/shared_tests.rs"
+  ],
+  "module_after": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6"
+}
