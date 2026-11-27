@@ -375,21 +375,7 @@ mod tests {
         }
 
         fn directory(&self) -> File {
-            #[cfg(windows)]
-            {
-                use std::os::windows::fs::OpenOptionsExt;
-                OpenOptions::new()
-                    .read(true)
-                    .write(true)
-                    .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
-                    .open(self._temp.path())
-                    .unwrap_or_else(|err| panic!("open outcome credit directory: {err}"))
-            }
-            #[cfg(not(windows))]
-            {
-                File::open(self._temp.path())
-                    .unwrap_or_else(|err| panic!("open outcome credit directory: {err}"))
-            }
+            crate::directory_test_support::directory(self._temp.path()).expect("directory")
         }
 
         fn writer(&self) -> LedgerWriter {
