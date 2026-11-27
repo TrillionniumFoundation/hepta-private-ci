@@ -1,0 +1,208 @@
+name: Hepta MCP OAuth schema generation
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - scripts/run_mcp_oauth_schema_generation_v1.py
+      - scripts/hepta_mcp_oauth_schema_generation_inputs_v1.json
+      - scripts/hepta_mcp_oauth_schema_generation_source_part1_v1.json
+      - scripts/hepta_mcp_oauth_schema_generation_source_part2_v1.json
+      - .github/workflows/hepta-mcp-oauth-schema-generation-v1.yml
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event_name == 'pull_request' &&
+      github.event.action == 'opened' &&
+      github.run_attempt == 1 &&
+      github.actor == 'ProfHepta' &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'fix/hepta-sdk-oauth-schema-generation-20261126-7c9e'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 32
+    env:
+      SCHEMA_STAGE: ${{ runner.temp }}/hepta-oauth-schema-${{ github.run_id }}-${{ github.run_attempt }}
+      RUSTUP_TOOLCHAIN: 1.96.0
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Record the original scope start
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          stage = Path(os.environ['SCHEMA_STAGE'])
+          stage.mkdir(mode=0o700, exist_ok=False)
+          keys = ('GITHUB_REPOSITORY', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT',
+                  'GITHUB_EVENT_NAME', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_HEAD_REF',
+                  'GITHUB_BASE_REF', 'GITHUB_ACTOR', 'GITHUB_WORKFLOW', 'GITHUB_JOB')
+          value = {'schema': 'hepta-mcp-oauth-schema-start-v1',
+                   'monotonic_seconds': time.monotonic(),
+                   'utc': datetime.now(timezone.utc).isoformat(),
+                   'boot_id': Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
+                   'github': {key: os.environ.get(key) for key in keys}}
+          with (stage / 'original-start.json').open('x', encoding='utf-8') as stream:
+              json.dump(value, stream, sort_keys=True)
+              stream.write('\n'); stream.flush(); os.fsync(stream.fileno())
+          print(json.dumps(value, sort_keys=True), flush=True)
+          PY
+
+      - name: Check out the exact generation head and its parent
+        id: original_checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Generate and retain one real schema candidate
+        id: original_generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/run_mcp_oauth_schema_generation_v1.py --stage "$SCHEMA_STAGE"
+
+      - name: Retain an original owner bootstrap failure
+        if: always()
+        shell: bash
+        env:
+          SCHEMA_CHECKOUT_OUTCOME: ${{ steps.original_checkout.outcome }}
+          SCHEMA_GENERATION_OUTCOME: ${{ steps.original_generation.outcome }}
+          SCHEMA_WORKFLOW_CANCELLED: ${{ cancelled() }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, stat, time
+          from pathlib import Path
+          stage = Path(os.environ['SCHEMA_STAGE'])
+          row = {'schema': 'hepta-mcp-oauth-schema-workflow-retention-v1',
+                 'checkout_outcome': os.environ['SCHEMA_CHECKOUT_OUTCOME'],
+                 'generation_outcome': os.environ['SCHEMA_GENERATION_OUTCOME'],
+                 'workflow_cancelled': os.environ['SCHEMA_WORKFLOW_CANCELLED'] == 'true',
+                 'generation_candidate': False, 'security_or_native_qualification': False}
+          def read_regular(path, maximum):
+              fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+              with os.fdopen(fd, 'rb') as stream:
+                  before = os.fstat(stream.fileno())
+                  if not stat.S_ISREG(before.st_mode) or before.st_size > maximum:
+                      raise ValueError('invalid bounded source')
+                  raw = stream.read(maximum + 1)
+                  after = os.fstat(stream.fileno())
+              keys = ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns', 'st_ctime_ns')
+              same_path = path.lstat()
+              if (len(raw) != before.st_size or len(raw) > maximum
+                  or any(getattr(before, key) != getattr(after, key)
+                         or getattr(before, key) != getattr(same_path, key) for key in keys)):
+                  raise ValueError('source changed during read')
+              return raw
+          def write_new(path, raw):
+              fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+              with os.fdopen(fd, 'wb') as stream:
+                  stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+              return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+          try:
+              start = json.loads(read_regular(stage / 'original-start.json', 16384))
+              keys = ('GITHUB_REPOSITORY', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT',
+                      'GITHUB_EVENT_NAME', 'GITHUB_SHA', 'GITHUB_REF', 'GITHUB_HEAD_REF',
+                      'GITHUB_BASE_REF', 'GITHUB_ACTOR', 'GITHUB_WORKFLOW', 'GITHUB_JOB')
+              if (start.get('github') != {key: os.environ.get(key) for key in keys}
+                  or start['boot_id'] != Path('/proc/sys/kernel/random/boot_id').read_text().strip()):
+                  raise ValueError('original scope identity differs')
+              row['elapsed_seconds_before_retention'] = time.monotonic() - start['monotonic_seconds']
+              evidence = stage / 'evidence'
+              if evidence.is_symlink():
+                  raise ValueError('evidence path is a symbolic link')
+              evidence.mkdir(mode=0o700, exist_ok=True)
+              result = evidence / 'RESULT.json'
+              if result.exists():
+                  raw = read_regular(result, 2097152)
+                  row['original_result'] = {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+                  value = json.loads(raw)
+                  if not isinstance(value, dict):
+                      raise ValueError('original result is not a JSON object')
+                  row['original_result_status'] = value.get('status')
+              else:
+                  sources = {}
+                  paths = (
+                      '.github/workflows/hepta-mcp-oauth-schema-generation-v1.yml',
+                      'scripts/run_mcp_oauth_schema_generation_v1.py',
+                      'scripts/hepta_mcp_oauth_schema_generation_inputs_v1.json',
+                      'scripts/hepta_mcp_oauth_schema_generation_source_part1_v1.json',
+                      'scripts/hepta_mcp_oauth_schema_generation_source_part2_v1.json',
+                      'scripts/run_chrono_hooks_cli_lock_scope_v1.py',
+                      'scripts/hepta_ci_exec.py',
+                  )
+                  for relative in paths:
+                      try:
+                          raw = read_regular(Path(relative), 512000)
+                          sources[relative] = write_new(
+                              evidence / ('bootstrap-' + relative.replace('/', '__')), raw)
+                      except BaseException as error:
+                          sources[relative] = {'error_type': type(error).__name__, 'error': str(error)}
+                  fallback = {'schema': 'hepta-mcp-oauth-schema-generation-result-v1',
+                              'status': 'failed', 'original_owner_result_missing': True,
+                              'checkout_outcome': row['checkout_outcome'],
+                              'generation_outcome': row['generation_outcome'],
+                              'retained_source_inputs': sources,
+                              'source_unchanged': False,
+                              'qualification': {'generation_candidate_only': False, 'native': False,
+                                                'sdk_conformance': False, 'published_stage_b': False},
+                              'original_job_terminal_required': True}
+                  row['failed_fallback_result'] = write_new(
+                      result, (json.dumps(fallback, sort_keys=True, indent=2) + '\n').encode())
+          except BaseException as error:
+              row['retention_error'] = {'type': type(error).__name__, 'message': str(error)}
+          print(json.dumps(row, sort_keys=True), flush=True)
+          if row.get('retention_error'):
+              raise SystemExit(1)
+          PY
+
+      - name: Retain original evidence
+        id: original_upload
+        if: always()
+        timeout-minutes: 2
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-oauth-schema-original-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.SCHEMA_STAGE }}/original-start.json
+            ${{ env.SCHEMA_STAGE }}/evidence/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 1
+
+      - name: Check the original whole scope after retention
+        if: always()
+        env:
+          SCHEMA_UPLOAD_OUTCOME: ${{ steps.original_upload.outcome }}
+          SCHEMA_WORKFLOW_CANCELLED: ${{ cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, time
+          from pathlib import Path
+          stage = Path(os.environ['SCHEMA_STAGE'])
+          start = json.loads((stage / 'original-start.json').read_bytes())
+          same_boot = start['boot_id'] == Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+          elapsed = time.monotonic() - start['monotonic_seconds']
+          row = {'schema': 'hepta-mcp-oauth-schema-after-retention-v1',
+                 'elapsed_seconds_through_retention': elapsed,
+                 'whole_acceptance_cap_seconds': 1800, 'same_boot': same_boot,
+                 'upload_outcome': os.environ['SCHEMA_UPLOAD_OUTCOME'],
+                 'workflow_cancelled': os.environ['SCHEMA_WORKFLOW_CANCELLED'] == 'true',
+                 'original_job_terminal_still_required': True}
+          print(json.dumps(row, sort_keys=True), flush=True)
+          if not (same_boot and 0 <= elapsed <= 1800 and row['upload_outcome'] == 'success'
+                  and not row['workflow_cancelled']):
+              raise SystemExit(1)
+          PY
