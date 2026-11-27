@@ -14,6 +14,7 @@ use codex_otel::ARTIFACT_OPERATION_STARTED_METRIC;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::SandboxErr;
 use codex_protocol::exec_output::ExecToolCallOutput;
+use codex_protocol::exec_output::StreamOutput;
 use codex_protocol::items::CommandExecutionItem;
 use codex_protocol::items::CommandExecutionStatus;
 use codex_protocol::items::FileChangeItem;
@@ -421,6 +422,22 @@ impl ToolEmitter {
                     let result = Err(FunctionCallError::RespondToModel(response));
                     (event, result)
                 }
+                CodexErrorDetails::UnsupportedOperation(_) => {
+                    let message = format!("execution error: {err:?}");
+                    let event = match (self, applied_patch_delta) {
+                        (Self::ApplyPatch { .. }, Some(delta)) => ToolEventStage::Success {
+                            output: ExecToolCallOutput {
+                                exit_code: 1,
+                                stderr: StreamOutput::new(message.clone()),
+                                ..Default::default()
+                            },
+                            applied_patch_delta: Some(delta),
+                        },
+                        _ => ToolEventStage::Failure(ToolEventFailure::Message(message.clone())),
+                    };
+                    let result = Err(FunctionCallError::RespondToModel(message));
+                    (event, result)
+                }
                 _ => {
                     let message = format!("execution error: {err:?}");
                     let event = ToolEventStage::Failure(ToolEventFailure::Message(message.clone()));
@@ -751,6 +768,17 @@ mod tests {
         assert_failed_apply_patch_tracks_committed_delta(
             Err(ToolError::Rejected("rejected by user".to_string())),
             PatchApplyStatus::Declined,
+        )
+        .await;
+    }
+
+    #[tokio::test]
+    async fn unsupported_apply_patch_tracks_committed_delta_as_failed() {
+        assert_failed_apply_patch_tracks_committed_delta(
+            Err(ToolError::Codex(CodexErr::UnsupportedOperation(
+                "filesystem execution unavailable".to_string(),
+            ))),
+            PatchApplyStatus::Failed,
         )
         .await;
     }
