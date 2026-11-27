@@ -29,6 +29,7 @@ use codex_utils_pty::ExecCommandSession;
 use codex_utils_pty::ProcessSignal as PtyProcessSignal;
 use codex_utils_pty::SpawnedPty;
 
+use super::ExecApprovalTerminal;
 use super::UNIFIED_EXEC_OUTPUT_MAX_BYTES;
 use super::UNIFIED_EXEC_OUTPUT_MAX_TOKENS;
 use super::UnifiedExecError;
@@ -47,6 +48,11 @@ pub(crate) trait SpawnLifecycle: std::fmt::Debug + Send + Sync {
     }
 
     fn after_spawn(&mut self) {}
+
+    /// Returns cancellation provenance owned by this prepared execution, if any.
+    fn approval_terminal(&self) -> Option<Arc<ExecApprovalTerminal>> {
+        None
+    }
 }
 
 pub(crate) type SpawnLifecycleHandle = Box<dyn SpawnLifecycle>;
@@ -121,6 +127,12 @@ impl std::fmt::Debug for UnifiedExecProcess {
 }
 
 impl UnifiedExecProcess {
+    pub(super) fn approval_terminal(&self) -> Option<Arc<ExecApprovalTerminal>> {
+        self._spawn_lifecycle
+            .as_ref()
+            .and_then(|lifecycle| lifecycle.approval_terminal())
+    }
+
     fn new(
         process_handle: ProcessHandle,
         sandbox_type: SandboxType,

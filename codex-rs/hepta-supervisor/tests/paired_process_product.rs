@@ -7,6 +7,7 @@ use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use std::sync::OnceLock;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -55,12 +56,43 @@ const IDS: [&str; 5] = [
 // Keep the product scenarios isolated while leaving their child processes and
 // all supervisor behavior unchanged.
 static PAIR_PRODUCT_TEST_LOCK: Mutex<()> = Mutex::new(());
+static PAIR_TRACE_START: OnceLock<Instant> = OnceLock::new();
 
 // Write fixed, infrequent markers through the stderr handle, outside libtest's
 // print-macro capture. A timeout can then retain the last entered lifecycle
 // boundary. Diagnostic write failure must not replace the test's own outcome.
 fn trace_pair_stage(marker: &'static [u8]) {
-    let _ = std::io::stderr().write_all(marker);
+    let elapsed_ms = PAIR_TRACE_START
+        .get_or_init(Instant::now)
+        .elapsed()
+        .as_millis();
+    // The longest fixed label plus a full u128 elapsed value is 103 bytes.
+    let mut record = [0_u8; 128];
+    let used = {
+        let mut output = record.as_mut_slice();
+        let _ = output.write_all(marker.strip_suffix(b"\n").unwrap_or(marker));
+        let _ = writeln!(output, " elapsed_ms={elapsed_ms}");
+        128 - output.len()
+    };
+    let _ = std::io::stderr().write_all(&record[..used]);
+}
+
+fn trace_pair_ready_failure(cause: &'static str, agent_count: usize, fault_count: usize) {
+    let elapsed_ms = PAIR_TRACE_START
+        .get_or_init(Instant::now)
+        .elapsed()
+        .as_millis();
+    // Fixed causes and full u128/64-bit usize values need at most 149 bytes.
+    let mut record = [0_u8; 256];
+    let used = {
+        let mut output = record.as_mut_slice();
+        let _ = writeln!(
+            output,
+            "paired-ready-error cause={cause} elapsed_ms={elapsed_ms} agents={agent_count} faults={fault_count}"
+        );
+        256 - output.len()
+    };
+    let _ = std::io::stderr().write_all(&record[..used]);
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -181,12 +213,14 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
     drop(old);
     trace_pair_stage(b"paired-stage five_pairs supervisor_drop_complete\n");
     trace_pair_stage(b"paired-stage five_pairs recover_begin\n");
-    let (recovered, report) = Supervisor::recover(
+    let recovery_result = Supervisor::recover(
         fixture.registry.clone(),
         UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
         test_config(),
         Instant::now(),
-    )?;
+    );
+    trace_pair_stage(b"paired-stage five_pairs recover_returned\n");
+    let (recovered, report) = recovery_result?;
     assert!(report.faults.is_empty(), "recovery faults: {report:?}");
     trace_pair_stage(b"paired-stage five_pairs recover_complete\n");
     fixture.supervisor = Some(recovered);
@@ -239,17 +273,21 @@ impl PairFleet {
             .prefix("hsup-pairs-")
             .tempdir_in("/tmp")?;
         let root = HeptaFleetRoot::parse(temp.path().join("fleet"))?;
+        trace_pair_stage(b"paired-stage fixture registry_init_begin\n");
         let registry = FleetRegistry::initialize(root.clone())?;
+        trace_pair_stage(b"paired-stage fixture registry_init_complete\n");
         let mut agents = Vec::new();
         for (index, value) in IDS.iter().take(count).enumerate() {
             let workspace = temp.path().join(format!("workspace-{index}"));
             std::fs::create_dir(&workspace)?;
             let agent_id = AgentId::parse(*value)?;
+            trace_pair_stage(b"paired-stage fixture register_begin\n");
             registry.register(AgentManifest::new(
                 agent_id.clone(),
                 WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
                 ResourceBudget::local_default(),
             )?)?;
+            trace_pair_stage(b"paired-stage fixture register_complete\n");
             agents.push(agent_id);
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
@@ -262,6 +300,7 @@ impl PairFleet {
             "--ignored".to_string(),
             "--nocapture".to_string(),
         ];
+        trace_pair_stage(b"paired-stage fixture install_release_begin\n");
         registry.install_release_bundle(
             release_id.clone(),
             &fixture_binary,
@@ -269,16 +308,24 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        trace_pair_stage(b"paired-stage fixture install_release_complete\n");
         for agent_id in &agents {
+            trace_pair_stage(b"paired-stage fixture allow_release_begin\n");
             registry.allow_release(agent_id, &release_id)?;
+            trace_pair_stage(b"paired-stage fixture allow_release_complete\n");
+            trace_pair_stage(b"paired-stage fixture write_binding_begin\n");
             write_binding(&registry, agent_id)?;
+            trace_pair_stage(b"paired-stage fixture write_binding_complete\n");
         }
-        let (supervisor, report) = Supervisor::recover(
+        trace_pair_stage(b"paired-stage fixture initial_recover_begin\n");
+        let initial_recovery_result = Supervisor::recover(
             registry.clone(),
             UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
             test_config(),
             Instant::now(),
-        )?;
+        );
+        trace_pair_stage(b"paired-stage fixture initial_recover_returned\n");
+        let (supervisor, report) = initial_recovery_result?;
         assert!(report.faults.is_empty());
         Ok(Self {
             _temp: temp,
@@ -334,6 +381,9 @@ impl PairFleet {
         loop {
             let supervisor = self.supervisor.as_mut().context("supervisor")?;
             let report = supervisor.tick(Instant::now());
+            if !report.faults.is_empty() {
+                trace_pair_ready_failure("tick_fault", agents.len(), report.faults.len());
+            }
             anyhow::ensure!(report.faults.is_empty(), "tick faults: {:?}", report.faults);
             if agents.iter().all(|agent_id| {
                 supervisor.snapshot(agent_id).is_some_and(|snapshot| {
@@ -346,6 +396,7 @@ impl PairFleet {
                 return Ok(());
             }
             if Instant::now() >= deadline {
+                trace_pair_ready_failure("deadline_reached", agents.len(), report.faults.len());
                 let snapshots: Vec<_> = agents
                     .iter()
                     .map(|agent_id| (agent_id.clone(), supervisor.snapshot(agent_id)))

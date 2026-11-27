@@ -14,6 +14,7 @@ mod environment_provider;
 mod environment_registry;
 mod environment_toml;
 mod file_read;
+mod file_system_error;
 mod forward;
 mod fs_helper;
 mod fs_helper_main;

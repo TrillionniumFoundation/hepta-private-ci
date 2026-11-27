@@ -10,6 +10,8 @@ mod unix_io;
 mod win;
 #[cfg(windows)]
 mod windows_input;
+#[cfg(windows)]
+mod windows_process_exit;
 
 pub const DEFAULT_OUTPUT_BYTES_CAP: usize = 1024 * 1024;
 
@@ -47,3 +49,7 @@ pub use win::PsuedoCon;
 pub use win::conpty::RawConPty;
 #[cfg(windows)]
 pub use windows_input::WindowsTtyInputNormalizer;
+#[cfg(windows)]
+pub use windows_process_exit::ProcessExitObserver;
+#[cfg(windows)]
+pub use windows_process_exit::ProcessExitState;

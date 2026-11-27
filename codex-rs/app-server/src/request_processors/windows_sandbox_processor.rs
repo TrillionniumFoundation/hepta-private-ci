@@ -23,6 +23,11 @@ impl WindowsSandboxRequestProcessor {
     pub(crate) async fn windows_sandbox_readiness(
         &self,
     ) -> Result<WindowsSandboxReadinessResponse, JSONRPCErrorError> {
+        #[cfg(target_os = "windows")]
+        if WindowsSandboxLevel::from_config(&self.config) != WindowsSandboxLevel::Disabled {
+            codex_windows_sandbox::ensure_windows_managed_filesystem_isolation()
+                .map_err(|err| internal_error(err.to_string()))?;
+        }
         Ok(determine_windows_sandbox_readiness(&self.config))
     }
 

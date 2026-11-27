@@ -40,22 +40,28 @@ impl ChatWidget {
         let workspace_roots = self.config.effective_workspace_roots();
         let env_map: std::collections::HashMap<String, String> = std::env::vars().collect();
         let permission_profile = self.config.permissions.effective_permission_profile();
-        let Ok(permissions) =
-            codex_windows_sandbox::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+        if codex_windows_sandbox::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
                 &permission_profile,
                 workspace_roots.as_slice(),
             )
-        else {
+            .is_err()
+        {
             return None;
-        };
-        match codex_windows_sandbox::apply_world_writable_scan_and_denies_for_permissions(
-            self.config.codex_home.as_path(),
-            cwd.as_path(),
-            &env_map,
-            &permissions,
-            Some(self.config.codex_home.as_path()),
-        ) {
-            Ok(_) => None,
+        }
+        // Selecting a profile must not install host ACLs. Actual preparation
+        // stays behind the managed-execution guard; inspection only supplies
+        // the existing warning and never treats Unsupported as a clean scan.
+        match codex_windows_sandbox::inspect_world_writable_paths(cwd.as_path(), &env_map) {
+            Ok(paths) if paths.is_empty() => None,
+            Ok(paths) => {
+                let sample_paths = paths
+                    .iter()
+                    .take(/*n*/ 3)
+                    .map(|path| path.display().to_string())
+                    .collect::<Vec<_>>();
+                let extra_count = paths.len() - sample_paths.len();
+                Some((sample_paths, extra_count, false))
+            }
             Err(_) => Some((Vec::new(), 0, true)),
         }
     }

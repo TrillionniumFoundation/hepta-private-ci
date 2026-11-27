@@ -22,6 +22,7 @@ use crate::tools::sandboxing::ApprovalRequestReasons;
 use crate::tools::sandboxing::PermissionRequestPayload;
 use crate::tools::sandboxing::ToolError;
 use crate::tools::sandboxing::with_cached_approval;
+use crate::unified_exec::ExecApprovalTerminal;
 use codex_analytics::GuardianApprovalRequestSource;
 use codex_config::types::AppToolApproval;
 use codex_hooks::PermissionRequestDecision;
@@ -441,6 +442,27 @@ impl Session {
         action: ApprovalAction,
         ctx: ApprovalContext,
     ) -> Result<ReviewDecision, ToolError> {
+        self.request_approval_with_terminal(action, ctx, /*exec_terminal*/ None)
+            .await
+    }
+
+    #[cfg(unix)]
+    pub(crate) async fn request_execve_approval(
+        self: &Arc<Self>,
+        action: ApprovalAction,
+        ctx: ApprovalContext,
+        terminal: Arc<ExecApprovalTerminal>,
+    ) -> Result<ReviewDecision, ToolError> {
+        self.request_approval_with_terminal(action, ctx, Some(terminal))
+            .await
+    }
+
+    async fn request_approval_with_terminal(
+        self: &Arc<Self>,
+        action: ApprovalAction,
+        ctx: ApprovalContext,
+        exec_terminal: Option<Arc<ExecApprovalTerminal>>,
+    ) -> Result<ReviewDecision, ToolError> {
         let is_mcp_tool_call = matches!(&action, ApprovalAction::McpToolCall { .. });
         let is_network_approval = matches!(&action, ApprovalAction::NetworkAccess { .. });
         let permission_request_run_id = match &action {
@@ -470,7 +492,10 @@ impl Session {
                 decision: ReviewDecision::denied(message),
                 source: ApprovalResolutionSource::Hook,
             },
-            None => self.request_reviewer_approval(action, &ctx).await,
+            None => {
+                self.request_reviewer_approval(action, &ctx, exec_terminal)
+                    .await
+            }
         };
         // Network approvals record their final telemetry after validation and persistence.
         if !is_network_approval {
@@ -504,6 +529,7 @@ impl Session {
         self: &Arc<Self>,
         action: ApprovalAction,
         ctx: &ApprovalContext,
+        exec_terminal: Option<Arc<ExecApprovalTerminal>>,
     ) -> ApprovalResolution {
         let reviewer = if ctx.strict_auto_review {
             ApprovalReviewer::Guardian
@@ -520,7 +546,10 @@ impl Session {
 
         let decision = match reviewer {
             ApprovalReviewer::Guardian => self.request_guardian_approval(action, ctx).await,
-            ApprovalReviewer::User => self.request_user_approval(&action, ctx).await,
+            ApprovalReviewer::User => {
+                self.request_user_approval(&action, ctx, exec_terminal)
+                    .await
+            }
         };
         let source = match reviewer {
             ApprovalReviewer::Guardian => ApprovalResolutionSource::Guardian,
@@ -611,7 +640,10 @@ impl Session {
         &self,
         action: &ApprovalAction,
         ctx: &ApprovalContext,
+        exec_terminal: Option<Arc<ExecApprovalTerminal>>,
     ) -> ReviewDecision {
+        #[cfg(not(unix))]
+        let _ = exec_terminal;
         match action {
             ApprovalAction::ExecCommand {
                 environment_id,
@@ -677,7 +709,7 @@ impl Session {
                 additional_permissions,
                 ..
             } => {
-                self.request_command_approval(
+                self.request_command_approval_with_terminal(
                     ctx.review_context.turn(),
                     ctx.call_id.clone(),
                     Some(approval_id.clone()),
@@ -690,6 +722,7 @@ impl Session {
                     additional_permissions.clone(),
                     Some(vec![ReviewDecision::Approved, ReviewDecision::Abort]),
                     /*plugin_attribution_override*/ None,
+                    exec_terminal,
                 )
                 .await
             }

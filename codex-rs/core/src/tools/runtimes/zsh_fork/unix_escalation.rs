@@ -11,6 +11,7 @@ use crate::tools::sandboxing::SandboxAttempt;
 use crate::tools::sandboxing::ToolCtx;
 use crate::tools::sandboxing::ToolError;
 use crate::tools::sandboxing::unsandboxed_execution_allowed;
+use crate::unified_exec::ExecApprovalTerminal;
 use codex_execpolicy::Decision;
 use codex_execpolicy::Evaluation;
 use codex_execpolicy::MatchOptions;
@@ -58,6 +59,7 @@ use uuid::Uuid;
 pub(crate) struct PreparedUnifiedExecZshFork {
     pub(crate) exec_request: ExecRequest,
     pub(crate) escalation_session: EscalationSession,
+    pub(crate) approval_terminal: Arc<ExecApprovalTerminal>,
 }
 
 const PROMPT_CONFLICT_REASON: &str =
@@ -142,11 +144,16 @@ pub(crate) async fn prepare_unified_exec_zsh_fork(
         codex_linux_sandbox_exe: ctx.step_context.turn.config.codex_linux_sandbox_exe.clone(),
         use_legacy_landlock: ctx.step_context.turn.config.features.use_legacy_landlock(),
     };
+    let approval_terminal = Arc::new(ExecApprovalTerminal::new(
+        ctx.step_context.turn.sub_id.clone(),
+        ctx.call_id.clone(),
+    ));
     let escalation_policy = CoreShellActionProvider {
         policy: Arc::clone(&exec_policy),
         session: Arc::clone(&ctx.session),
         review_context: GuardianReviewContext::from(&ctx.step_context),
         call_id: ctx.call_id.clone(),
+        approval_terminal: Arc::clone(&approval_terminal),
         environment_id: req.turn_environment.selection.environment_id.clone(),
         source: GuardianCommandSource::UnifiedExec,
         tool_name: ctx.tool_name.clone(),
@@ -174,6 +181,7 @@ pub(crate) async fn prepare_unified_exec_zsh_fork(
     Ok(Some(PreparedUnifiedExecZshFork {
         exec_request,
         escalation_session,
+        approval_terminal,
     }))
 }
 
@@ -182,6 +190,7 @@ struct CoreShellActionProvider {
     session: Arc<crate::session::session::Session>,
     review_context: GuardianReviewContext,
     call_id: String,
+    approval_terminal: Arc<ExecApprovalTerminal>,
     environment_id: String,
     source: GuardianCommandSource,
     tool_name: ToolName,
@@ -301,7 +310,13 @@ impl CoreShellActionProvider {
                     retry_reason: None,
                     network_approval_context: None,
                 };
-                self.session.request_approval(action, approval_ctx).await
+                self.session
+                    .request_execve_approval(
+                        action,
+                        approval_ctx,
+                        Arc::clone(&self.approval_terminal),
+                    )
+                    .await
             })
             .await
         {

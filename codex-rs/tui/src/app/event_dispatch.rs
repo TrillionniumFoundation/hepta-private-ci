@@ -1929,6 +1929,13 @@ impl App {
                 #[cfg(target_os = "windows")]
                 {
                     self.chat_widget.clear_windows_sandbox_setup_status();
+                    if let Err(err) =
+                        codex_windows_sandbox::ensure_windows_managed_filesystem_isolation()
+                    {
+                        self.windows_sandbox.setup_started_at = None;
+                        self.chat_widget.add_error_message(err.to_string());
+                        return Ok(AppRunControl::Continue);
+                    }
                     if let Some(started_at) = self.windows_sandbox.setup_started_at.take() {
                         self.session_telemetry.record_duration(
                             "codex.windows_sandbox.elevated_setup_duration_ms",

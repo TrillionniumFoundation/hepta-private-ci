@@ -46,6 +46,7 @@ use crate::shell::ShellType;
 use crate::tools::network_approval::DeferredNetworkApproval;
 use codex_core_plugins::PluginMetricsSidecar;
 
+mod approval_terminal;
 mod async_watcher;
 mod errors;
 mod head_tail_buffer;
@@ -58,6 +59,8 @@ pub(crate) fn set_deterministic_process_ids_for_tests(enabled: bool) {
     process_manager::set_deterministic_process_ids_for_tests(enabled);
 }
 
+pub(crate) use approval_terminal::ExecApprovalTerminal;
+pub(crate) use approval_terminal::PendingExecApprovalCancellation;
 pub(crate) use errors::UnifiedExecError;
 pub(crate) use process::NoopSpawnLifecycle;
 #[cfg(unix)]

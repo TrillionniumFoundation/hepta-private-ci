@@ -7,6 +7,8 @@ mod common;
 mod shared;
 #[path = "file_system/support.rs"]
 mod support;
+#[path = "file_system/unavailable_windows_tests.rs"]
+mod unavailable;
 
 use std::path::Path;
 use std::process::Command;
