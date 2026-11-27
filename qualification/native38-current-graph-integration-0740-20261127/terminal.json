@@ -1,0 +1,46 @@
+{
+  "results": [
+    {
+      "phase": "lock-update",
+      "command": [
+        "/opt/homebrew/bin/just",
+        "bazel-lock-update"
+      ],
+      "pid": 97024,
+      "exit_code": 0,
+      "seconds": 4.520713082980365,
+      "stdout": {
+        "bytes": 18,
+        "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+      },
+      "stderr": {
+        "bytes": 1290,
+        "sha256": "52161dd1fa6f6d104a15b8267f7ebaee35e5525c81bdaf3d5a757553e3dd8101"
+      }
+    },
+    {
+      "phase": "lock-check",
+      "command": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "pid": 97187,
+      "exit_code": 0,
+      "seconds": 1.2824213749263436,
+      "stdout": {
+        "bytes": 18,
+        "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+      },
+      "stderr": {
+        "bytes": 594,
+        "sha256": "8e57922ffc05728af6de9f992960838319c6891a15229aa308fc7db22d20834b"
+      }
+    }
+  ],
+  "changed_tracked_paths": [],
+  "dependency_changed": [],
+  "passed": true,
+  "MODULE_lock": {
+    "bytes": 1742739,
+    "sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6"
+  }
+}
