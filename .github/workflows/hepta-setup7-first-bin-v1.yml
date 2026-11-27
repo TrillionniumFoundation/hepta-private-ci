@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened]
     branches:
-      - "fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e"
+      - "fix/hepta-setup7-first-bin-controls-20261127-7c9e"
 
 permissions:
   contents: read
@@ -12,7 +12,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: hepta-setup7-first-bin-20261127-7c9e
+  group: hepta-setup7-tool-homes-20261127-7c9e
   cancel-in-progress: false
 
 env:
@@ -30,14 +30,14 @@ env:
 jobs:
   first-seven-native:
     if: >-
-      ${{ github.event_name == 'pull_request' &&
+      ${{ true && github.event_name == 'pull_request' &&
       github.event.action == 'opened' &&
       github.run_attempt == 1 &&
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'fix/hepta-setup7-first-bin-controls-20261127-7c9e' &&
-      github.event.pull_request.base.ref == 'fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e' &&
-      github.event.pull_request.base.sha == '1b2ae899a8956ee96201956bced828f0824ea5f3' &&
+      github.event.pull_request.head.ref == 'fix/hepta-setup7-explicit-tool-homes-20261127-7c9e' &&
+      github.event.pull_request.base.ref == 'fix/hepta-setup7-first-bin-controls-20261127-7c9e' &&
+      github.event.pull_request.base.sha == 'b8cb004664d7f89d16d4e031cdb35617fd7f6188' &&
       github.actor == 'ProfHepta' &&
       github.event.pull_request.user.login == 'ProfHepta' }}
     runs-on: windows-2025
@@ -49,7 +49,13 @@ jobs:
           $ErrorActionPreference = "Stop"
           if ($env:GITHUB_RUN_ATTEMPT -ne "1") { throw "Original attempt required" }
           $out = Join-Path $env:RUNNER_TEMP ("hepta-setup7-" + $env:GITHUB_RUN_ID)
+          $toolsRoot = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP ("hepta-setup7-tools-" + $env:GITHUB_RUN_ID)))
           if (Test-Path -LiteralPath $out) { throw "Original observation directory already exists" }
+          if (Test-Path -LiteralPath $toolsRoot) { throw "Explicit tool homes already exist" }
+          $rustupHome = Join-Path $toolsRoot "rustup"
+          $cargoHome = Join-Path $toolsRoot "cargo"
+          $toolchainBin = Join-Path $rustupHome "toolchains/1.96.0-x86_64-pc-windows-msvc/bin"
+          $toolchainBin = [IO.Path]::GetFullPath($toolchainBin)
           $tick = [Environment]::TickCount64
           $utc = [DateTimeOffset]::UtcNow.ToString("o")
           [IO.Directory]::CreateDirectory($out) | Out-Null
@@ -63,8 +69,21 @@ jobs:
             working_seconds = 1000
             retention_seconds = 200
             includes_checkout_tools_diagnostics_failures_and_upload = $true
+            tool_homes = @{
+              schema = "hepta.setup7.explicit_tool_homes.v1"
+              root = $toolsRoot
+              rustup_home = $rustupHome
+              cargo_home = $cargoHome
+              toolchain = "1.96.0-x86_64-pc-windows-msvc"
+              toolchain_bin = $toolchainBin
+              selection = "explicit-before-provision-no-defaults"
+            }
           } | ConvertTo-Json -Depth 8
           [IO.File]::WriteAllText((Join-Path $out "BOOTSTRAP.json"), $boot, [Text.UTF8Encoding]::new($false))
+          [IO.Directory]::CreateDirectory($rustupHome) | Out-Null
+          [IO.Directory]::CreateDirectory($cargoHome) | Out-Null
+          $homes = "RUSTUP_HOME=$rustupHome" + [Environment]::NewLine + "CARGO_HOME=$cargoHome" + [Environment]::NewLine
+          [IO.File]::AppendAllText($env:GITHUB_ENV, $homes, [Text.UTF8Encoding]::new($false))
       - name: Checkout the original opened source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -77,15 +96,33 @@ jobs:
         with:
           toolchain: "1.96.0"
           targets: x86_64-pc-windows-msvc
+      - name: Bind the pinned nextest installation directory
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $out = Join-Path $env:RUNNER_TEMP ("hepta-setup7-" + $env:GITHUB_RUN_ID)
+          $boot = [IO.File]::ReadAllText((Join-Path $out "BOOTSTRAP.json")) | ConvertFrom-Json -Depth 8
+          if ($boot.tool_homes.schema -ne "hepta.setup7.explicit_tool_homes.v1") { throw "Missing explicit tool-home declaration" }
+          if ($env:RUSTUP_HOME -cne $boot.tool_homes.rustup_home -or $env:CARGO_HOME -cne $boot.tool_homes.cargo_home) { throw "Provisioned homes differ from the original declaration" }
+          $toolchainBin = [IO.Path]::GetFullPath((Join-Path $env:RUSTUP_HOME "toolchains/1.96.0-x86_64-pc-windows-msvc/bin"))
+          if ($toolchainBin -cne $boot.tool_homes.toolchain_bin) { throw "Unexpected compiler directory" }
+          foreach ($name in @("cargo.exe", "rustc.exe")) {
+            $file = Get-Item -LiteralPath (Join-Path $toolchainBin $name)
+            if ($file -isnot [IO.FileInfo] -or ($file.Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw "Compiler path is not a regular file: $name" }
+          }
+          [IO.File]::AppendAllText($env:GITHUB_PATH, $toolchainBin + [Environment]::NewLine, [Text.UTF8Encoding]::new($false))
+          Write-Output ("Pinned nextest installation directory: " + $toolchainBin)
       - name: Provision the pinned nextest request
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: nextest@0.9.103
+          checksum: "true"
+          fallback: none
       - name: Observe the first seven native controls
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          HEPTA_SETUP7_INPUT_SHA256: "fed8d8a4224dc2b4f9e682773515b5d657b3e7508bbbf682fd24bbab521e505a"
+          HEPTA_SETUP7_INPUT_SHA256: "b3a135096f485c98d691758fa37b92cc46ced787d228b8ab327f0ccb4648005b"
         run: |
           $ErrorActionPreference = "Stop"
           $out = Join-Path $env:RUNNER_TEMP ("hepta-setup7-" + $env:GITHUB_RUN_ID)
@@ -104,7 +141,7 @@ jobs:
           scope = {"__name__": "__main__", "__file__": str(path), "__package__": ""}
           exec(compile(raw, str(path), "exec"), scope)
           '@
-            & python -I -B -X utf8 -c $bootstrap (Join-Path $env:GITHUB_WORKSPACE "scripts/run_hepta_setup7_first_bin_v1.py") "65ecb29c5ce3f47cf2176265771e9bd5d1b0bb695f4d45d2cd940b52df7a4de7"
+            & python -I -B -X utf8 -c $bootstrap (Join-Path $env:GITHUB_WORKSPACE "scripts/run_hepta_setup7_first_bin_v1.py") "47c248db388061d5fa9d163e223996d87d17c1c244e8af35afd1d074cf99482c"
             $code = $LASTEXITCODE
             if ($null -eq $code) { $code = 1; throw "No original Python exit code" }
           } catch {
