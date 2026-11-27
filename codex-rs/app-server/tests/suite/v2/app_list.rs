@@ -183,6 +183,7 @@ async fn list_apps_uses_external_chatgpt_auth() -> Result<()> {
         Duration::ZERO,
         Duration::ZERO,
         &access_token,
+        /*directory_release*/ None,
     )
     .await?;
 
@@ -579,11 +580,15 @@ async fn list_apps_emits_updates_and_returns_after_both_lists_load() -> Result<(
     ];
 
     let tools = vec![connector_tool("beta", "Beta App")?];
-    let (server_url, server_handle) = start_apps_server_with_delays(
+    let (directory_release_tx, directory_release_rx) =
+        tokio::sync::watch::channel(/*init*/ false);
+    let (server_url, server_handle, _) = start_apps_server_with_delays_and_control_inner(
         connectors.clone(),
         tools,
         Duration::from_millis(300),
         Duration::ZERO,
+        "chatgpt-token",
+        Some(directory_release_rx),
     )
     .await?;
 
@@ -633,6 +638,8 @@ async fn list_apps_emits_updates_and_returns_after_both_lists_load() -> Result<(
 
     let first_update = read_app_list_updated_notification(&mut mcp).await?;
     assert_eq!(first_update.data, expected_accessible);
+    // Release the directory response only after the accessible-only update is checked.
+    directory_release_tx.send(/*value*/ true)?;
 
     let expected_merged = vec![
         AppInfo {
@@ -1458,6 +1465,7 @@ struct AppsServerState {
     expected_account_id: String,
     response: Arc<StdMutex<serde_json::Value>>,
     directory_delay: Duration,
+    directory_release: Option<tokio::sync::watch::Receiver<bool>>,
 }
 
 #[derive(Clone)]
@@ -1546,6 +1554,7 @@ async fn start_apps_server_with_delays_and_control(
         directory_delay,
         tools_delay,
         "chatgpt-token",
+        /*directory_release*/ None,
     )
     .await
 }
@@ -1556,6 +1565,7 @@ async fn start_apps_server_with_delays_and_control_inner(
     directory_delay: Duration,
     tools_delay: Duration,
     expected_bearer: &str,
+    directory_release: Option<tokio::sync::watch::Receiver<bool>>,
 ) -> Result<(String, JoinHandle<()>, AppsServerControl)> {
     let response = Arc::new(StdMutex::new(
         json!({ "apps": connectors, "next_token": null }),
@@ -1566,6 +1576,7 @@ async fn start_apps_server_with_delays_and_control_inner(
         expected_account_id: "account-123".to_string(),
         response: response.clone(),
         directory_delay,
+        directory_release,
     };
     let state = Arc::new(state);
     let server_control = AppsServerControl {
@@ -1627,6 +1638,12 @@ async fn list_directory_connectors(
     } else if !external_logos_ok {
         Err(StatusCode::BAD_REQUEST)
     } else {
+        if let Some(mut directory_release) = state.directory_release.clone() {
+            directory_release
+                .wait_for(|released| *released)
+                .await
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        }
         let response = state
             .response
             .lock()
