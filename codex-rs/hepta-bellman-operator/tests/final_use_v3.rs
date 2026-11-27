@@ -328,6 +328,9 @@ fn qualified_dataset() -> TestResult<(Fixture, LedgerWriter, DatasetSnapshotRece
     Ok((fixture, owner, receipt, first_outcome))
 }
 
+#[path = "final_use_v3/memory_training.rs"]
+mod memory_training;
+
 fn runtime() -> TestResult<RuntimeLimitsV1> {
     Ok(RuntimeLimitsV1::new(10_000, 1_000_000)?)
 }
@@ -565,6 +568,89 @@ fn world_v3_enforces_uncertainty_and_keeps_raw_model_private() -> TestResult<()>
     assert!(matches!(
         fit_transition_model_verified_v3(&owner, verified, 50),
         Err(FinalUseError::Binding("world uncertainty budget"))
+    ));
+    Ok(())
+}
+
+#[test]
+fn terminal_cell_fits_only_observed_actions_and_rechecks_the_owner() -> TestResult<()> {
+    use codex_hepta_bellman_operator::TerminalCellError;
+    use codex_hepta_bellman_operator::TerminalCellProfileV1;
+    use codex_hepta_bellman_operator::TerminalSupportedCellProfileV1;
+    use codex_hepta_bellman_operator::fit_terminal_cell_from_owner_v1;
+    use codex_hepta_bellman_operator::freeze_supported_terminal_cells_from_owner_v1;
+    use codex_hepta_bellman_operator::freeze_terminal_cell_from_owner_v1;
+
+    let fixture = Fixture::new()?;
+    let mut owner = fixture.writer()?;
+    let target = FixedQ32::from_raw(FixedQ32::ONE.raw() / 4);
+    let outcome_id = collect(&mut owner, "first", target.raw())?;
+    let plan = DatasetFreezePlanV2 {
+        snapshot_id: id("terminal.dataset")?,
+        objective_digest: digest("objective"),
+        inclusion_policy_digest: digest("policy"),
+    };
+    let signed = sign(
+        owner.verifier(),
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        &dataset_freeze_signing_payload_v2(&owner.snapshot()?, &plan)?,
+    )?;
+    let now = 50;
+    let dataset = owner.freeze_dataset(plan, &signed, now)?;
+    let selected = id("first.selected")?;
+    let cells = TerminalCellProfileV1 {
+        artifact_id: id("terminal.artifact")?,
+        producer_id: id("terminal.producer")?,
+        generation: Generation::new(1)?,
+        sensor_id: id("single-state")?,
+        objective_digest: dataset.snapshot.objective_digest,
+        run_snapshot_digest: digest("first.run"),
+        unit_profile_digest: digest("outcome-units"),
+        action_ids: vec![selected.clone()],
+        minimum_samples_per_action: 1,
+    };
+    let supported = TerminalSupportedCellProfileV1 {
+        cells: cells.clone(),
+        candidate_ids: vec![selected.clone(), id("abstain")?],
+    };
+
+    let mut complete = cells;
+    complete.action_ids.clone_from(&supported.candidate_ids);
+    let complete = freeze_terminal_cell_from_owner_v1(&owner, &dataset, complete, now)?;
+    assert!(matches!(
+        fit_terminal_cell_from_owner_v1(&owner, complete, now),
+        Err(TerminalCellError::Fit(_))
+    ));
+
+    let mut insufficient = supported.clone();
+    insufficient.cells.minimum_samples_per_action = 2;
+    assert!(matches!(
+        freeze_supported_terminal_cells_from_owner_v1(&owner, &dataset, insufficient, now),
+        Err(TerminalCellError::Unsupported(
+            "insufficient owner action support"
+        ))
+    ));
+    let frozen = freeze_supported_terminal_cells_from_owner_v1(&owner, &dataset, supported, now)?;
+    assert_eq!(frozen.dataset(), &dataset);
+    assert_eq!(frozen.sample_count(), 1);
+    let artifact = fit_terminal_cell_from_owner_v1(&owner, frozen.clone(), now)?;
+    assert_eq!(artifact.dataset_digest, dataset.snapshot.dataset_digest);
+    assert!(!artifact.authority.grants_any());
+    let [cell] = artifact.cells.as_slice() else {
+        return Err("expected exactly one observed action cell".into());
+    };
+    assert_eq!(cell.action_id, selected);
+    assert_eq!(cell.sample_count, 1);
+    assert_eq!(
+        (cell.minimum_target, cell.mean_target, cell.maximum_target),
+        (target, target, target)
+    );
+
+    append_correction(&mut owner, &outcome_id)?;
+    assert!(matches!(
+        fit_terminal_cell_from_owner_v1(&owner, frozen, now),
+        Err(TerminalCellError::Ledger(_))
     ));
     Ok(())
 }

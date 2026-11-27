@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "source": {
+    "baseline_musl": "bc4912ea657864d33b36a57da0b50eb35bee90af",
+    "final_gnu": "469670e8e5a88432e5ff2ddd5355bde5238e98de"
+  },
+  "host": "Linux x86_64",
+  "method": "Original ignored native cases run explicitly and individually. Separate state and witness bind mounts. Parent starts as root in a read-only, network-isolated container. Each original test launches its dedicated non-root child. Baseline musl and final GNU are different target builds.",
+  "result": {
+    "baseline_musl": {
+      "image": "sha256:9a04f13b3f80ef056361e30868593b1cfd2279fe19e4081cb93a90bf56819d6a",
+      "binary_sha256": "9ded852f938f2c4cf8edb6b74c157731aa29329245f3fc61938aad90872a22b0",
+      "phase": "original-musl",
+      "cases": [
+        {
+          "name": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+          "rc": 101,
+          "elapsed_seconds": 31.931909933919087,
+          "ran": true,
+          "passed": false,
+          "error": [
+            "Error: publication RetiredSession: connect original CURRENT purpose",
+            "Caused by:",
+            "Error: publication component RetiredSession phase",
+            "Caused by:"
+          ],
+          "log_sha256": "f313875db60654348d5e17349bc19a733add703616fff7f3a6322fdc26c4d08c"
+        },
+        {
+          "name": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+          "rc": 101,
+          "elapsed_seconds": 46.986480829073116,
+          "ran": true,
+          "passed": false,
+          "error": [
+            "Error: initial child Recover: reading original published Feature",
+            "Caused by:",
+            "Error: initial parent Recover, controlled_ack_loss=true: original Root serve result: Ok(())",
+            "Caused by:"
+          ],
+          "log_sha256": "5e6f1c48c3ef4c85dd935adbd6b104433b7246c92c8d57753abe44568753c402"
+        },
+        {
+          "name": "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+          "rc": 0,
+          "elapsed_seconds": 2.532273962860927,
+          "ran": true,
+          "passed": true,
+          "error": [],
+          "log_sha256": "569ab742a11fdd3c7278614f5b1468d34aaf7738e54dee0debe787692c410e0d"
+        },
+        {
+          "name": "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer",
+          "rc": 0,
+          "elapsed_seconds": 6.84419357101433,
+          "ran": true,
+          "passed": true,
+          "error": [],
+          "log_sha256": "b66d82d142a4485a6eb33e974672e85ef1bc0fb24772d91d660d436e826e79b0"
+        }
+      ]
+    },
+    "final_gnu": {
+      "image": "sha256:9a04f13b3f80ef056361e30868593b1cfd2279fe19e4081cb93a90bf56819d6a",
+      "binary_sha256": "ecd9fbf68a57cecd1d9476e0791848557650a1f05d929a5620c5730a25be55a3",
+      "phase": "final-strict-469670e8",
+      "cases": [
+        {
+          "name": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+          "rc": 101,
+          "elapsed_seconds": 134.02834652387537,
+          "ran": true,
+          "passed": false,
+          "error": [
+            "Error: publication RetiredSession: connect original CURRENT purpose",
+            "Caused by:",
+            "Error: publication component RetiredSession phase",
+            "Caused by:"
+          ],
+          "log_sha256": "7753dd4e2ca84c81d7af6012cd85395aa0e65bf4b0b965f9b1d10ca5574a8624"
+        },
+        {
+          "name": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+          "rc": 101,
+          "elapsed_seconds": 62.861926327925175,
+          "ran": true,
+          "passed": false,
+          "error": [
+            "Error: invalid agentd configuration: Unavailable",
+            "Error: initial parent Recover, controlled_ack_loss=true: original Root serve result: Err(Custom { kind: Other, error: DeadlineElapsed })",
+            "Caused by:"
+          ],
+          "log_sha256": "0dff0591129511b51a2f670298b0182a4e2b7867569e8a8a74f5c7328d597a08"
+        },
+        {
+          "name": "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+          "rc": 0,
+          "elapsed_seconds": 7.909226822201163,
+          "ran": true,
+          "passed": true,
+          "error": [],
+          "log_sha256": "2fc8ec37aaa0e17a091de14eb22c2b4d388b1c109d3fd69686ea7a194e4eeac5"
+        },
+        {
+          "name": "authority_host_runtime::session::q24_model::cold_root_tests::root_q24_factory_v2_cold_reopens_original_files_with_new_root_and_writer",
+          "rc": 0,
+          "elapsed_seconds": 10.724915098864585,
+          "ran": true,
+          "passed": true,
+          "error": [],
+          "log_sha256": "fd37e4021c5278a8c4dd31c7d36aa11f22901f3a9c9ea80ff0471d0b44e89515"
+        }
+      ]
+    }
+  }
+}

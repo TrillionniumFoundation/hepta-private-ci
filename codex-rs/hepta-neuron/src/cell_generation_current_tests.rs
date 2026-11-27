@@ -158,6 +158,46 @@ fn config() -> CellGenerationConfigV2 {
 }
 
 #[test]
+fn owner_binding_validation_and_canonical_digest_agree_for_stored_fields() {
+    let binding = CellGenerationOwnerBindingV1::new(&config(), 128).unwrap();
+    let bytes = serde_json::to_vec(&binding).unwrap();
+    let domain = b"hepta.cell.generation-owner-binding.v1\0";
+    assert_eq!(binding.validate(), Ok(()));
+    assert_eq!(
+        binding.digest(),
+        Ok(Digest32::of_parts(&[domain, &bytes]).into_array())
+    );
+
+    let zero_digest = serde_json::to_value([0_u8; 32]).unwrap();
+    let stored = serde_json::to_value(&binding).unwrap();
+    for (field, invalid) in [
+        ("/scope/agent_id", serde_json::json!("")),
+        ("/scope/cell_id", serde_json::json!("")),
+        ("/scope/run_id", serde_json::json!("")),
+        ("/generation", serde_json::json!(0)),
+        ("/writer_epoch", serde_json::json!(0)),
+        ("/scope/principal_digest", zero_digest.clone()),
+        ("/manifest_digest", zero_digest.clone()),
+        ("/task_digest", zero_digest.clone()),
+        ("/source_frontier", zero_digest.clone()),
+        ("/initial_snapshot_digest", zero_digest.clone()),
+        ("/config_digest", zero_digest),
+    ] {
+        let mut altered = stored.clone();
+        *altered.pointer_mut(field).unwrap() = invalid;
+        let candidate: CellGenerationOwnerBindingV1 = serde_json::from_value(altered).unwrap();
+        assert_eq!(
+            candidate.validate(),
+            Err(CellGenerationErrorV2::InvalidBinding)
+        );
+        assert_eq!(
+            candidate.digest(),
+            Err(CellGenerationErrorV2::InvalidBinding)
+        );
+    }
+}
+
+#[test]
 fn staged_genesis_is_synced_but_cannot_admit_resume_or_expose_active_snapshot() {
     let files = Files::new();
     let config = config();

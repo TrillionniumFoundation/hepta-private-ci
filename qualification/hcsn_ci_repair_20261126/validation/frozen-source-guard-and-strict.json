@@ -1,0 +1,39 @@
+{
+  "sourceTree": "085833eabc65fbc701e1d23aeea43e5c39307603",
+  "sourceRustSubtree": "2cdc0625ff4a2ab0b2c911b57fa69827e9f37172",
+  "upstreamCommit": "469670e8e5a88432e5ff2ddd5355bde5238e98de",
+  "trackedDeltaCount": 10,
+  "threePackagesWarningsDenied": {
+    "command": "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-bellman-operator -p codex-hepta-agentd -p codex-hepta-shadow-qualification --all-targets -- -D warnings",
+    "exitCode": 0,
+    "logSha256": "353117d7dab78bb0a337394474085c64cda81d9f4015664005f0ac147e6550ec",
+    "elapsed": "9m16s"
+  },
+  "threePackagesFormat": {
+    "exitCode": 0,
+    "logSha256": "f0bb0abb2c5cbf705bbd3377b0a774fa4233fabc66750117cecc475ad74abdfd"
+  },
+  "sourceClosure": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "authorityGranted": false,
+    "rustFiles": 9148,
+    "closedBoundaries": 1652,
+    "protectedFiles": 826,
+    "fullOutputSha256": "b95a22d867e6ea5e75e5f12e628d70c117a2099ab478356ffe52919190687aa5",
+    "method": "Unchanged caller verification predicates and immutable complete Rust index evaluated in parallel; results reassembled in manifest order."
+  },
+  "originalSourceQAModules": {
+    "modules": 160,
+    "tests": 1352,
+    "green": true,
+    "skips": 0,
+    "fullReportSha256": "3b3cfe0558c85f7efd740b48d6a275f2edce58b4e244cc27d049511d0dd76ab6"
+  },
+  "operatorCompatibility": {
+    "warningsDeniedExitCode": 0,
+    "testsExitCode": 0,
+    "testsPassed": 47,
+    "testsLogSha256": "2d53eebd3c9b229b921145b30f15fa7a2a38da52468894892105594f09348d9b"
+  },
+  "operatorRawEvidenceZipSha256": "ba8c1d6ff29fafc0988fe1c6edc24253096ab30b717a3ec255188a8a7b84c73f"
+}

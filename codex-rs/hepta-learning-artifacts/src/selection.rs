@@ -324,15 +324,12 @@ impl ArtifactSelectionVerifierV1 {
         {
             return Err(ArtifactSelectionError::SelectorRevoked);
         }
-        VerifyingKey::from_bytes(&selector.verifying_key)
-            .map_err(|_| ArtifactSelectionError::InvalidKey)?
-            .verify_strict(
-                &signed.signing_bytes(),
-                &Signature::from_bytes(&signed.signature),
-            )
+        let key = VerifyingKey::from_bytes(&selector.verifying_key)
+            .map_err(|_| ArtifactSelectionError::InvalidKey)?;
+        let mut digest_bytes = signed.signing_bytes();
+        key.verify_strict(&digest_bytes, &Signature::from_bytes(&signed.signature))
             .map_err(|_| ArtifactSelectionError::InvalidSignature)?;
 
-        let mut digest_bytes = signed.signing_bytes();
         digest_bytes.extend_from_slice(&signed.signature);
         Ok(VerifiedArtifactSelectionV1 {
             pin: PinnedCandidateSpec {
@@ -632,6 +629,12 @@ mod tests {
         assert_eq!(verified.artifact_id(), &manifest.artifact_id);
         assert_eq!(verified.selector_id(), &selector);
         assert!(!verified.selection_digest().is_zero());
+        let mut original_bytes = signed.signing_bytes();
+        original_bytes.extend_from_slice(&signed.signature);
+        assert_eq!(
+            verified.selection_digest(),
+            Digest32::of_bytes(&original_bytes)
+        );
         assert!(!verified.trust_digest().is_zero());
         assert_eq!(verified.authority(), AuthorityPosture::DENY_ALL);
 

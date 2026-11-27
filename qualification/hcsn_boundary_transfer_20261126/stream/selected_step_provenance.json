@@ -1,0 +1,54 @@
+{
+  "head": "bc4912ea657864d33b36a57da0b50eb35bee90af",
+  "directory": "qualification/hcsn_boundary_transfer_20261126/stream",
+  "equal_updates_records.zip_sha256": "f6091bfdd93b59c172fbc4bdaf7fb571d6e997d5965d6c55bfaf887c7d98cc96",
+  "equal_updates_selected_weights.zip_sha256": "8cf1d68f5c8924ff415d9efcb134921b302b268a24c2f03c365c1cf7c706e182",
+  "entries": {
+    "fixed_centered-1601": {
+      "selected_optimizer_step": 16,
+      "within_20s_selected_step": 16,
+      "state_dict_sha256": "d462527b88454b950e21cb46e82fa18e0be291db6ff06da677c285b163dc53f0"
+    },
+    "fixed_centered-2601": {
+      "selected_optimizer_step": 0,
+      "within_20s_selected_step": 0,
+      "state_dict_sha256": "d996bc051422e687bd78d4cf2f00567bf69c940ee8affa003694b39bc7dca9ac"
+    },
+    "fixed_centered-601": {
+      "selected_optimizer_step": 32,
+      "within_20s_selected_step": 32,
+      "state_dict_sha256": "b42d9579a9995d1fca7d1a40ffd04674c65ae10adc5c3ed893789a670f100a10"
+    },
+    "qvi_centered-1601": {
+      "selected_optimizer_step": 128,
+      "within_20s_selected_step": 64,
+      "state_dict_sha256": "49b4eb29516e17255391a987d0adc7fd4b5b65d38b477f4ec5ab1add9f0d9725"
+    },
+    "qvi_centered-2601": {
+      "selected_optimizer_step": 128,
+      "within_20s_selected_step": 96,
+      "state_dict_sha256": "61d0e99152b0bb4cb70cd78cf2bed9d9ee75680cd02dcba70271b6a611e57179"
+    },
+    "qvi_centered-601": {
+      "selected_optimizer_step": 128,
+      "within_20s_selected_step": 96,
+      "state_dict_sha256": "8521e431e5e985a2e8bc48010d40046950256da6dd0a89f5d42236555728a754"
+    },
+    "qvi_raw-1601": {
+      "selected_optimizer_step": 16,
+      "within_20s_selected_step": 16,
+      "state_dict_sha256": "1f4783b57cd5d79fc1e791a2eb2a9635616a64d30c1d95427ff103c0655cf237"
+    },
+    "qvi_raw-2601": {
+      "selected_optimizer_step": 0,
+      "within_20s_selected_step": 0,
+      "state_dict_sha256": "d996bc051422e687bd78d4cf2f00567bf69c940ee8affa003694b39bc7dca9ac"
+    },
+    "qvi_raw-601": {
+      "selected_optimizer_step": 128,
+      "within_20s_selected_step": 32,
+      "state_dict_sha256": "8fa455f0e1184ded0072812bd6fbe7a4b07d2f8f78328de78c2954a02e5a2948"
+    }
+  },
+  "note": "For seed 2601, qvi_raw and fixed_centered select identical initial weights (optimizer step zero) and execute different forward policies. All three qvi_centered select the last of 128 optimizer updates."
+}

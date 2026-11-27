@@ -197,7 +197,7 @@ impl CurrentStore {
         if head.schema_version != 1 || owner_id(head.current.scope())? != self.owner_id {
             return Err(invalid("generation current scope or schema differs"));
         }
-        head.current.digest().map_err(invalid)?;
+        head.current.validate().map_err(invalid)?;
         head.validate_initial()?;
         Ok(head)
     }

@@ -368,7 +368,7 @@ jobs:
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           pattern: learning-operator-*-${{ env.SOURCE_SHA }}
-          path: .
+          path: .hepta-evidence/learning-operator
           merge-multiple: true
 
       - name: Build single readiness receipt

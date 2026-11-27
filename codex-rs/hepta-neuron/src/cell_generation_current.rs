@@ -79,7 +79,8 @@ impl CellGenerationOwnerBindingV1 {
         self.writer_epoch
     }
 
-    pub fn digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
+    /// Check the fields of this immutable generation owner binding.
+    pub fn validate(&self) -> Result<(), CellGenerationErrorV2> {
         for id in [
             &self.scope.agent_id,
             &self.scope.cell_id,
@@ -101,6 +102,11 @@ impl CellGenerationOwnerBindingV1 {
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
+        Ok(())
+    }
+
+    pub fn digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
+        self.validate()?;
         digest(b"hepta.cell.generation-owner-binding.v1\0", self)
     }
 
