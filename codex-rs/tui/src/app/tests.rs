@@ -26,6 +26,9 @@ mod startup;
 mod thread_usage;
 #[path = "tests/turn_submission.rs"]
 mod turn_submission;
+#[cfg(target_os = "windows")]
+#[path = "tests/windows_sandbox_availability_tests.rs"]
+mod windows_sandbox_availability_tests;
 
 use super::*;
 use crate::app_backtrack::BacktrackSelection;

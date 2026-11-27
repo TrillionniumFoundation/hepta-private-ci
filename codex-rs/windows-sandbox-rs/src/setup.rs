@@ -234,6 +234,7 @@ pub fn run_setup_refresh(
     else {
         return Ok(());
     };
+    crate::ensure_windows_managed_filesystem_isolation()?;
     let deny_read_paths =
         setup_refresh_deny_read_paths(permission_profile, workspace_roots, command_cwd)?;
     run_setup_refresh_inner(
@@ -277,6 +278,7 @@ pub fn run_setup_refresh_with_extra_read_roots(
     else {
         return Ok(());
     };
+    crate::ensure_windows_managed_filesystem_isolation()?;
     let deny_read_paths =
         setup_refresh_deny_read_paths(permission_profile, workspace_roots, command_cwd)?;
     let mut read_roots = gather_read_roots(command_cwd, &permissions, env_map, codex_home);
@@ -324,6 +326,7 @@ fn run_setup_refresh_inner(
     overrides: SetupRootOverrides,
     offline_proxy_settings_override: Option<&OfflineProxySettings>,
 ) -> Result<()> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     if !request.permissions.is_enforceable_by_windows_sandbox() {
         anyhow::bail!("unsupported filesystem permissions for Windows sandbox setup");
     }
@@ -1040,6 +1043,7 @@ fn run_elevated_setup_inner(
     overrides: SetupRootOverrides,
     offline_proxy_settings_override: Option<&OfflineProxySettings>,
 ) -> Result<()> {
+    crate::ensure_windows_managed_filesystem_isolation()?;
     if !request.permissions.is_enforceable_by_windows_sandbox() {
         anyhow::bail!("unsupported filesystem permissions for Windows sandbox setup");
     }

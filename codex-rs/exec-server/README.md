@@ -402,6 +402,21 @@ The server returns JSON-RPC errors with these codes:
 - `-32600`: invalid request
 - `-32602`: invalid params
 - `-32603`: internal error
+- `-32005`: filesystem execution is unsupported
+
+Filesystem helpers and handlers use `-32005` only for a typed
+`std::io::ErrorKind::Unsupported`. Updated local and remote filesystem clients
+preserve that kind. Error-message text alone cannot select this code or kind.
+For Windows managed filesystem operations, the executor checks the existing
+isolation availability guard before preparing the helper process. An unavailable
+executor remains a launch error; it must not be classified as a policy denial
+that permits retry without the requested sandbox.
+
+This adds a wire error-code contract without changing the JSON-RPC message shape.
+Both ends must implement it: older servers can flatten an unsupported error into
+`-32603`, and older clients can map `-32005` to a generic error. No compatibility
+claim is made for that mixed-version case. Requests that explicitly omit sandbox
+enforcement continue to use the existing unsandboxed filesystem path.
 
 Typical error cases:
 

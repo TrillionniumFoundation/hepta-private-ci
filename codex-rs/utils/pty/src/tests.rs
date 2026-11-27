@@ -14,6 +14,10 @@ use crate::spawn_pipe_process_no_stdin;
 use crate::spawn_pty_process;
 
 #[cfg(windows)]
+#[path = "windows_process_exit_tests.rs"]
+mod windows_process_exit_tests;
+
+#[cfg(windows)]
 #[path = "windows_tests.rs"]
 mod windows_tests;
 

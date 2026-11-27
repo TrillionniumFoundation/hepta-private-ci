@@ -5073,3 +5073,7 @@ fn write_test_skill(codex_home: &Path, name: &str) -> std::io::Result<()> {
         format!("---\nname: {name}\ndescription: {name} description\n---\n\n# Body\n"),
     )
 }
+
+#[cfg(windows)]
+#[path = "turn_start_windows_unavailable_tests.rs"]
+mod windows_unavailable_tests;

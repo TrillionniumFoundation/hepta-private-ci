@@ -100,6 +100,7 @@ mod windows_impl {
     pub fn run_windows_sandbox_capture_for_permission_profile(
         request: ElevatedSandboxProfileCaptureRequest<'_>,
     ) -> Result<CaptureResult> {
+        crate::ensure_windows_managed_filesystem_isolation()?;
         let ElevatedSandboxProfileCaptureRequest {
             permission_profile,
             workspace_roots,
