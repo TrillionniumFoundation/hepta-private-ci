@@ -31,8 +31,8 @@
     "explicit child-start marker remains absent on inaccessible library",
     "owned unified directory absent after refusal"
   ],
-  "native_windows_followup_pass": false,
-  "native_windows_followup_required": true,
+  "native_windows_followup_pass": true,
+  "native_windows_followup_required": false,
   "sources": [
     "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createhardlinkw",
     "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew"
@@ -105,5 +105,57 @@
     }
   },
   "original_assertions_ast_subsequence_verified": true,
-  "original_test_timeouts_ast_equal": true
+  "original_test_timeouts_ast_equal": true,
+  "actual_windows_followup": {
+    "source_head": "1cf6f2c8a466ffda004c8411f70dccdc7b24b47e",
+    "run_id": 46035302767,
+    "job_id": 140629075054,
+    "artifact_id": 15215853630,
+    "artifact": {
+      "bytes": 3503,
+      "sha256": "c4dbdb8f1b81455238a111da6d3cd1f4dc05519cee7e46a0564e4bf89f7c23b2"
+    },
+    "original_job_log": {
+      "bytes": 181506,
+      "sha256": "3bf24afb064e3fad982bbdf60de1afef20d1aa2d09d5dd7dd96ebe278f65858f"
+    },
+    "terminal": {
+      "returncode": 0,
+      "elapsed_seconds": 314.79699999999997,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 19227,
+        "sha256": "5de28cef5caed32d4f5f139b4bbfc9953c70a5b9728cae35dc4c3f03e1e9c904"
+      }
+    },
+    "original_test_count": 6,
+    "original_per_invocation_timeout_seconds": 30,
+    "native_tests_seconds": 1.34,
+    "retries": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "original_assertions_retained": true,
+    "explicit_no_child_and_no_leaked_directory_assertions": true,
+    "archive_members": {
+      "intent.json": {
+        "bytes": 294,
+        "sha256": "809cd5397ad857d23f66e44052619e0e06ae7c2a53a01ec4ca8193edee5f0bfc"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "result.json": {
+        "bytes": 311,
+        "sha256": "a9de0f085bc633aa969067dc248355f811170f0a4f61c66d166eb09270900d65"
+      },
+      "stderr": {
+        "bytes": 19227,
+        "sha256": "5de28cef5caed32d4f5f139b4bbfc9953c70a5b9728cae35dc4c3f03e1e9c904"
+      }
+    }
+  }
 }
