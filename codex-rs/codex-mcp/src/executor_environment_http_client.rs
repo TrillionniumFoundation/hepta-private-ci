@@ -27,6 +27,10 @@ impl ExecutorEnvironmentHttpClient {
 }
 
 impl HttpClient for ExecutorEnvironmentHttpClient {
+    fn restricted_request_cancellation(&self) -> Option<tokio_util::sync::CancellationToken> {
+        self.http_client.restricted_request_cancellation()
+    }
+
     fn http_request(
         &self,
         mut params: HttpRequestParams,

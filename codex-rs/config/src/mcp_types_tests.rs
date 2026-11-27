@@ -374,6 +374,7 @@ fn deserialize_streamable_http_server_config_with_oauth_client_id() {
         Some(McpServerOAuthConfig {
             client_id: Some("eci-prd-pub-codex-123".to_string()),
             callback_port: Some(9876),
+            authorization_origins: Default::default(),
         })
     );
 }

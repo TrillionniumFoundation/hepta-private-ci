@@ -35,12 +35,17 @@ use codex_protocol::protocol::EventMsg;
 use codex_rmcp_client::ElicitationResponse;
 use codex_rmcp_client::with_http_headers_helper;
 use codex_utils_path_uri::PathUri;
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use rmcp::model::ReadResourceRequestParams;
 use rmcp::model::ReadResourceResult;
 use rmcp::model::RequestId;
 use serde::Deserialize;
 use serde::Serialize;
 use tokio::sync::watch;
+use tokio::task::JoinError;
+use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
 
 use crate::McpConfig;
@@ -90,13 +95,61 @@ pub struct McpRuntimeInput {
 ///
 /// Publication replaces the latest state atomically. Existing bindings retain
 /// their exact connections and configuration for as long as they are needed.
+/// Replaced explicit OAuth authorizations are retired even when old bindings remain.
 pub struct McpRuntime {
     current: ArcSwap<PublishedMcpRuntime>,
     hosted_event_server_removals: watch::Sender<()>,
     reconnect_pending: AtomicBool,
     elicitation_router: ElicitationRequestRouter,
     resource_origins: Mutex<ResourceOrigins>,
+    oauth_retirement: Mutex<Option<Arc<OAuthRetirement>>>,
 }
+
+/// One exact owned cleanup result, retained after a cancelled waiter.
+/// Re-polling this completion never starts or retries a shutdown operation.
+struct OAuthRetirement {
+    completion: Shared<BoxFuture<'static, Result<(), Arc<JoinError>>>>,
+}
+
+#[derive(Debug)]
+struct RetirementFailure {
+    cause: Arc<JoinError>,
+}
+
+impl std::fmt::Display for RetirementFailure {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
+            "retired OAuth connection cleanup failed: {}",
+            self.cause
+        )
+    }
+}
+
+impl std::error::Error for RetirementFailure {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(self.cause.as_ref())
+    }
+}
+
+impl OAuthRetirement {
+    fn new(task: JoinHandle<()>) -> Self {
+        Self {
+            completion: async move { task.await.map_err(Arc::new) }.boxed().shared(),
+        }
+    }
+
+    async fn finish(&self) -> anyhow::Result<()> {
+        self.completion
+            .clone()
+            .await
+            .map_err(|cause| anyhow::Error::new(RetirementFailure { cause }))
+    }
+}
+
+#[cfg(test)]
+#[path = "oauth_retirement_tests.rs"]
+mod oauth_retirement_tests;
 
 struct PublishedMcpRuntime {
     connections: Arc<McpConnectionSet>,
@@ -147,6 +200,10 @@ impl McpPublicationGate {
         Self { published: None }
     }
 
+    pub(crate) fn is_pending(&self) -> bool {
+        self.published.is_some()
+    }
+
     pub(crate) async fn wait(mut self) -> bool {
         let Some(published) = self.published.as_mut() else {
             return true;
@@ -183,6 +240,7 @@ impl McpRuntime {
             reconnect_pending: AtomicBool::new(false),
             elicitation_router: ElicitationRequestRouter::default(),
             resource_origins: Mutex::default(),
+            oauth_retirement: Mutex::default(),
         }
     }
 
@@ -245,6 +303,40 @@ impl McpRuntime {
         Ok(runtime)
     }
 
+    #[cfg(test)]
+    pub(crate) fn from_test_connections(connections: Arc<McpConnectionSet>) -> Self {
+        let runtime = Self::empty(/*prefix_mcp_tool_names*/ true);
+        runtime.current.store(Arc::new(PublishedMcpRuntime {
+            connections,
+            config: None,
+            auth: None,
+            auth_token: None,
+            plugins_available: false,
+            selected_plugins: Arc::new(crate::SelectedPluginSnapshot::default()),
+            ready_selected_capability_roots: Vec::new(),
+            cached_binding: Mutex::new(None),
+        }));
+        runtime
+    }
+
+    async fn confirm_oauth_retirement(
+        &self,
+        retirement: Arc<OAuthRetirement>,
+    ) -> anyhow::Result<()> {
+        retirement.finish().await?;
+        let mut current = self
+            .oauth_retirement
+            .lock()
+            .map_err(|_| anyhow::anyhow!("MCP OAuth retirement state is poisoned"))?;
+        if current
+            .as_ref()
+            .is_some_and(|current| Arc::ptr_eq(current, &retirement))
+        {
+            *current = None;
+        }
+        Ok(())
+    }
+
     /// Reconciles configured servers and publishes their immutable runtime snapshot.
     pub async fn replace(&self, input: McpRuntimeInput) -> anyhow::Result<()> {
         let current = self.current.load_full();
@@ -272,6 +364,24 @@ impl McpRuntime {
         input: McpRuntimeInput,
         previous: Option<&McpConnectionSet>,
     ) -> anyhow::Result<()> {
+        // Keep the exact completion after a cancelled caller or failed join.
+        // A later generation may confirm it, but cannot replace or retry it.
+        let pending = {
+            self.oauth_retirement
+                .lock()
+                .map_err(|_| anyhow::anyhow!("MCP OAuth retirement state is poisoned"))?
+                .clone()
+        };
+        if let Some(retirement) = pending {
+            self.confirm_oauth_retirement(retirement).await?;
+        }
+        let publishing_from = self.current.load_full();
+        if let Some(previous) = previous {
+            anyhow::ensure!(
+                std::ptr::eq(previous, publishing_from.connections.as_ref()),
+                "MCP runtime changed before publication"
+            );
+        }
         let (publish, publication_gate) = McpPublicationGate::pending();
         let config = Arc::clone(&input.config);
         let auth = input.auth.clone();
@@ -297,19 +407,49 @@ impl McpRuntime {
                         .source()
                         .is_host_owned_apps(CODEX_APPS_MCP_SERVER_NAME, registration.config())
                 });
-        self.current.store(Arc::new(PublishedMcpRuntime {
-            connections,
-            config: Some(config),
-            auth,
-            auth_token,
-            plugins_available,
-            selected_plugins,
-            ready_selected_capability_roots,
-            cached_binding: Mutex::new(None),
-        }));
-        let _ = publish.send(true);
-        if !hosted_event_server_retained {
-            self.hosted_event_server_removals.send_replace(());
+        let retirement = {
+            // No await is performed while this guard is live. The short gate
+            // prevents two callers from overwriting one retirement completion.
+            let mut pending = self
+                .oauth_retirement
+                .lock()
+                .map_err(|_| anyhow::anyhow!("MCP OAuth retirement state is poisoned"))?;
+            anyhow::ensure!(
+                pending.is_none(),
+                "another MCP OAuth retirement is not yet confirmed"
+            );
+            anyhow::ensure!(
+                Arc::ptr_eq(&self.current.load_full(), &publishing_from),
+                "MCP runtime changed during publication"
+            );
+            let previous = connections.publish_with_elicitation_authority(|| {
+                self.current.swap(Arc::new(PublishedMcpRuntime {
+                    connections: Arc::clone(&connections),
+                    config: Some(config),
+                    auth,
+                    auth_token,
+                    plugins_available,
+                    selected_plugins,
+                    ready_selected_capability_roots,
+                    cached_binding: Mutex::new(None),
+                }))
+            })?;
+            // Fence delegated authorization before the new generation may
+            // start. Existing ordinary resource permissions are not expanded.
+            let retirement = previous
+                .connections
+                .revoke_replaced_oauth_authorizations(&connections)
+                .map(|task| Arc::new(OAuthRetirement::new(task)));
+            *pending = retirement.clone();
+            // Open this generation before another publisher can replace it.
+            let _ = publish.send(true);
+            if !hosted_event_server_retained {
+                self.hosted_event_server_removals.send_replace(());
+            }
+            retirement
+        };
+        if let Some(retirement) = retirement {
+            self.confirm_oauth_retirement(retirement).await?;
         }
         Ok(())
     }
@@ -608,6 +748,7 @@ pub struct McpRuntimeContext {
     selected_environments: HashMap<String, Arc<Environment>>,
     local_process_cwd: PathBuf,
     local_http_client: Arc<dyn HttpClient>,
+    oauth_authorization_revocation: Option<codex_rmcp_client::OAuthAuthorizationRevocation>,
 }
 
 /// Applies the local HTTP headers helper configured for an MCP server.
@@ -652,7 +793,16 @@ impl McpRuntimeContext {
             selected_environments: HashMap::new(),
             local_process_cwd,
             local_http_client,
+            oauth_authorization_revocation: None,
         }
+    }
+
+    pub(crate) fn with_oauth_authorization_revocation(
+        mut self,
+        revocation: Option<codex_rmcp_client::OAuthAuthorizationRevocation>,
+    ) -> Self {
+        self.oauth_authorization_revocation = revocation;
+        self
     }
 
     /// Pins the concrete environment handles captured for this thread or model step.
@@ -726,7 +876,21 @@ impl McpRuntimeContext {
             Some(environment) if environment.is_remote() => environment.get_http_client(),
             Some(_) | None => self.local_http_client(),
         };
-        apply_http_headers_helper(client, config, self.local_process_cwd())
+        let client = apply_http_headers_helper(client, config, self.local_process_cwd())?;
+        match &config.transport {
+            codex_config::McpServerTransportConfig::StreamableHttp { url, .. } => {
+                codex_rmcp_client::with_revocable_oauth_authorization_origins(
+                    client,
+                    url,
+                    config.oauth_authorization_origins(),
+                    self.oauth_authorization_revocation
+                        .clone()
+                        .unwrap_or_default(),
+                )
+                .map_err(|error| error.to_string())
+            }
+            codex_config::McpServerTransportConfig::Stdio { .. } => Ok(client),
+        }
     }
 }
 

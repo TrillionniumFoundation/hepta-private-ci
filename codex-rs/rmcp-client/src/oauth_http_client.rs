@@ -341,7 +341,30 @@ fn oauth_redirect_policy(
 
 impl OAuthHttpClient for OAuthHttpClientAdapter {
     fn execute(&self, request: OAuthHttpRequest) -> OAuthHttpClientFuture<'_> {
-        Box::pin(self.execute_request(request.request, request.redirect_policy, request.timeout))
+        let operation =
+            self.execute_request(request.request, request.redirect_policy, request.timeout);
+        match self.http_client.restricted_request_cancellation() {
+            None => Box::pin(operation),
+            Some(cancelled) => Box::pin(async move {
+                tokio::select! {
+                    biased;
+                    () = cancelled.cancelled() => Err(oauth_http_client_error(
+                        codex_exec_server::ExecServerError::HttpRequest(
+                            "owner-configured OAuth authorization was revoked".to_string(),
+                        ),
+                    )),
+                    result = operation => {
+                        if cancelled.is_cancelled() {
+                            Err(oauth_http_client_error(codex_exec_server::ExecServerError::HttpRequest(
+                                "owner-configured OAuth authorization was revoked".to_string(),
+                            )))
+                        } else {
+                            result
+                        }
+                    }
+                }
+            }),
+        }
     }
 }
 

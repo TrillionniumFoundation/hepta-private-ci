@@ -583,6 +583,7 @@ fn declared_placement_preserves_local_plugin_normalization() {
         oauth: Some(McpServerOAuthConfig {
             client_id: Some("client-id".to_string()),
             callback_port: Some(9876),
+            authorization_origins: Default::default(),
         }),
         oauth_resource: None,
         tools: HashMap::new(),

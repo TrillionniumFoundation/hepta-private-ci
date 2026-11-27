@@ -104,6 +104,29 @@ async fn observe_mcp_challenge(
     protocol_mode: McpProtocolMode,
     deadline: Instant,
 ) -> Result<Option<String>> {
+    let cancellation = context.http_client.restricted_request_cancellation();
+    let operation = observe_mcp_challenge_inner(context, server_url, protocol_mode, deadline);
+    match cancellation {
+        None => operation.await,
+        Some(cancelled) => tokio::select! {
+            biased;
+            () = cancelled.cancelled() => bail!("owner-configured OAuth authorization was revoked"),
+            result = operation => {
+                if cancelled.is_cancelled() {
+                    bail!("owner-configured OAuth authorization was revoked");
+                }
+                result
+            }
+        },
+    }
+}
+
+async fn observe_mcp_challenge_inner(
+    context: McpOAuthProbeContext,
+    server_url: &str,
+    protocol_mode: McpProtocolMode,
+    deadline: Instant,
+) -> Result<Option<String>> {
     if Url::parse(server_url)?.origin().ascii_serialization() != context.configured_resource_origin
     {
         bail!("MCP OAuth challenge resource origin changed");
@@ -192,6 +215,10 @@ struct RestrictedMcpProbeClient {
 }
 
 impl HttpClient for RestrictedMcpProbeClient {
+    fn restricted_request_cancellation(&self) -> Option<tokio_util::sync::CancellationToken> {
+        self.inner.restricted_request_cancellation()
+    }
+
     fn http_request(
         &self,
         _params: HttpRequestParams,

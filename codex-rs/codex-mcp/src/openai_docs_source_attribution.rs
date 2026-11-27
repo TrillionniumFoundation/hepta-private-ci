@@ -35,6 +35,10 @@ impl OpenAiDocsHttpClient {
 }
 
 impl HttpClient for OpenAiDocsHttpClient {
+    fn restricted_request_cancellation(&self) -> Option<tokio_util::sync::CancellationToken> {
+        self.http_client.restricted_request_cancellation()
+    }
+
     fn http_request_stream_restricted(
         &self,
         mut params: HttpRequestRestrictedParams,

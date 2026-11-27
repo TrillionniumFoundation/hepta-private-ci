@@ -983,6 +983,7 @@ async fn load_plugins_loads_default_skills_and_mcp_servers() {
                     oauth: Some(McpServerOAuthConfig {
                         client_id: Some("client-id".to_string()),
                         callback_port: Some(3118),
+                        authorization_origins: Default::default(),
                     }),
                     oauth_resource: None,
                     tools: HashMap::new(),

@@ -90,6 +90,9 @@ impl McpServerConnection {
         &self,
         desired: &McpServerConnectionIdentity,
     ) -> Option<ManagedClient> {
+        if self.client.cancel_token.is_cancelled() {
+            return None;
+        }
         let current = self.identity.as_ref()?;
         if !current.has_same_connection_config(desired) {
             return None;
@@ -131,6 +134,13 @@ impl McpServerConnection {
     }
 
     async fn shutdown(&self) {
+        if let Some(revocation) = self
+            .identity
+            .as_ref()
+            .and_then(McpServerConnectionIdentity::oauth_authorization_revocation)
+        {
+            revocation.revoke();
+        }
         self.client.shutdown().await;
     }
 
@@ -149,6 +159,13 @@ impl McpServerConnection {
 
 impl Drop for McpServerConnection {
     fn drop(&mut self) {
+        if let Some(revocation) = self
+            .identity
+            .as_ref()
+            .and_then(McpServerConnectionIdentity::oauth_authorization_revocation)
+        {
+            revocation.revoke();
+        }
         self.client.cancel_token.cancel();
     }
 }
@@ -191,6 +208,7 @@ pub(crate) struct McpConnectionSet {
     prefix_mcp_tool_names: bool,
     non_prefixed_mcp_tool_servers: Vec<String>,
     elicitation_requests: ElicitationRequestManager,
+    pending_elicitation_authority: Option<ElicitationRequestManager>,
 }
 
 impl McpConnectionSet {
@@ -250,26 +268,46 @@ impl McpConnectionSet {
         // Explicit reconnects have no previous set and must replace their clients eagerly.
         let allow_deferred_startup =
             startup_policy == McpStartupPolicy::LazyWhenCached && previous.is_some();
+        let defer_elicitation_authority = publication_gate.is_pending();
         let reusable_previous = previous.filter(|previous| {
             !previous.servers.is_empty()
-                && previous.elicitation_requests.update(
-                    approval_policy.value(),
-                    initial_permission_profile.clone(),
-                    elicitation_reviewer.clone(),
-                    elicitation_lifecycle.clone(),
-                )
+                && if defer_elicitation_authority {
+                    !previous.elicitation_requests.authority.is_poisoned()
+                } else {
+                    previous.elicitation_requests.update(
+                        approval_policy.value(),
+                        initial_permission_profile.clone(),
+                        elicitation_reviewer.clone(),
+                        elicitation_lifecycle.clone(),
+                    )
+                }
         });
-        let elicitation_requests = if let Some(previous) = reusable_previous {
-            previous.elicitation_requests.clone()
-        } else {
-            ElicitationRequestManager::new(
-                approval_policy.value(),
-                initial_permission_profile,
-                elicitation_reviewer,
-                elicitation_lifecycle,
-                elicitation_router,
-            )
-        };
+        let (elicitation_requests, pending_elicitation_authority) =
+            if let Some(previous) = reusable_previous {
+                // Preparing a candidate must not change the live connection's
+                // authority. The winning runtime publishes this complete value.
+                let pending = defer_elicitation_authority.then(|| {
+                    ElicitationRequestManager::new(
+                        approval_policy.value(),
+                        initial_permission_profile,
+                        elicitation_reviewer,
+                        elicitation_lifecycle,
+                        elicitation_router,
+                    )
+                });
+                (previous.elicitation_requests.clone(), pending)
+            } else {
+                (
+                    ElicitationRequestManager::new(
+                        approval_policy.value(),
+                        initial_permission_profile,
+                        elicitation_reviewer,
+                        elicitation_lifecycle,
+                        elicitation_router,
+                    ),
+                    None,
+                )
+            };
         let tool_plugin_provenance = Arc::new(tool_plugin_provenance);
         let startup_submit_id = submit_id;
         let static_chatgpt_auth_provider = auth
@@ -513,7 +551,9 @@ impl McpConnectionSet {
                 elicitation_requests.clone(),
                 codex_apps_tools_cache_context,
                 tool_catalog_cache_context,
-                runtime_context.clone(),
+                runtime_context.clone().with_oauth_authorization_revocation(
+                    connection_identity.oauth_authorization_revocation(),
+                ),
                 resolved_environment,
                 runtime_auth_provider,
                 client_elicitation_capability.clone(),
@@ -681,6 +721,7 @@ impl McpConnectionSet {
             prefix_mcp_tool_names,
             non_prefixed_mcp_tool_servers,
             elicitation_requests: elicitation_requests.clone(),
+            pending_elicitation_authority,
         };
         let summary_publication_gate = publication_gate;
         tokio::spawn(async move {
@@ -727,6 +768,33 @@ impl McpConnectionSet {
         manager
     }
 
+    /// Switches the snapshot while shared elicitation readers are fenced.
+    ///
+    /// Every fallible lock is acquired before publication. The caller holds its
+    /// runtime publication lock, and this closure must not await. Authority is
+    /// replaced as a whole, then its guard is released before transport revocation.
+    pub(crate) fn publish_with_elicitation_authority<T>(
+        &self,
+        publish: impl FnOnce() -> T,
+    ) -> Result<T> {
+        let Some(pending) = &self.pending_elicitation_authority else {
+            return Ok(publish());
+        };
+        let next = pending
+            .authority
+            .lock()
+            .map_err(|_| anyhow!("prepared MCP elicitation authority is poisoned"))?
+            .clone();
+        let mut authority = self
+            .elicitation_requests
+            .authority
+            .lock()
+            .map_err(|_| anyhow!("live MCP elicitation authority is poisoned"))?;
+        let published = publish();
+        *authority = next;
+        Ok(published)
+    }
+
     pub fn empty(prefix_mcp_tool_names: bool) -> Self {
         Self {
             servers: HashMap::new(),
@@ -747,6 +815,7 @@ impl McpConnectionSet {
                 /*lifecycle*/ None,
                 ElicitationRequestRouter::default(),
             ),
+            pending_elicitation_authority: None,
         }
     }
 
@@ -817,6 +886,46 @@ impl McpConnectionSet {
             return false;
         };
         view.connection.client.ready_transport().is_some() || view.connection.client().await.is_ok()
+    }
+
+    /// Retire every delegated authorization whose exact connection is replaced.
+    ///
+    /// Revoking even an addition-only replacement prevents an older retained
+    /// generation from escaping a later removal. The dispatch fence is
+    /// synchronous; original transport shutdown survives caller cancellation.
+    pub(crate) fn revoke_replaced_oauth_authorizations(
+        &self,
+        next: &Self,
+    ) -> Option<tokio::task::JoinHandle<()>> {
+        let mut retired = Vec::new();
+        for (name, view) in &self.servers {
+            if next
+                .servers
+                .get(name)
+                .is_some_and(|next| Arc::ptr_eq(&view.connection, &next.connection))
+            {
+                continue;
+            }
+            let Some(revocation) = view
+                .connection
+                .identity
+                .as_ref()
+                .and_then(McpServerConnectionIdentity::oauth_authorization_revocation)
+            else {
+                continue;
+            };
+            revocation.revoke();
+            view.connection.client.cancel_token.cancel();
+            retired.push(Arc::clone(&view.connection));
+        }
+        if retired.is_empty() {
+            return None;
+        }
+        Some(tokio::spawn(async move {
+            for connection in retired {
+                connection.shutdown().await;
+            }
+        }))
     }
 
     /// Stop all MCP clients owned by this manager and terminate stdio server processes.

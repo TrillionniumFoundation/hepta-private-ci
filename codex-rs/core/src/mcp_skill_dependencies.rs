@@ -429,6 +429,7 @@ fn mcp_dependency_to_server_config(
                 .map(|callback_port| McpServerOAuthConfig {
                     client_id: None,
                     callback_port: Some(callback_port),
+                    authorization_origins: Default::default(),
                 }),
             oauth_resource: None,
             tools: HashMap::new(),

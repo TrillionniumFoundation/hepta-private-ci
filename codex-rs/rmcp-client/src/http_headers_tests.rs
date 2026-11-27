@@ -198,3 +198,125 @@ async fn connection_headers_are_cached_and_origin_bound() {
         "x"
     );
 }
+
+#[tokio::test]
+async fn explicit_oauth_grant_does_not_extend_helper_or_resource_credential_scope() {
+    use codex_exec_server::RouteAwareHttpClient;
+    use codex_http_client::HttpClientFactory;
+    use codex_http_client::OutboundProxyPolicy;
+    use codex_protocol::OAuthAuthorizationOrigins;
+    use rmcp::transport::AuthorizationManager;
+    use serde_json::json;
+    use wiremock::Mock;
+    use wiremock::MockServer;
+    use wiremock::ResponseTemplate;
+    use wiremock::matchers::method;
+    use wiremock::matchers::path;
+
+    use crate::http_client_adapter::StreamableHttpRedirectMode;
+    use crate::oauth_authorization_http_client::with_oauth_authorization_origins;
+    use crate::oauth_http_client::OAuthHttpClientAdapter;
+
+    let resource = MockServer::start().await;
+    let authorization = MockServer::start().await;
+    let resource_url = format!("{}/mcp", resource.uri());
+    Mock::given(method("GET"))
+        .and(path("/.well-known/oauth-protected-resource/mcp"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "resource": resource_url,
+            "authorization_servers": [authorization.uri()]
+        })))
+        .expect(1)
+        .mount(&resource)
+        .await;
+    Mock::given(method("GET"))
+        .and(path("/.well-known/oauth-authorization-server"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+            "issuer": authorization.uri(),
+            "authorization_endpoint": format!("{}/authorize", authorization.uri()),
+            "token_endpoint": format!("{}/token", authorization.uri())
+        })))
+        .expect(1)
+        .mount(&authorization)
+        .await;
+    let helper_headers = Arc::new(
+        parse_helper_output(
+            br#"{"X-Helper":"helper-secret","Proxy-Authorization":"Basic proxy-secret"}"#.to_vec(),
+        )
+        .unwrap(),
+    );
+    let provider = HttpHeadersProvider {
+        server_origin: Url::parse(&resource_url).unwrap().origin(),
+        cached: futures::future::ready(Ok::<_, Arc<str>>(helper_headers))
+            .boxed()
+            .shared(),
+    };
+    let route = Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
+        OutboundProxyPolicy::ReqwestDefault,
+    )));
+    let helper = Arc::new(HttpHeadersClient {
+        inner: route,
+        provider,
+    });
+    let client = with_oauth_authorization_origins(
+        helper,
+        &resource_url,
+        OAuthAuthorizationOrigins::new(vec![authorization.uri()]).unwrap(),
+    )
+    .unwrap();
+    let adapter = Arc::new(
+        OAuthHttpClientAdapter::new_with_redirect_mode(
+            client,
+            HeaderMap::from_iter([
+                (
+                    HeaderName::from_static("authorization"),
+                    HeaderValue::from_static("Bearer resource-secret"),
+                ),
+                (
+                    HeaderName::from_static("x-resource-secret"),
+                    HeaderValue::from_static("resource-custom-secret"),
+                ),
+            ]),
+            &resource_url,
+            /*has_configured_headers*/ true,
+            StreamableHttpRedirectMode::Legacy,
+        )
+        .unwrap(),
+    );
+    let manager = AuthorizationManager::new_with_oauth_http_client(resource_url, adapter)
+        .await
+        .unwrap();
+    let result = tokio::time::timeout(Duration::from_secs(2), manager.resolve_metadata())
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        result.metadata.issuer.as_deref(),
+        Some(authorization.uri().as_str())
+    );
+    let authorized = authorization.received_requests().await.unwrap();
+    assert_eq!(authorized.len(), 1);
+    for header in [
+        "authorization",
+        "proxy-authorization",
+        "x-helper",
+        "x-resource-secret",
+    ] {
+        assert!(authorized[0].headers.get(header).is_none(), "{header}");
+    }
+    let original = resource.received_requests().await.unwrap();
+    assert_eq!(original.len(), 1);
+    assert_eq!(
+        original[0].headers["authorization"],
+        "Bearer resource-secret"
+    );
+    assert_eq!(
+        original[0].headers["proxy-authorization"],
+        "Basic proxy-secret"
+    );
+    assert_eq!(original[0].headers["x-helper"], "helper-secret");
+    assert_eq!(
+        original[0].headers["x-resource-secret"],
+        "resource-custom-secret"
+    );
+}

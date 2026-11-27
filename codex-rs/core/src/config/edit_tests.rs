@@ -1088,6 +1088,7 @@ fn blocking_replace_mcp_servers_round_trips() {
             oauth: Some(McpServerOAuthConfig {
                 client_id: Some("eci-prd-pub-codex-123".to_string()),
                 callback_port: Some(9876),
+                authorization_origins: Default::default(),
             }),
             oauth_resource: Some("https://resource.example.com".to_string()),
             tools: HashMap::new(),

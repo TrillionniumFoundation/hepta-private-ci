@@ -155,6 +155,16 @@ fn normalize_plugin_mcp_server(
 
     let mut config = serde_json::from_value::<McpServerConfig>(JsonValue::Object(object))
         .map_err(|err| err.to_string())?;
+    if config
+        .oauth
+        .as_ref()
+        .is_some_and(|oauth| !oauth.authorization_origins.is_empty())
+    {
+        return Err(
+            "OAuth authorization origins require explicit owner configuration; plugin manifests cannot grant them"
+                .to_string(),
+        );
+    }
     if matches!(source, PluginMcpSource::Environment { .. }) {
         bind_environment_env_vars(&mut config)?;
     }
@@ -288,3 +298,7 @@ fn normalize_plugin_mcp_server_value(
 #[cfg(test)]
 #[path = "plugin_config_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "plugin_oauth_authorization_origins_tests.rs"]
+mod oauth_authorization_origins_tests;
