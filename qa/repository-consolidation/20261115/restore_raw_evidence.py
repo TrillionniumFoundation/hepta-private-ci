@@ -115,6 +115,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/patch-source-custody/raw-evidence-storage.json": (
+        "cddbb382da7ae892cf017bc562098c6cabd4bc1a6422fd2dfd60ee6b46816b28"
+    ),
     "qa/repository-consolidation/20261126/macos-six-source/raw-evidence-storage.json": (
         "f3bde1f495dea35633a821b3f25324c338cada5ed4ddc4e9b54f42800cdfae8f"
     ),
@@ -239,6 +242,12 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/memory-cell-mem8-ci-followup/pending-startup-diagnostics/CANDIDATE.patch": (
+        "1664d01d545e479663fb3d4762364b139f4bf97e13af6c90ae60f0fe22c3ce5d"
+    ),
+    "qualification/memory-cell-mem8-ci-followup/v17/windows-current-d0f/AUDITOR_FROM_C895.patch": (
+        "57cd49dbaa8832d96a2bff26b470959f7317c09ad9bc1d2f93e43c7e424eb611"
+    ),
     "qualification/learn-ordinary-ce434/evaluation-resident-guards-514-20261112/remote-4ae6-candidate-evaluation-row.toml": (
         "bbd6e03a7acab2ad2b0ae826ae094c261792931d18454f9308d509f858456675"
     ),
