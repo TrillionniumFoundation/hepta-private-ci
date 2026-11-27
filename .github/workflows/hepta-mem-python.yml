@@ -419,7 +419,7 @@ jobs:
           test ! -L "$junit"
           mv "$junit" "$records/before-delivery.junit.xml"
           delivery_exit=0
-          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 7 \
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 11 \
             --output "$records/native-delivery-tests.json" \
             -- just test --locked -p codex-hepta-infer-worker-host --lib \
               -E 'test(native_app_server::context::tests::) | test(native_app_server::control::tests::) | test(native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)' \
@@ -450,15 +450,19 @@ jobs:
               "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
               "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
               "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown",
+              "native_app_server::control::tests::resume_rejects_configuration_or_capacity_changes_before_reconciliation",
+              "native_app_server::control::tests::resume_rejects_unknown_reserved_stopped_and_digest_only_without_io",
+              "native_app_server::control::tests::resume_retains_uncertainty_and_never_dispatches_missing_terminal_evidence",
+              "native_app_server::control::tests::retained_snapshot_roundtrips_all_fields_with_the_existing_v3_digest",
               "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
           }
           if (len(cases) != len(expected) or {case.get("name") for case in cases} != expected
-                  or current.get("tests") != "7" or current.get("failures") != "0"
+                  or current.get("tests") != str(len(expected)) or current.get("failures") != "0"
                   or current.get("errors") != "0"
                   or any(case.find(tag) is not None for case in cases for tag in ("failure", "error", "skipped"))
-                  or receipt["status"] != "passed" or receipt["observed_passed_tests"] != 7
+                  or receipt["status"] != "passed" or receipt["observed_passed_tests"] != len(expected)
                   or receipt["observed_failed_tests"] != 0):
-              raise SystemExit("native delivery did not pass all seven original cases")
+              raise SystemExit("native delivery did not pass every expected case")
           if str(uuid.UUID(current.attrib["uuid"])) == previous.get("uuid"):
               raise SystemExit("native delivery reused a previous nextest report")
           for case in cases:

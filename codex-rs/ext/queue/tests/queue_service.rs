@@ -43,6 +43,8 @@ use codex_protocol::models::ImageDetail;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::HookEventName;
+use codex_protocol::protocol::HookRunStatus;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_protocol::user_input::MAX_USER_INPUT_TEXT_CHARS;
 use codex_protocol::user_input::UserInput;
@@ -2620,17 +2622,57 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let following = staging.enqueue(thread_id, user_input("C")).await?;
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
-    tokio::time::timeout(Duration::from_secs(10), async {
-        test.submit_text_turn("A").await?;
-        for _ in 0..2 {
-            wait_for_event_match(test.codex.as_ref(), |event| {
-                matches!(event, EventMsg::TurnComplete(_)).then_some(())
-            })
-            .await;
-        }
-        anyhow::Ok(())
-    })
-    .await??;
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(10);
+    tokio::time::timeout_at(deadline, test.submit_text_turn("A"))
+        .await
+        .context("initial model turn and finish owner")??;
+    let rejected_turn = tokio::time::timeout_at(
+        deadline,
+        wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::HookCompleted(hook)
+                if hook.run.event_name == HookEventName::UserPromptSubmit
+                    && hook.run.status == HookRunStatus::Blocked =>
+            {
+                hook.turn_id.clone()
+            }
+            _ => None,
+        }),
+    )
+    .await
+    .context("queued head did not report a blocked UserPromptSubmit hook")?;
+    tokio::time::timeout_at(
+        deadline,
+        wait_for_event_match(test.codex.as_ref(), |event| {
+            matches!(event, EventMsg::TurnComplete(turn) if turn.turn_id == rejected_turn)
+                .then_some(())
+        }),
+    )
+    .await
+    .context("the rejected queue turn did not complete")?;
+
+    // A separate queue client reconciles the following message against the original rollout.
+    let TurnInput::UserInput { content, .. } = &following.input else {
+        anyhow::bail!("expected queued user input");
+    };
+    let observed = tokio::time::timeout_at(
+        deadline,
+        staging.reconcile(
+            thread_id,
+            test.codex.rollout_path(),
+            following.input.clone(),
+            user_input_payload_sha256(content)?,
+            QueueReconcileMode::ReconcileOnly,
+        ),
+    )
+    .await
+    .context("the following queue item did not reconcile")??;
+    assert_eq!(
+        QueueReconcileOutcome::Queued {
+            item: following.clone(),
+            created: false,
+        },
+        observed.outcome
+    );
 
     let prompts = responses
         .requests()

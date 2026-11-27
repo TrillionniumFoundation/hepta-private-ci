@@ -20,6 +20,9 @@ on:
       - "scripts/hepta_ci_junit.py"
       - "scripts/hepta_c_observer_coverage.py"
       - "scripts/test_hepta_c_observer_coverage.py"
+      - "scripts/format.py"
+      - "scripts/hepta_daemon_learning_format.py"
+      - "scripts/test_hepta_format_scope.py"
   workflow_dispatch:
 
 permissions:
@@ -251,6 +254,8 @@ jobs:
                   raise RuntimeError(name + " failed; retained execution and fresh JUnit observations")
 
           def postimages(complete):
+              from hepta_daemon_learning_format import is_owned_rust
+
               (records / "maintenance.patch").write_bytes(git("diff", "--binary", "HEAD", "--"))
               changed = git("diff", "--name-only", "--no-renames", "-z", "HEAD", "--")
               if git("ls-files", "--others", "--exclude-standard", "-z"):
@@ -260,10 +265,7 @@ jobs:
                   if not raw:
                       continue
                   path = os.fsdecode(raw)
-                  if not path.endswith(".rs") or not path.startswith(
-                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/",
-                           "codex-rs/hepta-intelligence-eval/", "codex-rs/hepta-contracts/",
-                           "codex-rs/hepta-neuron/", "codex-rs/hepta-learning-ledger/")):
+                  if not is_owned_rust(path):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():
@@ -322,7 +324,9 @@ jobs:
               assert before == after, "source changed during tests"
               maintenance_started = True
               stage("fix", ["just", "fix", "--locked", "--offline", *packages])
-              stage("fmt", ["just", "fmt", "--base", os.environ["FORMAT_BASE_SHA"]], 600)
+              stage("fmt", ["python3", "scripts/hepta_daemon_learning_format.py",
+                            "--base", os.environ["FORMAT_BASE_SHA"],
+                            "--inventory", str(records / "maintenance-format-inputs.json")], 600)
               maintenance_complete = True
               maintained = snapshot("after-maintenance")
               # No behavior tests after fix/fmt; this is compile-only binary validation.
@@ -360,6 +364,8 @@ jobs:
             -- python3 -m unittest discover -s qa/b4-no-bypass -p '*source_closure.py' -v
       - name: Check exact learning owner evidence parser controls
         run: python3 -m unittest discover -s scripts -p test_hepta_c_observer_coverage.py
+      - name: Check reviewed Rust formatter scope
+        run: python3 -m unittest discover -s scripts -p test_hepta_format_scope.py
       - name: Install native prerequisites
         run: |
           sudo apt-get update

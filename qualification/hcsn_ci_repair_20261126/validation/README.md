@@ -25,3 +25,18 @@
 GitHub 对带有证据附件的最终提交独立产生回执。
 
 [已发布修复](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/469670e8e5a88432e5ff2ddd5355bde5238e98de) · [对应的完整托管运行](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45917805750) · [上一提交已通过的原 musl 作业](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45914954824/job/140232518511)
+
+## 7a0e8667 的托管结果与后续修复
+
+[原 blocking-ci](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45923077801) 已完成 learning.operator 的精确源码、确定性合并和汇总三个资格作业。最终归档 ID 为 15167494270，文件 768 字节，SHA-256 为 `55254a6c562bfdff6c4d60dd6303d8a5441f8208ada5d160eea29c6c1892aa61`。独立使用原合并程序核验两份上游归档得到相同的源、树、工件和资格内容，两个生成时间字段随运行变化。[Daemon 原归档](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45923077654/artifacts/15167497589) 的 JUnit 含 2,852 个普通用例及声明的全部 68 个 Root 父用例，均零失败、零跳过。
+
+| 原作业的观察 | 后续变更及核验 |
+|---|---|
+| 原生 Windows 队列从上轮 35/39 改善到 40/41。Python 和 PowerShell 的真实钩子均通过，尚余一项拒绝持久化。 | 跟踪真实阻止事件的 turn ID 和同一项的完成事件，随后由独立队列客户端验证后续消息的既有记录。原 10 秒期限、外部模型请求数、钩子内容和持久 FIFO 均保留。GNU 完整 39/39。 |
+| 先前的父子通知测试将含有子完成消息的父回放错误路由至 404。 | 用真实发送方标头区分子请求，同时继续核对父回放与子消息内容。相同原生程序和同一真实事件顺序下，旧路由退出 101，新路由退出 0。原通知与标头组 32/32。 |
+| MemoryCell 的全量 Agentd 作业在选中 1,554 项中有六项找不到两个真实辅助程序。 | 复用仓库的 hepta_cell_test_helpers.py，按 Cargo 编译器记录准备两个真实二进制，复核来源和哈希后传给原 nextest。最初的同 ELF 诊断在缺少位置时 0/4、提供真实程序后 4/4。独立比对同提交的 Daemon 托管回执，正式 helper 在干净源上构建这两个包，六个对应原测试按名各运行一次且全部通过。这与新提交的 MemoryCell 整项资格分别记录。原五条测试命令保持原样。作业总预算从 30 改为 45 分钟以容纳新增构建，单项功能时限不变。 |
+| MEM 原 JUnit 十一项全过，旧汇总只接受七个名字。 | 严格集合纳入原七项和新增的四项，并由集合确定项数。复用托管原 JUnit 验证旧汇总退出 1、新汇总退出 0。21 个不合格输入全部被拒收，后续原 protocol 组也已 30/30 通过。 |
+| Daemon 普通及 Root 资格已通过，随后格式维护在归档中的孤立 Cargo manifest 失败。 | 沿原历史基线选取维护流程允许写入的六个现行 Rust 包，继续使用仓库已有的格式规则、版本识别及后像核验。在 4,243 份现存变更 Rust 源中，格式化 1,604 份；另 2,632 份按所属包记入清单，7 份签名归档逐份复核。原后像审计还原了唯一一份换行差异。 |
+| Linux GNU 和 macOS ARM 的 control-plane 原单测均为 184/185。相同冷重开读取报告 WriterUnavailable。 | 按原 NDU 原生验收的运行方式，让同一个 Bazel 单测目标在 Linux 和 macOS 内部串行。保留 185 项原测试及冷重开的 32 轮，Windows 参数按原配置。Linux 同一 ELF 的串行全组 20/20、默认并行全组 40/40、八线程全组 20/20 均成功，本机未观察到托管失败。 |
+
+[可下载的原生结果和核验资料](positive-runtime-and-ci-receipts.zip)的归档 SHA-256 为 `7ab323ef4275308ebe4898fcf1527db1134c0e715047c84bca2081038bab95fb`。固定源的独立测量还记录了 CPU 编译选项与存储差异。相同 500 毫秒用例中，只调三个本仓包为 5/6，同轮默认配置为 2/6；调五包为 6/6，同轮默认为 3/6。五包在首块持久盘的四项 Root 资格为 1/4。该机当前默认产品在首块和第二块 ext4 持久盘分别为 2/4 与 4/4，tmpfs 为 4/4。以上编译选项仅作为测量对照。原受保护 Windows 正向资格继续以其产品入口和独立托管结果为准。

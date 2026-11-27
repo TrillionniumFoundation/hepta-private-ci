@@ -4,6 +4,13 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-control-plane",
     crate_name = "codex_hepta_control_plane",
+    # Cold reopen checks require the preceding owner to have released its file locks.
+    # Other unit tests start child processes. The native NDU publication lane also runs serially.
+    unit_test_args = select({
+        "@platforms//os:linux": ["--test-threads=1"],
+        "@platforms//os:macos": ["--test-threads=1"],
+        "//conditions:default": [],
+    }),
 )
 
 # Bounded simulator executable; no hardware or external-effect authority.
