@@ -1,0 +1,256 @@
+{
+  "schema": "hepta-mcp-oauth-schema-generation-input-v1",
+  "activated": true,
+  "source_preparation_only": false,
+  "publication_authorized": true,
+  "engineering_execution_authorized": true,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "fix/hepta-sdk-oauth-schema-generation-20261126-7c9e",
+  "parent": {
+    "head": "df1a177bdc4f3b18466604cd6dcfb704e72acae9",
+    "tree": "dc309b04bb442e26e6e0092923d61bb80cf6980f"
+  },
+  "local_source_tree": "2532e2baef7f319e2a76d36b860095f44a49b72c",
+  "publication_paths": [
+    ".github/workflows/hepta-mcp-oauth-schema-generation-v1.yml",
+    "scripts/hepta_mcp_oauth_schema_generation_inputs_v1.json",
+    "scripts/hepta_mcp_oauth_schema_generation_source_part1_v1.json",
+    "scripts/hepta_mcp_oauth_schema_generation_source_part2_v1.json",
+    "scripts/run_mcp_oauth_schema_generation_v1.py"
+  ],
+  "source_paths": [
+    "codex-rs/cli/src/mcp_cmd.rs",
+    "codex-rs/codex-mcp/src/connection_manager.rs",
+    "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+    "codex-rs/codex-mcp/src/executor_environment_http_client.rs",
+    "codex-rs/codex-mcp/src/oauth_authorization_reconciliation_tests.rs",
+    "codex-rs/codex-mcp/src/oauth_retirement_tests.rs",
+    "codex-rs/codex-mcp/src/openai_docs_source_attribution.rs",
+    "codex-rs/codex-mcp/src/plugin_config.rs",
+    "codex-rs/codex-mcp/src/plugin_config_tests.rs",
+    "codex-rs/codex-mcp/src/plugin_oauth_authorization_origins_tests.rs",
+    "codex-rs/codex-mcp/src/runtime.rs",
+    "codex-rs/codex-mcp/src/server.rs",
+    "codex-rs/config/src/mcp_oauth_authorization_origins_tests.rs",
+    "codex-rs/config/src/mcp_types.rs",
+    "codex-rs/config/src/mcp_types_tests.rs",
+    "codex-rs/core-plugins/src/manager_tests.rs",
+    "codex-rs/core/src/config/edit/document_helpers.rs",
+    "codex-rs/core/src/config/edit/document_helpers_tests.rs",
+    "codex-rs/core/src/config/edit_tests.rs",
+    "codex-rs/core/src/mcp_skill_dependencies.rs",
+    "codex-rs/core/tests/suite/mcp_startup_refresh_http_proxy.rs",
+    "codex-rs/exec-server/src/client_api.rs",
+    "codex-rs/rmcp-client/src/http_client_redirect.rs",
+    "codex-rs/rmcp-client/src/http_headers.rs",
+    "codex-rs/rmcp-client/src/http_headers_tests.rs",
+    "codex-rs/rmcp-client/src/lib.rs",
+    "codex-rs/rmcp-client/src/oauth_authorization_http_client.rs",
+    "codex-rs/rmcp-client/src/oauth_authorization_http_client_tests.rs",
+    "codex-rs/rmcp-client/src/oauth_authorization_revocation_tests.rs",
+    "codex-rs/rmcp-client/src/oauth_http_client.rs",
+    "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs"
+  ],
+  "caps": {
+    "whole": 1800,
+    "commands": 1680,
+    "retention": 120
+  },
+  "phase_caps": {
+    "source": 120,
+    "tools": 120,
+    "generate": 1380,
+    "verify": 60
+  },
+  "maximum_original_attempts": 1,
+  "first_open_only": true,
+  "workflow_hard_bound_minutes": 32,
+  "root_admission": {
+    "reviewer": "root",
+    "accepted": true,
+    "schema_generation_authorized": true,
+    "sha256": "5ef0b042e65e042f6b2a80f72fbec495ff2b0c5b5e47e7095c15df0b51951f9f",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "branch": "fix/hepta-sdk-oauth-schema-generation-20261126-7c9e",
+    "parent": {
+      "head": "df1a177bdc4f3b18466604cd6dcfb704e72acae9",
+      "tree": "dc309b04bb442e26e6e0092923d61bb80cf6980f"
+    },
+    "local_source_tree": "2532e2baef7f319e2a76d36b860095f44a49b72c",
+    "caps": {
+      "whole": 1800,
+      "commands": 1680,
+      "retention": 120
+    },
+    "phase_caps": {
+      "source": 120,
+      "tools": 120,
+      "generate": 1380,
+      "verify": 60
+    },
+    "publication_paths": [
+      ".github/workflows/hepta-mcp-oauth-schema-generation-v1.yml",
+      "scripts/hepta_mcp_oauth_schema_generation_inputs_v1.json",
+      "scripts/hepta_mcp_oauth_schema_generation_source_part1_v1.json",
+      "scripts/hepta_mcp_oauth_schema_generation_source_part2_v1.json",
+      "scripts/run_mcp_oauth_schema_generation_v1.py"
+    ],
+    "source_paths": [
+      "codex-rs/cli/src/mcp_cmd.rs",
+      "codex-rs/codex-mcp/src/connection_manager.rs",
+      "codex-rs/codex-mcp/src/connection_manager_tests.rs",
+      "codex-rs/codex-mcp/src/executor_environment_http_client.rs",
+      "codex-rs/codex-mcp/src/oauth_authorization_reconciliation_tests.rs",
+      "codex-rs/codex-mcp/src/oauth_retirement_tests.rs",
+      "codex-rs/codex-mcp/src/openai_docs_source_attribution.rs",
+      "codex-rs/codex-mcp/src/plugin_config.rs",
+      "codex-rs/codex-mcp/src/plugin_config_tests.rs",
+      "codex-rs/codex-mcp/src/plugin_oauth_authorization_origins_tests.rs",
+      "codex-rs/codex-mcp/src/runtime.rs",
+      "codex-rs/codex-mcp/src/server.rs",
+      "codex-rs/config/src/mcp_oauth_authorization_origins_tests.rs",
+      "codex-rs/config/src/mcp_types.rs",
+      "codex-rs/config/src/mcp_types_tests.rs",
+      "codex-rs/core-plugins/src/manager_tests.rs",
+      "codex-rs/core/src/config/edit/document_helpers.rs",
+      "codex-rs/core/src/config/edit/document_helpers_tests.rs",
+      "codex-rs/core/src/config/edit_tests.rs",
+      "codex-rs/core/src/mcp_skill_dependencies.rs",
+      "codex-rs/core/tests/suite/mcp_startup_refresh_http_proxy.rs",
+      "codex-rs/exec-server/src/client_api.rs",
+      "codex-rs/rmcp-client/src/http_client_redirect.rs",
+      "codex-rs/rmcp-client/src/http_headers.rs",
+      "codex-rs/rmcp-client/src/http_headers_tests.rs",
+      "codex-rs/rmcp-client/src/lib.rs",
+      "codex-rs/rmcp-client/src/oauth_authorization_http_client.rs",
+      "codex-rs/rmcp-client/src/oauth_authorization_http_client_tests.rs",
+      "codex-rs/rmcp-client/src/oauth_authorization_revocation_tests.rs",
+      "codex-rs/rmcp-client/src/oauth_http_client.rs",
+      "codex-rs/rmcp-client/src/oauth_reactive_discovery.rs"
+    ],
+    "maximum_original_attempts": 1,
+    "first_open_only": true
+  },
+  "reviewed_sources": {
+    "scripts/run_mcp_oauth_schema_generation_v1.py": {
+      "bytes": 53338,
+      "sha256": "1e51868d914520030b4b67e7f90e0f5304d7b83618623f7e31f2b7011413fe69",
+      "git_blob": "aaf6a1a38e956b604cd32136d07490a687d1cb37"
+    },
+    ".github/workflows/hepta-mcp-oauth-schema-generation-v1.yml": {
+      "bytes": 10767,
+      "sha256": "9b024985db7b237518e294dc3b313c25a4883fd66dca467de475815564e32255",
+      "git_blob": "fda3dc1cbac4c05e3e391ad4c61028c33b1fd488"
+    },
+    "scripts/hepta_mcp_oauth_schema_generation_source_part1_v1.json": {
+      "bytes": 467869,
+      "sha256": "e4725f3f2f5e29d4d6e6d292d7e1dd9501d138601571ba168e4c903edf53a7da",
+      "git_blob": "05ad298ea56861a5f1a36015748e1d4cc4825c7e"
+    },
+    "scripts/hepta_mcp_oauth_schema_generation_source_part2_v1.json": {
+      "bytes": 468047,
+      "sha256": "69f23a602e7b09173df74286e349ecb86d396284fec2256947a94753becab711",
+      "git_blob": "a6dc3adad665578dc3330292ffa56138a3afbf99"
+    },
+    "scripts/run_chrono_hooks_cli_lock_scope_v1.py": {
+      "bytes": 51480,
+      "sha256": "9f7611b839ebe6518260e40cae81344169e7037a8551b1be00a2f20f28513ac2",
+      "git_blob": "dd2415007a34be01e8206dcc726d6379450ee111"
+    },
+    "scripts/hepta_ci_exec.py": {
+      "bytes": 17064,
+      "sha256": "ccabe2e8066c01a612a378d42cd7580ab183870b59921442a0d208b5ac528cba",
+      "git_blob": "491caed67eda5d820473d05717aaaa03b1828609"
+    }
+  },
+  "lock_pins": {
+    "MODULE.bazel.lock": {
+      "mode": "100644",
+      "bytes": 1792663,
+      "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892",
+      "git_blob": "bb7fb6827f138ca47c750d6c88aec6f5c3bb2775"
+    },
+    "codex-rs/Cargo.lock": {
+      "mode": "100644",
+      "bytes": 421756,
+      "sha256": "bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1",
+      "git_blob": "8a45110e349a11651f403d534467050ee998af3f"
+    }
+  },
+  "old_schema": {
+    "bytes": 188335,
+    "git_blob": "72c3f93671cd4167d93e0a76074057588f4e5634"
+  },
+  "required_root_completion": [
+    "Reuse the already Root-formatted and reviewed 31 Rust postimages and exact 15/16-row source parts from hepta-sdk-b31-candidate-data-root-v1; do not repeat formatting or tests of those unchanged files.",
+    "Bind the actual accepted source-lineage parent and complete map after Root's original fixture-lock and workflow-format successor publication. The independently inspected #7158 is an audited ancestor, not an assumed final parent.",
+    "Verify that the exact 31 Rust preimages and source-part bytes still correspond to that final parent, and independently reconstruct local_source_tree from the complete new parent map plus the unchanged 31 formatted postimages.",
+    "Bind both accepted lock pins and the prior schema against the final parent. Preserve the accepted source bytes; do not regenerate locks or manually author a substitute schema.",
+    "Root formats only this new owner/workflow as required, then fills their final bytes/SHA/Gitblob pins and updates the final input/manifest. Current owner/workflow Gitblob fields are intentionally null pending that operation.",
+    "Create and pin the concrete external Root admission under unchanged 1800/1680/120 and source120/tools120/generate1380/verify60 caps. Fill identical parent/tree/path sets in spec and admission.",
+    "Only after Root admission remove the workflow's single false && prefix and bind its final pin plus activated/execution flags. Preserve first owned opened event only, no dispatch/synchronize/retry.",
+    "Run the original cargo run --locked -p codex-core --bin codex-write-config-schema once on the exact derived source. Retain success or failure SOURCE/RESULT, original logs, actual upload, whole-scope cost and job terminal.",
+    "Both completed source parts remain <=512000 bytes. No blob-policy increase, allowlist, extra publication path, E1-E6 budget reuse, old execution replay or inferred native/SDK qualification is permitted."
+  ],
+  "qualification": {
+    "schema_generated": false,
+    "native": false,
+    "sdk_conformance": false,
+    "published_stage_b": false,
+    "proof_of_useful_work": false
+  },
+  "known_cost_boundaries": {
+    "queue_not_in_scope_monotonic": true,
+    "source_clock_starts_first_job_step_before_checkout": true,
+    "commands_deadline_is_acceptance_not_hard_real_time": true,
+    "original_32_minute_workflow_timeout_separate": true,
+    "checkout_and_upload_cpu_unknown": true,
+    "per_command_cpu_unknown": true,
+    "aggregate_reaped_children_cpu_retained": true,
+    "all_naturally_triggered_other_workflows_additional_original_costs": true
+  },
+  "old_budget_reuse": false,
+  "source_draft_revision": 5,
+  "v4_failure_retention_contract": {
+    "bootstrap_guarded": true,
+    "source_inputs_before_after_including_failed_admission": true,
+    "independent_generation_and_local_source_after_attempts_on_failure": true,
+    "verify_phase_spent_once": true,
+    "no_new_generation_or_test_attempt": true,
+    "workflow_missing_RESULT_is_failed_fallback": true
+  },
+  "generator_dependency_observation": {
+    "evidence_parent": "2b2beaa1dc392f3e6026b12472bdc813422e6105",
+    "core_Cargo_lock_static_overapprox_package_count": 1175,
+    "unresolved_edges": 0,
+    "v8_reachable": false,
+    "additional_V8_preparation": false,
+    "final_parent_equivalence_required": true,
+    "final_parent_equivalence_verified": true,
+    "final_parent": {
+      "head": "df1a177bdc4f3b18466604cd6dcfb704e72acae9",
+      "tree": "dc309b04bb442e26e6e0092923d61bb80cf6980f"
+    },
+    "equivalence_scope": "All original Cargo manifests, workspace lock, Cargo configs and toolchain entries are identical in complete Merkle-verified baseline and actual parent maps; all other ancestor changes are exactly the accepted 9+7 paths."
+  },
+  "v5_cancellation_contract": {
+    "ordinary_signals": [
+      "SIGINT",
+      "SIGTERM"
+    ],
+    "signal_handler_latches_only": true,
+    "original_helper_algorithm_and_disk_bytes_unchanged": true,
+    "private_loaded_module_boundary_observation_only": true,
+    "observed_direct_child_pid_group_signal_and_returncode": true,
+    "missing_group_signal_or_direct_child_terminal_cannot_qualify": true,
+    "final_retention_latches_signals_without_interrupting_original_reap": true,
+    "workflow_attempts_retention_and_upload_on_cancel": true,
+    "same_original_deadlines_and_first_attempt": true,
+    "hard_kill_runner_loss_and_escaped_sessions_not_claimed_closed": true,
+    "final_original_job_terminal_still_mandatory": true,
+    "inflight_command_cancellation_exception_only_in_original_protected_region": true,
+    "cancellation_always_nonzero_and_cannot_qualify": true,
+    "late_signals_must_override_pre_serialization_RESULT_using_final_stdout_and_actual_job_terminal": true,
+    "command_boundary_evidence_and_RESULT_have_independent_write_attempts": true
+  }
+}
