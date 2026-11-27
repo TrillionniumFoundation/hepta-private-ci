@@ -19,6 +19,9 @@ import run_bazel_with_buildbuddy
 
 PROBE = """
 import json, os, pathlib, sys
+marker = os.environ.get('PROCESS_WRAPPER_PROBE_MARKER')
+if marker:
+    pathlib.Path(marker).write_text('child started', encoding='utf-8')
 arguments = sys.argv[1:]
 expanded = []
 for argument in arguments:
@@ -201,14 +204,31 @@ class ProcessWrapperSmokeTest(unittest.TestCase):
         )
 
     def test_inaccessible_library_still_rejects_before_child_execution(self) -> None:
-        library = self.dependencies / "required.rlib"
+        # Windows can create a same-volume hard link even while an exclusive
+        # read handle prevents reading the file. Use the runner's system-volume
+        # temp directory and prove the hard-link fallback is actually exercised.
+        system_temporary = Path(os.environ["LOCALAPPDATA"]) / "Temp"
+        temporary = TemporaryDirectory(
+            prefix="rust wrapper cross volume ", dir=system_temporary
+        )
+        self.addCleanup(temporary.cleanup)
+        dependencies = Path(temporary.name)
+        library = dependencies / "required.rlib"
         library.write_bytes(b"required library")
+        with self.assertRaises(OSError) as error:
+            os.link(library, self.root / "hardlink preflight.rlib")
+        self.assertEqual(error.exception.winerror, 17)  # ERROR_NOT_SAME_DEVICE
+        marker = self.root / "child started.txt"
+        self.env["PROCESS_WRAPPER_PROBE_MARKER"] = str(marker)
         with exclusive_read_handle(library):
             with self.assertRaises(PermissionError):
                 library.read_bytes()
-            result = self.invoke(f"-Ldependency={self.dependencies}")
+            result = self.invoke(f"-Ldependency={dependencies}")
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(result.stdout, "")
+        self.assertFalse(
+            marker.exists(), "copy failure must reject before starting the child"
+        )
         self.assertIn("required.rlib", result.stderr)
         self.assertIn("unable to copy", result.stderr)
 

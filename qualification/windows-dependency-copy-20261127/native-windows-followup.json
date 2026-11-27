@@ -1,0 +1,26 @@
+{
+  "schema": "codex.hia.windows-dependency-copy-followup.v1",
+  "initial_native_windows_run": 45991122652,
+  "initial_native_windows_job": 140478908473,
+  "initial_commit": "ecac3513c280a5d2ca66fd12f33aa487aea01041",
+  "initial_smoke_results": {"executed": 6, "passed": 5, "failed": 1, "skipped": 0},
+  "original_log": {
+    "uncompressed_bytes": 189870,
+    "uncompressed_sha256": "775ac433b1578e817e28784d8e99f808f1fd9ca40faa2a069a1f9135e8e36d95",
+    "file": "native-windows-smoke-first-failure-140478908473.log.gz",
+    "compressed_bytes": 23000,
+    "compressed_sha256": "a662845f16a5be78827328f20311f1ddc8e04ef737aba5cbb7af810f0b6973ed"
+  },
+  "observed_failure": "An exclusive read handle did not prevent a same-volume hard link. The child then failed reading that alias; the fixture incorrectly expected the wrapper's fallback-copy diagnostic before child execution.",
+  "fixture_revision": "Create the required library on the runner's system volume. First require a real os.link attempt to fail with Windows error 17 (ERROR_NOT_SAME_DEVICE), then hold an exclusive handle and require the original copy-error diagnostic. A separate child-start marker must remain absent.",
+  "product_patch_changed": false,
+  "portable_validation": {
+    "platform": "macOS, real wrapper compiled with explicit windows cfg; not native Windows",
+    "script_sha256": "be76bedb85262aad38736e09ff4f20166568cef82996b45401966f2f51136d83",
+    "existing_behavior_tests_passed": 4,
+    "child_start_marker_positive_control_passed": true
+  },
+  "manual_windows_scope": "The existing Bazel workflow accepts a default-false windows_shard_one_only input. True runs the unchanged shard-1 commands, target selection, and 60-minute budget. The full Windows aggregate and other platform jobs are skipped, so this mode cannot qualify the complete matrix.",
+  "followup_native_windows_qualified": false,
+  "whole_matrix_qualified": false
+}
