@@ -9,6 +9,7 @@ use codex_protocol::permissions::FileSystemSandboxPolicy;
 use codex_protocol::permissions::NetworkSandboxPolicy;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
+use pretty_assertions::assert_eq;
 use std::io;
 use std::path::Path;
 use tokio::io::AsyncReadExt;
@@ -351,5 +352,157 @@ async fn stable_handle_bounded_read_never_returns_oversize_prefix() -> io::Resul
         .expect_err("oversized authorized read must fail without a prefix");
     assert_eq!(error.kind(), io::ErrorKind::InvalidData);
     assert_eq!(error.to_string(), "authorized file read exceeds bound");
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+#[test]
+fn stable_handle_path_candidates_preserve_mutable_suffix_and_component_boundary() -> io::Result<()>
+{
+    use std::os::unix::fs::symlink;
+
+    let temp = tempfile::tempdir_in("/var/tmp")?;
+    let outside = tempfile::tempdir()?;
+    symlink(outside.path(), temp.path().join("mutable"))?;
+    let suffix = Path::new("mutable/not-created.txt");
+    let stable_spelling = temp.path().canonicalize()?.join(suffix);
+    assert_eq!(
+        super::macos::authorized_read_path_candidates(&stable_spelling),
+        vec![stable_spelling.clone(), temp.path().join(suffix)]
+    );
+    let other_component = Path::new("/private/variable/not-created.txt");
+    assert_eq!(
+        super::macos::authorized_read_path_candidates(other_component),
+        vec![other_component.to_path_buf()]
+    );
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+#[tokio::test]
+async fn stable_handle_read_accepts_both_verified_system_alias_spellings() -> io::Result<()> {
+    if !super::stable_handle_authorized_read_available() {
+        return Ok(());
+    }
+    let temp = tempfile::tempdir_in("/var/tmp")?;
+    let allowed = temp.path().join("allowed");
+    let outside = temp.path().join("outside.txt");
+    std::fs::create_dir(&allowed)?;
+    std::fs::write(allowed.join("read.txt"), b"allowed")?;
+    std::fs::write(&outside, b"secret")?;
+    let canonical_allowed = allowed.canonicalize()?;
+    let canonical_outside = outside.canonicalize()?;
+    let file_system = LocalFileSystem::unsandboxed();
+
+    for root in [&allowed, &canonical_allowed] {
+        let sandbox = read_sandbox(root)?;
+        for path in [allowed.join("read.txt"), canonical_allowed.join("read.txt")] {
+            assert_eq!(
+                authorized_read(&file_system, &path, &sandbox, 128).await?,
+                b"allowed"
+            );
+        }
+        for path in [&outside, &canonical_outside] {
+            let error = authorized_read(&file_system, path, &sandbox, 128)
+                .await
+                .expect_err("a system alias must not authorize a sibling outside the grant");
+            assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
+            assert_eq!(error.to_string(), "Permission denied");
+        }
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+#[tokio::test]
+async fn stable_handle_read_prioritizes_exact_and_glob_denies_across_system_aliases()
+-> io::Result<()> {
+    if !super::stable_handle_authorized_read_available() {
+        return Ok(());
+    }
+    let temp = tempfile::tempdir_in("/var/tmp")?;
+    let allowed = temp.path().join("allowed");
+    std::fs::create_dir(&allowed)?;
+    std::fs::write(allowed.join("public.txt"), b"public")?;
+    std::fs::write(allowed.join("blocked.secret"), b"secret")?;
+    let canonical_allowed = allowed.canonicalize()?;
+    let file_system = LocalFileSystem::unsandboxed();
+
+    for grant in [&allowed, &canonical_allowed] {
+        for deny_root in [&allowed, &canonical_allowed] {
+            let wildcard_root = deny_root.to_string_lossy().replacen("/var/", "/v?r/", 1);
+            for denial in [
+                FileSystemPath::Path {
+                    path: PathUri::from_host_native_path(deny_root.join("blocked.secret"))?,
+                },
+                FileSystemPath::GlobPattern {
+                    pattern: format!("{}/*.secret", deny_root.display()),
+                },
+                FileSystemPath::GlobPattern {
+                    pattern: format!("{wildcard_root}/*.secret"),
+                },
+            ] {
+                let mut sandbox = read_sandbox(grant)?;
+                let permissions: PermissionProfile = sandbox.permissions.clone().try_into()?;
+                let mut policy = permissions.file_system_sandbox_policy();
+                policy.entries.push(FileSystemSandboxEntry::new(
+                    denial,
+                    FileSystemAccessMode::Deny,
+                ));
+                sandbox.permissions = PermissionProfile::from_runtime_permissions(
+                    &policy,
+                    NetworkSandboxPolicy::Restricted,
+                )
+                .into();
+                for spelling in [&allowed, &canonical_allowed] {
+                    assert_eq!(
+                        authorized_read(&file_system, &spelling.join("public.txt"), &sandbox, 128)
+                            .await?,
+                        b"public"
+                    );
+                    let error = authorized_read(
+                        &file_system,
+                        &spelling.join("blocked.secret"),
+                        &sandbox,
+                        128,
+                    )
+                    .await
+                    .expect_err("deny must win in every verified system alias spelling");
+                    assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
+                    assert_eq!(error.to_string(), "Permission denied");
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn stable_handle_read_does_not_follow_replaced_permission_root() -> io::Result<()> {
+    use std::os::unix::fs::symlink;
+
+    if !super::stable_handle_authorized_read_available() {
+        return Ok(());
+    }
+    let temp = tempfile::tempdir()?;
+    let allowed = temp.path().join("allowed");
+    let outside = temp.path().join("outside");
+    std::fs::create_dir(&allowed)?;
+    std::fs::create_dir(&outside)?;
+    std::fs::write(allowed.join("read.txt"), b"allowed")?;
+    std::fs::write(outside.join("read.txt"), b"secret")?;
+    let sandbox = read_sandbox(&allowed)?;
+    let file_system = LocalFileSystem::unsandboxed();
+    assert_eq!(
+        authorized_read(&file_system, &allowed.join("read.txt"), &sandbox, 128).await?,
+        b"allowed"
+    );
+    std::fs::rename(&allowed, temp.path().join("moved"))?;
+    symlink(&outside, &allowed)?;
+    let error = authorized_read(&file_system, &allowed.join("read.txt"), &sandbox, 128)
+        .await
+        .expect_err("replacing a permission root with a symlink must not grant its target");
+    assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(error.to_string(), "Permission denied");
     Ok(())
 }
