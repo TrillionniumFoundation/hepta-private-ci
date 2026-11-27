@@ -379,6 +379,15 @@ fn fixture() -> Fixture {
     let profile = objective_profile();
     let envelope = objective_envelope();
     let objective_context = objective_context(&profile, &envelope);
+    fixture_from_objective(profile, envelope, objective_context, "action.read")
+}
+
+fn fixture_from_objective(
+    profile: ObjectiveAdmissionProfileV1,
+    envelope: ObjectiveSourceEnvelopeV1,
+    objective_context: ObjectiveAdmissionContextV1,
+    candidate: &str,
+) -> Fixture {
     let objective = admit_and_compile_objective_v1(&envelope, &profile, &objective_context)
         .expect("objective admission")
         .compile_result
@@ -400,7 +409,7 @@ fn fixture() -> Fixture {
         objective_digest,
         generation: generation(7),
         contributions: vec![UtilityContribution {
-            candidate_id: id("action.read"),
+            candidate_id: id(candidate),
             organ_id: id("planner"),
             objective_digest,
             generation: generation(7),
@@ -505,7 +514,7 @@ fn fixture() -> Fixture {
     };
 
     let intuition_candidates = vec![CalibratedActionCandidateV1 {
-        candidate_id: id("action.read"),
+        candidate_id: id(candidate),
         legal: true,
         hard_veto: false,
         utility: FixedQ32::ONE,
@@ -597,7 +606,7 @@ fn fixture() -> Fixture {
     let evaluation_request = EvaluationRequest {
         evaluation_id: id("evaluation.agentd"),
         evaluator_id: id("learning.eval"),
-        candidate_id: id("action.read"),
+        candidate_id: id(candidate),
         candidate_producer_id: id("intuition.policy"),
         baseline_id: id("baseline.noop"),
         objective_digest,
@@ -622,7 +631,7 @@ fn fixture() -> Fixture {
                 generator_id: id("intelligence.control"),
                 grammar_digest: digest("legal-grammar"),
                 candidates: vec![LegalActionCandidateV1 {
-                    candidate_id: id("action.read"),
+                    candidate_id: id(candidate),
                     support_digest: digest("action-support"),
                 }],
                 support_floor_ppm: 1,

@@ -2,6 +2,9 @@
 
 use super::*;
 
+#[path = "intelligence_run_start.rs"]
+mod run_start;
+
 impl AgentdIntelligenceProductRunnerV1 {
     pub fn new(
         authority_file: PathBuf,
@@ -22,6 +25,8 @@ impl AgentdIntelligenceProductRunnerV1 {
             authority_file,
             authority_verifier,
             evaluation_trust: None,
+            coupled_field_owner: None,
+            coupled_run_files: BTreeMap::new(),
         })
     }
 
@@ -36,6 +41,52 @@ impl AgentdIntelligenceProductRunnerV1 {
         }
         self.evaluation_trust = Some(std::sync::Arc::new(trust));
         Ok(self)
+    }
+
+    /// Attach the host's read-only parameter owner. A selected field update must
+    /// match a currently materialized pin and its published ordinary decision.
+    pub fn with_coupled_field_evidence_owner<S>(
+        mut self,
+        owner: AgentdCoupledFieldEvidenceOwnerV1<S>,
+        run_files: Vec<std::sync::Arc<AgentdCoupledFieldRunFileV1>>,
+    ) -> Result<Self, AgentdIntelligenceProductError>
+    where
+        S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1 + Send + 'static,
+    {
+        if self.coupled_field_owner.is_some() {
+            return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
+        }
+        if run_files.is_empty() {
+            return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
+        }
+        for file in run_files {
+            if self
+                .coupled_run_files
+                .insert(file.run_id.clone(), file)
+                .is_some()
+            {
+                return Err(AgentdIntelligenceProductError::InvalidAuthorityVerifier);
+            }
+        }
+        self.coupled_field_owner = Some(std::sync::Arc::new(owner));
+        Ok(self)
+    }
+
+    /// The bounded worker cannot publish evidence. The daemon records the
+    /// verified evaluation only after revalidating the original durable run.
+    pub(crate) fn retain_coupled_field_evaluation(
+        &self,
+        original: &codex_hepta_learning_ledger::RunStartRecordV1,
+        prepared: &PreparedAgentdIntelligenceRunV1,
+    ) -> Result<(), AgentdIntelligenceEvaluationError> {
+        if let Some(proof) = &prepared.coupled_field_readback {
+            let file = self
+                .coupled_run_files
+                .get(&original.snapshot.run_id)
+                .ok_or(AgentdIntelligenceEvaluationError::Binding)?;
+            file.retain(original, proof)?;
+        }
+        Ok(())
     }
 
     // The permit belongs to the worker, not the request future. Aborting a
@@ -71,12 +122,28 @@ impl AgentdIntelligenceProductRunnerV1 {
 
     /// Run the seven-owner preparation against one frozen Agentd composition
     /// without retaining the run-coordinator mutex across owner execution.
+    /// This standalone path uses the caller's frozen composition identity;
+    /// durable Objective admission uses the record-bound preparation instead.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
+        inputs: AgentdIntelligenceOwnerInputsV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        self.prepare_with_run_identity(composition, None, request, inputs)
+            .await
+    }
+
+    async fn prepare_with_run_identity(
+        &self,
+        composition: &crate::RuntimeComposition,
+        original_record: Option<&codex_hepta_learning_ledger::RunStartRecordV1>,
+        request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let original_run = original_record
+            .map(run_start::original_run_identity)
+            .transpose()?;
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -103,8 +170,15 @@ impl AgentdIntelligenceProductRunnerV1 {
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
         let snapshot = request.snapshot.clone();
-        let timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
+        let timeout_micros = match &original_run {
+            Some(original) => run_start::remaining_preparation_budget(
+                started_ms,
+                original.deadline_ms,
+                request.budget.total_micros,
+            )?,
+            None => request.budget.total_micros,
+        };
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
         let deadline_ms = started_ms
             .checked_add(timeout_ms.max(1))
@@ -132,22 +206,34 @@ impl AgentdIntelligenceProductRunnerV1 {
                     current_owner,
                     trust: std::sync::Arc::clone(trust),
                     signed,
+                    original_record_digest: if candidate_ids
+                        .iter()
+                        .any(|id| id.as_str().starts_with("candidate:field:"))
+                    {
+                        original_record.map(codex_hepta_learning_ledger::RunStartRecordV1::durable_record_digest_v1).transpose()
+                            .map_err(|_| AgentdIntelligenceProductError::Run(crate::AgentRunError::MixedSnapshot))?
+                    } else {
+                        None
+                    },
+                    coupled_field_owner: self.coupled_field_owner.clone(),
                 })
             }
         };
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            let outcome = prepare_intelligence_run(request, &mut ports, &mut oracle)?;
+            Ok((outcome, ports.coupled_field_readback))
         })?;
-        let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
-            .await
-            .map_err(|_| {
-                worker.abort();
-                AgentdIntelligenceProductError::TimedOut
-            })?
-            .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
-            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let (outcome, coupled_field_readback) =
+            timeout(Duration::from_micros(timeout_micros), &mut worker)
+                .await
+                .map_err(|_| {
+                    worker.abort();
+                    AgentdIntelligenceProductError::TimedOut
+                })?
+                .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
+                .map_err(AgentdIntelligenceProductError::Canonical)?;
 
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
@@ -165,7 +251,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 body.extend_from_slice(snapshot.digest().as_array());
                 body.extend_from_slice(&snapshot.body_generation().get().to_be_bytes());
                 let body_digest = Digest32::of_bytes(&body);
-                let run_snapshot = crate::AgentRunSnapshot {
+                let run_snapshot = original_run.unwrap_or_else(|| crate::AgentRunSnapshot {
                     run_id: envelope.run_id.to_string(),
                     request_digest: envelope.trace_digest.to_string(),
                     objective_digest: envelope.objective_digest.to_string(),
@@ -175,7 +261,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     generation,
                     fence_digest,
                     deadline_ms,
-                };
+                });
                 let context_attachment = crate::AgentContextAttachment {
                     run_id: run_snapshot.run_id.clone(),
                     request_digest: run_snapshot.request_digest.clone(),
@@ -193,6 +279,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     PreparedAgentdIntelligenceRunV1 {
                         envelope,
                         dispatch_proposal_digest,
+                        coupled_field_readback,
                         snapshot,
                         candidate_ids,
                         run_snapshot,

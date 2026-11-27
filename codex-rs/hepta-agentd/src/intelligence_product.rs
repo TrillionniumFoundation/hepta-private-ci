@@ -26,12 +26,22 @@ use codex_hepta_learning_ledger::OutcomeObservation;
 #[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_types::FixedQ32;
 
+#[path = "intelligence_coupled_run_file.rs"]
+mod coupled_run_file;
+pub use coupled_run_file::AgentdCoupledFieldRunFileV1;
+use coupled_run_file::VerifiedUse;
+#[path = "intelligence_coupled_field.rs"]
+mod coupled_field;
+pub use coupled_field::AgentdCoupledFieldEvidenceOwnerV1;
+pub use coupled_field::AgentdCoupledFieldReadbackV1;
+
 #[path = "intelligence_evaluation.rs"]
 mod evaluation;
 pub use evaluation::AgentdEvaluationBindingV1;
 use evaluation::AgentdEvaluationSessionV1;
 pub use evaluation::AgentdIntelligenceEvaluationError;
 pub use evaluation::AgentdSignedEvaluationV1;
+pub use evaluation::intelligence_coupled_field_use_payload_v1;
 pub use evaluation::intelligence_evaluation_binding_payload_v1;
 
 use std::collections::BTreeMap;
@@ -247,6 +257,7 @@ struct AgentdOwnerPortsV1 {
     evaluation_request: Option<EvaluationRequest>,
     evaluation_session: Option<AgentdEvaluationSessionV1>,
     selected_candidate: Option<StableId>,
+    coupled_field_readback: Option<Box<VerifiedUse>>,
 }
 
 impl AgentdOwnerPortsV1 {
@@ -271,6 +282,7 @@ impl AgentdOwnerPortsV1 {
             evaluation_request: Some(value.evaluation_request),
             evaluation_session,
             selected_candidate: None,
+            coupled_field_readback: None,
         }
     }
 
@@ -545,10 +557,11 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
         )?;
         let started = Instant::now();
         let now = wall_clock_ms().map_err(|_| Self::reject(input.stage, "evaluation clock"))?;
-        let receipt = session
+        let (receipt, readback) = session
             .evaluate(input, &request.candidate_id, now)
             .map_err(|_| Self::reject(input.stage, "signed evaluation binding or evidence"))?;
         Self::within_budget(input, started)?;
+        self.coupled_field_readback = readback.map(Box::new);
         Self::receipt(
             input,
             "learning.eval",
@@ -562,6 +575,7 @@ impl CanonicalOwnerPortsV1 for AgentdOwnerPortsV1 {
 pub struct PreparedAgentdIntelligenceRunV1 {
     pub envelope: IntelligenceHostEnvelopeV1,
     pub dispatch_proposal_digest: Digest32,
+    coupled_field_readback: Option<Box<VerifiedUse>>,
     snapshot: CanonicalIntelligenceSnapshotV1,
     candidate_ids: Vec<StableId>,
     run_snapshot: crate::AgentRunSnapshot,
@@ -569,6 +583,14 @@ pub struct PreparedAgentdIntelligenceRunV1 {
 }
 
 impl PreparedAgentdIntelligenceRunV1 {
+    /// Ordinary evaluation evidence for the selected field update, if configured.
+    #[must_use]
+    pub fn coupled_field_readback(&self) -> Option<&AgentdCoupledFieldReadbackV1> {
+        self.coupled_field_readback
+            .as_ref()
+            .map(|verified| &verified.readback)
+    }
+
     #[must_use]
     pub fn run_snapshot(&self) -> crate::AgentRunSnapshot {
         self.run_snapshot.clone()
@@ -625,6 +647,8 @@ pub struct AgentdIntelligenceProductRunnerV1 {
     authority_file: PathBuf,
     authority_verifier: IntelligenceAuthorityVerifierV1,
     evaluation_trust: Option<std::sync::Arc<codex_hepta_learning_ledger::ActivatedLearningTrustV1>>,
+    coupled_field_owner: Option<std::sync::Arc<dyn coupled_field::CoupledReadback>>,
+    coupled_run_files: BTreeMap<StableId, std::sync::Arc<AgentdCoupledFieldRunFileV1>>,
 }
 
 #[path = "intelligence_product_runner.rs"]
