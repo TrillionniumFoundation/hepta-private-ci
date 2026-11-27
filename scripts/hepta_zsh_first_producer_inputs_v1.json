@@ -1,0 +1,199 @@
+{
+  "schema": "hepta-zsh-first-producer-input-v1",
+  "scope_id": "hepta-zsh-first-producer-v1",
+  "activated": true,
+  "source_parent": {
+    "head": "5a842a417dc288e22d506fb16bc691b889fa4297",
+    "tree": "b8b977b8c6e8970a09f7afd1474c258e7f2142b8"
+  },
+  "candidate_head": null,
+  "candidate_tree": null,
+  "approved_actor": "ProfHepta",
+  "root_admission": {
+    "accepted": true,
+    "reviewer": "root",
+    "receipt_sha256": "45a325a140b89155bdc6ce8383ea9556eaab940528f362766b9275bd501e1cca"
+  },
+  "ordinary_budget_receipt_raw": "{\n  \"schema\": \"root-hepta-zsh-first-producer-budget-v1\",\n  \"accepted\": true,\n  \"reviewer\": \"root\",\n  \"scope_id\": \"hepta-zsh-first-producer-v1\",\n  \"caps\": {\n    \"whole_seconds\": 1800,\n    \"work_seconds\": 1500,\n    \"retention_seconds\": 300\n  },\n  \"source_parent\": {\n    \"head\": \"5a842a417dc288e22d506fb16bc691b889fa4297\",\n    \"tree\": \"b8b977b8c6e8970a09f7afd1474c258e7f2142b8\"\n  },\n  \"source_pins\": [\n    {\n      \"repo_path\": \".github/scripts/build-hepta-zsh-first-producer-v1.sh\",\n      \"mode\": \"100755\",\n      \"bytes\": 7266,\n      \"sha256\": \"7814b0708dd47236386237930159ac83132635a2a366abfd956b196c9e1356a8\",\n      \"git_blob\": \"843ee20149a8eae6632a31b8d2fa16b2dc6770e2\"\n    },\n    {\n      \"repo_path\": \".github/workflows/hepta-zsh-first-producer-v1.yml\",\n      \"mode\": \"100644\",\n      \"bytes\": 6554,\n      \"sha256\": \"57ee3b3df2ce7ce70d0725210870ba208abfafa6b93de939bd06108a80b69fb3\",\n      \"git_blob\": \"7dc676f761a50d301e31d6f7b99d8a20d3557c48\"\n    },\n    {\n      \"repo_path\": \"codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch\",\n      \"mode\": \"100644\",\n      \"bytes\": 1632,\n      \"sha256\": \"fad006fde9bf82f8047ec69f1ef3e58f0d52cbbc1cfc44a3d527d6bfda034ea9\",\n      \"git_blob\": \"0339c0ad746754d44b0f44e76ab854a8a7e941b6\"\n    },\n    {\n      \"repo_path\": \"scripts/hepta_zsh_first_producer_collector_v1.py\",\n      \"mode\": \"100644\",\n      \"bytes\": 21848,\n      \"sha256\": \"6399317a8a48b472e27c0863b6129e8830d51b5fbb900a4934fe5cd436f26c86\",\n      \"git_blob\": \"306118077dfbd42711c0ffdf05aa94bc4d7f24e0\"\n    },\n    {\n      \"repo_path\": \"scripts/run_hepta_zsh_first_producer_v1.py\",\n      \"mode\": \"100644\",\n      \"bytes\": 73605,\n      \"sha256\": \"6c5b00b27090514e6101d597892faeb50ef9f9cc249793fd0957a5a40abd1301\",\n      \"git_blob\": \"a0fa7aa63d1db23e8eb3d53a253149d625bb839f\"\n    }\n  ],\n  \"approved_actor\": \"ProfHepta\",\n  \"branch\": \"fix/hepta-zsh-first-producer-20261127-7c9e\",\n  \"base_branch\": \"fix/hepta-native-fixture-modeling-20261127-7c9e\",\n  \"event\": \"pull_request.opened\",\n  \"attempt_limit\": 1,\n  \"release_or_tag_write\": false,\n  \"E1_E6_added\": 0,\n  \"E2_updates_remaining\": 0,\n  \"E6_remaining_seconds\": 1.9960488015785813,\n  \"whole_includes_checkout_tools_diagnostics_failures_retention_upload\": true,\n  \"command_stop_within_work_seconds\": 1440,\n  \"verification_reserve_within_work_seconds\": 60,\n  \"original_outer_prepare_limit\": 1,\n  \"original_outer_build_limit\": 1,\n  \"original_EXEC_WRAPPER_smoke_count\": 2,\n  \"old_Mac_seven_or_O_UNIQUE_replays\": 0,\n  \"DotSlash_or_release_promotion\": false,\n  \"actual_first4_receipt\": {\n    \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7179_ZSH_V3_FIRST4_FORMAT_ROOT_ACCEPTANCE_V1.json\",\n    \"bytes\": 30294,\n    \"sha256\": \"03168c83294395dd2d89c7f494b41bd7dadc4d697b6e6d6a547f2c1d127cbcc1\",\n    \"git_blob\": \"5b19c7d9dfff5fb8a1077b655374516e9520ae44\"\n  },\n  \"authorization_is_first_attempt_plan_not_observed_success\": true,\n  \"macOS15_qualification\": false\n}\n",
+  "caps": {
+    "whole_seconds": 1800,
+    "work_seconds": 1500,
+    "retention_seconds": 300
+  },
+  "command_stop_within_work_seconds": 1440,
+  "verification_reserve_within_work_seconds": 60,
+  "upstream_url": "https://git.code.sf.net/p/zsh/code",
+  "upstream_commit": "77045ef899e53b9598bebc5a41db93a548a40ca6",
+  "upstream_tree": "a1f9db593f3177225fb4ee2f7f2b92cbcf0ad883",
+  "deployment_target": "15.0",
+  "runner_label": "macos-26",
+  "trigger": {
+    "event": "pull_request",
+    "action": "opened",
+    "attempt": 1,
+    "job": "produce",
+    "head_branch": "fix/hepta-zsh-first-producer-20261127-7c9e",
+    "base_branch": "fix/hepta-native-fixture-modeling-20261127-7c9e",
+    "draft": true,
+    "exactly_one_job": true,
+    "scope_run_history_limit": 1,
+    "manual_dispatch": false,
+    "rerun": false,
+    "tag": false
+  },
+  "source_paths": [
+    ".github/scripts/build-hepta-zsh-first-producer-v1.sh",
+    ".github/workflows/hepta-zsh-first-producer-v1.yml",
+    "codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch",
+    "scripts/hepta_zsh_first_producer_collector_v1.py",
+    "scripts/hepta_zsh_first_producer_inputs_v1.json",
+    "scripts/run_hepta_zsh_first_producer_v1.py"
+  ],
+  "source_pins": [
+    {
+      "repo_path": ".github/scripts/build-hepta-zsh-first-producer-v1.sh",
+      "mode": "100755",
+      "bytes": 7266,
+      "sha256": "7814b0708dd47236386237930159ac83132635a2a366abfd956b196c9e1356a8",
+      "git_blob": "843ee20149a8eae6632a31b8d2fa16b2dc6770e2"
+    },
+    {
+      "repo_path": ".github/workflows/hepta-zsh-first-producer-v1.yml",
+      "mode": "100644",
+      "bytes": 6554,
+      "sha256": "57ee3b3df2ce7ce70d0725210870ba208abfafa6b93de939bd06108a80b69fb3",
+      "git_blob": "7dc676f761a50d301e31d6f7b99d8a20d3557c48"
+    },
+    {
+      "repo_path": "codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch",
+      "mode": "100644",
+      "bytes": 1632,
+      "sha256": "fad006fde9bf82f8047ec69f1ef3e58f0d52cbbc1cfc44a3d527d6bfda034ea9",
+      "git_blob": "0339c0ad746754d44b0f44e76ab854a8a7e941b6"
+    },
+    {
+      "repo_path": "scripts/hepta_zsh_first_producer_collector_v1.py",
+      "mode": "100644",
+      "bytes": 21848,
+      "sha256": "6399317a8a48b472e27c0863b6129e8830d51b5fbb900a4934fe5cd436f26c86",
+      "git_blob": "306118077dfbd42711c0ffdf05aa94bc4d7f24e0"
+    },
+    {
+      "repo_path": "scripts/run_hepta_zsh_first_producer_v1.py",
+      "mode": "100644",
+      "bytes": 73605,
+      "sha256": "6c5b00b27090514e6101d597892faeb50ef9f9cc249793fd0957a5a40abd1301",
+      "git_blob": "a0fa7aa63d1db23e8eb3d53a253149d625bb839f"
+    }
+  ],
+  "source_pin_self_reference": "The input cannot contain its own Git blob. Actual input bytes are bound by the authentic full source-head Git tree and the Root-controlled candidate commit. Its Root budget receipt binds the five noncircular exact source pins and the prescribed activation fields.",
+  "commands": {
+    "prepare_invocation_limit": 1,
+    "build_invocation_limit": 1,
+    "upstream_clone_invocation_limit": 1,
+    "patch_application_limit": 1,
+    "configure_limit": 1,
+    "make_limit": 1,
+    "producer_smokes": 2,
+    "tool_install_autoconf_if_absent_limit": 1,
+    "top_level_owned_children": 2,
+    "internal_tool_processes": "Actual build/tool children are not represented as two total kernel processes; the two are owned outer commands, with their inherited original process groups.",
+    "original_group_read_observation": {
+      "native_child_commands": 0,
+      "libproc_api": [
+        "proc_pidinfo(PROC_PIDTBSDINFO)",
+        "proc_listpids(PROC_PGRP_ONLY)"
+      ],
+      "leader_birth_required": true,
+      "single_reserved_original_group": true,
+      "maximum_members": 4096,
+      "maximum_snapshots_per_owned_command": 65,
+      "post_signal_observation_seconds": 1,
+      "unique_reap": true,
+      "signal_sent_is_not_terminal": true,
+      "detached_descendants_proven": false
+    },
+    "preconfig_outer_invocation_limit": 1,
+    "preconfig_nested_failure_diagnostic_is_failure": true
+  },
+  "bounds": {
+    "source_tree_files": 30000,
+    "source_tree_total_bytes": 536870912,
+    "source_single_file_bytes": 67108864,
+    "tool_file_bytes": 536870912,
+    "api_success_body_bytes": 12582912,
+    "each_owned_stdout_stderr_bytes": 2097152,
+    "archive_gzip_bytes": 33554432,
+    "archive_plain_bytes": 135266304,
+    "inner_executable_bytes": 134217728,
+    "evidence_files": 2000,
+    "evidence_total_bytes": 134217728,
+    "generated_file_bytes": 4194304,
+    "generated_total_bytes": 25165824,
+    "preconfig_each_stdout_stderr_bytes": 1048576
+  },
+  "patch_basis": {
+    "original_exec_c": {
+      "bytes": 174089,
+      "sha256": "94b7cfe455f79b36886fa3c72be4cbfebab9a81343124e6a17b43622de51b56f",
+      "git_blob": "27bca110cc5e90bffb35c6f24da1ac8cbaf672dc"
+    },
+    "candidate_exec_c": {
+      "bytes": 174844,
+      "sha256": "45c0a09c2ad874fa3a178a43998b875e44c89f8525b0def7081fdcd31e593622",
+      "git_blob": "f9cfa86d59c60592f214af0d12973a6c307baf8f"
+    }
+  },
+  "smoke_scope": {
+    "interface": "EXEC_WRAPPER",
+    "literal_ZSH_EXEC_WRAPPER_used": false,
+    "echo_interception": true,
+    "missing_and_empty_PATH_touch_interception": true,
+    "Rust_approval_protocol": false,
+    "original_seven_Mac_regressions": false,
+    "skill_read": false,
+    "O_UNIQUE": false
+  },
+  "qualification": {
+    "native_runtime_observed": false,
+    "toolchain_hermetic": false,
+    "macOS15_native_executed": false,
+    "macOS26_capability_probe_executed": false,
+    "artifact_produced": false,
+    "promotion_accepted": false,
+    "DotSlash_updated": false
+  },
+  "future_provider": null,
+  "future_archive_digest": null,
+  "future_blake3": null,
+  "future_release_tag": null,
+  "E1_E6_added": 0,
+  "E2_updates_remaining": 0,
+  "E6_remaining_seconds": 1.9960488015785813,
+  "original_failures_preserved": [
+    "#7175 original Mac ARM failure",
+    "#7179 original Mac ARM failure"
+  ],
+  "remaining_acceptance": "Root must independently review source and trigger closure, bind a real ordinary receipt and exact actor, activate only this new workflow/input, and later inspect the one original job and original artifact. A produced archive is not an adopted DotSlash manifest or proof of old native regressions.",
+  "tool_provenance": {
+    "autoheader_explicit": true,
+    "version_commands_inside_original_build_phase": true,
+    "full_toolchain_hermetic": false,
+    "upstream_preconfig_source_pin": "Source-only official original primary capsules retained; not a runtime observation."
+  },
+  "failure_retention": {
+    "fixed_generated_paths": [
+      "configure",
+      "config.log",
+      "config.status",
+      "config.h",
+      "config.h.in",
+      "Makefile",
+      "Src/Makefile"
+    ],
+    "only_after_original_group_terminal_and_leader_reaped": true,
+    "retention_clock_part_of_original_whole": true,
+    "full_worktree_uploaded": false,
+    "partial_objects_uploaded": false
+  }
+}
