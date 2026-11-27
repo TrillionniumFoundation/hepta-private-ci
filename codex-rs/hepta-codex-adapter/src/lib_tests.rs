@@ -124,7 +124,7 @@ fn reconciliation_response(
             "updatedAt": 2,
             "recencyAt": 2,
             "status": {"type": "idle"},
-            "cwd": "/tmp",
+            "cwd": if cfg!(windows) { r"C:\hepta-fixture" } else { "/tmp" },
             "cliVersion": "test",
             "source": "exec",
             "turns": []
