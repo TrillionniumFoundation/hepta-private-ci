@@ -92,7 +92,9 @@ async fn responses_turn_state_persists_within_turn_and_resets_after() -> Result<
 async fn websocket_turn_state_persists_within_turn_and_resets_after() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server_with_headers(vec![WebSocketConnectionConfig {
+    // Keep the active turn on the same profile as startup so the mock
+    // exercises turn-state transitions on a reusable connection.
+    let connection = WebSocketConnectionConfig {
         requests: vec![
             vec![ev_response_created("warm-1"), ev_completed("warm-1")],
             vec![
@@ -119,17 +121,19 @@ async fn websocket_turn_state_persists_within_turn_and_resets_after() -> Result<
         response_headers: Vec::new(),
         accept_delay: None,
         close_after_requests: false,
-    }])
-    .await;
+    };
+    let server = start_websocket_server_with_headers(vec![connection]).await;
 
-    let mut builder = test_codex();
+    let mut builder = test_codex().with_windows_cmd_shell();
     let test = builder.build_with_websocket_server(&server).await?;
-    // Phase 1: startup prewarm uses the connection without generating a response.
+    // Phase 1: startup prewarm opens a read-only connection without inference.
     // Phase 2: the first turn mints state for its same-turn tool follow-up.
-    test.submit_turn("run the echo command").await?;
+    test.submit_turn_with_policy("run the echo command", test.config.legacy_sandbox_policy())
+        .await?;
     // Phase 3: the follow-up replays that state on the same physical connection.
     // Phase 4: the next logical turn reuses the connection but starts with empty state.
-    test.submit_turn("start another turn").await?;
+    test.submit_turn_with_policy("start another turn", test.config.legacy_sandbox_policy())
+        .await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let requests = server.single_connection();
@@ -176,9 +180,9 @@ async fn websocket_turn_state_persists_within_turn_and_resets_after() -> Result<
             .collect::<Vec<_>>(),
         vec![
             json!("read-only"),
-            json!("danger-full-access"),
-            json!("danger-full-access"),
-            json!("danger-full-access"),
+            json!("read-only"),
+            json!("read-only"),
+            json!("read-only"),
         ]
     );
     let first_turn_id = turn_metadata[1]["turn_id"]
@@ -201,8 +205,11 @@ async fn websocket_turn_state_persists_within_turn_and_resets_after() -> Result<
 async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server_with_headers(vec![WebSocketConnectionConfig {
+    // Keep the active turn on the same profile as startup so the mock
+    // exercises turn-state transitions on a reusable connection.
+    let connection = WebSocketConnectionConfig {
         requests: vec![
+            vec![ev_response_created("warm-1"), ev_completed("warm-1")],
             vec![
                 json!({
                     "type": "response.metadata",
@@ -230,21 +237,22 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
         response_headers: Vec::new(),
         accept_delay: None,
         close_after_requests: false,
-    }])
-    .await;
-    let mut builder = test_codex();
+    };
+    let server = start_websocket_server_with_headers(vec![connection]).await;
+    let mut builder = test_codex().with_windows_cmd_shell();
     let test = builder.build_with_websocket_server(&server).await?;
 
     // Phase 1: the initial request starts empty and receives the first metadata value.
     // Phase 2: the first tool follow-up replays it and ignores a later value.
     // Phase 3: the second follow-up sends the original value on the same connection.
-    test.submit_turn("run two echo commands").await?;
+    test.submit_turn_with_policy("run two echo commands", test.config.legacy_sandbox_policy())
+        .await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let requests = server.single_connection();
-    assert_eq!(requests.len(), 3);
+    assert_eq!(requests.len(), 4);
     assert_eq!(
-        requests
+        requests[1..]
             .iter()
             .map(|request| request.body_json()["client_metadata"][TURN_STATE_HEADER].clone())
             .collect::<Vec<_>>(),
