@@ -87,15 +87,10 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let child_pid = match ready {
         Ok(Ok(pid)) => pid,
         other => {
-            // A failed fixture must not strand the descendant whose cleanup
-            // the test is intended to validate. Preserve the original 30s
-            // readiness and 100ms process-tree cleanup budgets.
-            let _ = wait_for_git_command_with_timeout_output(
-                wrapper,
-                process_tree,
-                Duration::from_millis(100),
-            )
-            .await;
+            // Keep the process-tree guard armed. A normal wait can preserve
+            // descendants when the wrapper has already exited.
+            drop(process_tree);
+            drop(wrapper);
             panic!("Git wrapper never produced its descendant readiness marker: {other:?}");
         }
     };
