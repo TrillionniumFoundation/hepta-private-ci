@@ -1,0 +1,53 @@
+diff --git a/defs.bzl b/defs.bzl
+index fc5964a0..cd718f8c 100644
+--- a/defs.bzl
++++ b/defs.bzl
+@@ -90,8 +90,8 @@ def _workspace_root_test_impl(ctx):
+     test_bin = ctx.executable.test_bin
+     bundle_files = []
+     if ctx.file.windows_test_bin:
+-        if not is_windows or not ctx.attr.runfile_environment_only:
+-            fail("windows_test_bin requires a Windows runfile-only test")
++        if not is_windows:
++            fail("windows_test_bin requires a Windows test")
+         test_bin = ctx.file.windows_test_bin
+         bundle_files.append(test_bin)
+     workspace_root_marker = ctx.file.workspace_root_marker
+@@ -730,6 +730,26 @@ def codex_rust_crate(
+                 tags = test_tags + ["manual"],
+             )
+ 
++            sharded_runfile_env = integration_test_cargo_env_runfiles
++            sharded_windows_test_bin = None
++            if (
++                "CARGO_BIN_EXE_codex-command-runner" in cargo_env_runfiles.values() and
++                "CARGO_BIN_EXE_codex-windows-sandbox-setup" in cargo_env_runfiles.values()
++            ):
++                bundled_test, bundled_env = _windows_sandbox_test_bundle(
++                    test_name,
++                    ":" + integration_test_binary,
++                    cargo_env_runfiles,
++                )
++                sharded_windows_test_bin = select({
++                    "@platforms//os:windows": bundled_test,
++                    "//conditions:default": None,
++                })
++                sharded_runfile_env = select({
++                    "@platforms//os:windows": bundled_env,
++                    "//conditions:default": cargo_env_runfiles | non_windows_cargo_env_runfiles,
++                })
++
+             workspace_root_test(
+                 name = test_name,
+                 env = test_env,
+@@ -737,8 +757,9 @@ def codex_rust_crate(
+                 # The launcher rewrites them to absolute paths at execution
+                 # time so tests keep working after chdir_workspace_root and on
+                 # manifest-only platforms.
+-                runfile_env = integration_test_cargo_env_runfiles,
++                runfile_env = sharded_runfile_env,
+                 test_bin = ":" + integration_test_binary,
++                windows_test_bin = sharded_windows_test_bin,
+                 test_threads = test_threads,
+                 workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+                 target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,

@@ -1,0 +1,79 @@
+{
+  "change_scope": [
+    "same physical Windows test/helper/CARGO_BIN_EXE sibling bundle for original sharded integration targets declaring both sandbox helpers",
+    "unchanged original workspace cwd, shard filtering, shard count, threads, test bodies, timeouts and no-FLAKY gate",
+    "non-Windows original runfiles mapping unchanged"
+  ],
+  "files": {
+    "artifact-members.json": {
+      "bytes": 409,
+      "sha256": "d4e54c78dce07fabbc8658af941fec2e4afc1b0f82df3804deadbc7a00fc5e2f"
+    },
+    "artifact15231816586.zip": {
+      "bytes": 5009426,
+      "sha256": "42c6fd5bedbb5bf7a3b3589c5addbd6b57a66de00fc2fe0948a8407e5376082a"
+    },
+    "artifacts.json": {
+      "bytes": 855,
+      "sha256": "db6ebd9c706c14fdb638761a6b9ab43746d55f579246c1f4009396e84fc7def6"
+    },
+    "download-results.json": {
+      "bytes": 972,
+      "sha256": "aa4304290999874206fb4f106e21789c1f4fe1015c3d35d6fd4c08df8eacfc97"
+    },
+    "fmt-intent.json": {
+      "bytes": 235,
+      "sha256": "6663f6e314950c43e2183efa0a9c9a5020d9e28aafd628f436d96e2d4253c7bf"
+    },
+    "fmt-result.json": {
+      "bytes": 56,
+      "sha256": "34829cc8e0a9ea62483ef964cc2a681edb00b7c75a423ad249ea07fd2ddfe710"
+    },
+    "fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "jobs.json": {
+      "bytes": 2697,
+      "sha256": "55c3f06fd125656075683ecb7c151200916f86c939fe9c912d83f5242ffb8a9b"
+    },
+    "original-job140730828591.log.gz": {
+      "bytes": 530770,
+      "sha256": "185d736e8264e3cc855de056155827728bf8bab45aed974ec29675652f6963b9"
+    },
+    "run.json": {
+      "bytes": 14388,
+      "sha256": "80809c625eecc9ea7e7108610770690d51e0c49e5b0e63f215a8b47266edc3bb"
+    },
+    "source.patch": {
+      "bytes": 2489,
+      "sha256": "47018dd64ff1b75045e46aba7c0df724badf602181bb85670907941a579b2898"
+    }
+  },
+  "fmt": {
+    "returncode": 0,
+    "seconds": 0.27061512507498264
+  },
+  "new_windows_ci": "PENDING",
+  "original_core_first_causes": {
+    "apply_patch_cli_preserves_existing_hard_link_outside_workspace": "expected hardlink rejection replaced by child startup error 2",
+    "multi_agent_v2_peer_followup_completion_notifies_initiating_turn": "deadline elapsed",
+    "subagent_stop_replaces_stop_and_skips_internal_subagents": "required 2 log entries, actual attempts 0/0/1",
+    "v2_residency_reload_preserves_inherited_environment_and_tools::owner_preserves_stricter_child": "agent thread limit reached",
+    "workspace_roots_allow_apply_patch_in_secondary_root": "CreateProcessWithLogonW error 2, expected file missing",
+    "workspace_roots_allow_file_and_command_writes": "CreateProcessWithLogonW error 2, expected file missing"
+  },
+  "original_job_id": 140730828591,
+  "original_run_conclusion": "failure",
+  "original_run_id": 46065846493,
+  "original_targets": {
+    "cli": "PASS 25.8 s",
+    "core": "FAILED 8 out of 23",
+    "exec-server": "PASS 24.5 s"
+  },
+  "parent_source": "711e59801e51f063c777d1785354c029df1aa5fe",
+  "schema": "hepta.windows-sharded-sandbox-physical-bundle.v1",
+  "source_after_sha256": "18026cd9311cc7830b14969b60acf5de1c82add38247851a012c9f0c2a78b6c3",
+  "source_before_sha256": "9be5d09483ccca6e046d7ce7d4a97ab6fa9015cf752b2905ec894904b564de7a",
+  "whole_stack_pass": false
+}
