@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - codex/hia-windows-sandbox-runfiles-20261127-2ac5
+      - codex/hia-windows-sandbox-runfiles-resolved-20261127-2ac5
     paths:
+      - defs.bzl
       - workspace_root_test_launcher.bat.tpl
       - codex-rs/cli/BUILD.bazel
       - codex-rs/exec-server/BUILD.bazel

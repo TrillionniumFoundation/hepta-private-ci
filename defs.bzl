@@ -736,7 +736,7 @@ def codex_rust_crate(
                 workspace_root_test(
                     name = test_name,
                     chdir_workspace_root = False,
-                    runfile_env = fixture_runfile_env,
+                    runfile_env = integration_test_cargo_env_runfiles | fixture_runfile_env,
                     runfile_environment_only = True,
                     test_bin = ":" + integration_test_binary,
                     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
