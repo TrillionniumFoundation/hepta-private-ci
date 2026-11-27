@@ -226,6 +226,7 @@ pub trait ProductQualificationEvidenceSinkV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductTemporalEvaluationReceiptV1 {
+    holdout_binding: Digest32,
     pub holdout: FinalHoldoutJournalReceiptV1,
     pub product_plan: ProductFrozenEvaluationPlanV1,
     pub candidate: TemporalEvaluationReceipt,
@@ -426,6 +427,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             confidence_receipt_digest,
         );
         let mut receipt = ProductTemporalEvaluationReceiptV1 {
+            holdout_binding: self.holdout.binding(),
             holdout,
             product_plan: product_plan.clone(),
             candidate,
@@ -451,6 +453,11 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
     ) -> Result<IndependentEvaluationBundleV1, ProductEvaluationError> {
         temporal.validate_integrity()?;
         let frozen = &temporal.product_plan.frozen_plan;
+        if temporal.holdout_binding != self.holdout.binding() {
+            return Err(ProductEvaluationError::Binding("holdout store binding"));
+        }
+        self.holdout
+            .verify_recorded_use(frozen, &temporal.holdout)?;
         Ok(IndependentEvaluationBundleV1 {
             evaluation_id: frozen.plan_id.clone(),
             candidate_id: frozen.candidate_id.clone(),
@@ -774,8 +781,10 @@ fn execution_digest(
 fn product_evaluation_seal(
     receipt: &ProductTemporalEvaluationReceiptV1,
 ) -> Result<Digest32, ProductEvaluationError> {
-    let mut bytes = b"hepta.intelligence-eval.product-evaluation-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-evaluation-receipt.v2".to_vec();
     for digest in [
+        receipt.holdout_binding,
+        receipt.holdout.head_digest,
         receipt.holdout.record_digest,
         receipt.product_plan.frozen_plan.plan_digest,
         receipt.candidate.evidence_digest,
@@ -787,6 +796,11 @@ fn product_evaluation_seal(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    bytes.extend_from_slice(&receipt.holdout.sequence.to_be_bytes());
+    bytes.push(match receipt.holdout.disposition {
+        crate::HoldoutUseDispositionV1::Recorded => 0,
+        crate::HoldoutUseDispositionV1::IdempotentReplay => 1,
+    });
     for metric in &receipt.metrics {
         push_metric(&mut bytes, metric);
     }

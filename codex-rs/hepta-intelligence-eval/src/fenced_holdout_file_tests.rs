@@ -145,6 +145,32 @@ fn owner(
 }
 
 #[test]
+fn recorded_use_is_read_only_after_growth_replay_and_file_reopen()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = TempFile::new();
+    let binding = digest("binding");
+    let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), binding)?;
+    let mut first = owner(store, None);
+    let a = plan("verify-plan-a");
+    let b = plan("verify-plan-b");
+    let recorded = first.consume(&a)?;
+    first.consume(&b)?;
+    let replay = first.consume(&a)?;
+    let minimum = first.anchor();
+    drop(first);
+
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), binding, Some(minimum))?;
+    let recovered = owner(store, Some(minimum));
+    let before = fs::read(&temp.path)?;
+    recovered.verify_recorded_use(&a, &recorded)?;
+    recovered.verify_recorded_use(&a, &replay)?;
+    assert!(recovered.verify_recorded_use(&b, &recorded).is_err());
+    assert_eq!(recovered.anchor().record_count, 2);
+    assert_eq!(fs::read(&temp.path)?, before);
+    Ok(())
+}
+
+#[test]
 fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
     let temp = TempFile::new();
     let store = match LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding")) {
