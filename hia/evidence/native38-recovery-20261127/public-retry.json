@@ -1,0 +1,131 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/tools/just",
+        "--version"
+      ],
+      "cwd": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src",
+      "elapsed_ns": 17046154,
+      "exit": 0,
+      "label": "just-version",
+      "stderr": "just-version.stderr",
+      "stdout": "just-version.stdout"
+    },
+    {
+      "argv": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "cwd": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src",
+      "elapsed_ns": 64528281,
+      "exit": 0,
+      "label": "nextest-version",
+      "stderr": "nextest-version.stderr",
+      "stdout": "nextest-version.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/prepare_unified_diff_policy.py",
+        "--repo",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src",
+        "--rustc",
+        "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+        "--config",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/unified-policy/config.json",
+        "--receipt-root",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/unified-policy/receipts",
+        "--bind-input",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1/build.json",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/retry-owners-v2/policy-configuration.json",
+        "--github-env",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/retry-owners-v2/github-env"
+      ],
+      "cwd": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src",
+      "elapsed_ns": 63840075,
+      "exit": 0,
+      "label": "policy-configuration",
+      "stderr": "policy-configuration.stderr",
+      "stdout": "policy-configuration.stdout"
+    },
+    {
+      "argv": [
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/tools/just",
+        "test",
+        "-p",
+        "codex-api",
+        "--test",
+        "retry_owner_tests",
+        "--test",
+        "clients",
+        "--features",
+        "codex-client/hia-native",
+        "--locked"
+      ],
+      "cwd": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/codex-rs",
+      "elapsed_ns": 226901844978,
+      "exit": 0,
+      "label": "native-owner",
+      "stderr": "native-owner.stderr",
+      "stdout": "native-owner.stdout"
+    },
+    {
+      "argv": [
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/tools/just",
+        "test",
+        "-p",
+        "codex-api",
+        "--test",
+        "retry_owner_tests",
+        "--test",
+        "clients",
+        "--locked"
+      ],
+      "cwd": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/codex-rs",
+      "elapsed_ns": 6224657239,
+      "exit": 0,
+      "label": "default-owner",
+      "stderr": "default-owner.stderr",
+      "stdout": "default-owner.stdout"
+    }
+  ],
+  "default_passed": true,
+  "finished_ns": 1795801019618668723,
+  "just_version": "just 1.51.0",
+  "native_passed": true,
+  "nextest_install": {
+    "archive_sha256": "b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036",
+    "binary_sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+    "global_tool_replaced": false,
+    "url": "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz"
+  },
+  "nextest_version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu",
+  "passed": true,
+  "per_job_budget_seconds": 3600,
+  "qualification_reused": false,
+  "schema": "codex.hia.native38.retry-owner-execution.v1",
+  "source_base": "5c07ad6792d73357f3678a27874d0565a479d474",
+  "source_pins": {
+    "codex-rs/Cargo.lock": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007",
+    "codex-rs/Cargo.toml": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e",
+    "codex-rs/codex-api/Cargo.toml": "9aa729c8814dbef1b447e8df9604eb135c99b3e43be1300201a2d39084ea3612",
+    "codex-rs/codex-api/tests/clients.rs": "99b54c005e3db833c816d419cab57c6b243e0c553116b5f2c3ff20dd224b385d",
+    "codex-rs/codex-api/tests/retry_owner_tests.rs": "54f799c1fc2f622cfac97ce84b95a1b2ff16428740b81e86d2be7260b8bbc73c",
+    "codex-rs/codex-client/Cargo.toml": "3f7e282ce1e95d4e4f6757dc0dc3ad8de4110adc66385caa300745beee0b0ace",
+    "codex-rs/codex-client/build.rs": "a6a3c10f1a9ac6397139f5640f253509a0bc7193e39888d2c3ccff9ecd253dfa",
+    "codex-rs/codex-client/src/hia_native_retry.rs": "4e937d2c0a4ea82b65b4d16236455ba8936fcd978fef9ca9b4f9f5d1a1525fe6",
+    "codex-rs/codex-client/src/lib.rs": "e912d1fc4807bbb778baf54e40350589a48f3bb7e8831015cbce15202ffe553e",
+    "codex-rs/codex-client/src/retry.rs": "f108613f835b7dca082e85e2995644a06ddcfdd7ad5756659beab6c2bf1de161",
+    "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
+    "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+    "hia/retry_decision.hepta": "f7a7cff8875291b7d58f254d8dcf35c8438b1076fb1db63250fa10e403641a2b",
+    "hia/retry_decision_buffer_contract.json": "c256765eb444e3cb9ea389e3f2260458d52fc89d50d3865a086f5665947876fc",
+    "hia/toolchain.json": "d851da300cb8ceef4fa0b58d66508c5ef535b7798b97af50e1ebea0c3f134980"
+  },
+  "source_terminal_readback_unchanged": true,
+  "started_ns": 1795800778993869000
+}

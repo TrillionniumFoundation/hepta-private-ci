@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import subprocess
 import tomllib
+from .dependencies import ROOT_FILES, admit_workspace_sources
+from .exec_server_source_history import LOCAL_FILE, CURRENT_TREE, reverse_local_file_source, reverse_platform_tree
 
 BASE = "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095"
 CRATE = "codex-rs/apply-patch"
@@ -246,11 +248,23 @@ def producer_inputs(producer, original_root, original_manifest):
     current = clean_identity(producer)
     # Equality to immutable originals rejects manifest/default-feature changes even
     # if an attacker updates a self-reported manifest SHA to match that change.
+    admission = admit_workspace_sources(
+        producer, {path: (original_root / path).read_bytes() for path in ROOT_FILES})
     matched = {}
+    projected = {}
+    type_projections = {}
     for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", CRATE + "/Cargo.toml", *TYPE_SOURCES):
-        if sha(producer / path) != sha(original_root / path):
-            raise RuntimeError(f"original dependency/type declaration changed: {path}")
-        matched[path] = sha(producer / path)
+        if admission is not None and path in ROOT_FILES:
+            if hashlib.sha256(admission["restored"][path]).hexdigest() != sha(original_root / path):
+                raise RuntimeError(f"original dependency/type declaration changed: {path}")
+            projected[path] = sha(original_root / path)
+        elif path == LOCAL_FILE and sha(producer / path) != sha(original_root / path):
+            type_projections[path] = reverse_local_file_source(producer, (original_root / path).read_bytes())
+            projected[path] = type_projections[path]["restored_sha256"]
+        else:
+            if sha(producer / path) != sha(original_root / path):
+                raise RuntimeError(f"original dependency/type declaration changed: {path}")
+            matched[path] = sha(producer / path)
     # The producing Actions checkout may be shallow. Baseline trees came from
     # the separate immutable original checkout, never from assumed local history.
     path_trees = {}
@@ -259,17 +273,27 @@ def producer_inputs(producer, original_root, original_manifest):
         actual = git(producer, "rev-parse", f"HEAD:{relative}").decode().strip()
         if actual != expected:
             pin = _EXEC_SERVER_TEST_PROJECTION
-            if (relative, expected, actual) != (
-                    pin["dependency"], pin["original_tree"], pin["actual_tree"]):
-                raise RuntimeError(f"real path dependency differs from its pinned original: {relative}")
-            projections[relative] = _exec_server_test_projection(
-                relative, expected, actual, git(producer, "ls-tree", "-r", "-z", actual))
+            if (relative, expected, actual) == (pin["dependency"], pin["original_tree"], CURRENT_TREE):
+                projections[relative] = reverse_platform_tree(
+                    producer, relative, expected, actual, git(producer, "ls-tree", "-r", "-z", actual))
+            else:
+                if (relative, expected, actual) != (
+                        pin["dependency"], pin["original_tree"], pin["actual_tree"]):
+                    raise RuntimeError(f"real path dependency differs from its pinned original: {relative}")
+                projections[relative] = _exec_server_test_projection(
+                    relative, expected, actual, git(producer, "ls-tree", "-r", "-z", actual))
         path_trees[relative] = actual
     result = {**current, "matched_original_files": matched, "path_dependency_trees": path_trees,
               "original_source_manifest": original_manifest["crate_tree"],
               "exact_routing_inverse": recover_owner(producer)}
     if projections:
         result["path_dependency_projections"] = projections
+    if projected:
+        result["projected_original_files"] = projected
+    if type_projections:
+        result["type_source_projections"] = type_projections
+    if admission is not None:
+        result["dependency_source_admission"] = admission["report"]
     return result
 
 

@@ -2,12 +2,22 @@
 import hashlib
 import subprocess
 from .common import BASE as COMMIT, CRATE_TREE
+from file_update_oracle.dependencies import ROOT_FILES, admit_workspace_sources
 
 def extract_original(context):
     OUT, REPO, REPORT, common = context.output, context.args.original_root.resolve(strict=True), context.report, context
     assert subprocess.check_output(['git', '-C', REPO, 'rev-parse', f'{COMMIT}:codex-rs/apply-patch']).decode().strip() == CRATE_TREE
+    originals = {relative: subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}'])
+                 for relative in ROOT_FILES}
+    admission = admit_workspace_sources(context.repo, originals)
     for relative in ('codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'codex-rs/apply-patch/Cargo.toml'):
-        assert subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}']) == (context.repo / relative).read_bytes()
+        if admission is not None and relative in ROOT_FILES:
+            assert subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}']) == admission["restored"][relative]
+        else:
+            assert subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}']) == (context.repo / relative).read_bytes()
+    context.dependency_source_admission = admission
+    if admission is not None:
+        REPORT["dependency_source_admission"] = admission["report"]
     root = OUT / 'original-source'
     root.mkdir()
     rows = []

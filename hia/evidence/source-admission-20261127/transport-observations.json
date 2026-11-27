@@ -1,0 +1,33 @@
+{
+  "schema": "codex.hia.evidence-readback-transport-observations.v1",
+  "archive_sha256": "02002143a97fa44f02e14fd50450f3f3f1afc37a724f1093e99b7367a3dd0261",
+  "source_unchanged": true,
+  "contents_large_binary": {
+    "git_blob": "11702d4ed09dc17e53ebe7cbc0cbad4022660cc7",
+    "bytes": 4194240,
+    "returned_content_length": 0
+  },
+  "generic_git_blob": {
+    "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "dedicated_fetch_blob": {
+    "error": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xfd in position 0: invalid start byte",
+    "error_code": "UNKNOWN"
+  },
+  "small_binary_probe": {
+    "git_blob": "ac992a3c7764b3af0b4f31975af12b4c2115364a",
+    "bytes": 983025,
+    "sha256": "b6928f23af9225d7e7727879ad3a3ee184b9b7b6edc14b95a65ef9544ac2868a",
+    "complete": true,
+    "probe_commit": "ed78f1261797ac0c0ecfb943ee71fe191f984a57"
+  },
+  "reconstruction": {
+    "parts": 27,
+    "max_part_bytes": 983025,
+    "archive_bytes": 26340328,
+    "archive_sha256": "02002143a97fa44f02e14fd50450f3f3f1afc37a724f1093e99b7367a3dd0261",
+    "manifest_sha256": "15024a948a34813a517711e4b54b3fdeeb8ace16135cfb7779286fad25ae7bb8",
+    "reconstruction_passed": true
+  }
+}

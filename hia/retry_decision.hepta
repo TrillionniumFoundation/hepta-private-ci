@@ -1,0 +1,113 @@
+hia-asm.v1 hepta.hia.program.v9 codex_retry_decision
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  capacity:usize = buffer.len(output)
+  required:usize = const() {"value":16}
+  enough:bool = compare.ge(capacity,required)
+  branch enough shape(source,output,workspace) short_output()
+block shape(s_source:readbuf,s_output:mutbuf,s_workspace:mutbuf)
+  source_size:usize = buffer.len(s_source)
+  workspace_size:usize = buffer.len(s_workspace)
+  request_size:usize = const() {"value":64}
+  empty_size:usize = const() {"value":0}
+  source_ok:bool = compare.eq(source_size,request_size)
+  workspace_ok:bool = compare.eq(workspace_size,empty_size)
+  shape_ok:bool = bool.and(source_ok,workspace_ok)
+  branch shape_ok header(s_source,s_output) invalid()
+block header(h_source:readbuf,h_output:mutbuf)
+  offset_0:usize = const() {"value":0}
+  version:u64 = buffer.load.u64.le(h_source,offset_0)
+  offset_1:usize = const() {"value":8}
+  attempt:u64 = buffer.load.u64.le(h_source,offset_1)
+  offset_2:usize = const() {"value":16}
+  maximum:u64 = buffer.load.u64.le(h_source,offset_2)
+  offset_3:usize = const() {"value":24}
+  retry_429:u64 = buffer.load.u64.le(h_source,offset_3)
+  offset_4:usize = const() {"value":32}
+  retry_5xx:u64 = buffer.load.u64.le(h_source,offset_4)
+  offset_5:usize = const() {"value":40}
+  retry_transport:u64 = buffer.load.u64.le(h_source,offset_5)
+  offset_6:usize = const() {"value":48}
+  kind:u64 = buffer.load.u64.le(h_source,offset_6)
+  offset_7:usize = const() {"value":56}
+  status:u64 = buffer.load.u64.le(h_source,offset_7)
+  one:u64 = const() {"value":1}
+  four:u64 = const() {"value":4}
+  version_ok:bool = compare.eq(version,one)
+  retry_429_ok:bool = compare.le(retry_429,one)
+  retry_5xx_ok:bool = compare.le(retry_5xx,one)
+  retry_transport_ok:bool = compare.le(retry_transport,one)
+  kind_ok:bool = compare.le(kind,four)
+  first_ok:bool = bool.and(version_ok,retry_429_ok)
+  second_ok:bool = bool.and(retry_5xx_ok,retry_transport_ok)
+  flags_ok:bool = bool.and(first_ok,second_ok)
+  valid:bool = bool.and(flags_ok,kind_ok)
+  branch valid status_kind(h_output,attempt,maximum,retry_429,retry_5xx,retry_transport,kind,status) invalid()
+block status_kind(k_output:mutbuf,k_attempt:u64,k_maximum:u64,k_retry_429:u64,k_retry_5xx:u64,k_retry_transport:u64,k_kind:u64,k_status:u64)
+  http_kind:u64 = const() {"value":0}
+  is_http:bool = compare.eq(k_kind,http_kind)
+  branch is_http http_status(k_output,k_attempt,k_maximum,k_retry_429,k_retry_5xx,k_retry_transport,k_kind,k_status) other_status(k_output,k_attempt,k_maximum,k_retry_429,k_retry_5xx,k_retry_transport,k_kind,k_status)
+block http_status(v_output:mutbuf,v_attempt:u64,v_maximum:u64,v_retry_429:u64,v_retry_5xx:u64,v_retry_transport:u64,v_kind:u64,v_status:u64)
+  first_status:u64 = const() {"value":100}
+  last_status:u64 = const() {"value":999}
+  above:bool = compare.ge(v_status,first_status)
+  below:bool = compare.le(v_status,last_status)
+  status_valid:bool = bool.and(above,below)
+  branch status_valid limit(v_output,v_attempt,v_maximum,v_retry_429,v_retry_5xx,v_retry_transport,v_kind,v_status) invalid()
+block other_status(o_output:mutbuf,o_attempt:u64,o_maximum:u64,o_retry_429:u64,o_retry_5xx:u64,o_retry_transport:u64,o_kind:u64,o_status:u64)
+  absent_status:u64 = const() {"value":0}
+  status_absent:bool = compare.eq(o_status,absent_status)
+  branch status_absent limit(o_output,o_attempt,o_maximum,o_retry_429,o_retry_5xx,o_retry_transport,o_kind,o_status) invalid()
+block limit(l_output:mutbuf,l_attempt:u64,l_maximum:u64,l_retry_429:u64,l_retry_5xx:u64,l_retry_transport:u64,l_kind:u64,l_status:u64)
+  attempts_remain:bool = compare.lt(l_attempt,l_maximum)
+  branch attempts_remain classify(l_output,l_attempt,l_retry_429,l_retry_5xx,l_retry_transport,l_kind,l_status) stop(l_output)
+block classify(c_output:mutbuf,c_attempt:u64,c_retry_429:u64,c_retry_5xx:u64,c_retry_transport:u64,c_kind:u64,c_status:u64)
+  http:u64 = const() {"value":0}
+  is_http_error:bool = compare.eq(c_kind,http)
+  branch is_http_error http_decision(c_output,c_attempt,c_retry_429,c_retry_5xx,c_status) transport_decision(c_output,c_attempt,c_retry_transport,c_kind)
+block http_decision(d_output:mutbuf,d_attempt:u64,d_retry_429:u64,d_retry_5xx:u64,d_status:u64)
+  enabled:u64 = const() {"value":1}
+  status_429:u64 = const() {"value":429}
+  status_500:u64 = const() {"value":500}
+  status_600:u64 = const() {"value":600}
+  enabled_429:bool = compare.eq(d_retry_429,enabled)
+  enabled_5xx:bool = compare.eq(d_retry_5xx,enabled)
+  is_429:bool = compare.eq(d_status,status_429)
+  server_start:bool = compare.ge(d_status,status_500)
+  server_end:bool = compare.lt(d_status,status_600)
+  is_server:bool = bool.and(server_start,server_end)
+  retry_rate:bool = bool.and(enabled_429,is_429)
+  retry_server:bool = bool.and(enabled_5xx,is_server)
+  http_retry:bool = bool.or(retry_rate,retry_server)
+  branch http_retry retry(d_output,d_attempt) stop(d_output)
+block transport_decision(t_output:mutbuf,t_attempt:u64,t_retry_transport:u64,t_kind:u64)
+  transport_enabled:u64 = const() {"value":1}
+  other_kind:u64 = const() {"value":4}
+  enabled_transport:bool = compare.eq(t_retry_transport,transport_enabled)
+  retryable_kind:bool = compare.lt(t_kind,other_kind)
+  transport_retry:bool = bool.and(enabled_transport,retryable_kind)
+  branch transport_retry retry(t_output,t_attempt) stop(t_output)
+block retry(r_output:mutbuf,r_attempt:u64)
+  increment:u64 = const() {"value":1}
+  next_attempt:u64 = int.add.checked(r_attempt,increment)
+  retry_offset:usize = const() {"value":0}
+  attempt_offset:usize = const() {"value":8}
+  _ = buffer.store.u64.le(r_output,retry_offset,increment)
+  _ = buffer.store.u64.le(r_output,attempt_offset,next_attempt)
+  success:u32 = const() {"value":16}
+  ret(success)
+block stop(x_output:mutbuf)
+  no_retry:u64 = const() {"value":0}
+  decision_offset:usize = const() {"value":0}
+  next_offset:usize = const() {"value":8}
+  _ = buffer.store.u64.le(x_output,decision_offset,no_retry)
+  _ = buffer.store.u64.le(x_output,next_offset,no_retry)
+  stopped:u32 = const() {"value":16}
+  ret(stopped)
+block invalid()
+  invalid_code:u32 = const() {"value":4294967295}
+  ret(invalid_code)
+block short_output()
+  short_code:u32 = const() {"value":4294967294}
+  ret(short_code)
+end
