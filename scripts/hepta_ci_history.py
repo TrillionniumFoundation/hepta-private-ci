@@ -46,8 +46,6 @@ def fetch_environment(repository):
 
 
 def prepare(repository, commits, *, full_history=False, with_blobs=False):
-    if full_history and with_blobs:
-        raise ValueError("snapshot blobs and full history are separate fetch modes")
     commits = list(dict.fromkeys(commits))
     if not commits or any(
         re.fullmatch(r"[0-9a-f]{40}", commit) is None for commit in commits
@@ -86,12 +84,11 @@ def prepare(repository, commits, *, full_history=False, with_blobs=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--commit", action="append", required=True)
-    mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--full-history", action="store_true")
-    mode.add_argument(
+    parser.add_argument("--full-history", action="store_true")
+    parser.add_argument(
         "--with-blobs",
         action="store_true",
-        help="fetch exact depth-one snapshots with file content",
+        help="include file content in comparisons or local merges",
     )
     args = parser.parse_args()
     prepare(

@@ -38,8 +38,16 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+
+      - name: Fetch exact merge ancestry and content
+        if: matrix.lane == 'base-merge'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 scripts/hepta_ci_history.py --full-history --with-blobs
+          --commit "$BASE_SHA" --commit "$SOURCE_SHA"
 
       - name: Construct original-tree prospective merge
         id: synthetic

@@ -119,6 +119,26 @@ class ExactHistoryTests(unittest.TestCase):
         self.archives_unselected()
 
     @patch.dict(os.environ, {"GH_TOKEN": ""})
+    def test_full_history_with_blobs_materializes_merge_without_lazy_fetch(self):
+        self.git(self.source, "config", "uploadpack.allowFilter", "true")
+        prepare(
+            self.checkout, [self.base, self.head], full_history=True, with_blobs=True
+        )
+        self.git(self.checkout, "remote", "remove", "origin")
+        merge = self.git(
+            self.checkout, "merge-tree", "--write-tree", self.base, self.head
+        )
+        self.assertEqual(
+            merge,
+            self.git(self.source, "merge-tree", "--write-tree", self.base, self.head),
+        )
+        self.assertEqual(
+            self.git(self.checkout, "show", f"{merge}:base"), "independent base change"
+        )
+        self.missing(self.unrelated)
+        self.archives_unselected()
+
+    @patch.dict(os.environ, {"GH_TOKEN": ""})
     def test_unavailable_exact_commit_fails_without_replacing_checkout(self):
         with self.assertRaises(subprocess.CalledProcessError):
             prepare(self.checkout, ["a" * 40])
