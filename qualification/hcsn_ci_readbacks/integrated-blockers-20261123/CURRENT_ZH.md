@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-27 UTC：N256 output interval 冻结源独立修补通过
+
+- #6799 实际新 head a845976041d14b4bc6a900aa4169c35abe30d903，draft 未合并；前一 5bfecec9 原首屏100工作流已终态 {"skipped":16,"success":61,"failure":22,"cancelled":1}（非全分页）。新 head 初读 0 条 PR workflow，不把无结果当通过。#7016/#7021/#7032/#7052 仍原 draft。原 blocking-ci 45918428289 首页30 job 已有 repo-checks Prettier、Linux GNU/musl、Windows shard1/2/4、macOS ARM/Intel 红门；cargo-deny 原成功仅限该旧候选。
+- 原 [output interval job140243108716](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45918428297/job/140243108716) frozen verifier README mismatch。精确 a845 源、10个 Git blob 经 ROG Python 原生 SHA1 校验转移；原 verifier exit1复现，9个冻结摘要原6/9；README.md 1423→1424B、__init__.py 79→80B、test_output_interval.py 4666→4667B，各只补一末尾LF并严格匹配原SHA256。原 verifier exit0/PASS_N256_UNIFORMIZATION_POSITIVE_OUTPUT_INTERVAL_SOURCE_ONLY，ROG 1a21aeb0713-ffbe-4e2b 实际 exit0/stderr0/stdout3026B、output_complete/durable/terminal_publication_confirmed=true。独立分支 repair/hcsn-n256-output-interval-frozen-lf-20261127 提交 [2c0847c8](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2c0847c8042a0e90d79a6bd5c6896ffcb564c6b0)，compare ahead3/behind0、三文件各+1/-0，提交全文回读一致。未重跑已成功 fixture、新模型/provider/优化器调用0，不改 REQUEST、freeze、原拒绝语义或生产准入。
+- FP64 rounding 原 job140243107177 仍 README freeze mismatch；continuous adjoint 140243101558 源绑定 assertion、split 140243108448 专用 manifest mismatch。未重复历史已闭合实验。主集成仍HOLD；不跨版本转移、不合并红门。
+- [原生完整回执及前一候选终态](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/d8243c0ef5c93ffa6385ac0d27b07de6a8d7ca40/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/n256-output-interval-exact-lf-a845-20261127.json) 已全文回读一致。
+
+
 ## 2026-11-27 01:33 UTC 后：N256 uniformization provider 原冻结字节修补独立原生闭合
 
 - #6799 精确 head 5bfecec9351bd68e41b4d1096ec6fd3177b856dc 仍为 draft、未合并；原 prospective merge c6b7d7731fced95af19e093c7630a7f6df747173 的 [provider job140243103481](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45918426545/job/140243103481) normal/-O 各5/5，py_compile 成功，原 verify_source 在 README.md 首处漂移退出1。此为 provider intent，不是此前已修的 precision policy。对原 verifier 6源+10父/输入逐字节独立 ECMAScript SHA256（abc 标准向量通过）复算，13/16原摘要相符，3处各缺末尾1 LF：README 2728→2729B、__init__ 86→87B、test_provider 4722→4723B。三处追加LF恰匹配原摘要；不改 provider 数学实现、REQUEST、freeze、verifier或拒绝判据。
