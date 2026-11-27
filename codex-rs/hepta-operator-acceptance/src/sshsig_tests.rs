@@ -264,3 +264,31 @@ fn nonempty_reserved_wire_field_matches_independent_openssh() {
     );
     assert!(fixture.accepts(&variant));
 }
+
+#[cfg(windows)]
+#[test]
+fn windows_openssh_program_data_is_scoped_to_the_child_environment() {
+    let parent_before = std::env::var_os("ProgramData");
+    let temporary = private_tempdir("OpenSSH startup environment");
+    let denied_key = temporary.path().join("missing-program-data");
+    let denied = ssh_keygen_command()
+        .env_remove("ProgramData")
+        .args(["-q", "-t", "ed25519", "-N", "", "-f"])
+        .arg(&denied_key)
+        .output()
+        .expect("run OpenSSH without its required startup environment");
+    assert_eq!(denied.status.code(), Some(255), "{denied:?}");
+    assert!(!denied_key.exists());
+    assert!(!denied_key.with_extension("pub").exists());
+
+    let key = temporary.path().join("known-folder-program-data");
+    let generated = ssh_keygen_command()
+        .args(["-q", "-t", "ed25519", "-N", "", "-f"])
+        .arg(&key)
+        .output()
+        .expect("run OpenSSH with the actual known-folder path");
+    assert!(generated.status.success(), "{generated:?}");
+    assert!(key.is_file());
+    assert!(key.with_extension("pub").is_file());
+    assert_eq!(std::env::var_os("ProgramData"), parent_before);
+}

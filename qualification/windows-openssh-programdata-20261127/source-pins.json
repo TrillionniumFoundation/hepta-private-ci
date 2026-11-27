@@ -1,0 +1,70 @@
+{
+  "base": "0e43224a1da27560785a7ff696ae14ef563ee6f7",
+  "native_complete_operator": {
+    "passed": 29,
+    "skipped": 0,
+    "tests": 29
+  },
+  "native_results": [
+    {
+      "bytes": 0,
+      "command": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "returncode": 0,
+      "seconds": 0.15974875004030764,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "command": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "returncode": 0,
+      "seconds": 0.017334084026515484,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 8022,
+      "command": [
+        "/opt/homebrew/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-operator-acceptance"
+      ],
+      "returncode": 0,
+      "seconds": 20.430091083981097,
+      "sha256": "682df3238299525160874f7b1a25bd34da5ed2c8c39a6a65b04d311b4c7dd519"
+    }
+  ],
+  "source_inputs": {
+    ".github/workflows/hia-windows-durability-trust.yml": {
+      "bytes": 3554,
+      "sha256": "d2a1fb86f1ce96b2283971cbb94f9c6285d0fdc1522c3b982fcef12751bd44b6"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1742739,
+      "sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 423450,
+      "sha256": "3f314e2537b62aee2e303ff51f4ac29bb88afd3b73d05c6f175a35916559ef85"
+    },
+    "codex-rs/hepta-operator-acceptance/Cargo.toml": {
+      "bytes": 861,
+      "sha256": "a40d8f6712a9f82f912e634ee8a8059e4baf017e838dc2009ae1cb5de8009837"
+    },
+    "codex-rs/hepta-operator-acceptance/src/sshsig_tests.rs": {
+      "bytes": 9602,
+      "sha256": "2ffdb98367b6fa59d8b370e1dccab1f96df5983221d05dd04eff50d5bb5c7e71"
+    },
+    "codex-rs/hepta-operator-acceptance/src/test_support.rs": {
+      "bytes": 3500,
+      "sha256": "a5353822b0b505e52c1b40f02b6a6bd921ea1fd9c85529fb4056d70cfb05e2cc"
+    }
+  },
+  "windows_followup": "PENDING: original four complete targets with one added Windows-only environment control"
+}
