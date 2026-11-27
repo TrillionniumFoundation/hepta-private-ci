@@ -3,6 +3,7 @@
 mod acl;
 
 pub(crate) use acl::SecuritySnapshot;
+pub(crate) use acl::private_child_creation_security;
 pub(crate) use acl::private_security;
 
 use std::ffi::c_void;

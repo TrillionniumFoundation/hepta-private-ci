@@ -97,7 +97,7 @@ pub(super) fn snapshot(file: &File, identity: &CurrentIdentity) -> io::Result<Fi
     })
 }
 
-fn query<T: Default>(file: &File, class: FILE_INFO_BY_HANDLE_CLASS) -> io::Result<T> {
+pub(super) fn query<T: Default>(file: &File, class: FILE_INFO_BY_HANDLE_CLASS) -> io::Result<T> {
     let mut value = T::default();
     // SAFETY: the private call sites pair each class with its exact Windows
     // struct. The OS receives the actual size of this aligned output object.

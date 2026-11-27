@@ -31,6 +31,8 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
     socket_path: PathBuf,
+    #[cfg(windows)]
+    socket_entry: Option<codex_utils_path::windows_private_fs::PrivateSocket>,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -42,14 +44,24 @@ impl AgentdControlServer {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
+        #[cfg(windows)]
+        let directory = prepare_socket(&socket_path).await?;
+        #[cfg(not(windows))]
         prepare_socket(&socket_path).await?;
         let listener = UnixListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
         set_owner_only(&socket_path).await?;
+        #[cfg(windows)]
+        let socket_entry = directory
+            .open_socket(socket_name(&socket_path)?)
+            .map_err(|error| io_context("retain bound agentd control socket", &socket_path, error))?
+            .ok_or_else(|| AgentdError::Invalid("bound control socket disappeared".to_string()))?;
         Ok(Self {
             listener,
             socket_path,
+            #[cfg(windows)]
+            socket_entry: Some(socket_entry),
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -82,7 +94,14 @@ impl AgentdControlServer {
 
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
+        #[cfg(windows)]
+        let cleanup = match self.socket_entry.take() {
+            Some(entry) => entry.remove(),
+            None => Ok(()),
+        };
+        #[cfg(not(windows))]
+        let cleanup = std::fs::remove_file(&self.socket_path);
+        if let Err(error) = cleanup
             && error.kind() != ErrorKind::NotFound
         {
             eprintln!(
@@ -163,6 +182,81 @@ fn bounded_message(message: &str) -> String {
     message.chars().take(512).collect()
 }
 
+#[cfg(windows)]
+fn socket_name(socket_path: &Path) -> Result<&str, AgentdError> {
+    socket_path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| {
+            AgentdError::Invalid("agentd control socket must have a UTF-8 filename".to_string())
+        })
+}
+
+#[cfg(windows)]
+async fn prepare_socket(
+    socket_path: &Path,
+) -> Result<codex_utils_path::windows_private_fs::PrivateSocketDirectory, AgentdError> {
+    use codex_utils_path::windows_private_fs::PrivateSocketDirectory;
+
+    let name = socket_name(socket_path)?;
+    let parent = socket_path.parent().ok_or_else(|| {
+        AgentdError::Invalid("agentd control socket has no parent directory".to_string())
+    })?;
+    let directory = PrivateSocketDirectory::open_or_create(parent)
+        .map_err(|error| io_context("retain private agentd socket directory", parent, error))?;
+    let probe_error = match UnixStream::connect(socket_path).await {
+        Ok(_) => {
+            return Err(AgentdError::Io(std::io::Error::new(
+                ErrorKind::AddrInUse,
+                format!(
+                    "agentd control socket is already live at {}",
+                    socket_path.display()
+                ),
+            )));
+        }
+        Err(error) => error,
+    };
+    let entry = directory
+        .open_socket(name)
+        .map_err(|error| io_context("inspect agentd control socket", socket_path, error))?;
+    let Some(entry) = entry else {
+        return Ok(directory);
+    };
+    if probe_error.kind() != ErrorKind::ConnectionRefused {
+        return Err(io_context(
+            "probe existing agentd control socket",
+            socket_path,
+            probe_error,
+        ));
+    }
+    // The initial probe preserves the live-endpoint refusal. Only this second
+    // probe, with the typed entry retained against replacement, admits cleanup.
+    match UnixStream::connect(socket_path).await {
+        Ok(_) => {
+            return Err(AgentdError::Io(std::io::Error::new(
+                ErrorKind::AddrInUse,
+                format!(
+                    "agentd control socket is already live at {}",
+                    socket_path.display()
+                ),
+            )));
+        }
+        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
+        Err(error) => {
+            return Err(io_context(
+                "probe retained agentd control socket",
+                socket_path,
+                error,
+            ));
+        }
+    }
+    entry
+        .remove()
+        .map_err(|error| io_context("remove retained stale agentd socket", socket_path, error))?;
+    Ok(directory)
+}
+
+#[cfg(not(windows))]
 async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     let parent = socket_path.parent().ok_or_else(|| {
         AgentdError::Invalid("agentd control socket has no parent directory".to_string())

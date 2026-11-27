@@ -62,6 +62,13 @@ impl FleetRegistry {
             layout.releases_root(),
             layout.agents_root(),
         ] {
+            #[cfg(windows)]
+            if directory == layout.run_root() {
+                codex_utils_path::windows_private_fs::PrivateDirectory::open_or_create(directory)?;
+            } else {
+                std::fs::create_dir_all(directory)?;
+            }
+            #[cfg(not(windows))]
             std::fs::create_dir_all(directory)?;
             validate_physical_directory(directory)?;
         }
@@ -82,6 +89,8 @@ impl FleetRegistry {
         ] {
             validate_physical_directory(directory)?;
         }
+        #[cfg(windows)]
+        validate_private_directory(registry.layout.run_root())?;
         registry.migrate_legacy_matrix_roots()?;
         registry.load()?;
         Ok(registry)

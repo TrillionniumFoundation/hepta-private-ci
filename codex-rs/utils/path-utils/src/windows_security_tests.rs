@@ -17,11 +17,13 @@ use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
 use super::LocalDescriptor;
 use super::current_user_sid;
 use crate::windows_private_fs::PrivateDirectory;
+use crate::windows_private_fs::PrivateSocketDirectory;
 
-fn grant_world_read(path: &Path) -> io::Result<()> {
+fn grant_world_read(path: &Path, inheritance: &str) -> io::Result<()> {
     let user = current_user_sid()?.to_sddl();
-    let descriptor =
-        LocalDescriptor::from_sddl(&format!("O:{user}D:P(A;;FA;;;{user})(A;;GR;;;WD)"))?;
+    let descriptor = LocalDescriptor::from_sddl(&format!(
+        "O:{user}D:P(A;;FA;;;{user})(A;{inheritance};GR;;;WD)"
+    ))?;
     let mut dacl = ptr::null_mut();
     let mut present = 0;
     let mut defaulted = 0;
@@ -67,7 +69,8 @@ fn unsafe_directory_acl_is_rejected_without_repairing_it() -> io::Result<()> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().join("state");
     let directory = PrivateDirectory::open_or_create(&root)?;
-    grant_world_read(&root)?;
+    let sockets = PrivateSocketDirectory::open_or_create(&root)?;
+    grant_world_read(&root, "")?;
     let before = dacl_bytes(directory.as_file())?;
     assert_eq!(
         directory.validate().unwrap_err().kind(),
@@ -83,6 +86,16 @@ fn unsafe_directory_acl_is_rejected_without_repairing_it() -> io::Result<()> {
             .kind(),
         io::ErrorKind::AlreadyExists
     );
+    assert_eq!(
+        PrivateSocketDirectory::open_or_create(&root)
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(
+        sockets.open_socket("absent.ctl").unwrap_err().kind(),
+        io::ErrorKind::PermissionDenied
+    );
     assert_eq!(dacl_bytes(directory.as_file())?, before);
     Ok(())
 }
@@ -95,7 +108,7 @@ fn unsafe_file_acl_is_rejected_before_write_or_replacement() -> io::Result<()> {
     let mut file = directory.create_new("state.json")?;
     file.write_all(b"unchanged")?;
     file.sync_all()?;
-    grant_world_read(&root.join("state.json"))?;
+    grant_world_read(&root.join("state.json"), "")?;
     let before = dacl_bytes(&file)?;
     assert_eq!(
         directory.open_write("state.json").unwrap_err().kind(),
@@ -114,5 +127,24 @@ fn unsafe_file_acl_is_rejected_before_write_or_replacement() -> io::Result<()> {
     assert_eq!(fs::read(root.join("state.json"))?, b"unchanged");
     assert_eq!(dacl_bytes(&file)?, before);
     assert!(directory.entry_exists("state.next")?);
+    Ok(())
+}
+
+#[test]
+fn socket_parent_rejects_foreign_inherit_only_access_without_repair() -> io::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().join("sockets");
+    let directory = PrivateDirectory::open_or_create(&root)?;
+    grant_world_read(&root, "OICIIO")?;
+    let before = dacl_bytes(directory.as_file())?;
+    directory.validate()?;
+    assert_eq!(
+        PrivateSocketDirectory::open_or_create(&root)
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::PermissionDenied
+    );
+    assert_eq!(dacl_bytes(directory.as_file())?, before);
+    assert_eq!(fs::read_dir(&root)?.count(), 0);
     Ok(())
 }

@@ -325,6 +325,8 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
         .registry
         .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
     for root in [
+        #[cfg(windows)]
+        fleet.registry.layout().run_root(),
         record.layout.agent_root(),
         record.layout.home_root(),
         record.layout.run_root(),

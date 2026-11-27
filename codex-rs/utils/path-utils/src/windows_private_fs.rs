@@ -6,9 +6,12 @@
 
 mod nt;
 mod snapshot;
+mod socket;
 
 pub use snapshot::FileSnapshot;
 pub use snapshot::snapshot_private_file;
+pub use socket::PrivateSocket;
+pub use socket::PrivateSocketDirectory;
 
 use std::fs::File;
 use std::io;

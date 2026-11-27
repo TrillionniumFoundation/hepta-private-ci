@@ -139,7 +139,7 @@ fn directory_reparse_points_are_rejected_in_every_resolved_component() -> io::Re
 // Mount-point fixtures need no symlink privilege and never address another
 // user's path. The payload is the documented REPARSE_DATA_BUFFER mount-point
 // layout, set only on a newly created empty directory within this test TempDir.
-fn create_junction(link: &Path, target: &Path) -> io::Result<()> {
+pub(super) fn create_junction(link: &Path, target: &Path) -> io::Result<()> {
     let directory = PrivateDirectory::open_or_create(link)?;
     let target = target.canonicalize()?;
     let target: Vec<u16> = target.as_os_str().encode_wide().collect();
