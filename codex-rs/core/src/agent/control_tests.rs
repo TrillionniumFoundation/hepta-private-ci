@@ -931,9 +931,19 @@ async fn check_v2_agent_reload(route: V2ReloadRoute) {
                 .turn_environments
                 .update_selections(std::slice::from_ref(&selection), &thread_config);
             parent_turn = parent_thread.session.new_default_turn().await;
+            // The spawned parent owns a real task. Finish its interrupt/terminal
+            // owner before making it eligible for residency eviction.
+            parent_thread
+                .session
+                .abort_all_tasks(TurnAbortReason::Interrupted)
+                .await;
+            parent_thread
+                .session
+                .drain_task_terminalizations_for_shutdown_except(/*excluded_identity*/ None)
+                .await;
+            assert!(parent_thread.session.active_turn.lock().await.is_none());
+            assert!(!parent_thread.session.has_pending_admission_fence());
             parent_thread.session.mark_interrupted();
-            // The fixture has no task runner to finish the turn or consume child results.
-            *parent_thread.session.active_turn.lock().await = None;
             let _ = parent_thread
                 .session
                 .input_queue
@@ -1021,6 +1031,16 @@ async fn check_v2_agent_reload(route: V2ReloadRoute) {
         .into_iter()
         .find(|entry| captured_op_matches(entry, &expected));
     assert!(captured.is_some());
+    if matches!(route, V2ReloadRoute::Sender) {
+        reloaded_child
+            .shutdown_and_wait()
+            .await
+            .expect("reloaded child should shut down");
+        parent_thread
+            .shutdown_and_wait()
+            .await
+            .expect("root thread should shut down");
+    }
 }
 
 #[tokio::test]
@@ -1363,10 +1383,10 @@ async fn spawn_agent_fork_from_paginated_parent_uses_model_context_prefix() {
         .shutdown_live_agent(child_thread_id)
         .await
         .expect("child shutdown should submit");
-    let _ = parent_thread
-        .submit(Op::Shutdown {})
+    parent_thread
+        .shutdown_and_wait()
         .await
-        .expect("parent shutdown should submit");
+        .expect("parent shutdown should complete");
 }
 
 #[tokio::test]
@@ -2856,10 +2876,10 @@ async fn spawn_agent_fork_last_n_turns_strips_parent_usage_hints() {
         .shutdown_live_agent(child_thread_id)
         .await
         .expect("child shutdown should submit");
-    let _ = parent_thread
-        .submit(Op::Shutdown {})
+    parent_thread
+        .shutdown_and_wait()
         .await
-        .expect("parent shutdown should submit");
+        .expect("parent shutdown should complete");
 }
 
 #[tokio::test]

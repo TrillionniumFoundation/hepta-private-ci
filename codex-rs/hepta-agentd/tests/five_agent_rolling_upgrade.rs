@@ -450,9 +450,10 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     fleet
         .supervisor
         .rollback(&agents[5].agent_id, Instant::now())?;
-    let (_, rolled_back) = wait_release(&mut fleet, &agents[5], "six-initial-5")
-        .await
-        .context("six-agent Agent 5 rollback readiness")?;
+    let (_, rolled_back) =
+        wait_release_with_healthy_snapshots(&mut fleet, &agents[5], "six-initial-5", &agents)
+            .await
+            .context("six-agent Agent 5 rollback readiness")?;
     ensure!(
         rolled_back.process_id != upgraded.process_id,
         "Agent 5 explicit rollback did not replace the upgraded process"
@@ -789,6 +790,15 @@ async fn wait_release(
     agent: &AgentFixture,
     release_identity: &str,
 ) -> Result<(AgentdClient, codex_hepta_agentd::HealthSnapshot)> {
+    wait_release_with_healthy_snapshots(fleet, agent, release_identity, &[]).await
+}
+
+async fn wait_release_with_healthy_snapshots(
+    fleet: &mut FleetHarness,
+    agent: &AgentFixture,
+    release_identity: &str,
+    required_healthy_agents: &[AgentFixture],
+) -> Result<(AgentdClient, codex_hepta_agentd::HealthSnapshot)> {
     eprintln!(
         "FLEET_STAGE await-release agent={} target={release_identity}",
         agent.agent_id
@@ -818,6 +828,14 @@ async fn wait_release(
                 let control = fleet.control_client(agent, spawn_generation)?;
                 if let Ok(health) = control.health().await
                     && health.ready
+                    // Direct control health does not update the supervisor's
+                    // last-tick snapshots checked at the lifecycle boundary.
+                    && required_healthy_agents.iter().all(|peer| {
+                        fleet
+                            .supervisor
+                            .snapshot(&peer.agent_id)
+                            .is_some_and(|snapshot| snapshot.active && snapshot.healthy)
+                    })
                 {
                     return Ok::<_, anyhow::Error>((control, health));
                 }
