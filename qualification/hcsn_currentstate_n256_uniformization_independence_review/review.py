@@ -150,4 +150,3 @@ def review_sources(candidate_path, oracle_path, provider_path):
         exact_sources_distinct=len(set(actual)) == 3,
         implementation_independence_passed=len(set(actual)) == 3,
     )
-

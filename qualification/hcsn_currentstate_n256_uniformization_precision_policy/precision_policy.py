@@ -161,4 +161,3 @@ def validate_precision_certificate(record, provider_source_sha256, provider_admi
         within_original_limit=True,
         certificate_identity_valid=True,
     )
-

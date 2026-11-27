@@ -115,6 +115,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261127/n256-uniformization-source-chain/raw-evidence-storage.json": (
+        "c9e71b773a7f8fe6afabda331005212782d209ec0eb8e6bebe55f41041b9fb19"
+    ),
     "qa/repository-consolidation/20261127/hcsn-frozen-vjp-sources/raw-evidence-storage.json": (
         "e6d0268d8f0338066a9d6c7549656e913a864fdc2dae2013c16fe7ee1f54d080"
     ),
@@ -251,6 +254,39 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_currentstate_n256_uniformization_independence_review/REQUEST.json": (
+        "3fc75817c42e7bb68f100562964051a68ba05f2f07e1e1bf59435eb01873ca8b"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_independence_review/review.py": (
+        "7a211fff5ef5c0ebb5ecb5d11eb6f60cf4552f31a91929cd038337d85060cbdf"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_precision_policy/REQUEST.json": (
+        "0ee36f9eb21b18ddacf06b7b3e8c3ae06fb981d97e560bbd51a1173d4bbc710a"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_precision_policy/precision_policy.py": (
+        "ac6114b0e19776374d9b6ab0ce61576b64c35c2db9332412a6d6e3bf6ea40614"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_provider_intent/REQUEST.json": (
+        "138d1df420e9305075ff936886c685f98df7d67dcd7fda1cf3a93f613961afaf"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_provider_intent/SOURCE_FREEZE.json": (
+        "6e713042592cb1210364f9878dfbbf80cf0413201609f1a6b12b042bbeb5ecb6"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_provider_intent/provider.py": (
+        "7e1a0051e7c81ab0499d4a7aa23a015b59588faff52330e4355c9357d16bd86e"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_admission_contract/verify_source.py": (
+        "963c3e1aa407c8d43c204197400ecc8560bf41fdc083296bd050dcdad698847e"
+    ),
+    "qualification/hcsn_currentstate_n256_execution_freeze_protocol/verify_source.py": (
+        "ae61d17d589206285570a7ff55b8598955f3fb090a40e907c0437066762a3328"
+    ),
+    "qualification/hcsn_currentstate_n256_execution_admission_bridge/verify_source.py": (
+        "bd932cafba714b042e246394031e566544f34e4b2c5bcbb72c801753c9321729"
+    ),
+    "qualification/hcsn_currentstate_n256_provider_fullstate_bridge/verify_source.py": (
+        "2c43ac884e3d57300cf771bc74834f589bc0aec57c8337363392900a988c90ec"
+    ),
     "qualification/hcsn_source_migration_vjp_n128_parentclear_attempt/REQUEST.json": (
         "517e444413b5d1156399b68afdfe9294f7c788fd00c750874deda689ae7d66c2"
     ),
@@ -618,12 +654,12 @@ def read_frozen_source(repo, path, expected, index, *, require_current_view=Fals
 def replay_source_freeze(repo, freeze_path, freeze_sha256, verifier_sha256=None):
     """Run an unchanged source-only verifier using its exact frozen tree."""
     freeze_path = relative_path(freeze_path)
-    freeze_bytes = read_regular(repo, freeze_path.as_posix(), 65536)
-    if hashlib.sha256(freeze_bytes).hexdigest() != freeze_sha256:
-        raise ValueError(f"historical source freeze changed: {freeze_path}")
-    frozen = json.loads(freeze_bytes)["files"]
-    verifier = freeze_path.with_name("verify_source.py")
     index = entries(repo)
+    freeze_bytes = read_frozen_source(repo, freeze_path.as_posix(), freeze_sha256, index)
+    manifest = json.loads(freeze_bytes)
+    frozen = manifest["files"]
+    bound_originals = manifest.get("bound_originals", {})
+    verifier = freeze_path.with_name("verify_source.py")
     if verifier_sha256 is not None:
         # Earlier verifiers pinned extra parents in immutable source rather
         # than in their manifests. Read those literals from the pinned copy.
@@ -644,6 +680,9 @@ def replay_source_freeze(repo, freeze_path, freeze_sha256, verifier_sha256=None)
         frozen = {**frozen, **parent_bindings, verifier.as_posix(): verifier_sha256}
     if verifier.as_posix() not in frozen:
         raise ValueError("source freeze does not pin its original verifier")
+    if bound_originals.keys() & frozen.keys():
+        raise ValueError("source freeze duplicates a bound original")
+    frozen = {**frozen, **bound_originals}
 
     with tempfile.TemporaryDirectory(prefix="hepta-frozen-source-") as scratch:
         original = Path(scratch)

@@ -340,4 +340,3 @@ def require_execution_admission(request_path, admission_path, provider_source_sh
     ):
         raise ProviderError("provider admission identity mismatch")
     return admission
-
