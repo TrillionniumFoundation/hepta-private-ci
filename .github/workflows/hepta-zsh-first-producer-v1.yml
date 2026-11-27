@@ -1,0 +1,143 @@
+name: Hepta first zsh artifact producer v1
+
+on:
+  pull_request:
+    types: [opened]
+    branches: [fix/hepta-native-fixture-modeling-20261127-7c9e]
+    paths:
+      - ".github/workflows/hepta-zsh-first-producer-v1.yml"
+      - ".github/scripts/build-hepta-zsh-first-producer-v1.sh"
+      - "scripts/run_hepta_zsh_first_producer_v1.py"
+      - "scripts/hepta_zsh_first_producer_collector_v1.py"
+      - "scripts/hepta_zsh_first_producer_inputs_v1.json"
+      - "codex-rs/shell-escalation/patches/zsh-exec-wrapper.patch"
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: hepta-zsh-first-producer-v1-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    name: First zsh producer (macOS 26 ARM)
+    if: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' && github.run_attempt == 1 && github.event.pull_request.draft == true && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'fix/hepta-zsh-first-producer-20261127-7c9e' && github.event.pull_request.base.sha == '5a842a417dc288e22d506fb16bc691b889fa4297' }}
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      HEPTA_ZSH_SOURCE_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Allocate one original budget and evidence directory
+        id: bootstrap
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import re
+          import sys
+          import time
+          start_mono = time.monotonic()
+          start_utc = time.time()
+          run = os.environ["GITHUB_RUN_ID"]
+          attempt = os.environ["GITHUB_RUN_ATTEMPT"]
+          source = os.environ["HEPTA_ZSH_SOURCE_HEAD"]
+          if not re.fullmatch(r"[1-9][0-9]*", run) or attempt != "1":
+              raise SystemExit("first original run identity required")
+          if not re.fullmatch(r"[0-9a-f]{40}", source):
+              raise SystemExit("actual opened source head required")
+          temp = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)
+          root = temp / ("hepta-zsh-first-producer-" + run + "-" + attempt)
+          root.mkdir(mode=0o700, exist_ok=False)
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              stream.write("root=" + str(root) + "\nowned=true\n")
+              stream.flush()
+              os.fsync(stream.fileno())
+          record = {
+              "schema": "hepta-zsh-first-producer-bootstrap-v1",
+              "scope_id": "hepta-zsh-first-producer-v1",
+              "run_id": run, "run_attempt": attempt,
+              "source_head": source, "event_sha": os.environ["GITHUB_SHA"],
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "job": os.environ["GITHUB_JOB"],
+              "root": str(root),
+              "workspace": str(Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True)),
+              "monotonic_seconds": start_mono, "utc_seconds": start_utc,
+              "python": sys.executable, "python_version": sys.version,
+              "platform": platform.platform(), "macos": platform.mac_ver()[0],
+              "machine": platform.machine(), "runner_os": os.environ.get("RUNNER_OS"),
+              "runner_arch": os.environ.get("RUNNER_ARCH"),
+              "runner_name": os.environ.get("RUNNER_NAME"),
+              "image_os": os.environ.get("ImageOS"),
+              "image_version": os.environ.get("ImageVersion"),
+              "caps": {"whole_seconds": 1800, "work_seconds": 1500, "retention_seconds": 300},
+              "future_provider": None, "new_native_attempts": 0,
+              "E1_E6_added": 0, "E6_remaining_seconds": 1.9960488015785813,
+          }
+          raw = (json.dumps(record, sort_keys=True, indent=2) + "\n").encode()
+          fd = os.open(root / "BOOTSTRAP.json", os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+          with os.fdopen(fd, "wb") as stream:
+              if stream.write(raw) != len(raw):
+                  raise SystemExit("short original bootstrap write")
+              stream.flush()
+              os.fsync(stream.fileno())
+          print(json.dumps({"original_bootstrap": str(root / "BOOTSTRAP.json"), "elapsed_seconds": time.monotonic() - start_mono}), flush=True)
+          PY
+
+      - name: Checkout the exact opened source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        timeout-minutes: 3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          submodules: false
+          lfs: false
+
+      - name: Build the one source-bound zsh artifact
+        id: producer
+        timeout-minutes: 25
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I scripts/run_hepta_zsh_first_producer_v1.py
+
+      - name: Retain the one original artifact and evidence
+        id: upload
+        if: ${{ always() && steps.bootstrap.outputs.owned == 'true' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        timeout-minutes: 5
+        with:
+          name: hepta-zsh-first-producer-${{ github.run_id }}-attempt-${{ github.run_attempt }}-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ steps.bootstrap.outputs.root }}/BOOTSTRAP.json
+            ${{ steps.bootstrap.outputs.root }}/evidence
+            ${{ steps.bootstrap.outputs.root }}/artifacts
+          include-hidden-files: true
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+      - name: Record actual upload identity and final shared clock
+        if: ${{ always() && steps.bootstrap.outputs.owned == 'true' }}
+        timeout-minutes: 1
+        env:
+          HEPTA_PRODUCER_OUTCOME: ${{ steps.producer.outcome }}
+          HEPTA_UPLOAD_OUTCOME: ${{ steps.upload.outcome }}
+          HEPTA_ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+          HEPTA_ARTIFACT_DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+          HEPTA_ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I scripts/run_hepta_zsh_first_producer_v1.py --post-upload
