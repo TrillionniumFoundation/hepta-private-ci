@@ -132,7 +132,12 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
         }),
     )
     .await
-    .context("forward fixture: oversized file write deadline")??;
+    .with_context(|| {
+        format!(
+            "forward fixture: oversized file write deadline; forwarder_finished={}; relay={connection:?}",
+            forwarder.abort_handle().is_finished()
+        )
+    })??;
     // A following request must still arrive as its own complete message.
     let read_response = client
         .fs_read_file(FsReadFileParams {
