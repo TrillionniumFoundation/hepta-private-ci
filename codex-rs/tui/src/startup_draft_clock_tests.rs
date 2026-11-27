@@ -37,8 +37,8 @@ fn startup_input_clock_preserves_the_held_character_flush_boundary() {
     assert!(pump.app_event_rx.try_recv().is_err());
 }
 
-#[test]
-fn startup_input_clock_preserves_the_pending_newline_boundary() {
+#[tokio::test]
+async fn startup_input_clock_preserves_the_pending_newline_boundary() {
     for (elapsed_ms, expected) in [(120, "ab\nx"), (121, "abx")] {
         let mut pump = startup_test_pump(std::iter::empty());
         let clock = freeze_input_clock(&mut pump);
