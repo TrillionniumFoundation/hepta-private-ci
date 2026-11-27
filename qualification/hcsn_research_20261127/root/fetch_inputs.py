@@ -19,8 +19,9 @@ def j(p):return json.loads(p.read_bytes())
 def digest(b):return hashlib.sha256(b).hexdigest()
 hf='https://huggingface.co'
 m=jpath=C/'model-id.json'
-download(hf+'/api/models/Xenova/clip-vit-base-patch32',m)
-rev=j(m)['sha'];print('model',rev,flush=True)
+pinned_rev='6b7c523703ae26e39be4b03774966f8571c7f523'
+download(hf+'/api/models/Xenova/clip-vit-base-patch32/revision/'+pinned_rev,m)
+rev=j(m)['sha'];assert rev==pinned_rev;print('model',rev,flush=True)
 model_paths=['onnx/vision_model_quantized.onnx','onnx/text_model_quantized.onnx','tokenizer.json','preprocessor_config.json']
 def setup(it):
  base,p=it;download(base,C/p);return p
