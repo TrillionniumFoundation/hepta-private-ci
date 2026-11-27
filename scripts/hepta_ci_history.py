@@ -45,7 +45,7 @@ def fetch_environment(repository):
     return environment
 
 
-def prepare(repository, commits, *, full_history=False):
+def prepare(repository, commits, *, full_history=False, with_blobs=False):
     commits = list(dict.fromkeys(commits))
     if not commits or any(
         re.fullmatch(r"[0-9a-f]{40}", commit) is None for commit in commits
@@ -61,7 +61,9 @@ def prepare(repository, commits, *, full_history=False):
             except subprocess.CalledProcessError:
                 selected.append(commit)
     if selected:
-        arguments = ["fetch", "--no-tags", "--filter=blob:none"]
+        arguments = ["fetch", "--no-tags", "--no-recurse-submodules"]
+        if not with_blobs:
+            arguments.append("--filter=blob:none")
         if full_history:
             if git(repository, "rev-parse", "--is-shallow-repository") == "true":
                 arguments.append("--unshallow")
@@ -83,8 +85,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--commit", action="append", required=True)
     parser.add_argument("--full-history", action="store_true")
+    parser.add_argument(
+        "--with-blobs",
+        action="store_true",
+        help="include file content in comparisons or local merges",
+    )
     args = parser.parse_args()
-    prepare(Path.cwd(), args.commit, full_history=args.full_history)
+    prepare(
+        Path.cwd(),
+        args.commit,
+        full_history=args.full_history,
+        with_blobs=args.with_blobs,
+    )
 
 
 if __name__ == "__main__":

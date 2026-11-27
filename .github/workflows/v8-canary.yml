@@ -31,13 +31,44 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
+
+      - name: Fetch V8 comparison history and exact lock blobs
+        if: github.event_name != 'workflow_dispatch'
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYTHON'
+          import os
+          from pathlib import Path
+
+          from hepta_ci_history import fetch_environment, git, prepare
+
+          repository = Path.cwd()
+          base, head = os.environ["BASE_SHA"], os.environ["HEAD_SHA"]
+          prepare(repository, [base, head], full_history=True)
+          merge_base = git(repository, "merge-base", base, head)
+          locks = dict.fromkeys(
+              git(repository, "rev-parse", f"{commit}:codex-rs/Cargo.lock")
+              for commit in (merge_base, head)
+          )
+          git(
+              repository, "fetch", "--no-tags", "--no-recurse-submodules",
+              "--no-write-fetch-head", "--filter=blob:none", "origin", *locks,
+              environment=fetch_environment(repository),
+          )
+          PYTHON
 
       - name: Resolve exact v8 crate version
         id: v8_version
