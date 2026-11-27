@@ -70,6 +70,13 @@ def beneath(child, root):
         os.path.normcase(os.path.abspath(child)),
         os.path.normcase(os.path.abspath(root)),
     )
+    # Distinct drives or UNC shares cannot contain one another. Mixed path
+    # types retain the original commonpath TypeError instead of becoming False.
+    if (
+        type(left) is type(right)
+        and os.path.splitdrive(left)[0] != os.path.splitdrive(right)[0]
+    ):
+        return False
     return os.path.commonpath((left, right)) == right and left != right
 
 
