@@ -568,17 +568,40 @@ fn nested_protected_paths_cannot_be_bypassed_by_renaming_ancestors() {
                 "protected ancestor denies must follow broader allowances: {policy}"
             );
 
+            // Prove that the restricted profile started before interpreting a
+            // failed filesystem operation as evidence of policy enforcement.
+            let separator = args
+                .iter()
+                .position(|arg| arg == "--")
+                .expect("seatbelt command separator");
+            let startup = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+                .args(&args[..=separator])
+                .arg("/usr/bin/true")
+                .current_dir(temp_dir.path())
+                .output()
+                .expect("execute seatbelt startup control");
+            let startup_stderr = String::from_utf8_lossy(&startup.stderr);
+            const STARTUP_UNAVAILABLE: &str =
+                "sandbox-exec: sandbox_apply: Operation not permitted";
+            if !startup.status.success() && startup_stderr.contains(STARTUP_UNAVAILABLE) {
+                eprintln!("seatbelt policy not exercised: {startup_stderr}");
+                return;
+            }
+            assert!(
+                startup.status.success(),
+                "seatbelt startup control: {startup_stderr}"
+            );
+
             let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
                 .args(args)
                 .current_dir(temp_dir.path())
                 .output()
                 .expect("execute seatbelt command");
             let stderr = String::from_utf8_lossy(&output.stderr);
-            if !output.status.success()
-                && stderr.contains("sandbox-exec: sandbox_apply: Operation not permitted")
-            {
-                return;
-            }
+            assert!(
+                !stderr.contains(STARTUP_UNAVAILABLE),
+                "seatbelt could not start after a successful startup control: {stderr}"
+            );
             assert!(
                 !output.status.success(),
                 "{protection:?} path must not become accessible by renaming {}",
