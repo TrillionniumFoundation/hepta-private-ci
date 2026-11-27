@@ -718,6 +718,36 @@ impl GuardianReviewSessionManager {
     }
 
     #[cfg(test)]
+    pub(crate) async fn fork_snapshot_diagnostics_for_test(&self) -> String {
+        let Some(trunk) = self.state.lock().await.trunk.clone() else {
+            return "guardian trunk is absent".to_string();
+        };
+        let prior_review_count = trunk.state.lock().await.prior_review_count;
+        let live_thread = match trunk
+            .session
+            .live_thread_for_persistence("guardian fork snapshot test diagnostic")
+        {
+            Ok(live_thread) => live_thread,
+            Err(err) => {
+                return format!(
+                    "prior reviews={prior_review_count}; live persistence handle failed: {err:#}"
+                );
+            }
+        };
+        match live_thread.load_history(/*include_archived*/ true).await {
+            Ok(history) => format!(
+                "prior reviews={prior_review_count}; persisted rollout has {} items",
+                history.items.len()
+            ),
+            Err(err) => {
+                format!(
+                    "prior reviews={prior_review_count}; persisted rollout read failed: {err:#}"
+                )
+            }
+        }
+    }
+
+    #[cfg(test)]
     pub(crate) async fn send_trunk_event_raw_for_test(&self, event: Event) {
         let trunk = self
             .state
