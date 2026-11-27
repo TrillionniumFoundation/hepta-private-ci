@@ -1,0 +1,7 @@
+# Same sequence computation, two time-parallel schedules
+
+If the sequence of barriers can be computed before transporting the population, transition composition is associative. The all-prefix and block implementations exactly match serial transport in real arithmetic. Against the original recursive cell with its internal history weights zeroed, including streaming, all parameters' gradients and mass, worst tested disagreement was 1.78e−15. A full HCSN with prices fed back into its own next barrier cannot reuse this schedule without changing the dynamics. Both variants keep ordinary trainable weights between the two layers.
+
+At T=256, four examples and four neurons per layer with twelve active atoms on the single-thread CPU, sequential / all-prefix / block median forward times were 38.6 / 47.9 / 41.7 ms and training steps were 151.4 / 148.9 / 141.4 ms. These are five timed samples after a warm-up; single-host wall noise and full sequence sizes are in the JSON. A scan lowers the depth of temporal dependencies but can increase memory traffic and arithmetic. These CPU microtimings are not matched-quality evidence against attention.
+
+The separate drift.py module is an optional trainable physical-drift extension for a population cell. Initially it matches the original published-drift cell. It continues pricing equity and loss with the supplied law and switches only the actual firing diffusion and its physical horizon probes to the input-conditioned drift. Do not reuse the fixed seven-coordinate dictionary for new drift schedules without requalification.
