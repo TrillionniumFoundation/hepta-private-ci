@@ -1,0 +1,68 @@
+{
+  "cold_median_speed_saving": 0.5483635747151545,
+  "cold_seconds": {
+    "adam": [
+      3.877743769000517,
+      3.875108480002382,
+      3.823297764000017,
+      4.061655897996388,
+      3.918591441004537
+    ],
+    "direct": [
+      1.6254840949986828,
+      1.8688987300047302,
+      1.674445630000264,
+      1.7513303340019775,
+      1.7607174919976387
+    ]
+  },
+  "panels": {
+    "emerging_19_25": {
+      "rows": 4248,
+      "anchor_dates": 354,
+      "direct": 0.19057804522354527,
+      "continuous": 0.19975719337125106,
+      "prior_cheap": 0.19203042386668598,
+      "direct_minus_continuous": -0.009179148147705792,
+      "interval": [
+        -0.013110461084242063,
+        -0.005985863552477027
+      ],
+      "direct_minus_adam": -1.3202466060540202e-09,
+      "scalar_predictive_noninferiority": true,
+      "sha256": "4fd2fde59a9b9b6af2e1949c8ce9716472460ab63ea0d57fe128e17adf24bee5"
+    },
+    "developed_26": {
+      "rows": 912,
+      "anchor_dates": 38,
+      "direct": 0.12415992606094607,
+      "continuous": 0.1277432557668287,
+      "prior_cheap": 0.12315421626392395,
+      "direct_minus_continuous": -0.0035833297058826302,
+      "interval": [
+        -0.0047406501659702635,
+        -0.0009339284912690961
+      ],
+      "direct_minus_adam": 1.6441628841948116e-09,
+      "scalar_predictive_noninferiority": true,
+      "sha256": "55faa46e456dc9a7a2e66444d39e99b82ba24f1693aa64a7e2b3de65d89fe863"
+    },
+    "emerging_26": {
+      "rows": 456,
+      "anchor_dates": 38,
+      "direct": 0.13866746840470592,
+      "continuous": 0.13892202748035337,
+      "prior_cheap": 0.1382973079019218,
+      "direct_minus_continuous": -0.0002545590756474421,
+      "interval": [
+        -0.0011419977648384945,
+        0.0008376470594069006
+      ],
+      "direct_minus_adam": 1.0836919527842868e-09,
+      "scalar_predictive_noninferiority": true,
+      "sha256": "80f73024c5c7e8f9966e1686f8eaf0c7cea7caeab7bf62949be39fc7b89187b9"
+    }
+  },
+  "discrete_transfer_pass": true,
+  "local_scalar_fit_speed_and_quality_pass": true
+}

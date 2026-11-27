@@ -1,0 +1,44 @@
+{
+  "torch": "2.8.0+cpu",
+  "interval_max_mass_error": 1.1102230246251565e-16,
+  "sequence_200_max_mass_error": 7.771561172376096e-16,
+  "streaming_equivalence_error": 0.0,
+  "equity_at_wall_max": 1.4210854715202004e-14,
+  "total_expected_spikes_200_steps_width3": 13.972287386300968,
+  "gradients": {
+    "input": {
+      "bp": -2.6566671524457666e-05,
+      "central": -2.6566672819972045e-05,
+      "error": 1.2955143786897143e-12
+    },
+    "interlayer": {
+      "bp": 0.001325979884521082,
+      "central": 0.0013259798842257806,
+      "error": 2.953013267942284e-13
+    },
+    "feedback": {
+      "bp": -0.0008662909777003044,
+      "central": -0.0008662909774942439,
+      "error": 2.0606053755672926e-13
+    },
+    "readout": {
+      "bp": 0.0037092920293898064,
+      "central": 0.003709292029085986,
+      "error": 3.03820336944316e-13
+    }
+  },
+  "ports": {
+    "boundary": {
+      "channels_per_sender": 1,
+      "parameter_count": 64
+    },
+    "priced": {
+      "channels_per_sender": 4,
+      "parameter_count": 76
+    },
+    "augmented": {
+      "channels_per_sender": 8,
+      "parameter_count": 92
+    }
+  }
+}
