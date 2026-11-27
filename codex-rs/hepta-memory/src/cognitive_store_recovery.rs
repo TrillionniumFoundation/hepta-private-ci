@@ -118,6 +118,7 @@ impl CognitiveStore {
     /// verification, exact current-cut equality, a FULL checkpoint, and
     /// independent production-authority verification. Activation is one atomic
     /// pointer rename; the predecessor database is left untouched.
+    /// Platforms without the retained-descriptor backend cannot recover a writer.
     pub async fn open_with_recovery<V>(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
@@ -142,15 +143,10 @@ impl CognitiveStore {
         let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
-                CognitiveRecoveryError::Unavailable(
-                    "cognitive recovery root does not exist".to_string(),
+                CognitiveRecoveryError::Indeterminate(
+                    "cognitive recovery root is redirected".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)

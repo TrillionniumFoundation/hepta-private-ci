@@ -899,21 +899,43 @@ mod tests {
         };
         let mut bytes = serde_json::to_vec(&request)?;
         bytes.push(b'\n');
-        stream.write_all(&bytes).await?;
-        let mut reader = BufReader::new(stream);
         let mut response = Vec::new();
-        reader.read_until(b'\n', &mut response).await?;
-        let response: MatrixdResponse = serde_json::from_slice(&response)?;
-        assert_eq!(response.release_id, "release-1");
-        assert!(matches!(
-            response.payload,
-            MatrixdPayload::Health(MatrixdHealth {
-                lifecycle: MatrixdLifecycle::Degraded,
-                agentd_connected: false,
-                matrix_sync_connected: false,
-                ..
-            })
-        ));
+        let received = async {
+            stream.write_all(&bytes).await?;
+            BufReader::new(stream)
+                .read_until(b'\n', &mut response)
+                .await
+        }
+        .await;
+        if cfg!(windows) {
+            // AF_UNIX cannot prove the peer's user identity on Windows. The
+            // production guard must close the connection before serving it.
+            assert!(
+                matches!(received, Ok(0))
+                    || matches!(received, Err(ref error) if matches!(
+                        error.kind(),
+                        ErrorKind::ConnectionReset | ErrorKind::BrokenPipe
+                    )),
+                "an unverified peer must be disconnected: {received:?}"
+            );
+            assert!(
+                response.is_empty(),
+                "no authority-bearing reply may be sent"
+            );
+        } else {
+            received?;
+            let response: MatrixdResponse = serde_json::from_slice(&response)?;
+            assert_eq!(response.release_id, "release-1");
+            assert!(matches!(
+                response.payload,
+                MatrixdPayload::Health(MatrixdHealth {
+                    lifecycle: MatrixdLifecycle::Degraded,
+                    agentd_connected: false,
+                    matrix_sync_connected: false,
+                    ..
+                })
+            ));
+        }
 
         connections.set_agentd_connected(true);
         connections.set_matrix_sync_connected(true);
