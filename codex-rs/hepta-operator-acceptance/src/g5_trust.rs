@@ -870,7 +870,17 @@ fn verify_sshsig_bytes(
         }
         Ok(())
     }
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    {
+        crate::sshsig::verify(
+            statement,
+            signature_bytes,
+            allowed_signers_bytes,
+            principal,
+            namespace,
+        )
+    }
+    #[cfg(not(any(unix, windows)))]
     {
         let _ = (
             statement,
