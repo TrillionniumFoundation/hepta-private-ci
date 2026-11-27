@@ -27,8 +27,10 @@ use codex_protocol::permissions::NetworkSandboxPolicy;
 #[cfg(unix)]
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
+#[cfg(unix)]
+use common::CAPABILITY_TRACE_ENV;
 use common::exec_server::exec_server;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use common::exec_server::exec_server_with_env;
 #[cfg(target_os = "linux")]
 use fake_bwrap::write_fake_bwrap;
@@ -228,12 +230,19 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
         }
         let helper_path = std::env::join_paths(path_entries)?;
         (
-            exec_server_with_env([("PATH", helper_path.as_os_str())], &[]).await?,
+            exec_server_with_env(
+                [
+                    ("PATH", helper_path.as_os_str()),
+                    (CAPABILITY_TRACE_ENV, std::ffi::OsStr::new("1")),
+                ],
+                &[],
+            )
+            .await?,
             fake_bwrap,
         )
     };
     #[cfg(not(target_os = "linux"))]
-    let mut server = exec_server().await?;
+    let mut server = exec_server_with_env([(CAPABILITY_TRACE_ENV, "1")], &[]).await?;
     initialize(&mut server).await?;
     let response = discover_roots(
         &mut server,
@@ -323,7 +332,7 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
         assert!(std::fs::read_to_string(&launch_log)?.lines().count() > 2);
 
         server.shutdown().await?;
-        server = exec_server().await?;
+        server = exec_server_with_env([(CAPABILITY_TRACE_ENV, "1")], &[]).await?;
         initialize(&mut server).await?;
     }
 
