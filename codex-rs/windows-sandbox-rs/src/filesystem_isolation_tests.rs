@@ -439,3 +439,57 @@ fn public_token_factories_cannot_bypass_managed_execution_refusal() -> Result<()
     attempts.assert_complete(/*expected*/ 6);
     Ok(())
 }
+
+#[tokio::test]
+async fn network_validation_preserves_error_priority_without_preparation() -> Result<()> {
+    let fixture = Fixture::new()?;
+    let roots = fixture.roots()?;
+    let profile = PermissionProfile::workspace_write();
+    let mut unavailable = RefusalAttempts::default();
+    for (level, proxy_enforced, expected_network_error) in [
+        (
+            WindowsSandboxLevel::RestrictedToken,
+            true,
+            Some("managed networking requires the elevated Windows sandbox backend"),
+        ),
+        (
+            WindowsSandboxLevel::RestrictedToken,
+            false,
+            Some("network proxy restricting SID requires the elevated Windows sandbox backend"),
+        ),
+        (WindowsSandboxLevel::Elevated, true, None),
+    ] {
+        let result =
+            crate::spawn_windows_sandbox_session_for_level(crate::WindowsSandboxSessionRequest {
+                permission_profile: &profile,
+                workspace_roots: &roots,
+                codex_home: &fixture.codex_home,
+                command: fixture.command(),
+                cwd: &fixture.cwd,
+                env_map: HashMap::new(),
+                windows_sandbox_level: level,
+                proxy_enforced,
+                network_proxy_restricting_sid: Some("S-1-5-21-111-222-333-444".to_owned()),
+                proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Preserve,
+                timeout_ms: Some(1_000),
+                read_roots_override: None,
+                read_roots_include_platform_defaults: true,
+                write_roots_override: None,
+                deny_read_paths_override: &[],
+                deny_write_paths_override: &[],
+                tty: false,
+                stdin_open: false,
+                use_private_desktop: true,
+            })
+            .await;
+        if let Some(expected) = expected_network_error {
+            let error = result.expect_err("invalid network configuration must prevent launch");
+            assert_eq!(error.to_string(), expected);
+        } else {
+            unavailable.assert_unavailable(result)?;
+        }
+        fixture.assert_unchanged()?;
+    }
+    unavailable.assert_complete(/*expected*/ 1);
+    Ok(())
+}

@@ -52,6 +52,23 @@ enum WindowsSandboxBackend {
     Elevated,
 }
 
+/// Validate only the supplied network fields, without resolving permissions,
+/// paths, environment variables, or backend availability.
+fn validate_windows_sandbox_network_request(
+    request: &WindowsSandboxSessionRequest<'_>,
+) -> Result<()> {
+    if matches!(request.windows_sandbox_level, WindowsSandboxLevel::Elevated) {
+        return Ok(());
+    }
+    if request.proxy_enforced {
+        bail!("managed networking requires the elevated Windows sandbox backend");
+    }
+    if request.network_proxy_restricting_sid.is_some() {
+        bail!("network proxy restricting SID requires the elevated Windows sandbox backend");
+    }
+    Ok(())
+}
+
 /// Describe the requested backend without preparing or launching a process.
 ///
 /// This is a routing decision, not a claim that either backend is available or
@@ -60,14 +77,9 @@ enum WindowsSandboxBackend {
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {
+    validate_windows_sandbox_network_request(request)?;
     if matches!(request.windows_sandbox_level, WindowsSandboxLevel::Elevated) {
         return Ok(WindowsSandboxBackend::Elevated);
-    }
-    if request.proxy_enforced {
-        bail!("managed networking requires the elevated Windows sandbox backend");
-    }
-    if request.network_proxy_restricting_sid.is_some() {
-        bail!("network proxy restricting SID requires the elevated Windows sandbox backend");
     }
 
     let permissions =
@@ -92,6 +104,7 @@ fn select_windows_sandbox_backend(
 pub async fn spawn_windows_sandbox_session_for_level(
     request: WindowsSandboxSessionRequest<'_>,
 ) -> Result<SpawnedProcess> {
+    validate_windows_sandbox_network_request(&request)?;
     crate::ensure_windows_managed_filesystem_isolation()?;
     match select_windows_sandbox_backend(&request)? {
         WindowsSandboxBackend::Elevated => {
