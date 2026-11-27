@@ -4,14 +4,25 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use codex_uds::UnixListener;
+#[cfg(windows)]
+use codex_uds::OwnerLocalListener as ControlListener;
+#[cfg(windows)]
+use codex_uds::OwnerLocalStream as ControlStream;
+#[cfg(not(windows))]
+use codex_uds::UnixListener as ControlListener;
 use codex_uds::UnixStream;
+#[cfg(not(windows))]
+use codex_uds::UnixStream as ControlStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::sync::Semaphore;
+#[cfg(windows)]
+use tokio::time::Instant;
 use tokio::time::timeout;
+#[cfg(windows)]
+use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
 use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
@@ -29,7 +40,8 @@ const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
-    listener: UnixListener,
+    listener: ControlListener,
+    #[cfg(not(windows))]
     socket_path: PathBuf,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
@@ -43,12 +55,13 @@ impl AgentdControlServer {
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
         prepare_socket(&socket_path).await?;
-        let listener = UnixListener::bind(&socket_path)
+        let listener = ControlListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
+            #[cfg(not(windows))]
             socket_path,
             state,
             cancellation,
@@ -62,9 +75,14 @@ impl AgentdControlServer {
                 _ = self.cancellation.cancelled() => return Ok(()),
                 accepted = self.listener.accept() => accepted?,
             };
+            #[cfg(windows)]
+            let request_end = Instant::now() + IO_TIMEOUT;
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
-                let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
+                    #[cfg(windows)]
+                    let mut stream = stream.authenticate().await?;
+                    #[cfg(not(windows))]
+                    let mut stream = stream;
                     stream.write_all(AGENTD_CONTROL_OVERLOAD_FRAME).await?;
                     stream.shutdown().await
                 })
@@ -74,12 +92,22 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
+                // On Windows neither a rejected nor an unauthenticated pipe
+                // may reach application framing. The deadline covers both.
+                #[cfg(windows)]
+                let _ = timeout_at(request_end, async {
+                    let stream = stream.authenticate().await?;
+                    serve_connection(stream, state).await
+                })
+                .await;
+                #[cfg(not(windows))]
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
         }
     }
 }
 
+#[cfg(not(windows))]
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_file(&self.socket_path)
@@ -93,7 +121,10 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection(
+    stream: ControlStream,
+    state: Arc<AgentdState>,
+) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -170,6 +201,34 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
+    // Reject foreign entry types before connect's platform-specific errno.
+    // This check never authorizes cleanup: live probing and the final stale
+    // socket classification below remain mandatory.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::FileTypeExt;
+
+        match tokio::fs::symlink_metadata(socket_path).await {
+            Ok(metadata) if !metadata.file_type().is_socket() => {
+                return Err(AgentdError::Io(std::io::Error::new(
+                    ErrorKind::AlreadyExists,
+                    format!(
+                        "agentd control socket path is not a stale socket: {}",
+                        socket_path.display()
+                    ),
+                )));
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == ErrorKind::NotFound => {}
+            Err(error) => {
+                return Err(io_context(
+                    "inspect agentd control socket entry",
+                    socket_path,
+                    error,
+                ));
+            }
+        }
+    }
     match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
@@ -180,14 +239,30 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
                 ),
             )));
         }
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_error) if !socket_path.exists() => return Ok(()),
+        Err(error)
+            if matches!(
+                error.kind(),
+                ErrorKind::NotFound | ErrorKind::ConnectionRefused
+            ) => {}
         Err(error) => {
             return Err(io_context(
                 /* operation */ "probe existing agentd control socket",
                 /* path */ socket_path,
                 /* source */ error,
+            ));
+        }
+    }
+    // Windows may refuse a missing rendezvous or report NotFound when following
+    // an existing AF_UNIX entry. Inspect the entry itself before deciding that
+    // cleanup is unnecessary; a dangling symlink is not an absent path.
+    match tokio::fs::symlink_metadata(socket_path).await {
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(io_context(
+                "inspect agentd control socket entry",
+                socket_path,
+                error,
             ));
         }
     }

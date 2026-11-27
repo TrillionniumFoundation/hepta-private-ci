@@ -313,17 +313,26 @@ impl CognitiveStore {
     /// This entry point has no independent current-cut witness and cannot detect
     /// rollback to an internally valid old backup. Hosts requiring that guarantee
     /// must use `open_with_recovery` and never fall back here on recovery failure.
+    /// Existing Unix main files must be owner-held, single-link and mode 0600.
+    /// New files are created privately before SQLite creates any sidecars.
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        let sqlite_config = SqliteConfig::from_sqlite_home(sqlite_home);
+        // Newly opened SQLite sidecars inherit the main database permissions.
+        #[cfg(unix)]
+        sqlite_config
+            .prepare_private_bootstrap_database(&path)
+            .map_err(unavailable)?;
+        let pool = sqlite_config
             .open_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
+        #[cfg(not(unix))]
         protect_database_file(&path)?;
         sqlx::query(
             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
@@ -341,6 +350,15 @@ impl CognitiveStore {
             path,
             _open_guard: Some(open_guard),
         })
+    }
+
+    /// Close the shared connection pool before releasing this handle's store fence.
+    ///
+    /// Dropping a pool does not await its SQLite connection workers. A host
+    /// handing the database to exact-cut recovery must await this method and
+    /// drop its other handles before opening the recovered generation.
+    pub async fn close(self) {
+        self.pool.close().await;
     }
 
     pub fn path(&self) -> &Path {

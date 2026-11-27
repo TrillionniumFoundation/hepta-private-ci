@@ -420,8 +420,25 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     use codex_hepta_paths::HeptaFleetRoot;
     use tokio_util::sync::CancellationToken;
 
+    // Keep the real Unix control socket within Darwin's SUN_LEN bound.
+    #[cfg(target_os = "macos")]
+    let directory = tempfile::Builder::new()
+        .prefix("agentd-ranker-")
+        .tempdir_in("/tmp")
+        .unwrap();
+    #[cfg(not(target_os = "macos"))]
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path().canonicalize().unwrap();
+    #[cfg(windows)]
+    let root = {
+        // Keep this positive owner fixture independent of the runner's inherited ACL.
+        let private = root.join("private-fixture");
+        drop(
+            codex_utils_path::open_private_state_directory(&private)
+                .expect("new private fixture root"),
+        );
+        private
+    };
     let fleet_path = root.join("fleet");
     let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).unwrap();
     let lifecycle = FleetRegistry::initialize(fleet_root.clone()).unwrap();

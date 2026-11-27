@@ -45,6 +45,7 @@ use crate::protocol::FsWalkParams;
 use crate::protocol::FsWalkResponse;
 use crate::protocol::FsWriteFileParams;
 use crate::protocol::FsWriteFileResponse;
+use crate::rpc::AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE;
 use crate::rpc::internal_error;
 use crate::rpc::invalid_request;
 use crate::rpc::not_found;
@@ -193,11 +194,28 @@ impl FileSystemHandler {
                         .to_string(),
                 )
             })?;
+        // An unadvertised capability must not reach the generic filesystem fallback.
+        if !crate::local_file_system::stable_handle_authorized_read_available() {
+            return Err(internal_error(
+                "bounded authorized file reads are unsupported".to_string(),
+            ));
+        }
         let bytes = self
             .file_system
             .read_file_bounded_authorized(&params.path, &params.sandbox, max_bytes)
             .await
-            .map_err(map_fs_error)?;
+            .map_err(|error| match error.kind() {
+                io::ErrorKind::InvalidData
+                    if error.to_string() == "authorized file read exceeds bound" =>
+                {
+                    JSONRPCErrorError {
+                        code: AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE,
+                        data: None,
+                        message: "authorized file read exceeds bound".to_string(),
+                    }
+                }
+                _ => map_fs_error(error),
+            })?;
         Ok(FsReadFileResponse {
             data_base64: STANDARD.encode(bytes),
         })

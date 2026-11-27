@@ -226,7 +226,7 @@ impl ChatWidget {
         self.bottom_pane
             .dismiss_view_by_id(RATE_LIMIT_SWITCH_PROMPT_VIEW_ID);
         let had_refreshing_status_outputs = !self.refreshing_status_outputs.is_empty();
-        let now = Local::now();
+        let now = codex_utils_time::Timestamp::now();
         for (_, handle) in self.refreshing_status_outputs.drain(..) {
             handle.finish_rate_limit_refresh(&[], now);
         }
