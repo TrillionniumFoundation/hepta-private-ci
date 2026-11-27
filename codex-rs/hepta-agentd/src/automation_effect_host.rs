@@ -24,6 +24,7 @@ use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
 use codex_hepta_automation::AuthorizedEffectRequest;
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::FinalUseEffectAuthorization;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
@@ -56,7 +57,7 @@ const MAX_PROVIDER_HEADERS: usize = 64;
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
     Indeterminate,
     ProvenAbsent,
 }
@@ -262,10 +263,12 @@ impl AgentdAutomationEffectHost {
                 intent,
                 wire_payload,
                 &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                FinalUseEffectAuthorization {
+                    signed_grant,
+                    expected_binding: &binding,
+                    command_id,
+                    now_ms,
+                },
             )
             .await
             .map_err(|error| {

@@ -837,8 +837,10 @@ fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_deli
         &serialization,
         &profile(),
         id("delivery:1"),
-        &provider,
-        &delivery_verifier(),
+        ContextProviderDeliveryInputV2 {
+            receipt: &provider,
+            verifier: &delivery_verifier(),
+        },
         25,
     )
     .unwrap_or_else(|error| panic!("valid delivery evidence: {error}"));
@@ -930,8 +932,10 @@ fn provider_owned_attempt_witness_is_authenticated_by_delivery_verifier() {
         &serialization,
         &profile(),
         id("delivery:1"),
-        &provider,
-        &verifier,
+        ContextProviderDeliveryInputV2 {
+            receipt: &provider,
+            verifier: &verifier,
+        },
         25,
     )
     .unwrap_or_else(|error| panic!("provider-owned witness should verify: {error}"));
@@ -997,8 +1001,10 @@ fn provider_payload_binding_must_match_exact_serialized_payload() {
             &serialization,
             &profile(),
             id("delivery:1"),
-            &provider,
-            &delivery_verifier(),
+            ContextProviderDeliveryInputV2 {
+                receipt: &provider,
+                verifier: &delivery_verifier(),
+            },
             25,
         ),
         Err(ContextCompilerV2Error::DeliveryMismatch)
@@ -1060,8 +1066,10 @@ fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
             &serialization,
             &profile(),
             id("delivery:1"),
-            &provider,
-            &delivery_verifier(),
+            ContextProviderDeliveryInputV2 {
+                receipt: &provider,
+                verifier: &delivery_verifier(),
+            },
             25,
         ),
         Err(ContextCompilerV2Error::ProviderEvidenceInvalid(
@@ -1125,8 +1133,10 @@ fn provider_and_model_identity_must_match_exact_model_profile() {
             &serialization,
             &profile(),
             id("delivery:1"),
-            &provider,
-            &delivery_verifier(),
+            ContextProviderDeliveryInputV2 {
+                receipt: &provider,
+                verifier: &delivery_verifier(),
+            },
             25,
         ),
         Err(ContextCompilerV2Error::ProviderModelProfileMismatch)
@@ -1193,8 +1203,10 @@ fn independent_provider_evidence_verifier_is_required() {
             &serialization,
             &profile(),
             id("delivery:1"),
-            &provider,
-            &rejecting,
+            ContextProviderDeliveryInputV2 {
+                receipt: &provider,
+                verifier: &rejecting,
+            },
             25,
         ),
         Err(ContextCompilerV2Error::ProviderEvidenceInvalid(_))
@@ -1350,8 +1362,10 @@ fn indeterminate_provider_terminal_remains_indeterminate() {
         &serialization,
         &profile(),
         id("delivery:1"),
-        &provider,
-        &delivery_verifier(),
+        ContextProviderDeliveryInputV2 {
+            receipt: &provider,
+            verifier: &delivery_verifier(),
+        },
         25,
     )
     .unwrap_or_else(|error| panic!("valid indeterminate evidence: {error}"));

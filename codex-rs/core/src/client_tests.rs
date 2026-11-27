@@ -877,8 +877,10 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
         attempt,
         test_model_provider(),
         /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseObservationOptions {
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     let observed = stream
@@ -930,8 +932,10 @@ async fn response_stream_records_last_model_feedback_ids() {
         InferenceTraceAttempt::disabled(),
         test_model_provider(),
         /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseObservationOptions {
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     while stream.next().await.is_some() {}
@@ -1066,8 +1070,10 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         attempt,
         provider,
         /*provider_attempt*/ None,
-        /*redact_provider_errors*/ true,
-        /*encoded_request_observer*/ None,
+        super::ResponseObservationOptions {
+            redact_provider_errors: true,
+            encoded_request_observer: None,
+        },
     );
     let error = stream
         .next()
@@ -1250,8 +1256,10 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
         attempt,
         test_model_provider(),
         /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseObservationOptions {
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     // Fill the mapper channel with non-terminal events, then yield one output

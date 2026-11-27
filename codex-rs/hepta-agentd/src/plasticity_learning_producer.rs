@@ -7,11 +7,16 @@
 //! Generator/Observer/Evaluator evidence and withholds success until the
 //! rollback-domain anchor commit succeeds.
 
+#[cfg(test)]
 use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
+#[cfg(test)]
 use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
+#[cfg(test)]
 use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
+#[cfg(test)]
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
 
+#[cfg(test)]
 use crate::PlasticityRuntimeCallErrorV1;
 use crate::PlasticityRuntimeHandleV1;
 
@@ -21,27 +26,30 @@ use crate::PlasticityRuntimeHandleV1;
 /// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
-    handle: PlasticityRuntimeHandleV1,
+    // Keep ownership when attached, even without a qualification caller.
+    _handle: PlasticityRuntimeHandleV1,
 }
 
 impl AgentdLearningPlasticityProducerV1 {
     pub(crate) fn new(handle: PlasticityRuntimeHandleV1) -> Self {
-        Self { handle }
+        Self { _handle: handle }
     }
 
+    #[cfg(test)]
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        self.handle.propose_parameter(request, now).await
+        self._handle.propose_parameter(request, now).await
     }
 
+    #[cfg(test)]
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        self.handle.propose_topology(request, now).await
+        self._handle.propose_topology(request, now).await
     }
 }

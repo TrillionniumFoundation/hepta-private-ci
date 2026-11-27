@@ -533,7 +533,11 @@ mod tests {
     }
 
     fn record(role: &str, text: &str, cwd: &Path) -> JsonValue {
-        let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+        let timestamp = time::OffsetDateTime::now_utc()
+            .replace_nanosecond(/*nanosecond*/ 0)
+            .expect("zero nanoseconds is valid")
+            .format(&time::format_description::well_known::Rfc3339)
+            .expect("current fixture time is representable as RFC 3339");
         serde_json::json!({
             "type": role,
             "cwd": cwd,

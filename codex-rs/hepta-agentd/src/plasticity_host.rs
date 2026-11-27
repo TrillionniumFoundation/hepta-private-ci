@@ -698,15 +698,20 @@ pub fn resolve_agentd_plasticity_admission_v1(
     })
 }
 
+/// Current owner stores and evidence policy used for final plasticity admission.
+pub struct AgentdPlasticityOwnerContextV1<'a> {
+    pub artifacts: &'a ArtifactRegistry,
+    pub ledger: &'a DurableLedger,
+    pub evidence_resolver: &'a dyn PlasticityOwnerEvidenceResolverV1,
+    pub evidence_policy: &'a PlasticityOwnerEvidencePolicyV1,
+}
+
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
-    artifacts: &ArtifactRegistry,
-    ledger: &DurableLedger,
-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
+    owner: AgentdPlasticityOwnerContextV1<'_>,
     verifier: &LearningEvidenceVerifierV1,
     writer: &mut AnchoredPlasticityWriterV1,
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
@@ -726,10 +731,10 @@ pub fn propose_agentd_plasticity_v1(
             modulator_broadcast_digest: request.admission.modulator_broadcast_digest,
             eligibility_digest: request.admission.eligibility_digest,
         },
-        artifacts,
-        ledger,
-        owner_evidence_resolver,
-        owner_evidence_policy,
+        owner.artifacts,
+        owner.ledger,
+        owner.evidence_resolver,
+        owner.evidence_policy,
         now,
     )?;
     if resolved != request.admission {

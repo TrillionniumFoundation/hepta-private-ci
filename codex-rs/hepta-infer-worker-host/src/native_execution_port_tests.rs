@@ -126,7 +126,7 @@ fn dispatched_reopened_or_partially_settled_state_must_not_create_a_port() {
         Err(NativePortBindingErrorV1::NotFreshlyReserved)
     );
 
-    let mut changed = base.clone();
+    let mut changed = base;
     changed.pre_dispatch_stop = Some("stopped".to_string());
     assert_eq!(
         bind(&changed),

@@ -84,7 +84,7 @@ jobs:
       - name: Install pinned Rust with rustfmt and Clippy
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
           components: rustfmt, clippy
 
       - name: Install pinned just and nextest
