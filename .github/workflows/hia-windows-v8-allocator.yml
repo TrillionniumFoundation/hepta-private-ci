@@ -1,0 +1,73 @@
+name: HIA Windows original V8 targets
+
+on:
+  push:
+    branches:
+      - codex/hia-windows-v8-allocator-init-20261127-2ac5
+    paths:
+      - codex-rs/code-mode-runtime/**
+      - codex-rs/v8-poc/**
+      - .github/workflows/hia-windows-v8-allocator.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-v8-allocator:
+    name: Three complete original Windows V8 targets
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run every original V8, runtime and host unit test
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --nocache_test_results \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/v8-poc:v8-poc-unit-tests \
+            //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests \
+            //codex-rs/code-mode-host:code-mode-host-unit-tests 2>&1 | tee "$RUNNER_TEMP/windows-v8-allocator.log"
+          if grep -Eq 'FLAKY|test result: FAILED|Attempt #([2-9][0-9]*|1[0-9]+)' "$RUNNER_TEMP/windows-v8-allocator.log"; then
+            echo "::error::Original target had a failed or retried attempt."
+            exit 1
+          fi
+          for target in v8-poc code-mode-runtime code-mode-host; do
+            grep -Eq "^//codex-rs/${target}:${target}-unit-tests[[:space:]]+PASSED in " "$RUNNER_TEMP/windows-v8-allocator.log"
+          done
+          echo "Three original Windows V8 targets: PASS, retries=0, flaky=0; full matrix remains independent."
+      - name: Preserve original execution evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-original-v8-allocator-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/bazel-execution-logs
+            ${{ runner.temp }}/windows-v8-allocator.log
+          if-no-files-found: error
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

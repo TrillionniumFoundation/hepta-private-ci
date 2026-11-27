@@ -1,0 +1,31 @@
+{
+  "schema": "hia.windows-v8-shared-allocator.source-evidence.v1",
+  "failure": {
+    "run": 46025167575,
+    "job": 140594591682,
+    "bytes": 416321,
+    "sha256": "fb80b8cc43200803d926aeb1f5764c95722e459dbd8098d66b05bad74a58cb7e",
+    "result": "FAIL"
+  },
+  "upstream": {
+    "v8": "15.0.245.2",
+    "rusty_v8": "v150.4.0",
+    "urls": [
+      "https://github.com/v8/v8/blob/15.0.245.2/src/init/isolate-group.cc",
+      "https://github.com/v8/v8/blob/15.0.245.2/src/api/api.cc",
+      "https://github.com/denoland/rusty_v8/blob/v150.4.0/src/isolate_create_params.rs"
+    ],
+    "sources": {
+      "isolate_group_source": {
+        "bytes": 25795,
+        "sha256": "c266acf65dedeaaca42d127f2304f17566c2b02f299315bcb8a531a7dd9d042e"
+      },
+      "rusty_create_params_source": {
+        "bytes": 16976,
+        "sha256": "1dac78dee81685d13e065a2e750685403c7c2dcf3271e0c250ded4f5804d8dd1"
+      }
+    }
+  },
+  "windows_candidate_result": "PENDING",
+  "complete_platform_matrix": "OPEN"
+}
