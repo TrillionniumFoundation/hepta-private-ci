@@ -33,6 +33,17 @@ def write(data,budget,dest):
         b=transport[i:i+360000];name=f'part{i//360000:03d}.bin';(dest/name).write_bytes(b);chunks.append(dict(file=name,size=len(b),sha256=digest(b)))
     manifest=dict(delivery_encoding='xz',zip_sha256=digest(raw),delivery_sha256=digest(transport),delivery_bytes=len(transport),zip_bytes=len(raw),chunks=chunks,files={n:digest(v) for n,v in files.items()});(dest/'manifest.json').write_text(json.dumps(manifest,indent=1))
     (dest/'outcome.json').write_text(json.dumps(outcomes,indent=1));(dest/'seal.json').write_text(json.dumps(seals,indent=1))
+    title=f"# 前向构造后物理 BP 的 {budget//60} 分钟曲线"
+    lines=[title,"",f"三个父种子先按开发集封存了当期状态，再冷测 964 幅遥感图片与对应原作者说明。初始网络是原短期开发选中的宽度 12、岭参数 0.1 的字面双价格编码器。每种子最多 {budget} 累计活跃墙钟秒，种子在同一核上轮转，等待其他种子的时间单列。","",
+           "| 种子 | 入选学习率 | 单率更新数 | 实例 R@1 | 实例 R@5 |","|---:|---:|---:|---:|---:|"]
+    for s in ("109","271","463"):
+        row=seals[s];metrics=outcomes['scores'][s]
+        lines.append(f"| {s} | {row['rate']} | {row['step']} | {100*metrics['strict_R1']:.4f}% | {100*metrics['strict_R5']:.4f}% |")
+    mean=np.mean([x["strict_R1"] for x in outcomes["scores"].values()])*100
+    ci=np.array(outcomes['paired95_vs_frozen'])*100
+    lines+=["",f"三种子均值 R@1 为 {mean:.4f}%。相对同一冻结解析初值的配对差为 {100*delta:+.4f} 个百分点，条件于这份图库的 95% 配对区间为 [{ci[0]:+.4f}, {ci[1]:+.4f}]。各做法共用先前已经检验的图库。本时点的发布覆盖物理网络和其冻结父模型。常规深度对照须等三个种子的相应预算都达到后再独立比较。","",
+            f"归档含 {len(files)} 个文件。逐个从所有在预算内实际完成的开发候选重选，所有入选权重 SHA 和逐例严格检索指标均匹配。按 manifest.json 顺序连接 {len(chunks)} 段、解开 XZ 及 ZIP，可得到全部当期选择、三份完整权重、每个项目的双向排名与资源回执。"]
+    (dest/'README.md').write_text("\n".join(lines)+"\n")
     print(budget,delta,len(chunks),len(transport))
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('data',type=Path);p.add_argument('budget',type=int);p.add_argument('dest',type=Path);args=p.parse_args();write(args.data,args.budget,args.dest)
