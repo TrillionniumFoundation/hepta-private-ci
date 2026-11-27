@@ -1,0 +1,77 @@
+{
+  "torch": "2.13.0+rocm10.0.0",
+  "hip": "7.15.26333",
+  "device": "ai395 CPU",
+  "real_training_code_uses_native_api": true,
+  "method": "matching contiguous packed QKV forward, causal SDPA, scalar square loss and backward; isolated microbenchmark; no full model throughput inference",
+  "observations": [
+    {
+      "device": "cpu",
+      "dtype": "torch.float32",
+      "batch": 16,
+      "tokens": 6,
+      "heads": 4,
+      "head_dimension": 5,
+      "q_stride": [
+        360,
+        5,
+        60,
+        1
+      ],
+      "k_stride": [
+        360,
+        5,
+        60,
+        1
+      ],
+      "v_stride": [
+        360,
+        5,
+        60,
+        1
+      ],
+      "op_trace": {
+        "aten::scaled_dot_product_attention": 1,
+        "aten::_scaled_dot_product_flash_attention_for_cpu": 1,
+        "autograd::engine::evaluate_function: ScaledDotProductFlashAttentionForCpuBackward0": 1,
+        "ScaledDotProductFlashAttentionForCpuBackward0": 1,
+        "aten::_scaled_dot_product_flash_attention_for_cpu_backward": 1
+      },
+      "median_default_forward_loss_backward_seconds": 0.0003624518867582083,
+      "samples_seconds": [
+        0.00038110604509711266,
+        0.0003952663391828537,
+        0.00037711719051003456,
+        0.0003448869101703167,
+        0.00040341587737202644,
+        0.0003677569329738617,
+        0.00034419773146510124,
+        0.00035714684054255486,
+        0.0003420878201723099,
+        0.00033804820850491524
+      ],
+      "forced_alternatives": {
+        "MATH": {
+          "available": true,
+          "single_unwarmed_seconds": 0.002252790145576,
+          "max_abs_from_default": 1.7881393432617188e-07,
+          "warnings": []
+        },
+        "FLASH_ATTENTION": {
+          "available": true,
+          "single_unwarmed_seconds": 0.0004816632717847824,
+          "max_abs_from_default": 0.0,
+          "warnings": []
+        },
+        "EFFICIENT_ATTENTION": {
+          "available": false,
+          "error": "No viable backend for scaled_dot_product_attention was found. This is likely due to turning off both the math kernel and the fused kernels."
+        },
+        "CUDNN_ATTENTION": {
+          "available": false,
+          "error": "No viable backend for scaled_dot_product_attention was found. This is likely due to turning off both the math kernel and the fused kernels."
+        }
+      }
+    }
+  ]
+}
