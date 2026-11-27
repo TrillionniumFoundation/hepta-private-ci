@@ -335,6 +335,53 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
 
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind =
+        Some(crate::responses_metadata::CodexResponsesRequestKind::Prewarm);
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm identity")
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection()).unwrap(),
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection()).unwrap(),
+        "connection reuse must not weaken request-specific recovery identity"
+    );
+
+    let mut changed_lineage = metadata_a.clone();
+    changed_lineage.parent_turn_id = Some("parent-next".to_string());
+    changed_lineage.root_turn_id = Some("root-next".to_string());
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed_lineage)
+            .expect("per-request lineage identity")
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection()).unwrap(),
+        serde_json::to_value(changed_lineage.turn_recovery_compatibility_projection()).unwrap(),
+    );
+    for field in ["parent_thread", "forked_thread", "agent", "subagent"] {
+        let mut changed = metadata_a.clone();
+        match field {
+            "parent_thread" => changed.parent_thread_id = Some(ThreadId::new()),
+            "forked_thread" => changed.forked_from_thread_id = Some(ThreadId::new()),
+            "agent" => changed.agent_name = Some("/other".to_string()),
+            "subagent" => changed.subagent_kind = Some("thread_spawn".to_string()),
+            _ => unreachable!(),
+        }
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed)
+                .expect("changed thread or agent identity"),
+            "{field} remains bound to the connection",
+        );
+    }
+
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
     volatile_metadata.window_id = "window-after-restart".to_string();
@@ -364,6 +411,40 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         identity_a,
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
             .expect("changed beta identity")
+    );
+
+    let mut changed_query = provider.clone();
+    changed_query.query_params = Some(HashMap::from([(
+        "api-version".to_string(),
+        "different-version".to_string(),
+    )]));
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&changed_query, Some("feature-a"), &metadata_a)
+            .expect("changed query identity")
+    );
+    let mut changed_headers = provider.clone();
+    changed_headers.headers.insert(
+        "x-provider-scope",
+        http::HeaderValue::from_static("different"),
+    );
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &changed_headers,
+            Some("feature-a"),
+            &metadata_a
+        )
+        .expect("changed provider header identity")
+    );
+    let mut changed_extra = metadata_a.clone();
+    changed_extra
+        .extra
+        .insert("codex_security_surface".to_string(), "sdk".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed_extra)
+            .expect("changed extra identity")
     );
 
     let mut changed_provider = provider;
@@ -1447,4 +1528,134 @@ async fn non_chatgpt_codex_endpoints_omit_attestation_generation() {
         None,
     );
     assert_eq!(attestation_calls.load(Ordering::Relaxed), 0);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn websocket_connection_reuses_attribution_but_rebinds_configured_extra() {
+    core_test_support::skip_if_no_network!();
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
+        .await
+        .expect("bind websocket server");
+    let base_url = format!("http://{}/v1", listener.local_addr().unwrap());
+    let handshakes = Arc::new(AtomicUsize::new(0));
+    let server_handshakes = handshakes.clone();
+    let server = tokio::spawn(async move {
+        let mut connections = tokio::task::JoinSet::new();
+        loop {
+            let (tcp, _) = listener
+                .accept()
+                .await
+                .expect("accept websocket connection");
+            let handshakes = server_handshakes.clone();
+            connections.spawn(async move {
+                let mut socket = tokio_tungstenite::accept_hdr_async(
+                    tcp,
+                    move |_request: &tokio_tungstenite::tungstenite::handshake::server::Request,
+                          response: tokio_tungstenite::tungstenite::handshake::server::Response| {
+                        handshakes.fetch_add(1, Ordering::SeqCst);
+                        Ok(response)
+                    },
+                )
+                .await
+                .expect("websocket handshake");
+                while socket.next().await.is_some() {}
+            });
+        }
+    });
+    let mut provider = create_oss_provider_with_base_url(&base_url, WireApi::Responses);
+    provider.supports_websockets = true;
+    provider.websocket_connect_timeout_ms = Some(5_000);
+    let mut client = test_model_client(SessionSource::Exec);
+    Arc::get_mut(&mut client.state)
+        .expect("client state is unique before creating a session")
+        .provider = create_model_provider(provider, /*auth_manager*/ None);
+    let session_telemetry = test_session_telemetry();
+    let mut session = client.new_session();
+    let mut metadata = test_responses_metadata_for_client(
+        &client,
+        Some("turn-a"),
+        "window-a".to_string(),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    let configured = BTreeMap::from([
+        ("codex_security_surface".to_string(), "sdk".to_string()),
+        (
+            "future_product_boundary".to_string(),
+            "account-a".to_string(),
+        ),
+    ]);
+    metadata.extra = configured.clone();
+    metadata
+        .extra
+        .insert("fiber_run_id".to_string(), "first".to_string());
+    metadata.websocket_connection_extra = Some(configured);
+
+    for (change, expected_handshakes) in [
+        ("initial", 1),
+        ("caller-attribution", 1),
+        ("configured-key", 2),
+        ("unknown-provenance", 3),
+        ("unclassified-key", 4),
+    ] {
+        match change {
+            "caller-attribution" => {
+                metadata
+                    .extra
+                    .insert("fiber_run_id".to_string(), "second".to_string());
+            }
+            "configured-key" => {
+                metadata.extra.insert(
+                    "future_product_boundary".to_string(),
+                    "account-b".to_string(),
+                );
+                metadata
+                    .websocket_connection_extra
+                    .as_mut()
+                    .unwrap()
+                    .insert(
+                        "future_product_boundary".to_string(),
+                        "account-b".to_string(),
+                    );
+            }
+            "unknown-provenance" => metadata.websocket_connection_extra = None,
+            "unclassified-key" => {
+                metadata
+                    .extra
+                    .insert("fiber_run_id".to_string(), "third".to_string());
+            }
+            _ => {}
+        }
+        let setup = client.current_client_setup().await.expect("client setup");
+        let auth_context = AuthRequestTelemetryContext::new(
+            setup.auth.as_ref().map(CodexAuth::auth_mode),
+            setup.api_auth.as_ref(),
+            setup.agent_identity_telemetry,
+            PendingUnauthorizedRetry::default(),
+        );
+        session
+            .websocket_connection(super::WebsocketConnectParams {
+                session_telemetry: &session_telemetry,
+                api_provider: setup.api_provider,
+                api_auth: setup.api_auth,
+                responses_metadata: &metadata,
+                auth_context,
+                request_route_telemetry: super::RequestRouteTelemetry::for_endpoint(
+                    super::RESPONSES_ENDPOINT,
+                ),
+            })
+            .await
+            .expect("websocket connection");
+        assert_eq!(
+            handshakes.load(Ordering::SeqCst),
+            expected_handshakes,
+            "{change}"
+        );
+        assert_eq!(
+            session.websocket_session.connection_reused(),
+            change == "caller-attribution"
+        );
+    }
+    server.abort();
+    assert!(server.await.unwrap_err().is_cancelled());
 }
