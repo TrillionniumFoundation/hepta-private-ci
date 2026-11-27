@@ -115,6 +115,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261127/hcsn-historical-source-pins/raw-evidence-storage.json": (
+        "91b0fa2237b9db16b90539be072c553479e5d81352f3b12889b54f5576412099"
+    ),
     "qa/repository-consolidation/20261126/fp64-rounding-predecessors/raw-evidence-storage.json": (
         "48513353a2cafa38c5e899bc0613936deb0680c8923fff2413dc397c5a8b6c28"
     ),
@@ -245,6 +248,15 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/p2/hcsn-effective32-derived-summary.json": (
+        "305c456f257b86b3a07337496cbee438bd317f89766577fa77e0f72e651416d0"
+    ),
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/publication/hosted-science-42827955616-metadata.json": (
+        "a8ada5c5549eb56408abba0ede9ff2c619694e5aad2bcd6764b5ab2679e041ed"
+    ),
+    "qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/drivers/validate_resource_rebuild_final_v2.py": (
+        "f2d3e8fde4d995d9f855b1d4608bd51dabde2087f68610c95303c17ff0897332"
+    ),
     "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": (
         "742841e716fd2f80d0d7942ddea90c00d8f9c60797d6a2d9508e1527e18d8569"
     ),

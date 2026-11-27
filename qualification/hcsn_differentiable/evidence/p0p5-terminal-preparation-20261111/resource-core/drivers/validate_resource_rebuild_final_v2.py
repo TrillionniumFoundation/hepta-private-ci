@@ -64,4 +64,3 @@ print(json.dumps({'returncode':child.returncode,'source_unchanged':before==after
     'whole_test_child_wall_seconds':complete_wall,'wait4_test_child_CPU_seconds':receipt['wait4_test_child_CPU_seconds'],
     'receipt':identity(target/'RESULT.json'),'archive':identity(archive)}))
 raise SystemExit(child.returncode)
-
