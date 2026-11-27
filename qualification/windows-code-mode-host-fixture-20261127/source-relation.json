@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.windows-code-mode-test-preparation.v1",
+  "parent": "ee553dd6b989fb34f83d75018f21cd2e218b86f6",
+  "path": "codex-rs/core/tests/suite/code_mode.rs",
+  "method": "disabled_process_host_with_fallback_disabled_attempts_the_host",
+  "original": {
+    "bytes": 212474,
+    "sha256": "87d721ec02d2ee1633d2c7ee8328e9b5d511d2bc286719103fd2176fd239a634"
+  },
+  "current": {
+    "bytes": 212649,
+    "sha256": "ca0127f4e3e891c18726f6d72b9eb66a6aafacbf587903505f9b5cb38fb9e1df"
+  },
+  "insert_after": "        .with_model(\"test-gpt-5.1-codex\")\n",
+  "insert": "        // Keep the original spawn-failure oracle independent of bundled host availability.\n        .with_code_mode_host_program(\"codex-code-mode-host-does-not-exist\".into())\n",
+  "inverse_requires_unique_fixed_method_scope": true,
+  "whole_file_inverse_verified": true,
+  "original_assertions_changed": false,
+  "original_budgets_changed": false,
+  "production_host_selection_changed": false,
+  "windows_gate": "PENDING"
+}
