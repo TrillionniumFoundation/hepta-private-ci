@@ -108,7 +108,10 @@ class StarlarkSelectionTests(unittest.TestCase):
         for relative, before in initial.items():
             self.assertNotEqual((self.root / relative).read_bytes(), before, relative)
         self.assertEqual(
-            {relative: (self.root / relative).read_bytes() for relative in self.metadata},
+            {
+                relative: (self.root / relative).read_bytes()
+                for relative in self.metadata
+            },
             self.metadata,
         )
         self.assertEqual(
