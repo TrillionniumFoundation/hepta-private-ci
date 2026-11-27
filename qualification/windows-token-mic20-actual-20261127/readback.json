@@ -1,0 +1,40 @@
+{
+  "artifact": {
+    "id": 15225914392,
+    "sha256": "5fa042bb05f9b13931c2ee87efd8863c620d9734fb5602111ed714516ecb474f",
+    "size": 2129305
+  },
+  "diagnostic_observation_count": 20,
+  "finding": "Low integrity rejects write-up deletion on normal Medium objects while retaining outside reads; other Low workspace parents still allow deletion unless FILE_DELETE_CHILD is explicitly denied. This mechanism evidence does not qualify arbitrary external Low directories, inherited or protected subdirectories, reparse traversal, or production installation.",
+  "job": 140692592777,
+  "members": [
+    {
+      "bytes": 2116548,
+      "crc32": 4123042724,
+      "name": "bazel-execution-logs/execution-log-test-original-restricted-token-166.zst",
+      "sha256": "ecb9159b308905a4c65fa877303127577de31c0b7d5d2153d105f0247e64e313"
+    },
+    {
+      "bytes": 125322,
+      "crc32": 2102699171,
+      "name": "windows-token-delete.log",
+      "sha256": "cdeb4e4b7d8ea137635aea9b418b1c22c3e222ae6f17b760a3c48349e76b0ef1"
+    }
+  ],
+  "production_permission_gate_passed": false,
+  "raw_log": {
+    "bytes": 321880,
+    "sha256": "f2000a63d05e97774dfbcbede884952547d0bbd8efe7a94fe0db67649c25c358"
+  },
+  "run": 46054195807,
+  "run_result": "failure",
+  "schema": "hia.windows-token-mic20-actual-evidence.v1",
+  "test_result": {
+    "failed": 2,
+    "filtered_out": 0,
+    "original_ignored": 2,
+    "passed": 149,
+    "test_seconds": 2.84
+  },
+  "tested_source": "dcdcf94d51ea47ae906298206874a38724a7aff4"
+}
