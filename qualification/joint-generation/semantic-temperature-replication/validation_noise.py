@@ -34,4 +34,3 @@ def validation_noise(noise_seed, variants=6):
             hashes.append(hashlib.sha256(full[-1].astype("<f8").tobytes()).hexdigest())
     return {"low": np.asarray(low), "full": np.asarray(full),
             "labels": np.asarray(targets), "groups": group_ids, "input_hashes": hashes}
-

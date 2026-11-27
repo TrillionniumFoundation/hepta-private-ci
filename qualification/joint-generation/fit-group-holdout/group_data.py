@@ -45,4 +45,3 @@ def group_dataset(fold,role,noise_slot=0,variants=6):
             hashes.append(hashlib.sha256(full[-1].astype("<f8").tobytes()).hexdigest())
     return {"low": np.asarray(low), "full": np.asarray(full),
             "labels": np.asarray(targets), "groups": group_ids, "input_hashes": hashes}
-
