@@ -306,6 +306,171 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
 fn record_native_write_restricted_delete_routes() -> Result<()> {
     use std::os::windows::fs::OpenOptionsExt;
 
+    #[derive(Clone, Copy)]
+    enum Grant {
+        None,
+        Own,
+        Other,
+    }
+
+    unsafe fn token_integrity_sid(token: HANDLE) -> Result<String> {
+        use windows_sys::Win32::Security::TOKEN_MANDATORY_LABEL;
+        use windows_sys::Win32::Security::TokenIntegrityLevel;
+        let mut needed = 0;
+        GetTokenInformation(
+            token,
+            TokenIntegrityLevel,
+            std::ptr::null_mut(),
+            0,
+            &mut needed,
+        );
+        anyhow::ensure!(needed as usize >= std::mem::size_of::<TOKEN_MANDATORY_LABEL>());
+        let mut buffer = vec![0u8; needed as usize];
+        let ok = GetTokenInformation(
+            token,
+            TokenIntegrityLevel,
+            buffer.as_mut_ptr().cast(),
+            needed,
+            &mut needed,
+        );
+        anyhow::ensure!(
+            ok != 0,
+            "query diagnostic token integrity: {}",
+            GetLastError()
+        );
+        let label = std::ptr::read_unaligned(buffer.as_ptr().cast::<TOKEN_MANDATORY_LABEL>());
+        let mut text: *mut u16 = std::ptr::null_mut();
+        let ok = windows_sys::Win32::Security::Authorization::ConvertSidToStringSidW(
+            label.Label.Sid,
+            &mut text,
+        );
+        anyhow::ensure!(
+            ok != 0,
+            "format diagnostic integrity SID: {}",
+            GetLastError()
+        );
+        let mut length = 0;
+        while *text.add(length) != 0 {
+            length += 1;
+        }
+        let result = String::from_utf16_lossy(std::slice::from_raw_parts(text, length));
+        LocalFree(text as HLOCAL);
+        Ok(result)
+    }
+
+    unsafe fn low_label(path: &std::path::Path) -> Result<()> {
+        use windows_sys::Win32::Security::LABEL_SECURITY_INFORMATION;
+        let mut descriptor = std::ptr::null_mut();
+        let ok = windows_sys::Win32::Security::Authorization::ConvertStringSecurityDescriptorToSecurityDescriptorW(
+            to_wide("S:(ML;OICI;NW;;;LW)").as_ptr(), 1, &mut descriptor, std::ptr::null_mut(),
+        );
+        anyhow::ensure!(
+            ok != 0,
+            "parse diagnostic mandatory label: {}",
+            GetLastError()
+        );
+        let result = (|| -> Result<()> {
+            let mut present = 0;
+            let mut defaulted = 0;
+            let mut sacl = std::ptr::null_mut();
+            let ok = windows_sys::Win32::Security::GetSecurityDescriptorSacl(
+                descriptor,
+                &mut present,
+                &mut sacl,
+                &mut defaulted,
+            );
+            anyhow::ensure!(ok != 0 && present != 0 && !sacl.is_null());
+            let code = SetNamedSecurityInfoW(
+                to_wide(path).as_ptr() as *mut u16,
+                SE_FILE_OBJECT,
+                LABEL_SECURITY_INFORMATION,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                sacl,
+            );
+            anyhow::ensure!(code == ERROR_SUCCESS, "set diagnostic Low label: {code}");
+            Ok(())
+        })();
+        LocalFree(descriptor as HLOCAL);
+        result
+    }
+
+    unsafe fn actual_label(path: &std::path::Path) -> Result<String> {
+        use windows_sys::Win32::Security::LABEL_SECURITY_INFORMATION;
+        let mut descriptor = std::ptr::null_mut();
+        let code = windows_sys::Win32::Security::Authorization::GetNamedSecurityInfoW(
+            to_wide(path).as_ptr(),
+            SE_FILE_OBJECT,
+            LABEL_SECURITY_INFORMATION,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            &mut descriptor,
+        );
+        anyhow::ensure!(
+            code == ERROR_SUCCESS,
+            "read diagnostic mandatory label: {code}"
+        );
+        let mut text: *mut u16 = std::ptr::null_mut();
+        let ok = windows_sys::Win32::Security::Authorization::ConvertSecurityDescriptorToStringSecurityDescriptorW(
+            descriptor, 1, LABEL_SECURITY_INFORMATION, &mut text, std::ptr::null_mut(),
+        );
+        let error = GetLastError();
+        LocalFree(descriptor as HLOCAL);
+        anyhow::ensure!(ok != 0, "format actual mandatory label: {error}");
+        let mut length = 0;
+        while *text.add(length) != 0 {
+            length += 1;
+        }
+        let result = String::from_utf16_lossy(std::slice::from_raw_parts(text, length));
+        LocalFree(text as HLOCAL);
+        Ok(result)
+    }
+
+    unsafe fn deny_parent_delete(path: &std::path::Path, everyone: *mut c_void) -> Result<()> {
+        let (old_acl, descriptor) = fetch_dacl_handle(path)?;
+        let entry = EXPLICIT_ACCESS_W {
+            grfAccessPermissions: windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD,
+            grfAccessMode: DENY_ACCESS,
+            grfInheritance: CONTAINER_INHERIT_ACE,
+            Trustee: TRUSTEE_W {
+                pMultipleTrustee: std::ptr::null_mut(),
+                MultipleTrusteeOperation: 0,
+                TrusteeForm: TRUSTEE_IS_SID,
+                TrusteeType: TRUSTEE_IS_UNKNOWN,
+                ptstrName: everyone.cast(),
+            },
+        };
+        let mut acl = std::ptr::null_mut();
+        let code = SetEntriesInAclW(1, &entry, old_acl, &mut acl);
+        let applied = if code == ERROR_SUCCESS {
+            SetNamedSecurityInfoW(
+                to_wide(path).as_ptr() as *mut u16,
+                SE_FILE_OBJECT,
+                DACL_SECURITY_INFORMATION,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                acl,
+                std::ptr::null_mut(),
+            )
+        } else {
+            code
+        };
+        if !acl.is_null() {
+            LocalFree(acl as HLOCAL);
+        }
+        if !descriptor.is_null() {
+            LocalFree(descriptor as HLOCAL);
+        }
+        anyhow::ensure!(
+            applied == ERROR_SUCCESS,
+            "set diagnostic parent delete deny: {applied}"
+        );
+        Ok(())
+    }
+
     fn result<T>(value: std::io::Result<T>) -> serde_json::Value {
         match value {
             Ok(_) => serde_json::json!({"allowed": true, "error": null}),
@@ -361,6 +526,7 @@ fn record_native_write_restricted_delete_routes() -> Result<()> {
     let fixture = tempfile::tempdir()?;
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     let capability = LocalSid::from_string("S-1-5-21-151-252-353-454")?;
+    let other_capability = LocalSid::from_string("S-1-5-21-161-262-363-464")?;
     let everyone = LocalSid::from_string("S-1-1-0")?;
     let write_restricted = OwnedToken(unsafe {
         create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?
@@ -389,7 +555,33 @@ fn record_native_write_restricted_delete_routes() -> Result<()> {
         );
         token
     });
-    for token in [write_restricted.0, full_restricted.0] {
+    let low_restricted = OwnedToken(unsafe {
+        let token = create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?;
+        let low = LocalSid::from_string("S-1-16-4096")?;
+        let label = windows_sys::Win32::Security::TOKEN_MANDATORY_LABEL {
+            Label: SID_AND_ATTRIBUTES {
+                Sid: low.as_ptr(),
+                Attributes: windows_sys::Win32::Security::SE_GROUP_INTEGRITY,
+            },
+        };
+        let ok = SetTokenInformation(
+            token,
+            windows_sys::Win32::Security::TokenIntegrityLevel,
+            (&label as *const windows_sys::Win32::Security::TOKEN_MANDATORY_LABEL).cast(),
+            std::mem::size_of_val(&label) as u32 + GetLengthSid(low.as_ptr()),
+        );
+        if ok == 0 {
+            let error = GetLastError();
+            CloseHandle(token);
+            return Err(anyhow!("lower diagnostic token integrity: {error}"));
+        }
+        token
+    });
+    assert_eq!(
+        unsafe { token_integrity_sid(low_restricted.0)? },
+        "S-1-16-4096"
+    );
+    for token in [write_restricted.0, full_restricted.0, low_restricted.0] {
         assert!(unsafe { token_has_restricting_sid(token, capability.as_ptr())? });
         assert!(!unsafe { token_has_restricting_sid(token, everyone.as_ptr())? });
     }
@@ -400,18 +592,34 @@ fn record_native_write_restricted_delete_routes() -> Result<()> {
         read_mask | windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE | DELETE;
     let delete_child = windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
     let mut observations = Vec::new();
-    for (mode, token) in [
-        ("actual-production-write-restricted", write_restricted.0),
+    for (mode, token, lowered, protect_low_roots) in [
+        (
+            "actual-production-write-restricted",
+            write_restricted.0,
+            false,
+            false,
+        ),
         (
             "independent-control-all-access-restricted",
             full_restricted.0,
+            false,
+            false,
+        ),
+        ("independent-low-integrity", low_restricted.0, true, false),
+        (
+            "independent-low-integrity-parent-deny",
+            low_restricted.0,
+            true,
+            true,
         ),
     ] {
-        for (label, child_delete, parent_delete, cap_grant) in [
-            ("file-delete-only", true, false, false),
-            ("parent-delete-child-only", false, true, false),
-            ("neither-delete-grant", false, false, false),
-            ("explicit-workspace-capability", true, false, true),
+        let actual_token_integrity = unsafe { token_integrity_sid(token)? };
+        for (label, child_delete, parent_delete, grant) in [
+            ("file-delete-only", true, false, Grant::None),
+            ("parent-delete-child-only", false, true, Grant::None),
+            ("neither-delete-grant", false, false, Grant::None),
+            ("explicit-workspace-capability", true, false, Grant::Own),
+            ("other-workspace-capability", true, true, Grant::Other),
         ] {
             let parent = fixture.path().join(format!("{mode}-{label}"));
             std::fs::create_dir(&parent)?;
@@ -419,29 +627,44 @@ fn record_native_write_restricted_delete_routes() -> Result<()> {
             let directory = parent.join("empty-directory");
             std::fs::write(&file, "original")?;
             std::fs::create_dir(&directory)?;
+            let cap_grant = matches!(grant, Grant::Own);
+            let granted_sid = match grant {
+                Grant::None => None,
+                Grant::Own => Some(capability.as_ptr()),
+                Grant::Other => Some(other_capability.as_ptr()),
+            };
+            // This diagnostic changes only its own objects, before replacing
+            // their DACLs. Production grant and token construction stay unchanged.
+            if lowered && granted_sid.is_some() {
+                for path in [&parent, &file, &directory] {
+                    unsafe { low_label(path)? };
+                }
+            }
             let parent_mask = read_mask | if parent_delete { delete_child } else { 0 };
             let child_mask = read_mask | if child_delete { DELETE } else { 0 };
-            let parent_grants = if cap_grant {
-                vec![
-                    (everyone.as_ptr(), FILE_ALL_ACCESS),
-                    (capability.as_ptr(), capability_mask),
-                ]
-            } else {
-                vec![(everyone.as_ptr(), parent_mask)]
+            let parent_grants = match granted_sid {
+                Some(sid) => vec![(everyone.as_ptr(), FILE_ALL_ACCESS), (sid, capability_mask)],
+                None => vec![(everyone.as_ptr(), parent_mask)],
             };
-            let child_grants = if cap_grant {
-                vec![
-                    (everyone.as_ptr(), FILE_ALL_ACCESS),
-                    (capability.as_ptr(), capability_mask),
-                ]
-            } else {
-                vec![(everyone.as_ptr(), child_mask)]
+            let child_grants = match granted_sid {
+                Some(sid) => vec![(everyone.as_ptr(), FILE_ALL_ACCESS), (sid, capability_mask)],
+                None => vec![(everyone.as_ptr(), child_mask)],
             };
             unsafe {
                 replace_dacl(&parent, &parent_grants)?;
                 replace_dacl(&file, &child_grants)?;
                 replace_dacl(&directory, &child_grants)?;
+                if protect_low_roots && granted_sid.is_some() {
+                    deny_parent_delete(&parent, everyone.as_ptr())?;
+                }
             }
+            let labels = unsafe {
+                [
+                    actual_label(&parent)?,
+                    actual_label(&file)?,
+                    actual_label(&directory)?,
+                ]
+            };
             let mut observation = {
                 let _impersonation = unsafe { Impersonation::enter(token)? };
                 let probe = |path: &std::path::Path, mask| {
@@ -461,6 +684,10 @@ fn record_native_write_restricted_delete_routes() -> Result<()> {
                     "parent_everyone_mask": parent_grants[0].1,
                     "child_everyone_mask": child_grants[0].1,
                     "capability_granted": cap_grant,
+                    "other_capability_granted": matches!(grant, Grant::Other),
+                    "actual_token_integrity_sid": actual_token_integrity,
+                    "actual_parent_file_directory_labels": labels,
+                    "parent_delete_child_deny": protect_low_roots && granted_sid.is_some(),
                     "read": result(std::fs::read(&file)),
                     "write": result(std::fs::write(&file, "rewritten")),
                     "file_delete_handle": probe(&file, DELETE),
@@ -485,14 +712,15 @@ fn record_native_write_restricted_delete_routes() -> Result<()> {
                     }
                 }
             }
+            eprintln!("HIA_WINDOWS_DELETE_CASE {observation}");
             observations.push(observation);
         }
     }
-    assert_eq!(observations.len(), 8);
+    assert_eq!(observations.len(), 20);
     eprintln!(
         "HIA_WINDOWS_DELETE_DIAGNOSTIC {}",
         serde_json::json!({
-            "schema": "hia.windows-restricted-token-delete-diagnostic.v1",
+            "schema": "hia.windows-restricted-token-delete-diagnostic.v2",
             "diagnostic_only": true,
             "production_qualification": false,
             "original_refusal_tests_unchanged": true,
