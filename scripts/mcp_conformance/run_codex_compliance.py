@@ -2,6 +2,7 @@
 """Black-box MCP compliance runner for a supplied Codex binary."""
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -25,6 +26,40 @@ if str(_MODULE_DIR) not in sys.path:
     # trusted package directory so direct `python path/to/script.py` usage
     # continues to work alongside the Bazel entry point.
     sys.path.insert(0, str(_MODULE_DIR))
+
+_IDENTITY_PATH = Path(__file__).resolve().with_name("conformance_fixture.py")
+if _IDENTITY_PATH.is_symlink() or not _IDENTITY_PATH.is_file():
+    raise RuntimeError("candidate identity module is not a regular source file")
+with _IDENTITY_PATH.open("rb") as _identity_stream:
+    _IDENTITY_RAW = _identity_stream.read(128 * 1024 + 1)
+if len(_IDENTITY_RAW) > 128 * 1024:
+    raise RuntimeError("candidate identity module exceeds its bound")
+_IDENTITY_SPEC = importlib.util.spec_from_file_location(
+    "conformance_fixture", _IDENTITY_PATH
+)
+if _IDENTITY_SPEC is None:
+    raise RuntimeError("candidate identity module has no source specification")
+_IDENTITY_MODULE = importlib.util.module_from_spec(_IDENTITY_SPEC)
+_PREVIOUS_IDENTITY_MODULE = sys.modules.get("conformance_fixture")
+sys.modules["conformance_fixture"] = _IDENTITY_MODULE
+try:
+    exec(
+        compile(
+            _IDENTITY_RAW, str(_IDENTITY_PATH), "exec", dont_inherit=True, optimize=0
+        ),
+        _IDENTITY_MODULE.__dict__,
+    )
+except BaseException:
+    if sys.modules.get("conformance_fixture") is _IDENTITY_MODULE:
+        if _PREVIOUS_IDENTITY_MODULE is None:
+            del sys.modules["conformance_fixture"]
+        else:
+            sys.modules["conformance_fixture"] = _PREVIOUS_IDENTITY_MODULE
+    raise
+_IDENTITY_MODULE.__hepta_compiled_sha256__ = hashlib.sha256(_IDENTITY_RAW).hexdigest()
+del _IDENTITY_RAW
+
+from conformance_fixture import commit_identity, verify_receipt  # noqa: E402 - exact raw module above.
 
 from official_conformance import (  # noqa: E402 - direct scripts must first add their sibling directory.
     OFFICIAL_CONFORMANCE_GIT_REF,
@@ -2021,6 +2056,11 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--conformance-fixture-receipt",
+        type=Path,
+        help="Verify and report the reviewed upstream fixture fork built for this exact Hepta checkout.",
+    )
+    parser.add_argument(
         "--official-scenario",
         action="append",
         help=(
@@ -2104,6 +2144,27 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         ),
     )
     return parser.parse_args(argv)
+
+
+def _fixture_source_identity() -> dict:
+    root = Path(__file__).resolve().parents[2]
+    raw = subprocess.run(
+        ["git", "cat-file", "-p", "HEAD"],
+        cwd=root,
+        capture_output=True,
+        check=True,
+        timeout=5,
+    ).stdout
+    status = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=no"],
+        cwd=root,
+        capture_output=True,
+        check=True,
+        timeout=5,
+    ).stdout
+    if status:
+        raise ValueError("fixture verification requires the clean Hepta source")
+    return commit_identity(raw)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -2210,26 +2271,77 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
+    fixture_provenance: dict | None = None
+    if args.conformance_fixture_receipt is not None:
+        if args.conformance_cli is None:
+            print(
+                "error: --conformance-fixture-receipt requires --conformance-cli",
+                file=sys.stderr,
+            )
+            return 2
+        try:
+            fixture_provenance = verify_receipt(
+                args.conformance_fixture_receipt.expanduser().resolve(),
+                Path(__file__).resolve().with_name("oauth-origin-fixture.json"),
+                args.conformance_cli.expanduser().resolve(),
+                _fixture_source_identity(),
+                codex_binary,
+                "before-conformance",
+            )
+        except (OSError, ValueError, subprocess.SubprocessError) as exc:
+            print(
+                f"error: reviewed fixture identity is invalid: {exc}", file=sys.stderr
+            )
+            return 2
+
     artifact_parent: Path | None = None
     if args.artifact_parent is not None:
         artifact_parent = args.artifact_parent.expanduser().resolve()
         artifact_parent.mkdir(parents=True, exist_ok=True)
 
-    report, _ = run_compliance(
-        codex_binary,
-        server_script=server_script,
-        adapter_script=adapter_script,
-        conformance_command=conformance_command,
-        official_scenarios=args.official_scenario,
-        modes=modes,
-        transports=transports,
-        timeout_seconds=args.timeout,
-        artifact_parent=artifact_parent,
-        keep_artifacts=args.keep_artifacts,
-        enable_modern_feature=args.enable_modern_feature,
-        include_auth=args.auth,
-        require_automatic_auth=args.require_automatic_auth,
-    )
+    fixture_after = None
+    fixture_after_error = None
+    original_error = None
+    try:
+        report, _ = run_compliance(
+            codex_binary,
+            server_script=server_script,
+            adapter_script=adapter_script,
+            conformance_command=conformance_command,
+            official_scenarios=args.official_scenario,
+            modes=modes,
+            transports=transports,
+            timeout_seconds=args.timeout,
+            artifact_parent=artifact_parent,
+            keep_artifacts=args.keep_artifacts,
+            enable_modern_feature=args.enable_modern_feature,
+            include_auth=args.auth,
+            require_automatic_auth=args.require_automatic_auth,
+        )
+    except BaseException as error:
+        original_error = error
+        raise
+    finally:
+        if fixture_provenance is not None:
+            try:
+                fixture_after = verify_receipt(
+                    args.conformance_fixture_receipt.expanduser().resolve(),
+                    Path(__file__).resolve().with_name("oauth-origin-fixture.json"),
+                    args.conformance_cli.expanduser().resolve(),
+                    None,
+                    codex_binary,
+                    "after-conformance",
+                )
+            except BaseException as error:
+                fixture_after_error = repr(error)
+                if original_error is not None:
+                    original_error.add_note(
+                        "post-conformance identity failed: " + fixture_after_error
+                    )
+    if fixture_provenance is not None:
+        report["conformanceFixture"] = fixture_provenance
+        report["conformanceFixtureAfter"] = fixture_after
+        report["conformanceFixtureAfterError"] = fixture_after_error
     if baseline_report is not None:
         report["regressionGate"] = _evaluate_regression_gate(
             report,
@@ -2256,6 +2368,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         _print_human_report(report)
         if args.report is not None:
             print(f"JSON report: {args.report.expanduser().resolve()}")
+    if fixture_after_error is not None:
+        return 1
     if baseline_report is not None:
         gate = report.get("regressionGate")
         return 0 if isinstance(gate, dict) and gate.get("success") is True else 1

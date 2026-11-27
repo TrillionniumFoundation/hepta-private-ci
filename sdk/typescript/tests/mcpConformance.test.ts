@@ -1,8 +1,8 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
-import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
+import { performance } from "node:perf_hooks";
 
 import { describe, it } from "@jest/globals";
 
@@ -35,16 +35,60 @@ function conformanceDirectory(): string {
   throw new Error(`MCP conformance harness is missing; checked ${candidates.join(" and ")}`);
 }
 
+function verifyReviewerIdentity(
+  directory: string,
+  codexBinary: string,
+  fixtureReceipt: string,
+  phase: "before-reviewer" | "after-reviewer",
+  deadline: number,
+): void {
+  const remaining = Math.floor(deadline - performance.now());
+  if (remaining <= 0) {
+    throw new Error("MCP reviewer identity exhausted the original reviewer deadline.");
+  }
+  const result = spawnSync(
+    "python3",
+    [
+      path.join(directory, "prepare_oauth_fixture.py"),
+      "--verify-sdk-use",
+      phase,
+      "--fixture-receipt",
+      fixtureReceipt,
+      "--codex-binary",
+      codexBinary,
+    ],
+    { encoding: "utf8", maxBuffer: 16 * 1024 * 1024, timeout: remaining },
+  );
+  if (result.error || result.status !== 0 || performance.now() > deadline) {
+    throw new Error(
+      [
+        `MCP reviewer ${phase} identity failed: ${result.status ?? result.signal}.`,
+        result.error?.message,
+        result.stdout,
+        result.stderr,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      { cause: result.error },
+    );
+  }
+}
+
 describe("MCP client conformance", () => {
   it(
     "does not introduce shipping, intermediate, or modern official conformance regressions",
     () => {
       const directory = conformanceDirectory();
-      const require = createRequire(import.meta.url);
-      const conformancePackage = require.resolve("@modelcontextprotocol/conformance/package.json");
+      const receiptLocation = process.env.CODEX_MCP_CONFORMANCE_FIXTURE_RECEIPT;
+      if (!receiptLocation) {
+        throw new Error(
+          "Build the reviewed OAuth-origin conformance fixture and set CODEX_MCP_CONFORMANCE_FIXTURE_RECEIPT.",
+        );
+      }
+      const fixtureReceipt = requireFile(path.resolve(receiptLocation), "reviewed fixture receipt");
       const officialConformanceCli = requireFile(
-        path.join(path.dirname(conformancePackage), "dist", "index.js"),
-        "pinned official CLI",
+        path.join(path.dirname(fixtureReceipt), "upstream", "dist", "index.js"),
+        "reviewed upstream fixture CLI",
       );
       const codexBinary = requireFile(codexExecPath, "built Codex binary");
       const baseline = requireFile(
@@ -65,6 +109,8 @@ describe("MCP client conformance", () => {
           "--auth",
           "--conformance-cli",
           officialConformanceCli,
+          "--conformance-fixture-receipt",
+          fixtureReceipt,
           "--baseline-report",
           baseline,
           "--report",
@@ -104,6 +150,12 @@ describe("MCP client conformance", () => {
     () => {
       const directory = conformanceDirectory();
       const codexBinary = requireFile(codexExecPath, "built Codex binary");
+      const receiptLocation = process.env.CODEX_MCP_CONFORMANCE_FIXTURE_RECEIPT;
+      if (!receiptLocation) {
+        throw new Error("The reviewer requires this original SDK fixture receipt.");
+      }
+      const fixtureReceipt = requireFile(path.resolve(receiptLocation), "reviewed fixture receipt");
+      const deadline = performance.now() + reviewerRegressionTimeoutMs - 10_000;
       const reviewer = requireFile(
         path.join(directory, "review_regressions.py"),
         "production reviewer regression runner",
@@ -114,43 +166,66 @@ describe("MCP client conformance", () => {
       );
       const reportDirectory = process.env.RUNNER_TEMP ?? os.tmpdir();
       const reportPath = path.join(reportDirectory, `codex-mcp-review-${process.pid}.json`);
-      const result = spawnSync(
-        "python3",
-        [
-          reviewer,
-          codexBinary,
-          "--mode",
-          "all",
-          "--baseline-report",
-          baseline,
-          "--report",
-          reportPath,
-        ],
-        {
-          encoding: "utf8",
-          maxBuffer: 16 * 1024 * 1024,
-          timeout: reviewerRegressionTimeoutMs - 10_000,
-        },
-      );
+      verifyReviewerIdentity(directory, codexBinary, fixtureReceipt, "before-reviewer", deadline);
+      const failures: unknown[] = [];
+      try {
+        if (performance.now() >= deadline) {
+          throw new Error("MCP reviewer exhausted the original deadline before execution.");
+        }
+        const result = spawnSync(
+          "python3",
+          [
+            reviewer,
+            codexBinary,
+            "--mode",
+            "all",
+            "--baseline-report",
+            baseline,
+            "--report",
+            reportPath,
+          ],
+          {
+            encoding: "utf8",
+            maxBuffer: 16 * 1024 * 1024,
+            timeout: Math.max(1, Math.floor(deadline - performance.now())),
+          },
+        );
 
-      if (result.error) {
-        throw new Error(
-          `MCP production reviewer regression runner could not complete: ${result.error.message}`,
-          { cause: result.error },
+        if (result.error) {
+          throw new Error(
+            `MCP production reviewer regression runner could not complete: ${result.error.message}`,
+            { cause: result.error },
+          );
+        }
+
+        if (result.status !== 0) {
+          throw new Error(
+            [
+              `MCP production reviewer regression gate exited with ${result.status ?? result.signal}.`,
+              `Report: ${reportPath}`,
+              result.stdout,
+              result.stderr,
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          );
+        }
+      } catch (error) {
+        failures.push(error);
+      }
+      try {
+        verifyReviewerIdentity(directory, codexBinary, fixtureReceipt, "after-reviewer", deadline);
+      } catch (identityError) {
+        failures.push(identityError);
+      }
+      if (failures.length > 1) {
+        throw new AggregateError(
+          failures,
+          "MCP reviewer and its final identity observation both failed.",
         );
       }
-
-      if (result.status !== 0) {
-        throw new Error(
-          [
-            `MCP production reviewer regression gate exited with ${result.status ?? result.signal}.`,
-            `Report: ${reportPath}`,
-            result.stdout,
-            result.stderr,
-          ]
-            .filter(Boolean)
-            .join("\n"),
-        );
+      if (failures.length === 1) {
+        throw failures[0];
       }
     },
     reviewerRegressionTimeoutMs,

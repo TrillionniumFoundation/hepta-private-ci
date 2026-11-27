@@ -1,0 +1,2191 @@
+{
+  "schema": "hepta-oauth-origin-fixture-v2",
+  "activated": true,
+  "root_admission": {
+    "reviewer": "root",
+    "accepted": true,
+    "sha256": "9bf220c57303a868af90a20c88d09d04efb3738c1cc271a8ea57d4f9748059c7"
+  },
+  "publication": {
+    "requires_actual_stage_b_parent": true,
+    "parent": {
+      "head": "5a842a417dc288e22d506fb16bc691b889fa4297",
+      "tree": "b8b977b8c6e8970a09f7afd1474c258e7f2142b8"
+    },
+    "root_must_bind_final_candidate": true,
+    "source_paths": [
+      ".github/workflows/blocking-ci.yml",
+      ".github/workflows/sdk.yml",
+      "scripts/mcp_conformance/README.md",
+      "scripts/mcp_conformance/codex_conformance_adapter.py",
+      "scripts/mcp_conformance/conformance_fixture.py",
+      "scripts/mcp_conformance/oauth-origin-fixture.json",
+      "scripts/mcp_conformance/oauth-origin-fixture.patch",
+      "scripts/mcp_conformance/prepare_oauth_fixture.py",
+      "scripts/mcp_conformance/run_codex_compliance.py",
+      "scripts/mcp_conformance/test_conformance_fixture.py",
+      "scripts/mcp_conformance/test_oauth_authorization_origins.py",
+      "sdk/typescript/tests/mcpConformance.test.ts"
+    ]
+  },
+  "upstream": {
+    "repository": "modelcontextprotocol/conformance",
+    "commit": "49103de6ed70804e940637bf3e9e29e4a3f54e64",
+    "tree": "699705222f144a15fb7fdcc1b4f0b0a62825aef0"
+  },
+  "fork_source_tree": "a37efbf5808034753c18d8d2ff7c0fc3de29fff2",
+  "source_files": {
+    ".claude/skills/mcp-sdk-tier-audit/README.md": {
+      "bytes": 12299,
+      "git_blob": "77fc8cf8bdf073bf7ef07d14f69a2f3518829545"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/SKILL.md": {
+      "bytes": 15383,
+      "git_blob": "5da0fbde7482e581e8ce810194b97b02e547abaf"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/docs-coverage-prompt.md": {
+      "bytes": 5913,
+      "git_blob": "86bbcc5293d11d8f797d1ede24d41c6bb9f23390"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/feature-list.md": {
+      "bytes": 4929,
+      "git_blob": "b0e019a3e0739def91f286f7da100971e43ab972"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/policy-evaluation-prompt.md": {
+      "bytes": 5644,
+      "git_blob": "b3960e60c810fa701a776743a82f5bd5d8700f7c"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/report-template.md": {
+      "bytes": 6338,
+      "git_blob": "d77e1993e1c029d74d303ab1965d73152a8afc67"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/tier-requirements.md": {
+      "bytes": 8247,
+      "git_blob": "077917b23fdf7225535d2ce3d4ea90420f749929"
+    },
+    ".claude/skills/new-sep/SKILL.md": {
+      "bytes": 10655,
+      "git_blob": "fa19a2e1fa10cafeca63e290c987bfa70afa3951"
+    },
+    ".claude/skills/review-scenario/SKILL.md": {
+      "bytes": 3973,
+      "git_blob": "af17ac5506afdd7002dcdac4ae63f129cca340ad"
+    },
+    ".gitattributes": {
+      "bytes": 65,
+      "git_blob": "9cc8d5b5a71280f7e3695af3767a9c3709d91966"
+    },
+    ".github/workflows/ci.yml": {
+      "bytes": 1496,
+      "git_blob": "ea43b519313d55112d04455962b2d09ba711cd84"
+    },
+    ".github/workflows/pr-publish.yml": {
+      "bytes": 464,
+      "git_blob": "92295519f12becc830b17a5e207392bee9ab77a1"
+    },
+    ".github/workflows/traceability.yml": {
+      "bytes": 4946,
+      "git_blob": "319510578ab224a3b840bb5cb05bb29f76588cfd"
+    },
+    ".gitignore": {
+      "bytes": 126,
+      "git_blob": "2b6bcd5ba24043acf270dacc0a3bf20dab87ad5f"
+    },
+    ".prettierignore": {
+      "bytes": 664,
+      "git_blob": "a354d8386713eede7f946efe023e50bc522c71df"
+    },
+    ".prettierrc.json": {
+      "bytes": 187,
+      "git_blob": "4ba6ca3e564c4d8953eeb657d3152773861530b6"
+    },
+    "AGENTS.md": {
+      "bytes": 10414,
+      "git_blob": "ca88ff8773374065ac21ea2a412923462b29fb4e"
+    },
+    "CONTRIBUTING.md": {
+      "bytes": 2814,
+      "git_blob": "920b1750c256574e6f90d8ae213a50c8a23059d5"
+    },
+    "LICENSE": {
+      "bytes": 12227,
+      "git_blob": "4a93985763241755401a10678395303de4e720ba"
+    },
+    "MAINTAINERS.md": {
+      "bytes": 273,
+      "git_blob": "b099240cf0d62d88ee0b04560c0a1d1a1d3f4a5a"
+    },
+    "README.md": {
+      "bytes": 16640,
+      "git_blob": "c320f481b33615b26843b4873a189452da2c15cd"
+    },
+    "SDK_INTEGRATION.md": {
+      "bytes": 6782,
+      "git_blob": "a0921150362622b1562400300397042924df2529"
+    },
+    "action.yml": {
+      "bytes": 3014,
+      "git_blob": "f3ee63669b599da8d2c3dadc73157a5399206b82"
+    },
+    "eslint.config.mjs": {
+      "bytes": 533,
+      "git_blob": "8d98c92d314dcec18bb5617e12ef3465dc09f489"
+    },
+    "examples/authorization-server-settings.example.json": {
+      "bytes": 40,
+      "git_blob": "a511114df96891e17e74e4b589b42a9b876140f3"
+    },
+    "examples/clients/typescript/auth-test-attempts-dcr.ts": {
+      "bytes": 1835,
+      "git_blob": "f9a6510e0756b40679a6ddcac0de5fe3a70535b5"
+    },
+    "examples/clients/typescript/auth-test-bad-prm.ts": {
+      "bytes": 2376,
+      "git_blob": "4f65f323a999ef8654f6d6734524cb4357ade406"
+    },
+    "examples/clients/typescript/auth-test-dpop-bearer.ts": {
+      "bytes": 674,
+      "git_blob": "6ddd4ea8244cc22bd44571262d368729f7a56d89"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-as-nonce.ts": {
+      "bytes": 708,
+      "git_blob": "0c395c4fd8f200f0bc336751277619a1648c87d3"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-nonce.ts": {
+      "bytes": 1006,
+      "git_blob": "232367f2e28d8628834c438b5b66e1522e395cf6"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-rs-nonce.ts": {
+      "bytes": 741,
+      "git_blob": "35f1991d9d56892be9f05b5843ae9f7de2af4af8"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-token-proof.ts": {
+      "bytes": 861,
+      "git_blob": "ab72c5fca22ddf38734560f2d7213c4b71ae0343"
+    },
+    "examples/clients/typescript/auth-test-dpop-replay.ts": {
+      "bytes": 659,
+      "git_blob": "50b7efcf931b43803c6282683abc7132913a973b"
+    },
+    "examples/clients/typescript/auth-test-dpop.ts": {
+      "bytes": 612,
+      "git_blob": "feabfa74c4da4cadcf1571b7650c184273bb8fa4"
+    },
+    "examples/clients/typescript/auth-test-echo-scope.ts": {
+      "bytes": 2089,
+      "git_blob": "7a197c64a8722455423c70dc80d21bc7369c9b89"
+    },
+    "examples/clients/typescript/auth-test-ignore-403.ts": {
+      "bytes": 2544,
+      "git_blob": "08aaa8279e4a5ab516e6d506433aec75a41a0840"
+    },
+    "examples/clients/typescript/auth-test-ignore-scope.ts": {
+      "bytes": 2360,
+      "git_blob": "c934da47ef43a1b584fc6216e64b73cdff111852"
+    },
+    "examples/clients/typescript/auth-test-iss-normalize.ts": {
+      "bytes": 8113,
+      "git_blob": "09f8b5bafef9bc4d746ab33f5ecb0b57d3426419"
+    },
+    "examples/clients/typescript/auth-test-iss-validation.ts": {
+      "bytes": 8321,
+      "git_blob": "327cb4cd6029b310881d61e60d1b61a3ead0e63a"
+    },
+    "examples/clients/typescript/auth-test-no-application-type.ts": {
+      "bytes": 1387,
+      "git_blob": "e25ccd85dc754b2183462719cdce8e9c9e1426d7"
+    },
+    "examples/clients/typescript/auth-test-no-cimd.ts": {
+      "bytes": 1848,
+      "git_blob": "11b8f0538c5a194d270537b70c19b6db52260bf6"
+    },
+    "examples/clients/typescript/auth-test-no-pkce.ts": {
+      "bytes": 5640,
+      "git_blob": "308351dba4a19ce65c1a3f75979259febc0ac85e"
+    },
+    "examples/clients/typescript/auth-test-no-retry-limit.ts": {
+      "bytes": 3407,
+      "git_blob": "78a2c7baafd5b4e79b51266639e54ff4990a7a3b"
+    },
+    "examples/clients/typescript/auth-test-partial-scopes.ts": {
+      "bytes": 2402,
+      "git_blob": "654ea292fdd1819d7e1d559cda44be3e6982e700"
+    },
+    "examples/clients/typescript/auth-test-reuse-credentials.ts": {
+      "bytes": 1237,
+      "git_blob": "842950e325fad5585d65684aae08a0d08b675a2e"
+    },
+    "examples/clients/typescript/auth-test-wif-expired-assertion.ts": {
+      "bytes": 420,
+      "git_blob": "7bbfa3c4cbc9ae83ba3ea54b14ae20ec32f754e6"
+    },
+    "examples/clients/typescript/auth-test-wif-grant-fallback.ts": {
+      "bytes": 416,
+      "git_blob": "a7fa1b9080a07fdca6c2d6bfecc5ea0f007eef0a"
+    },
+    "examples/clients/typescript/auth-test-wif-no-assertion.ts": {
+      "bytes": 440,
+      "git_blob": "430406d13bef46a83c6f020c2f19afb9b7811a9a"
+    },
+    "examples/clients/typescript/auth-test-wif-retry.ts": {
+      "bytes": 365,
+      "git_blob": "476a448eead87910aa79e4a96e3c140659619853"
+    },
+    "examples/clients/typescript/auth-test-wif-scope-rejected.ts": {
+      "bytes": 433,
+      "git_blob": "9fbe9db3134c114e75dada4fbbf9267e537c5f42"
+    },
+    "examples/clients/typescript/auth-test-wif-wrong-audience.ts": {
+      "bytes": 418,
+      "git_blob": "0a1cab8a7b707edd042f4c93c40222c76e053d69"
+    },
+    "examples/clients/typescript/auth-test.ts": {
+      "bytes": 1592,
+      "git_blob": "3efe71ed2004bf2b9b5796eb7b07a41e78b02ac4"
+    },
+    "examples/clients/typescript/elicitation-defaults-test.ts": {
+      "bytes": 2748,
+      "git_blob": "9a197e14ed041f2c4bd7b37dd58e4f30e1dde632"
+    },
+    "examples/clients/typescript/everything-client.ts": {
+      "bytes": 37262,
+      "git_blob": "c91d0b8bd55f7f9ca56a476f6700ba16e38904fd"
+    },
+    "examples/clients/typescript/helpers/ConformanceOAuthProvider.ts": {
+      "bytes": 4053,
+      "git_blob": "5dffd3d722f0de629b32fed36e517bdeb04b03fa"
+    },
+    "examples/clients/typescript/helpers/cliRunner.ts": {
+      "bytes": 745,
+      "git_blob": "7a6e8bf6d0cbc0adada7dfceb86e2c6a21e11c71"
+    },
+    "examples/clients/typescript/helpers/dpopClientFlow.ts": {
+      "bytes": 9091,
+      "git_blob": "f4cb81ff9823d1c907f91fb0f68d10cb01ff8cae"
+    },
+    "examples/clients/typescript/helpers/logger.ts": {
+      "bytes": 567,
+      "git_blob": "3b1ff5c3953b763cc3fb2e10982810e288305448"
+    },
+    "examples/clients/typescript/helpers/withOAuthRetry.ts": {
+      "bytes": 4966,
+      "git_blob": "92767e90e03c919b81a5fff2dca448db3dc6ace0"
+    },
+    "examples/clients/typescript/sse-retry-test.ts": {
+      "bytes": 2321,
+      "git_blob": "8c16ca29c191e994b548318d52986e28228d59bd"
+    },
+    "examples/clients/typescript/test-broken.ts": {
+      "bytes": 1307,
+      "git_blob": "92fe4124b765c0bf0f4f982b5d8aba1d0b280df6"
+    },
+    "examples/clients/typescript/test1.ts": {
+      "bytes": 1158,
+      "git_blob": "c8a54c654f1504ddba12a7477b48520f678d7e06"
+    },
+    "examples/clients/typescript/test2.ts": {
+      "bytes": 1300,
+      "git_blob": "bc40cd7f22046bc5f6f97adf925c7655f4da3b20"
+    },
+    "examples/clients/typescript/wif-broken-clients.ts": {
+      "bytes": 9111,
+      "git_blob": "2416d1babb4f9313146078fa9d0d7f851bd8d0ca"
+    },
+    "examples/servers/typescript/README.md": {
+      "bytes": 5920,
+      "git_blob": "53c28fdcc673d5ee1b78052e90db94945ceb8639"
+    },
+    "examples/servers/typescript/everything-server.ts": {
+      "bytes": 75639,
+      "git_blob": "e7a6878e2db0dabb2898595b0e1fb093fee72793"
+    },
+    "examples/servers/typescript/no-dns-rebinding-protection.ts": {
+      "bytes": 2136,
+      "git_blob": "1e0fc3c6ac6835cbc09606da082833084910364d"
+    },
+    "examples/servers/typescript/package-lock.json": {
+      "bytes": 58028,
+      "git_blob": "d892ee63e44e71ad1f536dba87095707ed374048"
+    },
+    "examples/servers/typescript/package.json": {
+      "bytes": 645,
+      "git_blob": "4356d425a29e7392ad665127cd18ded78acba14e"
+    },
+    "examples/servers/typescript/sep-2106-stripped-schema.ts": {
+      "bytes": 2490,
+      "git_blob": "30da62415bdbc767b63ac830ab1263d6c5d49d01"
+    },
+    "examples/servers/typescript/sep-2164-empty-contents.ts": {
+      "bytes": 2022,
+      "git_blob": "06fc311cfb9fc331862b8be1ef42060c53cd49f5"
+    },
+    "examples/servers/typescript/sep-2322-mrtr-broken-server.ts": {
+      "bytes": 4478,
+      "git_blob": "49fcdb6de2575919f01a6b61c4b55d2e4af845b9"
+    },
+    "examples/servers/typescript/sep-2549-no-caching-hints.ts": {
+      "bytes": 2535,
+      "git_blob": "efee1c286647c79a1e0762a91c7c15277b6c1485"
+    },
+    "examples/servers/typescript/tsconfig.json": {
+      "bytes": 136,
+      "git_blob": "82a28b5eed373780507f8810db11a61ae8938bcc"
+    },
+    "lefthook-local.example.yml": {
+      "bytes": 373,
+      "git_blob": "3401c11a8794aeefba1ecb954b74a23b26d2b3f2"
+    },
+    "lefthook.yml": {
+      "bytes": 967,
+      "git_blob": "416265ee236dfb9089ec7f86adab42615c1da23c"
+    },
+    "package-lock.json": {
+      "bytes": 184233,
+      "git_blob": "ef3d6eaccdb4079bdd37cd3f5f31ba196c1cd4fc"
+    },
+    "package.json": {
+      "bytes": 1972,
+      "git_blob": "e59d9f0411a9f7e9e11f2b57f45bdbcab65e1137"
+    },
+    "scripts/sync-schema.ts": {
+      "bytes": 1907,
+      "git_blob": "a5d41a0b8b74aef5b6790551adc433133b53cba3"
+    },
+    "src/checks/checks.test.ts": {
+      "bytes": 3261,
+      "git_blob": "b82f17c9b51f9351ab6e11c128356f431f79ea02"
+    },
+    "src/checks/client.ts": {
+      "bytes": 2429,
+      "git_blob": "89b110685f8673325ad8492355dd32da9a27d180"
+    },
+    "src/checks/collapse.test.ts": {
+      "bytes": 2692,
+      "git_blob": "d590d468efdb40bb56e74c0d66c281ab5c2926e3"
+    },
+    "src/checks/collapse.ts": {
+      "bytes": 1559,
+      "git_blob": "f308cc74a322db79c36c68bf54d95b68f3ea1b62"
+    },
+    "src/checks/index.ts": {
+      "bytes": 113,
+      "git_blob": "ed443cea9b458ca2516a456e4cbcd4ed4c6b1037"
+    },
+    "src/checks/server.ts": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "src/connection/connection.test.ts": {
+      "bytes": 5132,
+      "git_blob": "fa3a17ddb2cfdc206de9ed7f02f8ee5dce1c2ff3"
+    },
+    "src/connection/index.ts": {
+      "bytes": 4114,
+      "git_blob": "47952c644f63d4818d3f035e26fee3d648e73ab2"
+    },
+    "src/connection/sdk-client.ts": {
+      "bytes": 6214,
+      "git_blob": "d00805042b259d896180d43a857279e7a8804abc"
+    },
+    "src/connection/select.ts": {
+      "bytes": 2274,
+      "git_blob": "46679005e8d733911b7811b9fc96185ce602364e"
+    },
+    "src/connection/stateful.ts": {
+      "bytes": 3838,
+      "git_blob": "3361f28348f4883698c960eb9b01349b58668ec6"
+    },
+    "src/connection/stateless.test.ts": {
+      "bytes": 5981,
+      "git_blob": "794369676d8589bb6529ec183fb83fa2ccb8193d"
+    },
+    "src/connection/stateless.ts": {
+      "bytes": 15938,
+      "git_blob": "38890ac891286acefd48db6d226fe49a61df6a57"
+    },
+    "src/connection/testing.ts": {
+      "bytes": 612,
+      "git_blob": "f9177d195369491be4911f4126a194184850e105"
+    },
+    "src/expected-failures.test.ts": {
+      "bytes": 17494,
+      "git_blob": "78bb55b8c229e2ed4d959ce0a31a683d1619b959"
+    },
+    "src/expected-failures.ts": {
+      "bytes": 10195,
+      "git_blob": "0f372f494dac14bfb72a170f5274b749b0e25d4f"
+    },
+    "src/index.ts": {
+      "bytes": 26143,
+      "git_blob": "788e4700424ce5ff18aecce90e839fdda0a16eb3"
+    },
+    "src/mock-server/index.ts": {
+      "bytes": 2178,
+      "git_blob": "7c8470e605f92e66bf32a9cc7938011cbde00721"
+    },
+    "src/mock-server/mock-server.test.ts": {
+      "bytes": 19161,
+      "git_blob": "43ecca64e5a503a0ac3f5f307c7633f43777dd8c"
+    },
+    "src/mock-server/select.ts": {
+      "bytes": 556,
+      "git_blob": "2a836f1c032be5a427880964d5141cb0d3e63acf"
+    },
+    "src/mock-server/stateful.ts": {
+      "bytes": 6411,
+      "git_blob": "0a80b7f727db35375c7e1cd29897d8f1bbeaf7b5"
+    },
+    "src/mock-server/stateless.ts": {
+      "bytes": 9899,
+      "git_blob": "3d06c86a521c570847d7486e5ea6213c40599384"
+    },
+    "src/mock-server/testing.ts": {
+      "bytes": 583,
+      "git_blob": "1e307b8deda83f91823cf146c4796418b2f327c3"
+    },
+    "src/new-sep/index.test.ts": {
+      "bytes": 3926,
+      "git_blob": "acc01bb7e684166cd87abe8fd2ecf9b451ad00c7"
+    },
+    "src/new-sep/index.ts": {
+      "bytes": 7620,
+      "git_blob": "aa50a3a6962945b07d764d3557acd6036fda4339"
+    },
+    "src/runner/DESIGN.md": {
+      "bytes": 7152,
+      "git_blob": "fb714d514d92e5adf55ede92d0ba3d9b40ee7150"
+    },
+    "src/runner/authorization-server.ts": {
+      "bytes": 3569,
+      "git_blob": "15d0ad5833a63a5ce7796c06f6c9fb16d17aff0b"
+    },
+    "src/runner/client.test.ts": {
+      "bytes": 2579,
+      "git_blob": "8ce464ac18b32b20c62038fc57517f5a880cb7c3"
+    },
+    "src/runner/client.ts": {
+      "bytes": 11191,
+      "git_blob": "af10657f3800ffaa734845280a01151460e22e77"
+    },
+    "src/runner/index.ts": {
+      "bytes": 393,
+      "git_blob": "a39a86ca7ce63649c302320221fa6b029df345e9"
+    },
+    "src/runner/server.test.ts": {
+      "bytes": 5489,
+      "git_blob": "f2a2faa719b2befd8a604adc642b432dad075594"
+    },
+    "src/runner/server.ts": {
+      "bytes": 5523,
+      "git_blob": "a2c624a07245b2ddd3b7912553aeacd5464204a8"
+    },
+    "src/runner/utils.ts": {
+      "bytes": 1775,
+      "git_blob": "14e94328500c51d4eeee9de8d2073a3b221d3bd3"
+    },
+    "src/scenarios/authorization-server/auth/helpers/createCallbackServer.ts": {
+      "bytes": 1533,
+      "git_blob": "f6780dd11060095585a3cdc6543a7660d1294b75"
+    },
+    "src/scenarios/authorization-server/auth/spec-references.ts": {
+      "bytes": 498,
+      "git_blob": "e89ec868809a7aa9216eac34d108741e0234d626"
+    },
+    "src/scenarios/authorization-server/authorization-code-grant.test.ts": {
+      "bytes": 8899,
+      "git_blob": "6b51bf696a19d1eeab753435773c6de97a58874c"
+    },
+    "src/scenarios/authorization-server/authorization-code-grant.ts": {
+      "bytes": 12562,
+      "git_blob": "48bcdeed8e941e1b0698eaaa451617286b4911fb"
+    },
+    "src/scenarios/authorization-server/authorization-server-metadata.test.ts": {
+      "bytes": 9545,
+      "git_blob": "a1a5d669eac46eae506fababccdfea9c9f2b60fe"
+    },
+    "src/scenarios/authorization-server/authorization-server-metadata.ts": {
+      "bytes": 6593,
+      "git_blob": "ec5fd3a30468b9a39181b9b7c0281133cf03fe32"
+    },
+    "src/scenarios/client/auth/authorization-server-migration.ts": {
+      "bytes": 8727,
+      "git_blob": "6c7c989e6994ce30e2eed0bbebe7f774926bbc9d"
+    },
+    "src/scenarios/client/auth/basic-cimd.ts": {
+      "bytes": 3676,
+      "git_blob": "1e4b37c52d242fd1c42c4773c2cf57494d87601f"
+    },
+    "src/scenarios/client/auth/client-credentials.ts": {
+      "bytes": 13961,
+      "git_blob": "d633f7a57fe3da3a3e9eaff28af213c3669beac9"
+    },
+    "src/scenarios/client/auth/discovery-metadata.ts": {
+      "bytes": 7629,
+      "git_blob": "3c53e08ddd9544b9298d9b016b57c1515945e27e"
+    },
+    "src/scenarios/client/auth/dpop.ts": {
+      "bytes": 12771,
+      "git_blob": "8b16ba5aae8bbec07123b69697e09750e9ff5876"
+    },
+    "src/scenarios/client/auth/enterprise-managed-authorization.ts": {
+      "bytes": 18666,
+      "git_blob": "eff5e255fac86344d2d212c5942454fa4664c731"
+    },
+    "src/scenarios/client/auth/helpers/createAuthServer.ts": {
+      "bytes": 29377,
+      "git_blob": "162f93aae4000fc0c4f91c85f26a7612a5f1de6a"
+    },
+    "src/scenarios/client/auth/helpers/createServer.ts": {
+      "bytes": 7083,
+      "git_blob": "cd32d21b6586a82b7e788a2e1d583715d53bb17c"
+    },
+    "src/scenarios/client/auth/helpers/createWorkloadJwt.test.ts": {
+      "bytes": 6746,
+      "git_blob": "7f69283012f407c005548ea4d4dcc100fac67a48"
+    },
+    "src/scenarios/client/auth/helpers/createWorkloadJwt.ts": {
+      "bytes": 2538,
+      "git_blob": "3728bd8976aef8e05aac7ae2f51ff81e39e0d001"
+    },
+    "src/scenarios/client/auth/helpers/dpopProof.test.ts": {
+      "bytes": 6794,
+      "git_blob": "e0d1efcdd76bfb6cf329f646cb0a64b82f0b400b"
+    },
+    "src/scenarios/client/auth/helpers/dpopProof.ts": {
+      "bytes": 6616,
+      "git_blob": "5ebc8687198c12d277921304f159192574298bce"
+    },
+    "src/scenarios/client/auth/helpers/dpopResourceAuth.test.ts": {
+      "bytes": 6766,
+      "git_blob": "8d20cf7a4de3fefa2e7279270ab3103499c2ba33"
+    },
+    "src/scenarios/client/auth/helpers/dpopResourceAuth.ts": {
+      "bytes": 9534,
+      "git_blob": "33f44be46a0a13fd00c12b2e8ca0f0917d10f874"
+    },
+    "src/scenarios/client/auth/helpers/dpopToken.test.ts": {
+      "bytes": 5096,
+      "git_blob": "710380930faa32fac43bdf324087cb079f45a088"
+    },
+    "src/scenarios/client/auth/helpers/dpopToken.ts": {
+      "bytes": 4100,
+      "git_blob": "afe5632ff5bba7268be58e0bfedfce4876de8319"
+    },
+    "src/scenarios/client/auth/helpers/mockTokenVerifier.ts": {
+      "bytes": 2012,
+      "git_blob": "022fa4ddd2c0be4219cd946dbd23730a53063f56"
+    },
+    "src/scenarios/client/auth/helpers/serverLifecycle.ts": {
+      "bytes": 816,
+      "git_blob": "7fb3886258fd937ce1e99236f4ff6bf0a9609844"
+    },
+    "src/scenarios/client/auth/helpers/validateDpopProofAtTokenEndpoint.test.ts": {
+      "bytes": 5222,
+      "git_blob": "e4a2310211b9afb676c35f7840a8d022972f7d82"
+    },
+    "src/scenarios/client/auth/index.test.ts": {
+      "bytes": 19374,
+      "git_blob": "57ff27acfcf708aec4035318bbd850a3f2ef5b63"
+    },
+    "src/scenarios/client/auth/index.ts": {
+      "bytes": 3271,
+      "git_blob": "7daec39bf3b41ee0d7fe2fed0003715ca0fc773e"
+    },
+    "src/scenarios/client/auth/issuer-parameter.ts": {
+      "bytes": 21592,
+      "git_blob": "b55e97467b5926dddd8039b7e5fe532547a0bc61"
+    },
+    "src/scenarios/client/auth/march-spec-backcompat.ts": {
+      "bytes": 6662,
+      "git_blob": "48f9170aaa72102952dfd1ba341bf5b74f5704f4"
+    },
+    "src/scenarios/client/auth/offline-access.ts": {
+      "bytes": 12111,
+      "git_blob": "77eccca5b21427ff7a2d51a53dd79ea42aea3fd2"
+    },
+    "src/scenarios/client/auth/pre-registration.ts": {
+      "bytes": 5279,
+      "git_blob": "11f82690f79f211e53ecb055364fbb08fb7c8873"
+    },
+    "src/scenarios/client/auth/resource-mismatch.ts": {
+      "bytes": 4367,
+      "git_blob": "2e8b02f9b0ca864dfd13cf1a776e0129ecae2090"
+    },
+    "src/scenarios/client/auth/scope-handling.ts": {
+      "bytes": 25699,
+      "git_blob": "227c6c45752be1480278c4b0b00e8e227c50e1eb"
+    },
+    "src/scenarios/client/auth/spec-references.ts": {
+      "bytes": 6282,
+      "git_blob": "972417bd5b0c4f5f876f0a2713eab9fc00e5f299"
+    },
+    "src/scenarios/client/auth/test_helpers/testClient.ts": {
+      "bytes": 7056,
+      "git_blob": "e21459a78441cae8f2fea41b496aba9f228b46fe"
+    },
+    "src/scenarios/client/auth/token-endpoint-auth.ts": {
+      "bytes": 10545,
+      "git_blob": "53643fd287c073ceacc04f08db740c587ebb43b9"
+    },
+    "src/scenarios/client/auth/wif-jwt-bearer.ts": {
+      "bytes": 11173,
+      "git_blob": "4db0bd9c07612de7fc53f0d55af609962373d036"
+    },
+    "src/scenarios/client/draft-result-fields.test.ts": {
+      "bytes": 10918,
+      "git_blob": "1fdc6d449b14818911d9331ddc310ea7c7b129f7"
+    },
+    "src/scenarios/client/elicitation-defaults.ts": {
+      "bytes": 17782,
+      "git_blob": "d41702952de09bf20666d56cbfe1aa726177c806"
+    },
+    "src/scenarios/client/http-base.ts": {
+      "bytes": 5302,
+      "git_blob": "3e8cbe8e21fa4901f1b7ecc1c29a9b5e87bbaeae"
+    },
+    "src/scenarios/client/http-custom-headers.test.ts": {
+      "bytes": 6334,
+      "git_blob": "8a68f22a064f123a6591526119c5ec3c6ed0a7a1"
+    },
+    "src/scenarios/client/http-custom-headers.ts": {
+      "bytes": 35480,
+      "git_blob": "8e64e6ab71afff597f0f9cc4752587f64f6ba166"
+    },
+    "src/scenarios/client/http-standard-headers.test.ts": {
+      "bytes": 2900,
+      "git_blob": "9467456234d9b19b7b65138f3e9d0c9942399711"
+    },
+    "src/scenarios/client/http-standard-headers.ts": {
+      "bytes": 11678,
+      "git_blob": "227546b295fc76dd30071ae3572ae7c114fe9dcd"
+    },
+    "src/scenarios/client/initialize.ts": {
+      "bytes": 3975,
+      "git_blob": "be8d7082e759daccf11ed5dcd483cea3329b2d26"
+    },
+    "src/scenarios/client/json-schema-ref-deref.test.ts": {
+      "bytes": 5169,
+      "git_blob": "8445f1b4a44b4711c64fb6405e5baceb339d9fe3"
+    },
+    "src/scenarios/client/json-schema-ref-deref.ts": {
+      "bytes": 9186,
+      "git_blob": "aff791d34a8f9d6f660d4117cdc5301427643177"
+    },
+    "src/scenarios/client/mrtr-client.test.ts": {
+      "bytes": 1334,
+      "git_blob": "46268aa224361e7a481928e980367dd13a40f013"
+    },
+    "src/scenarios/client/mrtr-client.ts": {
+      "bytes": 15591,
+      "git_blob": "2bd5692eaf0b526e5a2d0a69af452c8fac3144f3"
+    },
+    "src/scenarios/client/request-metadata.test.ts": {
+      "bytes": 10790,
+      "git_blob": "0227d3f84cecdc8ed089d5c5fba1db7739444470"
+    },
+    "src/scenarios/client/request-metadata.ts": {
+      "bytes": 13942,
+      "git_blob": "54673b00a566417fd603a06e14d87bf71a7a0cd6"
+    },
+    "src/scenarios/client/sse-retry.ts": {
+      "bytes": 17598,
+      "git_blob": "e89b23eb7f42bb8ea144c160590b7e3069533714"
+    },
+    "src/scenarios/client/tools_call.test.ts": {
+      "bytes": 3485,
+      "git_blob": "ad6a58e60157d8ee276469e34667c4eeb99e2a06"
+    },
+    "src/scenarios/client/tools_call.ts": {
+      "bytes": 2731,
+      "git_blob": "b3dcb74c12b00fd1f40c008e2b5fd6e8a4a3be50"
+    },
+    "src/scenarios/index.ts": {
+      "bytes": 16667,
+      "git_blob": "db1584ea1ade58878ff54cb8610c4f57b19e01b9"
+    },
+    "src/scenarios/request-logger.ts": {
+      "bytes": 3228,
+      "git_blob": "a799ad05399696f224fe8c33dc256a7ec67b01f4"
+    },
+    "src/scenarios/server/all-scenarios.test.ts": {
+      "bytes": 5485,
+      "git_blob": "68387d739997086b52cdd4d1830289cc4b26968a"
+    },
+    "src/scenarios/server/caching.ts": {
+      "bytes": 9061,
+      "git_blob": "c7f4a5b5b1897cfc7a791e7c7c218e14cac992c4"
+    },
+    "src/scenarios/server/dns-rebinding.ts": {
+      "bytes": 8540,
+      "git_blob": "e93f810c88d8b0a05d7965edde51c71240282d15"
+    },
+    "src/scenarios/server/elicitation-defaults.ts": {
+      "bytes": 10632,
+      "git_blob": "20ed8ee9937bd7ae19f6aa1a4595754ea22877ea"
+    },
+    "src/scenarios/server/elicitation-enums.ts": {
+      "bytes": 14215,
+      "git_blob": "ac0486008014f7856ae995099c7ad6429026462a"
+    },
+    "src/scenarios/server/http-standard-headers.test.ts": {
+      "bytes": 8270,
+      "git_blob": "056d3b388d84449870191d5390764668f5c07756"
+    },
+    "src/scenarios/server/http-standard-headers.ts": {
+      "bytes": 36909,
+      "git_blob": "d5ca03208758b398ffc2ae2426dfa4b25ace4dfd"
+    },
+    "src/scenarios/server/input-required-result-helpers.ts": {
+      "bytes": 4451,
+      "git_blob": "a845a8f4ad8a27b183c039c0e06e0a968cfdc918"
+    },
+    "src/scenarios/server/input-required-result.ts": {
+      "bytes": 61369,
+      "git_blob": "66efb3f5c4338637c4dafe78f39150867937aa05"
+    },
+    "src/scenarios/server/json-schema-2020-12.ts": {
+      "bytes": 12665,
+      "git_blob": "23c4e22b72bcbb75bdcd4b2aea366c4b3bc509b9"
+    },
+    "src/scenarios/server/lifecycle.test.ts": {
+      "bytes": 2768,
+      "git_blob": "899d63b8c700164b9fc68196aff54b2f70a24c99"
+    },
+    "src/scenarios/server/lifecycle.ts": {
+      "bytes": 5760,
+      "git_blob": "2e2e0c9fc097048c2de2a9a8e60cbd503956ce38"
+    },
+    "src/scenarios/server/negative-mrtr.test.ts": {
+      "bytes": 4815,
+      "git_blob": "302284005cfc412b439fcf7b597ff4a75c076c87"
+    },
+    "src/scenarios/server/negative.test.ts": {
+      "bytes": 7584,
+      "git_blob": "0d248272e8b076c30731a1eafaff286af977438d"
+    },
+    "src/scenarios/server/prompts.ts": {
+      "bytes": 13917,
+      "git_blob": "c5a5f3803f0de21059aa09457972f37841e88303"
+    },
+    "src/scenarios/server/resources.ts": {
+      "bytes": 21117,
+      "git_blob": "382b0db837b3395ce67a0ba07013f7797ce300f9"
+    },
+    "src/scenarios/server/sse-multiple-streams.test.ts": {
+      "bytes": 5718,
+      "git_blob": "967f5d8a5357949acd9630dd9a364fb3be9e06cc"
+    },
+    "src/scenarios/server/sse-multiple-streams.ts": {
+      "bytes": 11104,
+      "git_blob": "d2eb493144e5247761ff4185c5da30c8c7743276"
+    },
+    "src/scenarios/server/sse-polling.test.ts": {
+      "bytes": 7659,
+      "git_blob": "e09cd9a1aca2a143abf2f2a164ff2de1eb799b38"
+    },
+    "src/scenarios/server/sse-polling.ts": {
+      "bytes": 20780,
+      "git_blob": "a15d5e981f5bda8f1acc8b4758d824a16297f6ca"
+    },
+    "src/scenarios/server/stateless.test.ts": {
+      "bytes": 29951,
+      "git_blob": "9bfd0b536695e049f954647184b724eef914a79a"
+    },
+    "src/scenarios/server/stateless.ts": {
+      "bytes": 51789,
+      "git_blob": "618dc0c5f2d88e168741468b8c1b5c7fcfd1aba6"
+    },
+    "src/scenarios/server/tasks/capability.ts": {
+      "bytes": 10672,
+      "git_blob": "2a0bcda064a69860b5fb67eac518be75679c505b"
+    },
+    "src/scenarios/server/tasks/composition.ts": {
+      "bytes": 7179,
+      "git_blob": "23daebeb8a8397aac86fe9637fe9efcdf4dc0478"
+    },
+    "src/scenarios/server/tasks/dispatch.ts": {
+      "bytes": 19923,
+      "git_blob": "65382fab2260fabf27d750ec29b7d8ff7995fab8"
+    },
+    "src/scenarios/server/tasks/headers.ts": {
+      "bytes": 12020,
+      "git_blob": "d523994d26fd29929a8a5f2ca071ebc913b9947c"
+    },
+    "src/scenarios/server/tasks/helpers.ts": {
+      "bytes": 3750,
+      "git_blob": "b786d9cab4c670c58032a77d7ec37718025e7626"
+    },
+    "src/scenarios/server/tasks/lifecycle.test.ts": {
+      "bytes": 2791,
+      "git_blob": "8926538bb2eb4ba31beee2402a511e3b30845fe3"
+    },
+    "src/scenarios/server/tasks/lifecycle.ts": {
+      "bytes": 20703,
+      "git_blob": "2214ff16be5a2d0b9858895f3604e0de8e195e53"
+    },
+    "src/scenarios/server/tasks/mrtr-helpers.ts": {
+      "bytes": 4744,
+      "git_blob": "f7da1851047b8d99f0a42315a178638be3a1d40d"
+    },
+    "src/scenarios/server/tasks/mrtr-input.ts": {
+      "bytes": 13709,
+      "git_blob": "b5b41c6167e7c5f6841ea591654b15114a3005da"
+    },
+    "src/scenarios/server/tasks/notifications.ts": {
+      "bytes": 2567,
+      "git_blob": "6022a704393a6a882deae07f476c8e98cdab93a2"
+    },
+    "src/scenarios/server/tasks/request-state.ts": {
+      "bytes": 6806,
+      "git_blob": "0e6559ca9cd248420ef83b9500ac0e96629a9bf7"
+    },
+    "src/scenarios/server/tasks/required-task-error.ts": {
+      "bytes": 8860,
+      "git_blob": "1da07c8f04ebace7e846dc572a7c38f3bd30f1e0"
+    },
+    "src/scenarios/server/tasks/wire-fields.ts": {
+      "bytes": 9374,
+      "git_blob": "73684a19c7d0004fc13445c0f3e59df159eb5b94"
+    },
+    "src/scenarios/server/tools.test.ts": {
+      "bytes": 3572,
+      "git_blob": "d54daa4c91f08a33351c0839fb158c06353f8576"
+    },
+    "src/scenarios/server/tools.ts": {
+      "bytes": 36205,
+      "git_blob": "f18df3cf325f1eda861708b47612518151801337"
+    },
+    "src/scenarios/server/utils.ts": {
+      "bytes": 8011,
+      "git_blob": "b22971582a17feb3259d7efb70bf69d33bd66b18"
+    },
+    "src/scenarios/spec-version.test.ts": {
+      "bytes": 5843,
+      "git_blob": "7e5f45177a7294a37f4e4a839f53791cd865961f"
+    },
+    "src/scenarios/untestable.test.ts": {
+      "bytes": 1221,
+      "git_blob": "4ad06b8f800492be2ea5450d3adc4d793bbb3f5e"
+    },
+    "src/scenarios/untestable.ts": {
+      "bytes": 2105,
+      "git_blob": "5ebd8220e52a3999fca13542e66ead28d6dc7337"
+    },
+    "src/schemas.ts": {
+      "bytes": 2350,
+      "git_blob": "040aa2e39e122f289bae757aafc6f592a5984728"
+    },
+    "src/schemas/context.ts": {
+      "bytes": 1321,
+      "git_blob": "cea338a70eeb94edf02695f68a35ea5091aec5fd"
+    },
+    "src/sdk-runner/checkout.ts": {
+      "bytes": 3931,
+      "git_blob": "fb91e07aea8e2a8aefb8feb69559164f535beadd"
+    },
+    "src/sdk-runner/config.ts": {
+      "bytes": 4053,
+      "git_blob": "edcd77a8a89111da47a38adba9a2de96232b6013"
+    },
+    "src/sdk-runner/index.ts": {
+      "bytes": 11192,
+      "git_blob": "cfe959cc1e020a33cb5dedb53ff637463a0f089c"
+    },
+    "src/sdk-runner/known-sdks.ts": {
+      "bytes": 7157,
+      "git_blob": "9c430678715b60dd2f61fc033bf5638795b4884a"
+    },
+    "src/sdk-runner/sdk-runner.test.ts": {
+      "bytes": 8095,
+      "git_blob": "7ce0f79b906c8183c7a5b38802e56e47a29af242"
+    },
+    "src/seps/sep-1932.yaml": {
+      "bytes": 5433,
+      "git_blob": "c3c650f399fa0893e28b5117b2241aebdac78b09"
+    },
+    "src/seps/sep-1933.yaml": {
+      "bytes": 2970,
+      "git_blob": "5e72f51c6bfb8108ec250a5f83765ec3b72ddf3e"
+    },
+    "src/seps/sep-2106.yaml": {
+      "bytes": 2223,
+      "git_blob": "870484e6491f63e150b759aa6d10ada5731cda3d"
+    },
+    "src/seps/sep-2164.yaml": {
+      "bytes": 575,
+      "git_blob": "83c11ce9ce9b81011d96d672fbac9388b2971e84"
+    },
+    "src/seps/sep-2207.yaml": {
+      "bytes": 1477,
+      "git_blob": "97439df3983a0bb7ad21f878fb51d043cab68dc4"
+    },
+    "src/seps/sep-2243.yaml": {
+      "bytes": 4972,
+      "git_blob": "a39b6d2c05eadd8ce568bbacf9890be2cd551811"
+    },
+    "src/seps/sep-2260.yaml": {
+      "bytes": 4118,
+      "git_blob": "b5e0306bcd90e114864c76bbe6a57441b4db3f51"
+    },
+    "src/seps/sep-2322.yaml": {
+      "bytes": 8879,
+      "git_blob": "143a7ed1932e0dfd63204b6310f140180e55f34d"
+    },
+    "src/seps/sep-2350.yaml": {
+      "bytes": 1578,
+      "git_blob": "5f3ebfb14661d4869f8b7cf9015259b56c90dab8"
+    },
+    "src/seps/sep-2352.yaml": {
+      "bytes": 1759,
+      "git_blob": "5f0251106255378efeded4ddfd54b587166ed385"
+    },
+    "src/seps/sep-2468.yaml": {
+      "bytes": 3840,
+      "git_blob": "969f4a444b15ccc8dd6a972c5ff2b0524e8ad419"
+    },
+    "src/seps/sep-2549.yaml": {
+      "bytes": 4438,
+      "git_blob": "4a5c1a508ffaf114c06a2cba6c6ca27fff932669"
+    },
+    "src/seps/sep-2575.yaml": {
+      "bytes": 11573,
+      "git_blob": "057355d88318c59d14a744eef8367584f4d66b14"
+    },
+    "src/seps/sep-2663.yaml": {
+      "bytes": 15898,
+      "git_blob": "dec9dd93f721de6ee642daef9aab81aa3b7678b4"
+    },
+    "src/seps/sep-837.yaml": {
+      "bytes": 1344,
+      "git_blob": "d97d00a34ef3b3488b4b6702b8e3ecbd43dcb415"
+    },
+    "src/seps/traceability.json": {
+      "bytes": 56862,
+      "git_blob": "bdf6c6289fdf5a727a64697ecdde30b96b72635e"
+    },
+    "src/spec-types/2025-03-26.schema.json": {
+      "bytes": 89428,
+      "git_blob": "a1e3f26799d06421eea7e2334e6d279233c6d090"
+    },
+    "src/spec-types/2025-03-26.ts": {
+      "bytes": 34253,
+      "git_blob": "6da0f596f66b5ce6391ccb9450646f4cf084e61d"
+    },
+    "src/spec-types/2025-06-18.schema.json": {
+      "bytes": 108236,
+      "git_blob": "775dc991791e6008f662544e70f76f9d47be32ac"
+    },
+    "src/spec-types/2025-06-18.ts": {
+      "bytes": 42362,
+      "git_blob": "0df081ee2979a1f09a9cf6f44dae5c3a0252fecc"
+    },
+    "src/spec-types/2025-11-25.schema.json": {
+      "bytes": 174326,
+      "git_blob": "9d2e662a2676124cfafcf893af4f263f0041554f"
+    },
+    "src/spec-types/2025-11-25.ts": {
+      "bytes": 66569,
+      "git_blob": "b734ae30eb4941679a19e82df9cb9baafbde9eb6"
+    },
+    "src/spec-types/README.md": {
+      "bytes": 1098,
+      "git_blob": "f13187472c80c6ea6fc5560f90a0a56c86d8c948"
+    },
+    "src/spec-types/SOURCE": {
+      "bytes": 62,
+      "git_blob": "a4891c9d74e46fcca07f7422567324a382ed08b4"
+    },
+    "src/spec-types/draft.schema.json": {
+      "bytes": 180695,
+      "git_blob": "cc44564e33305dbc07e820cdd0a97648f3852019"
+    },
+    "src/spec-types/draft.ts": {
+      "bytes": 97900,
+      "git_blob": "110485f68da17d54cb4b9119add86ca958af3a94"
+    },
+    "src/tier-check/checks/files.ts": {
+      "bytes": 1402,
+      "git_blob": "1fd768de9db46f64b81f422310fef4cec87259a1"
+    },
+    "src/tier-check/checks/labels.ts": {
+      "bytes": 2110,
+      "git_blob": "a2b37b7a0b9d82a905f6ddac484ccc0be087888f"
+    },
+    "src/tier-check/checks/p0.ts": {
+      "bytes": 2384,
+      "git_blob": "25fad1536d6626316e706288d7610e06b99506e3"
+    },
+    "src/tier-check/checks/release.ts": {
+      "bytes": 1356,
+      "git_blob": "3eb53f1d3a9dae74ec091025b203510a43d00ee5"
+    },
+    "src/tier-check/checks/spec-tracking.ts": {
+      "bytes": 2511,
+      "git_blob": "ce4c101cee5965e7cd52b214612d37b842e4d221"
+    },
+    "src/tier-check/checks/test-conformance-results.ts": {
+      "bytes": 7638,
+      "git_blob": "ba16be215495fc7db387d94f979c56849ec5428c"
+    },
+    "src/tier-check/checks/triage.ts": {
+      "bytes": 3022,
+      "git_blob": "523f4ec0e71c4ecc74b72fb5d34a07909570f1c1"
+    },
+    "src/tier-check/index.ts": {
+      "bytes": 6706,
+      "git_blob": "1cd32c19808dd4462c11ca31f9ca40055c60cbc5"
+    },
+    "src/tier-check/output.ts": {
+      "bytes": 11762,
+      "git_blob": "ab0d2fbeb7989373e335b37a52e5995f55a42a65"
+    },
+    "src/tier-check/tier-logic.ts": {
+      "bytes": 2144,
+      "git_blob": "cf096c9798495e3148aef3fa109829e451a7ae89"
+    },
+    "src/tier-check/types.ts": {
+      "bytes": 2173,
+      "git_blob": "eacbcbe6046f3599292e4fbff6e6c56fd620ebd2"
+    },
+    "src/traceability/index.test.ts": {
+      "bytes": 4001,
+      "git_blob": "721365e691766ecaa4fb7ccf9b4ed7a95b3de572"
+    },
+    "src/traceability/index.ts": {
+      "bytes": 10224,
+      "git_blob": "055076da993584a70d6e3cdc3d825aa3f506a166"
+    },
+    "src/traceability/types.ts": {
+      "bytes": 2664,
+      "git_blob": "8edc0221724cefe55656282428db349354149902"
+    },
+    "src/types.test.ts": {
+      "bytes": 913,
+      "git_blob": "6612196e9b123c5128944fb9406ddc7ec359c4ac"
+    },
+    "src/types.ts": {
+      "bytes": 4860,
+      "git_blob": "5960945bbb335c8c5024e883de2b42a179faafd9"
+    },
+    "src/validation/vitest-hooks.ts": {
+      "bytes": 904,
+      "git_blob": "fd9cac1ceec27b6df076bb45b8a32ec10e22e32b"
+    },
+    "src/validation/wire-schema.test.ts": {
+      "bytes": 18234,
+      "git_blob": "98fc4d7b79e515aa3b29a1aa9597d82b2bb2707d"
+    },
+    "src/validation/wire-schema.ts": {
+      "bytes": 14974,
+      "git_blob": "8b45849ddc2f7179670b8330c0690e625a0d24e1"
+    },
+    "tsconfig.json": {
+      "bytes": 400,
+      "git_blob": "21ed5ae12bbee7f85f109f46d3a1d12dd7f94f93"
+    },
+    "vitest.config.ts": {
+      "bytes": 743,
+      "git_blob": "946044fa65277e1a4f8e285a83169434ea174393"
+    }
+  },
+  "postimage_files": {
+    ".claude/skills/mcp-sdk-tier-audit/README.md": {
+      "bytes": 12299,
+      "git_blob": "77fc8cf8bdf073bf7ef07d14f69a2f3518829545"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/SKILL.md": {
+      "bytes": 15383,
+      "git_blob": "5da0fbde7482e581e8ce810194b97b02e547abaf"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/docs-coverage-prompt.md": {
+      "bytes": 5913,
+      "git_blob": "86bbcc5293d11d8f797d1ede24d41c6bb9f23390"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/feature-list.md": {
+      "bytes": 4929,
+      "git_blob": "b0e019a3e0739def91f286f7da100971e43ab972"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/policy-evaluation-prompt.md": {
+      "bytes": 5644,
+      "git_blob": "b3960e60c810fa701a776743a82f5bd5d8700f7c"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/report-template.md": {
+      "bytes": 6338,
+      "git_blob": "d77e1993e1c029d74d303ab1965d73152a8afc67"
+    },
+    ".claude/skills/mcp-sdk-tier-audit/references/tier-requirements.md": {
+      "bytes": 8247,
+      "git_blob": "077917b23fdf7225535d2ce3d4ea90420f749929"
+    },
+    ".claude/skills/new-sep/SKILL.md": {
+      "bytes": 10655,
+      "git_blob": "fa19a2e1fa10cafeca63e290c987bfa70afa3951"
+    },
+    ".claude/skills/review-scenario/SKILL.md": {
+      "bytes": 3973,
+      "git_blob": "af17ac5506afdd7002dcdac4ae63f129cca340ad"
+    },
+    ".gitattributes": {
+      "bytes": 65,
+      "git_blob": "9cc8d5b5a71280f7e3695af3767a9c3709d91966"
+    },
+    ".github/workflows/ci.yml": {
+      "bytes": 1496,
+      "git_blob": "ea43b519313d55112d04455962b2d09ba711cd84"
+    },
+    ".github/workflows/pr-publish.yml": {
+      "bytes": 464,
+      "git_blob": "92295519f12becc830b17a5e207392bee9ab77a1"
+    },
+    ".github/workflows/traceability.yml": {
+      "bytes": 4946,
+      "git_blob": "319510578ab224a3b840bb5cb05bb29f76588cfd"
+    },
+    ".gitignore": {
+      "bytes": 126,
+      "git_blob": "2b6bcd5ba24043acf270dacc0a3bf20dab87ad5f"
+    },
+    ".prettierignore": {
+      "bytes": 664,
+      "git_blob": "a354d8386713eede7f946efe023e50bc522c71df"
+    },
+    ".prettierrc.json": {
+      "bytes": 187,
+      "git_blob": "4ba6ca3e564c4d8953eeb657d3152773861530b6"
+    },
+    "AGENTS.md": {
+      "bytes": 10414,
+      "git_blob": "ca88ff8773374065ac21ea2a412923462b29fb4e"
+    },
+    "CONTRIBUTING.md": {
+      "bytes": 2814,
+      "git_blob": "920b1750c256574e6f90d8ae213a50c8a23059d5"
+    },
+    "LICENSE": {
+      "bytes": 12227,
+      "git_blob": "4a93985763241755401a10678395303de4e720ba"
+    },
+    "MAINTAINERS.md": {
+      "bytes": 273,
+      "git_blob": "b099240cf0d62d88ee0b04560c0a1d1a1d3f4a5a"
+    },
+    "README.md": {
+      "bytes": 16640,
+      "git_blob": "c320f481b33615b26843b4873a189452da2c15cd"
+    },
+    "SDK_INTEGRATION.md": {
+      "bytes": 6782,
+      "git_blob": "a0921150362622b1562400300397042924df2529"
+    },
+    "action.yml": {
+      "bytes": 3014,
+      "git_blob": "f3ee63669b599da8d2c3dadc73157a5399206b82"
+    },
+    "eslint.config.mjs": {
+      "bytes": 533,
+      "git_blob": "8d98c92d314dcec18bb5617e12ef3465dc09f489"
+    },
+    "examples/authorization-server-settings.example.json": {
+      "bytes": 40,
+      "git_blob": "a511114df96891e17e74e4b589b42a9b876140f3"
+    },
+    "examples/clients/typescript/auth-test-attempts-dcr.ts": {
+      "bytes": 1835,
+      "git_blob": "f9a6510e0756b40679a6ddcac0de5fe3a70535b5"
+    },
+    "examples/clients/typescript/auth-test-bad-prm.ts": {
+      "bytes": 2376,
+      "git_blob": "4f65f323a999ef8654f6d6734524cb4357ade406"
+    },
+    "examples/clients/typescript/auth-test-dpop-bearer.ts": {
+      "bytes": 674,
+      "git_blob": "6ddd4ea8244cc22bd44571262d368729f7a56d89"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-as-nonce.ts": {
+      "bytes": 708,
+      "git_blob": "0c395c4fd8f200f0bc336751277619a1648c87d3"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-nonce.ts": {
+      "bytes": 1006,
+      "git_blob": "232367f2e28d8628834c438b5b66e1522e395cf6"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-rs-nonce.ts": {
+      "bytes": 741,
+      "git_blob": "35f1991d9d56892be9f05b5843ae9f7de2af4af8"
+    },
+    "examples/clients/typescript/auth-test-dpop-no-token-proof.ts": {
+      "bytes": 861,
+      "git_blob": "ab72c5fca22ddf38734560f2d7213c4b71ae0343"
+    },
+    "examples/clients/typescript/auth-test-dpop-replay.ts": {
+      "bytes": 659,
+      "git_blob": "50b7efcf931b43803c6282683abc7132913a973b"
+    },
+    "examples/clients/typescript/auth-test-dpop.ts": {
+      "bytes": 612,
+      "git_blob": "feabfa74c4da4cadcf1571b7650c184273bb8fa4"
+    },
+    "examples/clients/typescript/auth-test-echo-scope.ts": {
+      "bytes": 2089,
+      "git_blob": "7a197c64a8722455423c70dc80d21bc7369c9b89"
+    },
+    "examples/clients/typescript/auth-test-ignore-403.ts": {
+      "bytes": 2544,
+      "git_blob": "08aaa8279e4a5ab516e6d506433aec75a41a0840"
+    },
+    "examples/clients/typescript/auth-test-ignore-scope.ts": {
+      "bytes": 2360,
+      "git_blob": "c934da47ef43a1b584fc6216e64b73cdff111852"
+    },
+    "examples/clients/typescript/auth-test-iss-normalize.ts": {
+      "bytes": 8113,
+      "git_blob": "09f8b5bafef9bc4d746ab33f5ecb0b57d3426419"
+    },
+    "examples/clients/typescript/auth-test-iss-validation.ts": {
+      "bytes": 8321,
+      "git_blob": "327cb4cd6029b310881d61e60d1b61a3ead0e63a"
+    },
+    "examples/clients/typescript/auth-test-no-application-type.ts": {
+      "bytes": 1387,
+      "git_blob": "e25ccd85dc754b2183462719cdce8e9c9e1426d7"
+    },
+    "examples/clients/typescript/auth-test-no-cimd.ts": {
+      "bytes": 1848,
+      "git_blob": "11b8f0538c5a194d270537b70c19b6db52260bf6"
+    },
+    "examples/clients/typescript/auth-test-no-pkce.ts": {
+      "bytes": 5640,
+      "git_blob": "308351dba4a19ce65c1a3f75979259febc0ac85e"
+    },
+    "examples/clients/typescript/auth-test-no-retry-limit.ts": {
+      "bytes": 3407,
+      "git_blob": "78a2c7baafd5b4e79b51266639e54ff4990a7a3b"
+    },
+    "examples/clients/typescript/auth-test-partial-scopes.ts": {
+      "bytes": 2402,
+      "git_blob": "654ea292fdd1819d7e1d559cda44be3e6982e700"
+    },
+    "examples/clients/typescript/auth-test-reuse-credentials.ts": {
+      "bytes": 1237,
+      "git_blob": "842950e325fad5585d65684aae08a0d08b675a2e"
+    },
+    "examples/clients/typescript/auth-test-wif-expired-assertion.ts": {
+      "bytes": 420,
+      "git_blob": "7bbfa3c4cbc9ae83ba3ea54b14ae20ec32f754e6"
+    },
+    "examples/clients/typescript/auth-test-wif-grant-fallback.ts": {
+      "bytes": 416,
+      "git_blob": "a7fa1b9080a07fdca6c2d6bfecc5ea0f007eef0a"
+    },
+    "examples/clients/typescript/auth-test-wif-no-assertion.ts": {
+      "bytes": 440,
+      "git_blob": "430406d13bef46a83c6f020c2f19afb9b7811a9a"
+    },
+    "examples/clients/typescript/auth-test-wif-retry.ts": {
+      "bytes": 365,
+      "git_blob": "476a448eead87910aa79e4a96e3c140659619853"
+    },
+    "examples/clients/typescript/auth-test-wif-scope-rejected.ts": {
+      "bytes": 433,
+      "git_blob": "9fbe9db3134c114e75dada4fbbf9267e537c5f42"
+    },
+    "examples/clients/typescript/auth-test-wif-wrong-audience.ts": {
+      "bytes": 418,
+      "git_blob": "0a1cab8a7b707edd042f4c93c40222c76e053d69"
+    },
+    "examples/clients/typescript/auth-test.ts": {
+      "bytes": 1592,
+      "git_blob": "3efe71ed2004bf2b9b5796eb7b07a41e78b02ac4"
+    },
+    "examples/clients/typescript/elicitation-defaults-test.ts": {
+      "bytes": 2748,
+      "git_blob": "9a197e14ed041f2c4bd7b37dd58e4f30e1dde632"
+    },
+    "examples/clients/typescript/everything-client.ts": {
+      "bytes": 37262,
+      "git_blob": "c91d0b8bd55f7f9ca56a476f6700ba16e38904fd"
+    },
+    "examples/clients/typescript/helpers/ConformanceOAuthProvider.ts": {
+      "bytes": 4053,
+      "git_blob": "5dffd3d722f0de629b32fed36e517bdeb04b03fa"
+    },
+    "examples/clients/typescript/helpers/cliRunner.ts": {
+      "bytes": 745,
+      "git_blob": "7a6e8bf6d0cbc0adada7dfceb86e2c6a21e11c71"
+    },
+    "examples/clients/typescript/helpers/dpopClientFlow.ts": {
+      "bytes": 9091,
+      "git_blob": "f4cb81ff9823d1c907f91fb0f68d10cb01ff8cae"
+    },
+    "examples/clients/typescript/helpers/logger.ts": {
+      "bytes": 567,
+      "git_blob": "3b1ff5c3953b763cc3fb2e10982810e288305448"
+    },
+    "examples/clients/typescript/helpers/withOAuthRetry.ts": {
+      "bytes": 4966,
+      "git_blob": "92767e90e03c919b81a5fff2dca448db3dc6ace0"
+    },
+    "examples/clients/typescript/sse-retry-test.ts": {
+      "bytes": 2321,
+      "git_blob": "8c16ca29c191e994b548318d52986e28228d59bd"
+    },
+    "examples/clients/typescript/test-broken.ts": {
+      "bytes": 1307,
+      "git_blob": "92fe4124b765c0bf0f4f982b5d8aba1d0b280df6"
+    },
+    "examples/clients/typescript/test1.ts": {
+      "bytes": 1158,
+      "git_blob": "c8a54c654f1504ddba12a7477b48520f678d7e06"
+    },
+    "examples/clients/typescript/test2.ts": {
+      "bytes": 1300,
+      "git_blob": "bc40cd7f22046bc5f6f97adf925c7655f4da3b20"
+    },
+    "examples/clients/typescript/wif-broken-clients.ts": {
+      "bytes": 9111,
+      "git_blob": "2416d1babb4f9313146078fa9d0d7f851bd8d0ca"
+    },
+    "examples/servers/typescript/README.md": {
+      "bytes": 5920,
+      "git_blob": "53c28fdcc673d5ee1b78052e90db94945ceb8639"
+    },
+    "examples/servers/typescript/everything-server.ts": {
+      "bytes": 75639,
+      "git_blob": "e7a6878e2db0dabb2898595b0e1fb093fee72793"
+    },
+    "examples/servers/typescript/no-dns-rebinding-protection.ts": {
+      "bytes": 2136,
+      "git_blob": "1e0fc3c6ac6835cbc09606da082833084910364d"
+    },
+    "examples/servers/typescript/package-lock.json": {
+      "bytes": 58028,
+      "git_blob": "d892ee63e44e71ad1f536dba87095707ed374048"
+    },
+    "examples/servers/typescript/package.json": {
+      "bytes": 645,
+      "git_blob": "4356d425a29e7392ad665127cd18ded78acba14e"
+    },
+    "examples/servers/typescript/sep-2106-stripped-schema.ts": {
+      "bytes": 2490,
+      "git_blob": "30da62415bdbc767b63ac830ab1263d6c5d49d01"
+    },
+    "examples/servers/typescript/sep-2164-empty-contents.ts": {
+      "bytes": 2022,
+      "git_blob": "06fc311cfb9fc331862b8be1ef42060c53cd49f5"
+    },
+    "examples/servers/typescript/sep-2322-mrtr-broken-server.ts": {
+      "bytes": 4478,
+      "git_blob": "49fcdb6de2575919f01a6b61c4b55d2e4af845b9"
+    },
+    "examples/servers/typescript/sep-2549-no-caching-hints.ts": {
+      "bytes": 2535,
+      "git_blob": "efee1c286647c79a1e0762a91c7c15277b6c1485"
+    },
+    "examples/servers/typescript/tsconfig.json": {
+      "bytes": 136,
+      "git_blob": "82a28b5eed373780507f8810db11a61ae8938bcc"
+    },
+    "lefthook-local.example.yml": {
+      "bytes": 373,
+      "git_blob": "3401c11a8794aeefba1ecb954b74a23b26d2b3f2"
+    },
+    "lefthook.yml": {
+      "bytes": 967,
+      "git_blob": "416265ee236dfb9089ec7f86adab42615c1da23c"
+    },
+    "package-lock.json": {
+      "bytes": 184233,
+      "git_blob": "ef3d6eaccdb4079bdd37cd3f5f31ba196c1cd4fc"
+    },
+    "package.json": {
+      "bytes": 1972,
+      "git_blob": "e59d9f0411a9f7e9e11f2b57f45bdbcab65e1137"
+    },
+    "scripts/sync-schema.ts": {
+      "bytes": 1907,
+      "git_blob": "a5d41a0b8b74aef5b6790551adc433133b53cba3"
+    },
+    "src/checks/checks.test.ts": {
+      "bytes": 3261,
+      "git_blob": "b82f17c9b51f9351ab6e11c128356f431f79ea02"
+    },
+    "src/checks/client.ts": {
+      "bytes": 2429,
+      "git_blob": "89b110685f8673325ad8492355dd32da9a27d180"
+    },
+    "src/checks/collapse.test.ts": {
+      "bytes": 2692,
+      "git_blob": "d590d468efdb40bb56e74c0d66c281ab5c2926e3"
+    },
+    "src/checks/collapse.ts": {
+      "bytes": 1559,
+      "git_blob": "f308cc74a322db79c36c68bf54d95b68f3ea1b62"
+    },
+    "src/checks/index.ts": {
+      "bytes": 113,
+      "git_blob": "ed443cea9b458ca2516a456e4cbcd4ed4c6b1037"
+    },
+    "src/checks/server.ts": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "src/connection/connection.test.ts": {
+      "bytes": 5132,
+      "git_blob": "fa3a17ddb2cfdc206de9ed7f02f8ee5dce1c2ff3"
+    },
+    "src/connection/index.ts": {
+      "bytes": 4114,
+      "git_blob": "47952c644f63d4818d3f035e26fee3d648e73ab2"
+    },
+    "src/connection/sdk-client.ts": {
+      "bytes": 6214,
+      "git_blob": "d00805042b259d896180d43a857279e7a8804abc"
+    },
+    "src/connection/select.ts": {
+      "bytes": 2274,
+      "git_blob": "46679005e8d733911b7811b9fc96185ce602364e"
+    },
+    "src/connection/stateful.ts": {
+      "bytes": 3838,
+      "git_blob": "3361f28348f4883698c960eb9b01349b58668ec6"
+    },
+    "src/connection/stateless.test.ts": {
+      "bytes": 5981,
+      "git_blob": "794369676d8589bb6529ec183fb83fa2ccb8193d"
+    },
+    "src/connection/stateless.ts": {
+      "bytes": 15938,
+      "git_blob": "38890ac891286acefd48db6d226fe49a61df6a57"
+    },
+    "src/connection/testing.ts": {
+      "bytes": 612,
+      "git_blob": "f9177d195369491be4911f4126a194184850e105"
+    },
+    "src/expected-failures.test.ts": {
+      "bytes": 17494,
+      "git_blob": "78bb55b8c229e2ed4d959ce0a31a683d1619b959"
+    },
+    "src/expected-failures.ts": {
+      "bytes": 10195,
+      "git_blob": "0f372f494dac14bfb72a170f5274b749b0e25d4f"
+    },
+    "src/index.ts": {
+      "bytes": 26143,
+      "git_blob": "788e4700424ce5ff18aecce90e839fdda0a16eb3"
+    },
+    "src/mock-server/index.ts": {
+      "bytes": 2178,
+      "git_blob": "7c8470e605f92e66bf32a9cc7938011cbde00721"
+    },
+    "src/mock-server/mock-server.test.ts": {
+      "bytes": 19161,
+      "git_blob": "43ecca64e5a503a0ac3f5f307c7633f43777dd8c"
+    },
+    "src/mock-server/select.ts": {
+      "bytes": 556,
+      "git_blob": "2a836f1c032be5a427880964d5141cb0d3e63acf"
+    },
+    "src/mock-server/stateful.ts": {
+      "bytes": 6411,
+      "git_blob": "0a80b7f727db35375c7e1cd29897d8f1bbeaf7b5"
+    },
+    "src/mock-server/stateless.ts": {
+      "bytes": 9899,
+      "git_blob": "3d06c86a521c570847d7486e5ea6213c40599384"
+    },
+    "src/mock-server/testing.ts": {
+      "bytes": 583,
+      "git_blob": "1e307b8deda83f91823cf146c4796418b2f327c3"
+    },
+    "src/new-sep/index.test.ts": {
+      "bytes": 3926,
+      "git_blob": "acc01bb7e684166cd87abe8fd2ecf9b451ad00c7"
+    },
+    "src/new-sep/index.ts": {
+      "bytes": 7620,
+      "git_blob": "aa50a3a6962945b07d764d3557acd6036fda4339"
+    },
+    "src/runner/DESIGN.md": {
+      "bytes": 7152,
+      "git_blob": "fb714d514d92e5adf55ede92d0ba3d9b40ee7150"
+    },
+    "src/runner/authorization-server.ts": {
+      "bytes": 3569,
+      "git_blob": "15d0ad5833a63a5ce7796c06f6c9fb16d17aff0b"
+    },
+    "src/runner/client.test.ts": {
+      "bytes": 2579,
+      "git_blob": "8ce464ac18b32b20c62038fc57517f5a880cb7c3"
+    },
+    "src/runner/client.ts": {
+      "bytes": 12169,
+      "git_blob": "2333e50a2914c9b2c03fa11ef868263a8115e582"
+    },
+    "src/runner/index.ts": {
+      "bytes": 393,
+      "git_blob": "a39a86ca7ce63649c302320221fa6b029df345e9"
+    },
+    "src/runner/server.test.ts": {
+      "bytes": 5489,
+      "git_blob": "f2a2faa719b2befd8a604adc642b432dad075594"
+    },
+    "src/runner/server.ts": {
+      "bytes": 5523,
+      "git_blob": "a2c624a07245b2ddd3b7912553aeacd5464204a8"
+    },
+    "src/runner/utils.ts": {
+      "bytes": 1775,
+      "git_blob": "14e94328500c51d4eeee9de8d2073a3b221d3bd3"
+    },
+    "src/scenarios/authorization-server/auth/helpers/createCallbackServer.ts": {
+      "bytes": 1533,
+      "git_blob": "f6780dd11060095585a3cdc6543a7660d1294b75"
+    },
+    "src/scenarios/authorization-server/auth/spec-references.ts": {
+      "bytes": 498,
+      "git_blob": "e89ec868809a7aa9216eac34d108741e0234d626"
+    },
+    "src/scenarios/authorization-server/authorization-code-grant.test.ts": {
+      "bytes": 8899,
+      "git_blob": "6b51bf696a19d1eeab753435773c6de97a58874c"
+    },
+    "src/scenarios/authorization-server/authorization-code-grant.ts": {
+      "bytes": 12562,
+      "git_blob": "48bcdeed8e941e1b0698eaaa451617286b4911fb"
+    },
+    "src/scenarios/authorization-server/authorization-server-metadata.test.ts": {
+      "bytes": 9545,
+      "git_blob": "a1a5d669eac46eae506fababccdfea9c9f2b60fe"
+    },
+    "src/scenarios/authorization-server/authorization-server-metadata.ts": {
+      "bytes": 6593,
+      "git_blob": "ec5fd3a30468b9a39181b9b7c0281133cf03fe32"
+    },
+    "src/scenarios/client/auth/authorization-server-migration.ts": {
+      "bytes": 8727,
+      "git_blob": "6c7c989e6994ce30e2eed0bbebe7f774926bbc9d"
+    },
+    "src/scenarios/client/auth/basic-cimd.ts": {
+      "bytes": 3676,
+      "git_blob": "1e4b37c52d242fd1c42c4773c2cf57494d87601f"
+    },
+    "src/scenarios/client/auth/client-credentials.ts": {
+      "bytes": 13961,
+      "git_blob": "d633f7a57fe3da3a3e9eaff28af213c3669beac9"
+    },
+    "src/scenarios/client/auth/discovery-metadata.ts": {
+      "bytes": 7681,
+      "git_blob": "777ee2e7acf82d01497b465fa0f65ddd3eb8a498"
+    },
+    "src/scenarios/client/auth/dpop.ts": {
+      "bytes": 12771,
+      "git_blob": "8b16ba5aae8bbec07123b69697e09750e9ff5876"
+    },
+    "src/scenarios/client/auth/enterprise-managed-authorization.ts": {
+      "bytes": 18666,
+      "git_blob": "eff5e255fac86344d2d212c5942454fa4664c731"
+    },
+    "src/scenarios/client/auth/helpers/createAuthServer.ts": {
+      "bytes": 29377,
+      "git_blob": "162f93aae4000fc0c4f91c85f26a7612a5f1de6a"
+    },
+    "src/scenarios/client/auth/helpers/createServer.ts": {
+      "bytes": 7083,
+      "git_blob": "cd32d21b6586a82b7e788a2e1d583715d53bb17c"
+    },
+    "src/scenarios/client/auth/helpers/createWorkloadJwt.test.ts": {
+      "bytes": 6746,
+      "git_blob": "7f69283012f407c005548ea4d4dcc100fac67a48"
+    },
+    "src/scenarios/client/auth/helpers/createWorkloadJwt.ts": {
+      "bytes": 2538,
+      "git_blob": "3728bd8976aef8e05aac7ae2f51ff81e39e0d001"
+    },
+    "src/scenarios/client/auth/helpers/dpopProof.test.ts": {
+      "bytes": 6794,
+      "git_blob": "e0d1efcdd76bfb6cf329f646cb0a64b82f0b400b"
+    },
+    "src/scenarios/client/auth/helpers/dpopProof.ts": {
+      "bytes": 6616,
+      "git_blob": "5ebc8687198c12d277921304f159192574298bce"
+    },
+    "src/scenarios/client/auth/helpers/dpopResourceAuth.test.ts": {
+      "bytes": 6766,
+      "git_blob": "8d20cf7a4de3fefa2e7279270ab3103499c2ba33"
+    },
+    "src/scenarios/client/auth/helpers/dpopResourceAuth.ts": {
+      "bytes": 9534,
+      "git_blob": "33f44be46a0a13fd00c12b2e8ca0f0917d10f874"
+    },
+    "src/scenarios/client/auth/helpers/dpopToken.test.ts": {
+      "bytes": 5096,
+      "git_blob": "710380930faa32fac43bdf324087cb079f45a088"
+    },
+    "src/scenarios/client/auth/helpers/dpopToken.ts": {
+      "bytes": 4100,
+      "git_blob": "afe5632ff5bba7268be58e0bfedfce4876de8319"
+    },
+    "src/scenarios/client/auth/helpers/mockTokenVerifier.ts": {
+      "bytes": 2012,
+      "git_blob": "022fa4ddd2c0be4219cd946dbd23730a53063f56"
+    },
+    "src/scenarios/client/auth/helpers/serverLifecycle.ts": {
+      "bytes": 816,
+      "git_blob": "7fb3886258fd937ce1e99236f4ff6bf0a9609844"
+    },
+    "src/scenarios/client/auth/helpers/validateDpopProofAtTokenEndpoint.test.ts": {
+      "bytes": 5222,
+      "git_blob": "e4a2310211b9afb676c35f7840a8d022972f7d82"
+    },
+    "src/scenarios/client/auth/index.test.ts": {
+      "bytes": 19374,
+      "git_blob": "57ff27acfcf708aec4035318bbd850a3f2ef5b63"
+    },
+    "src/scenarios/client/auth/index.ts": {
+      "bytes": 3271,
+      "git_blob": "7daec39bf3b41ee0d7fe2fed0003715ca0fc773e"
+    },
+    "src/scenarios/client/auth/issuer-parameter.ts": {
+      "bytes": 21592,
+      "git_blob": "b55e97467b5926dddd8039b7e5fe532547a0bc61"
+    },
+    "src/scenarios/client/auth/march-spec-backcompat.ts": {
+      "bytes": 6662,
+      "git_blob": "48f9170aaa72102952dfd1ba341bf5b74f5704f4"
+    },
+    "src/scenarios/client/auth/offline-access.ts": {
+      "bytes": 12111,
+      "git_blob": "77eccca5b21427ff7a2d51a53dd79ea42aea3fd2"
+    },
+    "src/scenarios/client/auth/pre-registration.ts": {
+      "bytes": 5279,
+      "git_blob": "11f82690f79f211e53ecb055364fbb08fb7c8873"
+    },
+    "src/scenarios/client/auth/resource-mismatch.ts": {
+      "bytes": 4367,
+      "git_blob": "2e8b02f9b0ca864dfd13cf1a776e0129ecae2090"
+    },
+    "src/scenarios/client/auth/scope-handling.ts": {
+      "bytes": 25699,
+      "git_blob": "227c6c45752be1480278c4b0b00e8e227c50e1eb"
+    },
+    "src/scenarios/client/auth/spec-references.ts": {
+      "bytes": 6282,
+      "git_blob": "972417bd5b0c4f5f876f0a2713eab9fc00e5f299"
+    },
+    "src/scenarios/client/auth/test_helpers/testClient.ts": {
+      "bytes": 7056,
+      "git_blob": "e21459a78441cae8f2fea41b496aba9f228b46fe"
+    },
+    "src/scenarios/client/auth/token-endpoint-auth.ts": {
+      "bytes": 10596,
+      "git_blob": "a79d54219a6b75102ecc6b5f3dcb698d1a4bbfa0"
+    },
+    "src/scenarios/client/auth/wif-jwt-bearer.ts": {
+      "bytes": 11173,
+      "git_blob": "4db0bd9c07612de7fc53f0d55af609962373d036"
+    },
+    "src/scenarios/client/draft-result-fields.test.ts": {
+      "bytes": 10918,
+      "git_blob": "1fdc6d449b14818911d9331ddc310ea7c7b129f7"
+    },
+    "src/scenarios/client/elicitation-defaults.ts": {
+      "bytes": 17782,
+      "git_blob": "d41702952de09bf20666d56cbfe1aa726177c806"
+    },
+    "src/scenarios/client/http-base.ts": {
+      "bytes": 5302,
+      "git_blob": "3e8cbe8e21fa4901f1b7ecc1c29a9b5e87bbaeae"
+    },
+    "src/scenarios/client/http-custom-headers.test.ts": {
+      "bytes": 6334,
+      "git_blob": "8a68f22a064f123a6591526119c5ec3c6ed0a7a1"
+    },
+    "src/scenarios/client/http-custom-headers.ts": {
+      "bytes": 35480,
+      "git_blob": "8e64e6ab71afff597f0f9cc4752587f64f6ba166"
+    },
+    "src/scenarios/client/http-standard-headers.test.ts": {
+      "bytes": 2900,
+      "git_blob": "9467456234d9b19b7b65138f3e9d0c9942399711"
+    },
+    "src/scenarios/client/http-standard-headers.ts": {
+      "bytes": 11678,
+      "git_blob": "227546b295fc76dd30071ae3572ae7c114fe9dcd"
+    },
+    "src/scenarios/client/initialize.ts": {
+      "bytes": 3975,
+      "git_blob": "be8d7082e759daccf11ed5dcd483cea3329b2d26"
+    },
+    "src/scenarios/client/json-schema-ref-deref.test.ts": {
+      "bytes": 5169,
+      "git_blob": "8445f1b4a44b4711c64fb6405e5baceb339d9fe3"
+    },
+    "src/scenarios/client/json-schema-ref-deref.ts": {
+      "bytes": 9186,
+      "git_blob": "aff791d34a8f9d6f660d4117cdc5301427643177"
+    },
+    "src/scenarios/client/mrtr-client.test.ts": {
+      "bytes": 1334,
+      "git_blob": "46268aa224361e7a481928e980367dd13a40f013"
+    },
+    "src/scenarios/client/mrtr-client.ts": {
+      "bytes": 15591,
+      "git_blob": "2bd5692eaf0b526e5a2d0a69af452c8fac3144f3"
+    },
+    "src/scenarios/client/request-metadata.test.ts": {
+      "bytes": 10790,
+      "git_blob": "0227d3f84cecdc8ed089d5c5fba1db7739444470"
+    },
+    "src/scenarios/client/request-metadata.ts": {
+      "bytes": 13942,
+      "git_blob": "54673b00a566417fd603a06e14d87bf71a7a0cd6"
+    },
+    "src/scenarios/client/sse-retry.ts": {
+      "bytes": 17598,
+      "git_blob": "e89b23eb7f42bb8ea144c160590b7e3069533714"
+    },
+    "src/scenarios/client/tools_call.test.ts": {
+      "bytes": 3485,
+      "git_blob": "ad6a58e60157d8ee276469e34667c4eeb99e2a06"
+    },
+    "src/scenarios/client/tools_call.ts": {
+      "bytes": 2731,
+      "git_blob": "b3dcb74c12b00fd1f40c008e2b5fd6e8a4a3be50"
+    },
+    "src/scenarios/index.ts": {
+      "bytes": 16667,
+      "git_blob": "db1584ea1ade58878ff54cb8610c4f57b19e01b9"
+    },
+    "src/scenarios/request-logger.ts": {
+      "bytes": 3228,
+      "git_blob": "a799ad05399696f224fe8c33dc256a7ec67b01f4"
+    },
+    "src/scenarios/server/all-scenarios.test.ts": {
+      "bytes": 5485,
+      "git_blob": "68387d739997086b52cdd4d1830289cc4b26968a"
+    },
+    "src/scenarios/server/caching.ts": {
+      "bytes": 9061,
+      "git_blob": "c7f4a5b5b1897cfc7a791e7c7c218e14cac992c4"
+    },
+    "src/scenarios/server/dns-rebinding.ts": {
+      "bytes": 8540,
+      "git_blob": "e93f810c88d8b0a05d7965edde51c71240282d15"
+    },
+    "src/scenarios/server/elicitation-defaults.ts": {
+      "bytes": 10632,
+      "git_blob": "20ed8ee9937bd7ae19f6aa1a4595754ea22877ea"
+    },
+    "src/scenarios/server/elicitation-enums.ts": {
+      "bytes": 14215,
+      "git_blob": "ac0486008014f7856ae995099c7ad6429026462a"
+    },
+    "src/scenarios/server/http-standard-headers.test.ts": {
+      "bytes": 8270,
+      "git_blob": "056d3b388d84449870191d5390764668f5c07756"
+    },
+    "src/scenarios/server/http-standard-headers.ts": {
+      "bytes": 36909,
+      "git_blob": "d5ca03208758b398ffc2ae2426dfa4b25ace4dfd"
+    },
+    "src/scenarios/server/input-required-result-helpers.ts": {
+      "bytes": 4451,
+      "git_blob": "a845a8f4ad8a27b183c039c0e06e0a968cfdc918"
+    },
+    "src/scenarios/server/input-required-result.ts": {
+      "bytes": 61369,
+      "git_blob": "66efb3f5c4338637c4dafe78f39150867937aa05"
+    },
+    "src/scenarios/server/json-schema-2020-12.ts": {
+      "bytes": 12665,
+      "git_blob": "23c4e22b72bcbb75bdcd4b2aea366c4b3bc509b9"
+    },
+    "src/scenarios/server/lifecycle.test.ts": {
+      "bytes": 2768,
+      "git_blob": "899d63b8c700164b9fc68196aff54b2f70a24c99"
+    },
+    "src/scenarios/server/lifecycle.ts": {
+      "bytes": 5760,
+      "git_blob": "2e2e0c9fc097048c2de2a9a8e60cbd503956ce38"
+    },
+    "src/scenarios/server/negative-mrtr.test.ts": {
+      "bytes": 4815,
+      "git_blob": "302284005cfc412b439fcf7b597ff4a75c076c87"
+    },
+    "src/scenarios/server/negative.test.ts": {
+      "bytes": 7584,
+      "git_blob": "0d248272e8b076c30731a1eafaff286af977438d"
+    },
+    "src/scenarios/server/prompts.ts": {
+      "bytes": 13917,
+      "git_blob": "c5a5f3803f0de21059aa09457972f37841e88303"
+    },
+    "src/scenarios/server/resources.ts": {
+      "bytes": 21117,
+      "git_blob": "382b0db837b3395ce67a0ba07013f7797ce300f9"
+    },
+    "src/scenarios/server/sse-multiple-streams.test.ts": {
+      "bytes": 5718,
+      "git_blob": "967f5d8a5357949acd9630dd9a364fb3be9e06cc"
+    },
+    "src/scenarios/server/sse-multiple-streams.ts": {
+      "bytes": 11104,
+      "git_blob": "d2eb493144e5247761ff4185c5da30c8c7743276"
+    },
+    "src/scenarios/server/sse-polling.test.ts": {
+      "bytes": 7659,
+      "git_blob": "e09cd9a1aca2a143abf2f2a164ff2de1eb799b38"
+    },
+    "src/scenarios/server/sse-polling.ts": {
+      "bytes": 20780,
+      "git_blob": "a15d5e981f5bda8f1acc8b4758d824a16297f6ca"
+    },
+    "src/scenarios/server/stateless.test.ts": {
+      "bytes": 29951,
+      "git_blob": "9bfd0b536695e049f954647184b724eef914a79a"
+    },
+    "src/scenarios/server/stateless.ts": {
+      "bytes": 51789,
+      "git_blob": "618dc0c5f2d88e168741468b8c1b5c7fcfd1aba6"
+    },
+    "src/scenarios/server/tasks/capability.ts": {
+      "bytes": 10672,
+      "git_blob": "2a0bcda064a69860b5fb67eac518be75679c505b"
+    },
+    "src/scenarios/server/tasks/composition.ts": {
+      "bytes": 7179,
+      "git_blob": "23daebeb8a8397aac86fe9637fe9efcdf4dc0478"
+    },
+    "src/scenarios/server/tasks/dispatch.ts": {
+      "bytes": 19923,
+      "git_blob": "65382fab2260fabf27d750ec29b7d8ff7995fab8"
+    },
+    "src/scenarios/server/tasks/headers.ts": {
+      "bytes": 12020,
+      "git_blob": "d523994d26fd29929a8a5f2ca071ebc913b9947c"
+    },
+    "src/scenarios/server/tasks/helpers.ts": {
+      "bytes": 3750,
+      "git_blob": "b786d9cab4c670c58032a77d7ec37718025e7626"
+    },
+    "src/scenarios/server/tasks/lifecycle.test.ts": {
+      "bytes": 2791,
+      "git_blob": "8926538bb2eb4ba31beee2402a511e3b30845fe3"
+    },
+    "src/scenarios/server/tasks/lifecycle.ts": {
+      "bytes": 20703,
+      "git_blob": "2214ff16be5a2d0b9858895f3604e0de8e195e53"
+    },
+    "src/scenarios/server/tasks/mrtr-helpers.ts": {
+      "bytes": 4744,
+      "git_blob": "f7da1851047b8d99f0a42315a178638be3a1d40d"
+    },
+    "src/scenarios/server/tasks/mrtr-input.ts": {
+      "bytes": 13709,
+      "git_blob": "b5b41c6167e7c5f6841ea591654b15114a3005da"
+    },
+    "src/scenarios/server/tasks/notifications.ts": {
+      "bytes": 2567,
+      "git_blob": "6022a704393a6a882deae07f476c8e98cdab93a2"
+    },
+    "src/scenarios/server/tasks/request-state.ts": {
+      "bytes": 6806,
+      "git_blob": "0e6559ca9cd248420ef83b9500ac0e96629a9bf7"
+    },
+    "src/scenarios/server/tasks/required-task-error.ts": {
+      "bytes": 8860,
+      "git_blob": "1da07c8f04ebace7e846dc572a7c38f3bd30f1e0"
+    },
+    "src/scenarios/server/tasks/wire-fields.ts": {
+      "bytes": 9374,
+      "git_blob": "73684a19c7d0004fc13445c0f3e59df159eb5b94"
+    },
+    "src/scenarios/server/tools.test.ts": {
+      "bytes": 3572,
+      "git_blob": "d54daa4c91f08a33351c0839fb158c06353f8576"
+    },
+    "src/scenarios/server/tools.ts": {
+      "bytes": 36205,
+      "git_blob": "f18df3cf325f1eda861708b47612518151801337"
+    },
+    "src/scenarios/server/utils.ts": {
+      "bytes": 8011,
+      "git_blob": "b22971582a17feb3259d7efb70bf69d33bd66b18"
+    },
+    "src/scenarios/spec-version.test.ts": {
+      "bytes": 5843,
+      "git_blob": "7e5f45177a7294a37f4e4a839f53791cd865961f"
+    },
+    "src/scenarios/untestable.test.ts": {
+      "bytes": 1221,
+      "git_blob": "4ad06b8f800492be2ea5450d3adc4d793bbb3f5e"
+    },
+    "src/scenarios/untestable.ts": {
+      "bytes": 2105,
+      "git_blob": "5ebd8220e52a3999fca13542e66ead28d6dc7337"
+    },
+    "src/schemas.ts": {
+      "bytes": 2350,
+      "git_blob": "040aa2e39e122f289bae757aafc6f592a5984728"
+    },
+    "src/schemas/context.ts": {
+      "bytes": 1321,
+      "git_blob": "cea338a70eeb94edf02695f68a35ea5091aec5fd"
+    },
+    "src/sdk-runner/checkout.ts": {
+      "bytes": 3931,
+      "git_blob": "fb91e07aea8e2a8aefb8feb69559164f535beadd"
+    },
+    "src/sdk-runner/config.ts": {
+      "bytes": 4053,
+      "git_blob": "edcd77a8a89111da47a38adba9a2de96232b6013"
+    },
+    "src/sdk-runner/index.ts": {
+      "bytes": 11192,
+      "git_blob": "cfe959cc1e020a33cb5dedb53ff637463a0f089c"
+    },
+    "src/sdk-runner/known-sdks.ts": {
+      "bytes": 7157,
+      "git_blob": "9c430678715b60dd2f61fc033bf5638795b4884a"
+    },
+    "src/sdk-runner/sdk-runner.test.ts": {
+      "bytes": 8095,
+      "git_blob": "7ce0f79b906c8183c7a5b38802e56e47a29af242"
+    },
+    "src/seps/sep-1932.yaml": {
+      "bytes": 5433,
+      "git_blob": "c3c650f399fa0893e28b5117b2241aebdac78b09"
+    },
+    "src/seps/sep-1933.yaml": {
+      "bytes": 2970,
+      "git_blob": "5e72f51c6bfb8108ec250a5f83765ec3b72ddf3e"
+    },
+    "src/seps/sep-2106.yaml": {
+      "bytes": 2223,
+      "git_blob": "870484e6491f63e150b759aa6d10ada5731cda3d"
+    },
+    "src/seps/sep-2164.yaml": {
+      "bytes": 575,
+      "git_blob": "83c11ce9ce9b81011d96d672fbac9388b2971e84"
+    },
+    "src/seps/sep-2207.yaml": {
+      "bytes": 1477,
+      "git_blob": "97439df3983a0bb7ad21f878fb51d043cab68dc4"
+    },
+    "src/seps/sep-2243.yaml": {
+      "bytes": 4972,
+      "git_blob": "a39b6d2c05eadd8ce568bbacf9890be2cd551811"
+    },
+    "src/seps/sep-2260.yaml": {
+      "bytes": 4118,
+      "git_blob": "b5e0306bcd90e114864c76bbe6a57441b4db3f51"
+    },
+    "src/seps/sep-2322.yaml": {
+      "bytes": 8879,
+      "git_blob": "143a7ed1932e0dfd63204b6310f140180e55f34d"
+    },
+    "src/seps/sep-2350.yaml": {
+      "bytes": 1578,
+      "git_blob": "5f3ebfb14661d4869f8b7cf9015259b56c90dab8"
+    },
+    "src/seps/sep-2352.yaml": {
+      "bytes": 1759,
+      "git_blob": "5f0251106255378efeded4ddfd54b587166ed385"
+    },
+    "src/seps/sep-2468.yaml": {
+      "bytes": 3840,
+      "git_blob": "969f4a444b15ccc8dd6a972c5ff2b0524e8ad419"
+    },
+    "src/seps/sep-2549.yaml": {
+      "bytes": 4438,
+      "git_blob": "4a5c1a508ffaf114c06a2cba6c6ca27fff932669"
+    },
+    "src/seps/sep-2575.yaml": {
+      "bytes": 11573,
+      "git_blob": "057355d88318c59d14a744eef8367584f4d66b14"
+    },
+    "src/seps/sep-2663.yaml": {
+      "bytes": 15898,
+      "git_blob": "dec9dd93f721de6ee642daef9aab81aa3b7678b4"
+    },
+    "src/seps/sep-837.yaml": {
+      "bytes": 1344,
+      "git_blob": "d97d00a34ef3b3488b4b6702b8e3ecbd43dcb415"
+    },
+    "src/seps/traceability.json": {
+      "bytes": 56862,
+      "git_blob": "bdf6c6289fdf5a727a64697ecdde30b96b72635e"
+    },
+    "src/spec-types/2025-03-26.schema.json": {
+      "bytes": 89428,
+      "git_blob": "a1e3f26799d06421eea7e2334e6d279233c6d090"
+    },
+    "src/spec-types/2025-03-26.ts": {
+      "bytes": 34253,
+      "git_blob": "6da0f596f66b5ce6391ccb9450646f4cf084e61d"
+    },
+    "src/spec-types/2025-06-18.schema.json": {
+      "bytes": 108236,
+      "git_blob": "775dc991791e6008f662544e70f76f9d47be32ac"
+    },
+    "src/spec-types/2025-06-18.ts": {
+      "bytes": 42362,
+      "git_blob": "0df081ee2979a1f09a9cf6f44dae5c3a0252fecc"
+    },
+    "src/spec-types/2025-11-25.schema.json": {
+      "bytes": 174326,
+      "git_blob": "9d2e662a2676124cfafcf893af4f263f0041554f"
+    },
+    "src/spec-types/2025-11-25.ts": {
+      "bytes": 66569,
+      "git_blob": "b734ae30eb4941679a19e82df9cb9baafbde9eb6"
+    },
+    "src/spec-types/README.md": {
+      "bytes": 1098,
+      "git_blob": "f13187472c80c6ea6fc5560f90a0a56c86d8c948"
+    },
+    "src/spec-types/SOURCE": {
+      "bytes": 62,
+      "git_blob": "a4891c9d74e46fcca07f7422567324a382ed08b4"
+    },
+    "src/spec-types/draft.schema.json": {
+      "bytes": 180695,
+      "git_blob": "cc44564e33305dbc07e820cdd0a97648f3852019"
+    },
+    "src/spec-types/draft.ts": {
+      "bytes": 97900,
+      "git_blob": "110485f68da17d54cb4b9119add86ca958af3a94"
+    },
+    "src/tier-check/checks/files.ts": {
+      "bytes": 1402,
+      "git_blob": "1fd768de9db46f64b81f422310fef4cec87259a1"
+    },
+    "src/tier-check/checks/labels.ts": {
+      "bytes": 2110,
+      "git_blob": "a2b37b7a0b9d82a905f6ddac484ccc0be087888f"
+    },
+    "src/tier-check/checks/p0.ts": {
+      "bytes": 2384,
+      "git_blob": "25fad1536d6626316e706288d7610e06b99506e3"
+    },
+    "src/tier-check/checks/release.ts": {
+      "bytes": 1356,
+      "git_blob": "3eb53f1d3a9dae74ec091025b203510a43d00ee5"
+    },
+    "src/tier-check/checks/spec-tracking.ts": {
+      "bytes": 2511,
+      "git_blob": "ce4c101cee5965e7cd52b214612d37b842e4d221"
+    },
+    "src/tier-check/checks/test-conformance-results.ts": {
+      "bytes": 7638,
+      "git_blob": "ba16be215495fc7db387d94f979c56849ec5428c"
+    },
+    "src/tier-check/checks/triage.ts": {
+      "bytes": 3022,
+      "git_blob": "523f4ec0e71c4ecc74b72fb5d34a07909570f1c1"
+    },
+    "src/tier-check/index.ts": {
+      "bytes": 6706,
+      "git_blob": "1cd32c19808dd4462c11ca31f9ca40055c60cbc5"
+    },
+    "src/tier-check/output.ts": {
+      "bytes": 11762,
+      "git_blob": "ab0d2fbeb7989373e335b37a52e5995f55a42a65"
+    },
+    "src/tier-check/tier-logic.ts": {
+      "bytes": 2144,
+      "git_blob": "cf096c9798495e3148aef3fa109829e451a7ae89"
+    },
+    "src/tier-check/types.ts": {
+      "bytes": 2173,
+      "git_blob": "eacbcbe6046f3599292e4fbff6e6c56fd620ebd2"
+    },
+    "src/traceability/index.test.ts": {
+      "bytes": 4001,
+      "git_blob": "721365e691766ecaa4fb7ccf9b4ed7a95b3de572"
+    },
+    "src/traceability/index.ts": {
+      "bytes": 10224,
+      "git_blob": "055076da993584a70d6e3cdc3d825aa3f506a166"
+    },
+    "src/traceability/types.ts": {
+      "bytes": 2664,
+      "git_blob": "8edc0221724cefe55656282428db349354149902"
+    },
+    "src/types.test.ts": {
+      "bytes": 913,
+      "git_blob": "6612196e9b123c5128944fb9406ddc7ec359c4ac"
+    },
+    "src/types.ts": {
+      "bytes": 4860,
+      "git_blob": "5960945bbb335c8c5024e883de2b42a179faafd9"
+    },
+    "src/validation/vitest-hooks.ts": {
+      "bytes": 904,
+      "git_blob": "fd9cac1ceec27b6df076bb45b8a32ec10e22e32b"
+    },
+    "src/validation/wire-schema.test.ts": {
+      "bytes": 18234,
+      "git_blob": "98fc4d7b79e515aa3b29a1aa9597d82b2bb2707d"
+    },
+    "src/validation/wire-schema.ts": {
+      "bytes": 14974,
+      "git_blob": "8b45849ddc2f7179670b8330c0690e625a0d24e1"
+    },
+    "tsconfig.json": {
+      "bytes": 400,
+      "git_blob": "21ed5ae12bbee7f85f109f46d3a1d12dd7f94f93"
+    },
+    "vitest.config.ts": {
+      "bytes": 743,
+      "git_blob": "946044fa65277e1a4f8e285a83169434ea174393"
+    },
+    "src/runner/oauth-authorization-origins.test.ts": {
+      "bytes": 14514,
+      "git_blob": "23306c40eb11174b24d67e088a9ac65e2ca5dd53"
+    }
+  },
+  "patch": {
+    "path": "oauth-origin-fixture.patch",
+    "bytes": 18059,
+    "sha256": "665dbb058fbe47d0fc78d5dcad8a93c4b23d5790e69c212cd256a04c6fe88d64"
+  },
+  "controls": {
+    "file": "src/runner/oauth-authorization-origins.test.ts",
+    "suite": "OAuth authorization origin sideband",
+    "titles": [
+      "missing_auth_url_clears_inherited_authorization",
+      "trusted_auth_url_is_the_only_authorization_source",
+      "context_cannot_extend_authorization_sideband",
+      "canonical_origin_preserves_scheme_host_and_port",
+      "malformed_fixture_url_prevents_spawn_and_stops_scenario",
+      "unsupported_or_credentialed_fixture_url_is_rejected",
+      "all_three_token_auth_modes_return_owned_auth_server",
+      "all_four_metadata_variants_return_owned_auth_origin"
+    ]
+  },
+  "caps": {
+    "whole_seconds": 420,
+    "command_seconds": 400,
+    "retention_seconds": 20
+  },
+  "scope_notes": [
+    "Root may authorize one first original SDK qualification under the unchanged 420 = 400 + 20 second fixture bound and existing SDK deadlines. Activation is admission to execute; completion evidence is retained separately.",
+    "This is a reviewed fork of the exact upstream source, with three modified sources and one new control source. It is not an unchanged official npm distribution.",
+    "Eight mocked startup/spawn component controls are distinct from the three-protocol authenticated HTTP conformance run.",
+    "The original 23 baseline failures and 12 subsequent failures remain historical facts. This source manifest grants no successful execution or conformance qualification.",
+    "The 420-second build acceptance deadline is separate from the 8-minute workflow step timeout and the pre-existing 60-minute SDK job maximum.",
+    "Dependency lock identity is pinned. npm ci success does not individually qualify every installed runtime dependency file.",
+    "The original SDK build and both consumers must bind this event source, its sole B32 parent, the original run/attempt/job, the complete source tree and the exact staged Codex/sibling bytes. An old receipt at the same HEAD does not qualify.",
+    "GITHUB_SHA retains the actual provider event identity. The SDK explicitly checks out the PR source head; a pull-request event merge is separately checked for equal tree and exact [B32, source] parents.",
+    "Each identity observation uses at most 20 seconds inside existing build/fixture/SDK deadlines. No identity observation adds a native execution budget or permits another attempt.",
+    "Both parent slots bind actual #7179 head 5a842a417dc288e22d506fb16bc691b889fa4297 and tree b8b977b8c6e8970a09f7afd1474c258e7f2142b8. Any successor requires its actual independent receipt, both literal replacements and a new complete outside-path comparison before activation."
+  ],
+  "qualifications": {
+    "source_only": true,
+    "build_passed": false,
+    "controls_passed": false,
+    "conformance_passed": false
+  }
+}

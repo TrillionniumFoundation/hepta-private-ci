@@ -45,6 +45,7 @@ CIMD_CLIENT_METADATA_URL = "https://conformance-test.local/client-metadata.json"
 PRE_REGISTERED_CLIENT_SECRET_ENV_VAR = "MCP_CONFORMANCE_CLIENT_SECRET"
 CLIENT_REGISTRATION_OVERRIDE_ENV_VAR = "CODEX_CONFORMANCE_CLIENT_REGISTRATION"
 AUTH_COMPLETION_METHOD = "mcpServer/oauthLogin/completed"
+AUTHORIZATION_ORIGINS_ENV_VAR = "MCP_CONFORMANCE_AUTHORIZATION_ORIGINS"
 EXPECTED_AUTH_REJECTION_SCENARIOS = frozenset(
     {
         "auth/resource-mismatch",
@@ -82,6 +83,85 @@ def _conformance_context() -> dict[str, object]:
     if not isinstance(decoded, dict):
         raise AdapterFailure("MCP_CONFORMANCE_CONTEXT was not an object")
     return decoded
+
+
+def _authorization_origins(raw: str | None) -> list[str]:
+    """Parse only the trusted scenario-start sideband, never discovery data."""
+    if raw is None:
+        return []
+    if len(raw) > 16 * 16384 + 4096:
+        raise AdapterFailure(
+            "OAuth authorization origin sideband exceeds its size bound"
+        )
+    try:
+        values = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise AdapterFailure(
+            "invalid OAuth authorization origin sideband JSON"
+        ) from exc
+    if not isinstance(values, list) or len(values) > 16:
+        raise AdapterFailure(
+            "OAuth authorization origins must be an array of at most 16 strings"
+        )
+    origins: list[str] = []
+    for value in values:
+        if not isinstance(value, str) or len(value) > 16384 or not value.isascii():
+            raise AdapterFailure(
+                "OAuth authorization origin must be bounded canonical ASCII"
+            )
+        try:
+            parsed = urllib.parse.urlsplit(value)
+            host = parsed.hostname
+            port = parsed.port
+            if (
+                parsed.scheme not in {"http", "https"}
+                or not host
+                or parsed.username is not None
+                or parsed.password is not None
+                or parsed.path
+                or parsed.query
+                or parsed.fragment
+                or "%" in host
+                or (port is not None and not 1 <= port <= 65535)
+            ):
+                raise ValueError("not an HTTP origin")
+            try:
+                address = ipaddress.ip_address(host)
+            except ValueError:
+                final_label = host.rsplit(".", 1)[-1]
+                if final_label.isdigit() or final_label.startswith("0x"):
+                    raise ValueError("noncanonical IPv4 spelling") from None
+                if any(
+                    not label
+                    or label.startswith("-")
+                    or label.endswith("-")
+                    or any(
+                        character not in "abcdefghijklmnopqrstuvwxyz0123456789-"
+                        for character in label
+                    )
+                    for label in host.split(".")
+                ):
+                    raise ValueError("noncanonical host") from None
+                canonical_host = host
+            else:
+                canonical_host = (
+                    f"[{address.compressed}]" if address.version == 6 else str(address)
+                )
+            default_port = 80 if parsed.scheme == "http" else 443
+            port_suffix = (
+                f":{port}" if port is not None and port != default_port else ""
+            )
+            canonical = f"{parsed.scheme}://{canonical_host}{port_suffix}"
+            if canonical != value:
+                raise ValueError("noncanonical origin")
+        except ValueError as exc:
+            raise AdapterFailure(
+                "invalid canonical OAuth authorization origin"
+            ) from exc
+        if value in origins:
+            raise AdapterFailure("duplicate OAuth authorization origin")
+        origins.append(value)
+    return origins
 
 
 def _result_or_raise(
@@ -338,18 +418,22 @@ def _write_auth_registration(
     server_url: str,
     oauth_client_id: str | None,
     oauth_client_secret_env_var: str | None = None,
+    authorization_origins: Sequence[str] = (),
 ) -> None:
     existing = config_path.read_text(encoding="utf-8") if config_path.exists() else ""
     block = f"\n[mcp_servers.{TEST_SERVER_NAME}]\nurl = {json.dumps(server_url, ensure_ascii=False)}\n"
-    if oauth_client_id is not None:
-        block += (
-            f"\n[mcp_servers.{TEST_SERVER_NAME}.oauth]\n"
-            f"client_id = {json.dumps(oauth_client_id, ensure_ascii=False)}\n"
-        )
-        if oauth_client_secret_env_var is not None:
+    if oauth_client_id is not None or authorization_origins:
+        block += f"\n[mcp_servers.{TEST_SERVER_NAME}.oauth]\n"
+        if oauth_client_id is not None:
+            block += f"client_id = {json.dumps(oauth_client_id, ensure_ascii=False)}\n"
+            if oauth_client_secret_env_var is not None:
+                block += (
+                    "client_secret_env_var = "
+                    f"{json.dumps(oauth_client_secret_env_var, ensure_ascii=False)}\n"
+                )
+        if authorization_origins:
             block += (
-                "client_secret_env_var = "
-                f"{json.dumps(oauth_client_secret_env_var, ensure_ascii=False)}\n"
+                f"authorization_origins = {json.dumps(list(authorization_origins))}\n"
             )
     config_path.write_text(existing.rstrip() + "\n" + block, encoding="utf-8")
 
@@ -712,6 +796,13 @@ def run_adapter(server_url: str) -> dict[str, object]:
         os.environ.get("CODEX_CONFORMANCE_REQUIRE_AUTOMATIC_AUTH", "0") == "1"
     )
     context = _conformance_context()
+    authorization_origins = _authorization_origins(
+        os.environ.get(AUTHORIZATION_ORIGINS_ENV_VAR)
+    )
+    if authorization_origins and not scenario.startswith("auth/"):
+        raise AdapterFailure(
+            "only authentication fixtures may supply OAuth authorization origins"
+        )
 
     codex_home.mkdir(mode=0o700, parents=True, exist_ok=True)
     workspace = codex_home / "workspace"
@@ -720,6 +811,9 @@ def run_adapter(server_url: str) -> dict[str, object]:
     # Scenario context can contain ephemeral OAuth client secrets. The adapter
     # consumes it directly and does not expose the full blob to Codex.
     env.pop("MCP_CONFORMANCE_CONTEXT", None)
+    for key in list(env):
+        if key.upper() == AUTHORIZATION_ORIGINS_ENV_VAR:
+            del env[key]
     steps: list[Step] = []
     registered = False
     error: str | None = None
@@ -780,6 +874,7 @@ def run_adapter(server_url: str) -> dict[str, object]:
                 server_url=server_url,
                 oauth_client_id=oauth_client_id,
                 oauth_client_secret_env_var=oauth_client_secret_env_var,
+                authorization_origins=authorization_origins,
             )
             registered = True
             steps.append(
