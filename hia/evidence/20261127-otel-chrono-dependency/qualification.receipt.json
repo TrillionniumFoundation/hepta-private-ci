@@ -1,0 +1,34 @@
+{
+  "scope": "codex-otel only; not whole HIA, not production retirement",
+  "source_base": "5c07ad6792d73357f3678a27874d0565a479d474",
+  "source_tree": "a3fdd93245527d9b812e4b8dca412c1ca13d78a2",
+  "source_sha256": {
+    "codex-rs/Cargo.lock": "a15c40f90ec29252277f2803f0cf4f01d660d6ce9a571feca9ecd8ba78d379fa",
+    "codex-rs/otel/Cargo.toml": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f",
+    "codex-rs/otel/src/events/shared.rs": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9",
+    "codex-rs/otel/src/events/shared_tests.rs": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+  },
+  "module_lock_sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+  "tests_passed": 62,
+  "existing_skips": 1,
+  "cargo_job": "1a21df17861-ffbe-54e4",
+  "final_job": "1a21e2998d6-ffbe-5554",
+  "prior_failures_retained": [
+    "initial five-node inventory assumption",
+    "format invoked using system Python 3.9.6",
+    "original Bazel V8 archive download timeout and partial invalid archive retained in original isolated root"
+  ],
+  "evidence_sha256": {
+    "cargo-ledger.json": "40ba6a6436195e06370f8fa44bae283ef52efd23cf6ef2f4c8bf26a3132e4d20",
+    "format-bazel-ledger.json": "08c519fb306ed216c550e6884255fe56874d44581d27c7df2b09f3490104b66e",
+    "metadata-inventory-initial-failure.json": "d58beb9ae078a0f2a8d7dfe01cd6484ad19b2ea3514670eca4a6eb8a29ff9cdd",
+    "cargo-test.log.gz": "e9a5abb97d14afb9ee4f209381f649e558d6b5abb092c553e7332090761fc1dc",
+    "cargo-strict-clippy.log.gz": "5d31b6920a1ce9042e86d10f37ff7f96d34c2392fb803cc3bc4564319cae9b56",
+    "cargo-scoped-fix.log.gz": "0735beb5782a1d67b09beb50b53d48e5bc1a55f815829ba9a697711a92af4f3b",
+    "cargo-format.log.gz": "54297b9215877d059931bf7f3e8788cb14246969b5b8df38b1566f56c0be2c49",
+    "final-format.log.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "final-bazel-lock-update.log.gz": "ddd6ae76b6b597d5100fd7193fccb971d1ed4763cdf5a3d34e60d9f49c334a76",
+    "final-bazel-lock-check.log.gz": "6225601e5ae25987f75d672e5765058a52588ff68c18b6c7ea552a783b5d96c8",
+    "final-diff-check.log.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+  }
+}

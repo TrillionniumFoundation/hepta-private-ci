@@ -1,0 +1,37 @@
+{
+  "base": "5c07ad6792d73357f3678a27874d0565a479d474",
+  "tree": "a3fdd93245527d9b812e4b8dca412c1ca13d78a2",
+  "source_before": {
+    "codex-rs/Cargo.lock": "a15c40f90ec29252277f2803f0cf4f01d660d6ce9a571feca9ecd8ba78d379fa",
+    "codex-rs/otel/Cargo.toml": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f",
+    "codex-rs/otel/src/events/shared.rs": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9",
+    "codex-rs/otel/src/events/shared_tests.rs": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+  },
+  "lock_packages": 1534,
+  "lock_changed_only": [
+    [
+      "codex-otel",
+      "0.0.0",
+      ""
+    ]
+  ],
+  "steps": [
+    {
+      "name": "locked-metadata",
+      "argv": [
+        "/opt/homebrew/opt/rustup/bin/cargo",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--format-version",
+        "1"
+      ],
+      "returncode": 0,
+      "seconds": 1.206061291,
+      "log_bytes": 8404347,
+      "log_sha256": "283ffed83e2d5f8ff812a971ef04afc68006cc32d31bb1d4fed2f7e40087b878"
+    }
+  ],
+  "scope_qualified": false,
+  "whole": false
+}

@@ -1,0 +1,197 @@
+{
+  "base": "5c07ad6792d73357f3678a27874d0565a479d474",
+  "tree": "a3fdd93245527d9b812e4b8dca412c1ca13d78a2",
+  "source_before": {
+    "codex-rs/Cargo.lock": "a15c40f90ec29252277f2803f0cf4f01d660d6ce9a571feca9ecd8ba78d379fa",
+    "codex-rs/otel/Cargo.toml": "0e78e49f15f9ad5329651edd3c421413dd414cd91b4105ad24503f8feb4fb74f",
+    "codex-rs/otel/src/events/shared.rs": "7ee035517eca15d324fea89ae923d02ded3aaf81f8efe831c5a8e4a8b41733f9",
+    "codex-rs/otel/src/events/shared_tests.rs": "046dfba4025e1f170bbcc45f60adcb0bcd245889b06c9107ca8af20c5c63a339"
+  },
+  "retained_metadata": "/Users/qianqi/work/hia-otel-chrono-20261127-0852/otel-current-base-v1/qualification-v1/locked-metadata.log",
+  "retained_metadata_sha": "283ffed83e2d5f8ff812a971ef04afc68006cc32d31bb1d4fed2f7e40087b878",
+  "v1_failure": "full metadata has seven SQLx nodes, not five; retained original assertion failure; all seven now checked for absent Chrono feature and edges",
+  "resolved_otel_deps": [
+    "codex-api",
+    "codex-protocol",
+    "codex-utils-absolute-path",
+    "codex-utils-string",
+    "eventsource-stream",
+    "gethostname",
+    "http",
+    "libc",
+    "opentelemetry",
+    "opentelemetry-appender-tracing",
+    "opentelemetry-otlp",
+    "opentelemetry-semantic-conventions",
+    "opentelemetry_sdk",
+    "os_info",
+    "pretty_assertions",
+    "reqwest",
+    "seccompiler",
+    "serde",
+    "serde_json",
+    "strum_macros",
+    "thiserror",
+    "time",
+    "tokio",
+    "tokio-tungstenite",
+    "tracing",
+    "tracing-opentelemetry",
+    "tracing-subscriber"
+  ],
+  "sqlx_nodes": {
+    "sqlx": [
+      "_rt-tokio",
+      "_sqlite",
+      "derive",
+      "json",
+      "macros",
+      "migrate",
+      "runtime-tokio",
+      "sqlite-bundled",
+      "sqlx-macros",
+      "sqlx-sqlite",
+      "time",
+      "tls-rustls",
+      "tls-rustls-ring",
+      "tls-rustls-ring-webpki",
+      "uuid"
+    ],
+    "sqlx-core": [
+      "_rt-tokio",
+      "_tls-rustls",
+      "_tls-rustls-ring-webpki",
+      "any",
+      "crc",
+      "default",
+      "json",
+      "migrate",
+      "offline",
+      "rustls",
+      "serde",
+      "serde_json",
+      "sha2",
+      "time",
+      "tokio",
+      "tokio-stream",
+      "uuid",
+      "webpki-roots"
+    ],
+    "sqlx-macros": [
+      "_rt-tokio",
+      "_tls-rustls-ring-webpki",
+      "default",
+      "derive",
+      "json",
+      "macros",
+      "migrate",
+      "sqlite",
+      "time",
+      "uuid"
+    ],
+    "sqlx-macros-core": [
+      "_rt-tokio",
+      "_sqlite",
+      "_tls-rustls-ring-webpki",
+      "default",
+      "derive",
+      "json",
+      "macros",
+      "migrate",
+      "sqlite",
+      "sqlx-sqlite",
+      "thiserror",
+      "time",
+      "tokio",
+      "uuid"
+    ],
+    "sqlx-mysql": [
+      "json",
+      "migrate",
+      "offline",
+      "serde",
+      "time",
+      "uuid"
+    ],
+    "sqlx-postgres": [
+      "json",
+      "migrate",
+      "offline",
+      "time",
+      "uuid"
+    ],
+    "sqlx-sqlite": [
+      "bundled",
+      "json",
+      "migrate",
+      "offline",
+      "serde",
+      "time",
+      "uuid"
+    ]
+  },
+  "steps": [
+    {
+      "name": "test",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-otel"
+      ],
+      "returncode": 0,
+      "seconds": 37.305286249999995,
+      "log_bytes": 20336,
+      "log_sha256": "2b0b5019bb5b2813a22203fc638963e9034e7c7a5938efe38dc39563d54c868d"
+    },
+    {
+      "name": "strict-clippy",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-otel",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "seconds": 20.165439499999998,
+      "log_bytes": 3113,
+      "log_sha256": "15de6a31c0078ccb5ae7560e432dd03655ae751c9b33f2221870c24437cc9c3d"
+    },
+    {
+      "name": "scoped-fix",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-otel"
+      ],
+      "returncode": 0,
+      "seconds": 10.962124374999995,
+      "log_bytes": 2597,
+      "log_sha256": "ce22271b220483b69847b5f3cefc7505b081d127e95aa3f808a7d3e2cde2e67a"
+    },
+    {
+      "name": "format",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "returncode": 1,
+      "seconds": 0.0658403749999934,
+      "log_bytes": 358,
+      "log_sha256": "8093c98c29898ba04e053a637994821fca066edca987e9a04f4d084c9d23324d"
+    }
+  ],
+  "scope_qualified": false,
+  "whole": false,
+  "cargo_scope_pass": true
+}
