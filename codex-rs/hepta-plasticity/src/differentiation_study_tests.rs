@@ -185,9 +185,8 @@ fn six_arm_study_recommends_only_owner_review_and_enters_existing_proposal_owner
         evaluate_differentiation_study_v1(&plan, &demand, &study),
         Ok(receipt.clone())
     );
-    let proposed =
-        propose_differentiation_topology_v1(&plan, &receipt, proposal(&plan, &receipt))
-            .expect("proposal");
+    let proposed = propose_differentiation_topology_v1(&plan, &receipt, proposal(&plan, &receipt))
+        .expect("proposal");
     assert_eq!(
         (proposed.status, proposed.authority),
         (

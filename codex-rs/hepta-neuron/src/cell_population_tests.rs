@@ -165,9 +165,8 @@ fn expert_versions_bind_registered_capabilities_and_cannot_alias_a_bundle() {
         Err(CellPopulationErrorV1::UnregisteredType(id("unknown.type")))
     );
     let mut value = original.clone();
-    value.experts[0].capability_digest = original.capabilities[1]
-        .digest()
-        .expect("other capability");
+    value.experts[0].capability_digest =
+        original.capabilities[1].digest().expect("other capability");
     assert_eq!(
         value.population(limits()),
         Err(CellPopulationErrorV1::CapabilityMismatch(id("expert.0")))
@@ -176,7 +175,9 @@ fn expert_versions_bind_registered_capabilities_and_cannot_alias_a_bundle() {
     value.experts[1].version_id = id("expert.0");
     assert_eq!(
         value.population(limits()),
-        Err(CellPopulationErrorV1::DuplicateExpertVersion(id("expert.0")))
+        Err(CellPopulationErrorV1::DuplicateExpertVersion(id(
+            "expert.0"
+        )))
     );
     let mut value = original.clone();
     value.experts[1].parameter_bundle_digest = value.experts[0].parameter_bundle_digest;
@@ -346,7 +347,9 @@ fn invalid_limits_and_state_reservation_overflow_fail_closed() {
             max_reserved_state_bytes: u64::MAX,
             ..original
         }),
-        Err(CellPopulationErrorV1::CapacityExceeded("reserved state bytes"))
+        Err(CellPopulationErrorV1::CapacityExceeded(
+            "reserved state bytes"
+        ))
     );
 }
 
