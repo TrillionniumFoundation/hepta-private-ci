@@ -1,0 +1,80 @@
+{
+  "schema": "hia.native37-complete-original-pipeline.v1",
+  "tested_source": "5756a7a47269abfb2a1e84c70b59d7ac5cdb6be6",
+  "run": 46050512359,
+  "all_four_jobs_natural_success": true,
+  "job_ids": [
+    140680360227,
+    140680360582,
+    140680360600,
+    140680360645
+  ],
+  "raw_logs": [
+    {
+      "job_id": 140680360227,
+      "run": 46050512359,
+      "bytes": 2509146,
+      "sha256": "435d4f1381d64b94e7b369b47d699997081dcdf3f671d148d7bb47dd331ad752"
+    },
+    {
+      "job_id": 140680360582,
+      "run": 46050512359,
+      "bytes": 304977,
+      "sha256": "f509cdd7b51075132a8015446b1ee781b71a39a7d5695724916559f00d0d74ba"
+    },
+    {
+      "job_id": 140680360600,
+      "run": 46050512359,
+      "bytes": 118166,
+      "sha256": "90e60975544ad0d5aba652410918ddab3cc007534a715c54842615f760b2a1c0"
+    },
+    {
+      "job_id": 140680360645,
+      "run": 46050512359,
+      "bytes": 1640554,
+      "sha256": "82648f15402d2c6a82c76fe6dafec417b7246eb1ce8939843b914bc9f14aa488"
+    }
+  ],
+  "artifact_count": 5,
+  "original_zip_bytes": 172219865,
+  "original_member_count": 39696,
+  "all_original_artifact_members_preserved": true,
+  "unique_member_count": 18778,
+  "unique_uncompressed_bytes": 1641001192,
+  "cas_index": {
+    "uncompressed_bytes": 17455956,
+    "uncompressed_sha256": "0d1e2b595979d2f34dadd2a4b82fe57742a565b0ef90a5fda0d97af6fe22bae6",
+    "member_zip_metadata_preserved": true
+  },
+  "cas_archive": {
+    "bytes": 100827964,
+    "sha256": "85da09cbad8f2e55e55482a020c5df44f81da5c6f72f3618f2652403f2ecf727",
+    "parts": [
+      {
+        "name": "artifact-members.tar.xz.part000",
+        "bytes": 33554432,
+        "sha256": "c43e2f59e60e86100300c016e171b166d6fbe0b3ac9d7a5892d136536f95df34"
+      },
+      {
+        "name": "artifact-members.tar.xz.part001",
+        "bytes": 33554432,
+        "sha256": "681545e7ed47538bbfec0f2c15c6f7d04f2d11d8562f0f043e0ed8152d3ccde4"
+      },
+      {
+        "name": "artifact-members.tar.xz.part002",
+        "bytes": 33554432,
+        "sha256": "88849cdedb6a467e6ab372784b2adce6cf2ebaaf63929ccc782682a04166886f"
+      },
+      {
+        "name": "artifact-members.tar.xz.part003",
+        "bytes": 164668,
+        "sha256": "4498f415a933cacbfcc458d1676c86eb05a1abf95334fd71ef789de6a1af53fa"
+      }
+    ],
+    "all_member_bytes_independently_reread": true
+  },
+  "native38_qualified": false,
+  "whole_platform_matrix_passed": false,
+  "old_components_retired": false,
+  "archive_seconds": 26.88811770803295
+}

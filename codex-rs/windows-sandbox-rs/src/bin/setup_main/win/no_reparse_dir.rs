@@ -18,6 +18,8 @@ use windows_sys::Win32::Foundation::NTSTATUS;
 use windows_sys::Win32::Foundation::RtlNtStatusToDosError;
 use windows_sys::Win32::Foundation::UNICODE_STRING;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
@@ -67,6 +69,34 @@ unsafe extern "system" {
 /// The returned handle must remain open through any security mutation so the
 /// mutation stays bound to the directory that passed this validation.
 pub(super) fn open_or_create_no_reparse(path: &Path) -> Result<OwnedHandle> {
+    open_or_create(
+        path,
+        ptr::null(),
+        READ_CONTROL | WRITE_DAC,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+    )
+}
+
+/// Create a private credential directory atomically, or hold an existing one
+/// without allowing its name to be replaced during validation/publication.
+pub(super) fn open_or_create_private_no_reparse(
+    path: &Path,
+    security_descriptor: *const c_void,
+) -> Result<OwnedHandle> {
+    open_or_create(
+        path,
+        security_descriptor,
+        FILE_GENERIC_READ | FILE_GENERIC_WRITE | WRITE_DAC,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+    )
+}
+
+fn open_or_create(
+    path: &Path,
+    security_descriptor: *const c_void,
+    access: u32,
+    share_access: u32,
+) -> Result<OwnedHandle> {
     ensure!(
         path.is_absolute(),
         "sandbox ACL path must be absolute: {}",
@@ -107,7 +137,7 @@ pub(super) fn open_or_create_no_reparse(path: &Path) -> Result<OwnedHandle> {
         root_directory: 0,
         object_name: &object_name,
         attributes: OBJ_CASE_INSENSITIVE as u32 | OBJ_DONT_REPARSE as u32,
-        security_descriptor: ptr::null(),
+        security_descriptor,
         security_quality_of_service: ptr::null(),
     };
     let mut io_status_block = IO_STATUS_BLOCK {
@@ -119,12 +149,12 @@ pub(super) fn open_or_create_no_reparse(path: &Path) -> Result<OwnedHandle> {
         // SetSecurityInfo can reject a WRITE_DAC-only directory handle.
         NtCreateFile(
             &mut handle,
-            READ_CONTROL | WRITE_DAC,
+            access,
             &object_attributes,
             &mut io_status_block,
             ptr::null(),
             FILE_ATTRIBUTE_NORMAL,
-            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+            share_access,
             FILE_OPEN_IF,
             FILE_DIRECTORY_FILE,
             ptr::null(),

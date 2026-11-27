@@ -1,0 +1,55 @@
+{
+  "all_three_original_targets_passed": true,
+  "artifact": {
+    "id": 15225684698,
+    "sha256": "628fd67e29b7fb2087bdb311e1fe23197eca1e16daa912f477271d1f0c4185b2",
+    "size": 2745644
+  },
+  "dependency_inputs_changed": false,
+  "full_matrix_passed": false,
+  "job": 140687168652,
+  "members": [
+    {
+      "bytes": 2742758,
+      "crc32": 273496257,
+      "name": "bazel-execution-logs/execution-log-test-original-v8-allocator-1490.zst",
+      "sha256": "c3d5abdff3036593d5dd3a422f8ef8df71bcdaea86bf56fa9bb1cfbcf8a67098"
+    },
+    {
+      "bytes": 47682,
+      "crc32": 2668149847,
+      "name": "windows-v8-allocator.log",
+      "sha256": "d30cc2949e931bc3e95fde9c705992a9601c2be37c9646cd2c12859daac6e021"
+    }
+  ],
+  "original_assertions_timeouts_and_test_functions_changed": false,
+  "production_change": "Initialize the shared default array-buffer allocator once while the existing V8 initialization guard is still held; later isolate construction keeps its original concurrency.",
+  "raw_log": {
+    "bytes": 226112,
+    "sha256": "22a1f9fe40a52dacae7b785a9cbf51d64dd1cae26bb8346547540ba2bcdad2de"
+  },
+  "run": 46052548787,
+  "run_conclusion": "success",
+  "schema": "hia.windows-v8-allocator-original-gate.v1",
+  "targets": {
+    "code-mode-host": {
+      "flaky": false,
+      "passed": true,
+      "retries": 0,
+      "seconds": 64.0
+    },
+    "code-mode-runtime": {
+      "flaky": false,
+      "passed": true,
+      "retries": 0,
+      "seconds": 69.7
+    },
+    "v8-poc": {
+      "flaky": false,
+      "passed": true,
+      "retries": 0,
+      "seconds": 73.9
+    }
+  },
+  "tested_source": "fe01c99b7ad4cf4216e9c9df96f1a3f231def9ae"
+}
