@@ -114,6 +114,29 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
                 ],
             )
 
+    def test_cache_credentials_keep_the_local_msvc_toolchain(self) -> None:
+        arguments = [
+            "build",
+            "--platforms=//:windows_x86_64_msvc",
+            "--",
+            "//codex-rs/cli:codex",
+        ]
+        env = {"RUNNER_OS": "Windows"}
+        authenticated = dict(env, BUILDBUDDY_API_KEY="test-cache-key")
+        native = run_bazel_with_buildbuddy.bazel_args_with_remote_config(arguments, env)
+        cached = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+            arguments, authenticated
+        )
+        required = (
+            "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+            "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
+        )
+        for flag in required:
+            self.assertEqual(native.count(flag), 1)
+            self.assertEqual(cached.count(flag), 1)
+        self.assertIn("--config=buildbuddy-generic", cached)
+        self.assertEqual(cached[-2:], arguments[-2:])
+
     def test_windows_cross_ci_configuration_follows_remote_configuration(self) -> None:
         env = {"BUILDBUDDY_API_KEY": "fork-token"}
 
