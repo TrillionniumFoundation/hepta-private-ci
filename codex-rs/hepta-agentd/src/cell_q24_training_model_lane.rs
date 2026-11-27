@@ -234,10 +234,6 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         #[cfg(target_os = "linux")]
         let source = training.original_source_for_operation()?;
         #[cfg(target_os = "linux")]
-        #[expect(
-            clippy::redundant_closure,
-            reason = "source admission requires an explicit typed authority call"
-        )]
         let mut operation = source
             .as_ref()
             .map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)

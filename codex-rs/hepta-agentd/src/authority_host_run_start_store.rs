@@ -1,6 +1,7 @@
 //! Guarded primary operations. Every possible primary read belongs to the
 //! independent refusal arm; CAS and final real postchecks finish before Ready.
 
+use super::inputs::RunStartOwnerIds;
 use super::*;
 
 impl RunStartRecordStore {
@@ -246,8 +247,10 @@ impl RootRetainedRunStartDataV1 {
             original_identity,
             &original.target,
             &observed.publication,
-            original.publisher.uid,
-            original.publisher_gid,
+            RunStartOwnerIds {
+                uid: original.publisher.uid,
+                gid: original.publisher_gid,
+            },
             observed.observed_unix_ms,
         )?;
         if frame.frame_start != observed.frame_start

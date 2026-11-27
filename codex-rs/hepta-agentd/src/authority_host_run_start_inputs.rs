@@ -81,6 +81,13 @@ struct DecodedInputs {
     trust: TextTrust,
 }
 
+/// Supplied numeric file-owner IDs, checked by the existing file validation.
+#[derive(Clone, Copy)]
+pub(super) struct RunStartOwnerIds {
+    pub(super) uid: u32,
+    pub(super) gid: u32,
+}
+
 impl OriginalInputPin {
     pub(super) fn capture(
         files: &RootInitialRunStartFilesV1,
@@ -122,10 +129,10 @@ impl OriginalInputPin {
         identity: &AgentdIdentity,
         target: &CellGenerationOwnerBindingV1,
         publication: &OriginalRunStartPublicationDataV1,
-        uid: u32,
-        gid: u32,
+        ownership: RunStartOwnerIds,
         now: u64,
     ) -> io::Result<RunStartReadOnlyFrameV1> {
+        let RunStartOwnerIds { uid, gid } = ownership;
         RootInitialRunStartFilesV1::with_original_files(files, |journal, profile, trust| {
             let decoded = decode_inputs(journal, profile, trust, identity, uid, gid)?;
             self.require_decoded(&decoded)?;

@@ -222,6 +222,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
         for marker in ("matches!(self.origin, Origin::Recovered)", "request.action == wire::Action::Execute",
                        "matches!(self.origin, Origin::Fresh)", "request.action == wire::Action::Readback"):
             self.rejects(SERVICE, "fn command_response(", marker)
+        self.rejects(SERVICE, "fn command_response(", "|| (matches!(self.origin, Origin::Fresh)", "&& (matches!(self.origin, Origin::Fresh)")
         self.rejects(MAIN, "fn recover_original_custody(", "Origin::Recovered", "Origin::Fresh")
 
     def require_current_first_in_writer_lane(self, source):
@@ -255,7 +256,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
         code = self.function(source, "fn command_response(")
         for match in re.finditer(r"\bState\s*::\s*Awaiting\s*\(", code):
             tail = code[match.end():]
-            if re.match(r"\s*custody\s*\)\s*=>\s*custody\s*,", tail) is None:
+            if re.match(r"\s*custody\s*\)\s*=>\s*\*\s*custody\s*,", tail) is None:
                 raise PROOF.VerificationFailure("Awaiting may only destructure the original custody")
 
     def test_ready_is_retained_before_work_and_failed_initialization_never_rearms(self):
@@ -269,7 +270,12 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
             "State::Fenced",
         ):
             self.rejects(SERVICE, "fn command_response(", marker)
-        for replacement in ("State::Awaiting(custody)", "State /* restored */ :: Awaiting (custody)"):
+        for replacement in (
+            "State::Awaiting(custody)",
+            "State /* restored */ :: Awaiting (custody)",
+            "State::Awaiting(Box::new(custody))",
+            "State /* restored */ :: Awaiting ( Box :: new(custody) )",
+        ):
             changed = source.replace("State::Fenced;", replacement + ";", 1)
             with self.assertRaises(PROOF.VerificationFailure):
                 self.require_no_custody_rearm(changed)

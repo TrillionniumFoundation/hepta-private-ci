@@ -181,8 +181,10 @@ impl OriginalPostAContinuationV1 {
             snapshot.clone(),
             final_use,
             clock,
-            &mut files,
-            &cancelled,
+            super::artifacts::OriginalArtifactReadInputs {
+                files: &mut files,
+                cancelled: &cancelled,
+            },
         )
         .await?;
         require_continuation(&state, &identity, &cancelled, end)?;

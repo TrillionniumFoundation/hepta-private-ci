@@ -13,7 +13,7 @@ use super::*;
 enum GrantPhase {
     Available {},
     Attempted {},
-    Issued { signed: SignedFinalUseGrant },
+    Issued { signed: Box<SignedFinalUseGrant> },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -127,7 +127,7 @@ impl RegisteredPublicationGrant {
         }
         let mut issued = before.clone();
         issued.state = GrantPhase::Issued {
-            signed: signed.clone(),
+            signed: Box::new(signed.clone()),
         };
         self.store
             .compare_and_set(&self.owner, &before, &issued)

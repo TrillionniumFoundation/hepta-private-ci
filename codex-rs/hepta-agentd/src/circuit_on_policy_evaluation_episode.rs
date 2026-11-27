@@ -22,6 +22,14 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use std::collections::BTreeMap;
 
+/// Read-only lookup inputs; the original episode authentication follows unchanged.
+pub(super) struct EpisodeRecords<'lookup, 'data> {
+    pub(super) decisions: &'lookup BTreeMap<StableId, &'data AuthenticatedDecisionRecordV2>,
+    pub(super) outcomes:
+        &'lookup BTreeMap<StableId, (&'data AuthenticatedOutcomeRecordV2, Digest32)>,
+    pub(super) publications: &'data Publications,
+}
+
 pub(super) struct Episode<'a> {
     pub(super) decision: &'a AuthenticatedDecisionRecordV2,
     pub(super) outcome: &'a AuthenticatedOutcomeRecordV2,
@@ -40,13 +48,16 @@ impl<'a> Episode<'a> {
         config: &OriginalCircuitOnPolicyCohortConfigV1,
         ledger: &LedgerWriter,
         requested: &OriginalCircuitEvaluationEpisodeV1,
-        decisions: &BTreeMap<StableId, &'a AuthenticatedDecisionRecordV2>,
-        outcomes: &BTreeMap<StableId, (&'a AuthenticatedOutcomeRecordV2, Digest32)>,
-        publications: &'a Publications,
+        records: EpisodeRecords<'_, 'a>,
         sources: &[OriginalCircuitEvaluationSourceV1],
         training: &super::binding::CandidateBinding,
         current: u64,
     ) -> Result<Episode<'a>, Error> {
+        let EpisodeRecords {
+            decisions,
+            outcomes,
+            publications,
+        } = records;
         let decision = *decisions
             .get(&requested.episode_id)
             .ok_or(Error::Binding("original Decision"))?;

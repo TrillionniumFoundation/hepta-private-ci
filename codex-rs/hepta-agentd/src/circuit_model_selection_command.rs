@@ -136,12 +136,14 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             /*execution_requested*/ false,
             None,
         )
@@ -159,12 +161,14 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             /*execution_requested*/ true,
             expected,
         )
@@ -210,15 +214,18 @@ impl OriginalCircuitModelSelectionCommandClientV1 {
     }
 
     fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         context: OriginalCircuitCandidateLearningReadContextV1,
-        timeout: Duration,
-        lifetime: Duration,
         execution_requested: bool,
         retained: Option<OriginalCircuitModelSelectionCommandReceiptV1>,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         wire::require_selection_context(&context, started_at)?;
         let binding = context.binding(started_at)?;

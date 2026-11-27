@@ -231,8 +231,8 @@ class OriginalCandidateOperationClosureTests(unittest.TestCase):
         self.rejects(GATE, "fn checkpoint(", ") -> Result<u64, Error>")
         self.rejects(
             GATE, "fn checkpoint(",
-            "self.local(GateActionV3::Checkpoint(next), predecessor).await",
-            "self.local(GateActionV3::Checkpoint(next), predecessor).await.map(|_| 0)",
+            "self.local(GateActionV3::Checkpoint(Box::new(next)), predecessor).await",
+            "self.local(GateActionV3::Checkpoint(Box::new(next)), predecessor).await.map(|_| 0)",
         )
         for marker in (
             "let committed_at = gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?",

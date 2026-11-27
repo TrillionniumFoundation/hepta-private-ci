@@ -255,7 +255,7 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
         _ => anyhow::bail!("unstarted original test custody"),
     };
     let ready = owner
-        .build_original_owner(custody, bound, actual_cut, started_at)
+        .build_original_owner(*custody, bound, actual_cut, started_at)
         .await?;
     *owner.state.lock().expect("original Ready state") = State::Ready(ready);
     let missing_bytes = (fixture.training_bytes()?, fixture.bytes()?);
