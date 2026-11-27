@@ -100,6 +100,25 @@ class ExactHistoryTests(unittest.TestCase):
         self.archives_unselected()
 
     @patch.dict(os.environ, {"GH_TOKEN": ""})
+    def test_snapshot_only_fetch_supplies_base_content_without_other_history(self):
+        prepare(self.checkout, [self.base, self.head], with_blobs=True)
+        self.assertEqual(self.git(self.checkout, "rev-parse", "HEAD"), self.head)
+        self.assertEqual(
+            self.git(self.checkout, "show", f"{self.base}:base"),
+            "independent base change",
+        )
+        self.assertEqual(
+            self.git(self.checkout, "diff", "--numstat", self.base, self.head),
+            self.git(self.source, "diff", "--numstat", self.base, self.head),
+        )
+        self.assertEqual(
+            self.git(self.checkout, "rev-parse", "--is-shallow-repository"), "true"
+        )
+        self.missing(self.common)
+        self.missing(self.unrelated)
+        self.archives_unselected()
+
+    @patch.dict(os.environ, {"GH_TOKEN": ""})
     def test_unavailable_exact_commit_fails_without_replacing_checkout(self):
         with self.assertRaises(subprocess.CalledProcessError):
             prepare(self.checkout, ["a" * 40])
