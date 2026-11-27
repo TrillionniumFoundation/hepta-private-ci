@@ -1,0 +1,157 @@
+# Disabled solely by the .in filename. After exact independent review, root
+# copies these unchanged bytes to the stated workflow path and materializes
+# only status/root_review_sha256 in the pending execution binding.
+name: HCSN frozen boundary cross-parent83 and137 20261127
+
+"on":
+  push:
+    branches: [research/hcsn-boundary-transfer83-137-20261127]
+    paths:
+      - qualification/hcsn_boundary_transfer83_137_20261127/**
+      - .github/workflows/hcsn-boundary-transfer83-137-pilot.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hcsn-boundary-transfer83-137-20261127-once
+  cancel-in-progress: false
+
+jobs:
+  fixed-parent-sequence:
+    if: github.run_attempt == 1 && github.run_number == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NUMEXPR_NUM_THREADS: '1'
+      CUDA_VISIBLE_DEVICES: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/hcsn_sender40_pilot_20261127
+            qualification/hcsn_boundary8_pilot_20261127
+            qualification/hcsn_boundary_transfer83_137_20261127
+            .github/workflows/hcsn-boundary-transfer83-137-pilot.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12.3'
+      - name: Verify the exact new publication and unchanged predecessor helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast, hashlib, json, os, pathlib, subprocess
+          task = pathlib.Path('qualification/hcsn_boundary_transfer83_137_20261127')
+          helper = pathlib.Path('qualification/hcsn_sender40_pilot_20261127')
+          core = pathlib.Path('qualification/hcsn_boundary8_pilot_20261127')
+          binding = json.loads((task/'EXECUTION_BINDINGS.json').read_text())
+          if binding['status'] != 'FROZEN_FOR_EXECUTION_AFTER_ROOT_REVIEW' or binding['parent_order'] != [83,137]:
+              raise SystemExit('Unreviewed binding or changed fixed parent order.')
+          if not isinstance(binding['root_review_sha256'],str) or len(binding['root_review_sha256']) != 64:
+              raise SystemExit('Missing exact independent root review.')
+          parent = subprocess.check_output(['git','rev-parse','HEAD^'],text=True).strip()
+          if parent != binding['predecessor_artifact']['qualified_head_commit']:
+              raise SystemExit('Publication is not one child of the pinned boundary8 source.')
+          allowed = {str(task/name) for name in binding['adapter_files']}
+          allowed.update({str(task/'EXECUTION_BINDINGS.json'),binding['workflow']['path']})
+          changes = subprocess.check_output(['git','diff','--name-status',parent,'HEAD'],text=True).splitlines()
+          if len(changes) != len(allowed) or {line.split('\t')[-1] for line in changes} != allowed:
+              raise SystemExit('Changed paths differ from the exact new-file closure.')
+          if any(line.split('\t')[0] != 'A' for line in changes):
+              raise SystemExit('The publication modifies an existing source or workflow.')
+          for directory,group in ((task,'adapter_files'),(helper,'helper_files'),(core,'core_files')):
+              for name,item in binding[group].items():
+                  raw = (directory/name).read_bytes()
+                  if len(raw)!=item['bytes'] or hashlib.sha256(raw).hexdigest()!=item['sha256']:
+                      raise SystemExit('Pinned source identity mismatch: '+name)
+          raw = pathlib.Path(binding['workflow']['path']).read_bytes()
+          if len(raw)!=binding['workflow']['bytes'] or hashlib.sha256(raw).hexdigest()!=binding['workflow']['sha256']:
+              raise SystemExit('Workflow differs from its independently reviewed bytes.')
+          for path in task.glob('*.py'):
+              ast.parse(path.read_text(),filename=str(path))
+          output=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-boundary-transfer-public-output'
+          output.mkdir(exist_ok=False)
+          (output/'PUBLICATION.json').write_text(json.dumps(dict(parent=parent,head=os.environ['GITHUB_SHA'],
+              changed_paths=sorted(allowed),run_id=os.environ['GITHUB_RUN_ID'],run_number=os.environ['GITHUB_RUN_NUMBER'],
+              run_attempt=os.environ['GITHUB_RUN_ATTEMPT'],private_model_inputs=False),indent=2)+'\n')
+          PY
+      - name: Install the same exact public CPU package versions in a new environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TRANSFER_SETUP_START=$(date +%s)
+          python -m venv "$RUNNER_TEMP/hcsn-boundary-transfer-venv"
+          PYTHON="$RUNNER_TEMP/hcsn-boundary-transfer-venv/bin/python"
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 numpy==2.3.5 scipy==1.17.0
+          "$PYTHON" - <<'PY'
+          import importlib.metadata,json,os,pathlib,subprocess,sys,time
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-boundary-transfer-public-output'
+          (out/'packages.txt').write_text(subprocess.check_output([sys.executable,'-m','pip','freeze','--all'],text=True))
+          (out/'SETUP.json').write_text(json.dumps(dict(wall_seconds=time.time()-int(os.environ['TRANSFER_SETUP_START']),
+              python=sys.version,versions={key:importlib.metadata.version(key) for key in ('torch','numpy','scipy')},
+              transitive_wheel_hashes_locked=False,model_calls=0),indent=2)+'\n')
+          PY
+      - name: Fetch the one exact source47 boundary ABSTAIN artifact
+        env:
+          BOUNDARY_TRANSFER_ARTIFACT_READ_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_boundary_transfer83_137_20261127
+          "$RUNNER_TEMP/hcsn-boundary-transfer-venv/bin/python" "$TASK/fetch_predecessor.py" "$TASK/EXECUTION_BINDINGS.json" \
+            "$RUNNER_TEMP/hcsn-boundary-transfer-source47.zip" "$RUNNER_TEMP/hcsn-boundary-transfer-public-output/DOWNLOAD.json"
+      - name: Prepare original public83 and137 inputs without a model or fit
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_boundary_transfer83_137_20261127
+          "$RUNNER_TEMP/hcsn-boundary-transfer-venv/bin/python" "$TASK/prepare_public.py" "$TASK/EXECUTION_BINDINGS.json" \
+            "$RUNNER_TEMP/hcsn-boundary-transfer-source47.zip" "$RUNNER_TEMP/hcsn-boundary-transfer-prepared" \
+            "$RUNNER_TEMP/hcsn-boundary-transfer-public-output/PUBLIC_PREPARATION_RESULT.json"
+          python - <<'PY'
+          import os,pathlib,shutil
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])
+          prepared=root/'hcsn-boundary-transfer-prepared'
+          out=root/'hcsn-boundary-transfer-public-output'
+          shutil.copyfile(prepared/'PREPARED.json',out/'PREPARED.json')
+          for seed in (83,137):
+              shutil.copyfile(prepared/('parent%d'%seed)/'PREPARED.json',out/('parent%d_PREPARED.json'%seed))
+          shutil.copytree(prepared/'source47',out/'source47_abstention')
+          PY
+      - name: Run the fixed two-parent sequence once within the unchanged global cap
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK="$GITHUB_WORKSPACE/qualification/hcsn_boundary_transfer83_137_20261127"
+          HELPER="$GITHUB_WORKSPACE/qualification/hcsn_sender40_pilot_20261127"
+          CORE="$GITHUB_WORKSPACE/qualification/hcsn_boundary8_pilot_20261127"
+          PYTHON="$RUNNER_TEMP/hcsn-boundary-transfer-venv/bin/python"
+          sudo -n systemd-run --wait --pipe --collect --unit="hcsn-boundary-transfer-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --property="User=$(id -un)" --property="Group=$(id -gn)" --property="WorkingDirectory=$GITHUB_WORKSPACE" \
+            --property=MemoryMax=1073741824 --property=CPUQuota=100% --property=TasksMax=64 \
+            --property=RuntimeMaxSec=630 --property=KillMode=control-group \
+            --setenv=OMP_NUM_THREADS=1 --setenv=OPENBLAS_NUM_THREADS=1 --setenv=MKL_NUM_THREADS=1 \
+            --setenv=NUMEXPR_NUM_THREADS=1 --setenv=CUDA_VISIBLE_DEVICES= --setenv=PYTHONDONTWRITEBYTECODE=1 \
+            --setenv=PYTHONUNBUFFERED=1 --setenv="LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" \
+            "$PYTHON" "$TASK/supervise.py" "$TASK/EXECUTION_BINDINGS.json" "$HELPER" "$CORE" \
+            "$RUNNER_TEMP/hcsn-boundary-transfer-prepared" "$RUNNER_TEMP/hcsn-boundary-transfer-public-output/supervised"
+      - name: Preserve all completed, unavailable, failed and unstarted parent evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-boundary-transfer-public-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-boundary-transfer-public-output
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 6

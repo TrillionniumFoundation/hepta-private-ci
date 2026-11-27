@@ -1,0 +1,275 @@
+{
+  "schema": "hepta.weightcode-boundary-cross-parent-preregistration.v3",
+  "status": "FROZEN_METHOD_AND_MAX_BUDGET__NOT_AUTHORIZED_TO_EXECUTE",
+  "registered_at_utc": "2026-11-27T09:39:32.954693+00:00",
+  "source_results_seen_for_design": 0,
+  "method_rules_sha256": "3f56e3384c516e8ec7dcf970e2a9d535ab32f437b7d690a85946f52d1497adc1",
+  "program_files": {
+    "boundary_inverse": "e6da84d80047492c2afb5d74faafd1be227cc7775d012a50167b035cfdec025a",
+    "boundary_program": "ea36b3768b7617275947e6d955e4d3770c33a5700de9b649b938b642e7744dde"
+  },
+  "purpose": "Cross-parent stability of an unchanged target-adaptive executable program versus copying fixed seed47 edits; historically seen task data, not a heldout generalization study.",
+  "parents": [
+    {
+      "seed": 83,
+      "path": "wsp_closure_20261127/neuron/bound_exports_v1/centered_83.canonical.safetensors",
+      "sha256": "43417b35193afb7419b27e416db3fc2c1352bd1ac77c2c8f307750a03c60b2df"
+    },
+    {
+      "seed": 137,
+      "path": "wsp_closure_20261127/neuron/bound_exports_v1/centered_137.canonical.safetensors",
+      "sha256": "d9fa07d71aeffa7dea343e623eb9492ce17ea40adcff632aaa11ce3b16cb82fd"
+    }
+  ],
+  "parent_order": [
+    83,
+    137
+  ],
+  "source_parent": {
+    "seed": 47,
+    "sha256": "ef79165452a16c852892fb7b08bf709fae45c4a3e7f4d50f2cf72c6914587dac",
+    "source_candidate_doses": [
+      0.25,
+      1
+    ],
+    "use_all_compiled_doses_independent_of_quality": true
+  },
+  "no_conditional_parent_choice": true,
+  "scope": {
+    "tensor_names": [
+      "body.input_drive.weight",
+      "body.input_drive.bias"
+    ],
+    "shapes": [
+      [
+        4,
+        9
+      ],
+      [
+        4
+      ]
+    ],
+    "dtype": "F32",
+    "total": 40,
+    "global_realized_Frobenius_radius": 1,
+    "all_other_file_bytes_and_aliases_immutable": true
+  },
+  "data": {
+    "same_frozen_train80_dev32_eligible_retain28_as_phase1": true,
+    "train_sha256": "b708c4fbc0018aa0cac928d9de10b22663fe2479904e6c7491e6c3dd90190acd",
+    "dev_sha256": "099d6580639f03e16c72daca506eda6b8745fd9fd4e54deb83f103a199002d58",
+    "retain_sha256": "9590a7d57fec843d18fe44ff61d0d49f8c35dffccf4320043158dd844c9a5fed",
+    "retain_excluded_indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "old_test_new_calls": 0,
+    "new_market_source_data": 0,
+    "all_data_previously_seen": true,
+    "actual_parent_specific_baseline_and_correct_masks_required": true
+  },
+  "qualification_per_parent": {
+    "artifact": "Full SHA, exact canonical tensor/alias map, source and original train-only normalizer binding, same allowed40 scope; malformed source -> parent-specific qualification failure, never substitute another parent.",
+    "existing_native_receipts": "Reuse existing frozen canonical12-case core qualification only for its actual pinned source. No new native forward is hidden as a qualification step.",
+    "gradient": "Fixed first2 train queries, full6tick F32 scores/F64 CE, Rademacher40 seed20261127, h2^-8, baseline/plus/minus3 forwards and baseline1 backward.",
+    "criterion": "All40 gradients finite and nonzero norm; abs((Lplus-Lminus)-grad0 dot(actual_theta_plus-actual_theta_minus)) <=1e-5+.1*max(abs(actual finite difference),abs(dot)). No epsilon/tolerance tuning.",
+    "full_forward": 3,
+    "backward": 1,
+    "paired_queries": 6,
+    "failure": "Stop that parent's optimization and report QUALIFICATION_FAILED; it remains in every planned denominator. No rerun or replacement parent."
+  },
+  "arms": [
+    {
+      "name": "KEEP",
+      "candidates": 1,
+      "source": "Each parent's own newly budgeted train baseline and dev+eligible retain output."
+    },
+    {
+      "name": "RERUN_PROGRAM",
+      "candidates": 2,
+      "doses": [
+        0.25,
+        1
+      ],
+      "source": "Run the same code unchanged on this parent's own train trace; own correct masks, own boundary prototypes, original theta/reset. No LLM calls.",
+      "fit_solves_per_parent_max": 2,
+      "inverse_targets_per_parent_max": 24,
+      "unused_control_directions_still_computed_and_costed": true,
+      "unused_control_candidate_forward_calls": 0
+    },
+    {
+      "name": "COPY_SOURCE_DELTA",
+      "candidates": 2,
+      "doses": [
+        0.25,
+        1
+      ],
+      "source": "For each source dose independently, subtract actual seed47 old/new F32 values as exact dyadic differences. Add that same vector to this parent's original40 parameters, cast to F32 and apply the same inward-only exact-norm gate. Do not apply the dose twice; do not remeasure target activations to choose values.",
+      "fit_solves": 0,
+      "inverse_targets": 0
+    },
+    {
+      "name": "BP_TASK",
+      "candidates": 2,
+      "snapshots": [
+        4,
+        16
+      ],
+      "source": "Independent same-parent16-step task-gradient baseline with identical allowed40, exact F32 radius, train labels and2 candidate checks.",
+      "optimizer_steps_per_parent": 16
+    }
+  ],
+  "bp": {
+    "objective": "F64 binary CE from actual F32 two-choice output + .25 mean squared parent-margin deviation on parent-correct training rows; same declared objective as original pilot.",
+    "optimizer": "Adam",
+    "lr": 0.008,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0,
+    "batch_paired_queries": 8,
+    "grad_norm_cap": 1,
+    "steps": 16,
+    "sampling": "Two fixed seed20261127 permutations of train80; first10 batches from first, next6 from second.",
+    "project_each_step_to_same_realized_f32_ball": true,
+    "same_labels_available_as_program": true,
+    "different_physical_vs_task_objectives_explicit": true
+  },
+  "candidate_policy": {
+    "all_three_main_methods_exactly2_candidate_slots": true,
+    "bytes_frozen_before_candidate_dev_or_retain_evaluation": true,
+    "selection": "Within each method only the same predeclared dev-correct, dev-Brier, realized-displacement order; include KEEP; KEEP wins exact tie.",
+    "protection": "Per-parent baseline eligible retain correct-to-wrong<=0, Brier increase<=.01; physical violations<=2e-9; all finite.",
+    "signal": "At least1 new dev correct and train CE strictly lower. Descriptive developmental evidence only.",
+    "unavailable": "A method that cannot produce a required candidate records ABSTAIN/UNAVAILABLE, retains slot in planned denominator, and consumes no substitute candidate. If seed47 failed to compile a dose, COPY for that dose is unavailable on BOTH fixed parents; RERUN/BP still follow their predeclared own-parent qualification. If source47 is poor on dev but structurally admissible, its deltas are still copied.",
+    "no_test_or_hyperparameter_search": true,
+    "no_quality_conditioned_extra_parent_or_dose": true
+  },
+  "budget_derivation_per_parent": [
+    {
+      "stage": "gradient qualification",
+      "full_forward": 3,
+      "backward": 1,
+      "optimizer_steps": 0,
+      "paired_queries": 6
+    },
+    {
+      "stage": "KEEP train80 and dev32+retain28",
+      "full_forward": 2,
+      "backward": 0,
+      "optimizer_steps": 0,
+      "paired_queries": 140
+    },
+    {
+      "stage": "BP16 batches of8",
+      "full_forward": 16,
+      "backward": 16,
+      "optimizer_steps": 16,
+      "paired_queries": 128
+    },
+    {
+      "stage": "RERUN2+COPY2+BP2 frozen candidates, each train80 and devretain60",
+      "full_forward": 12,
+      "backward": 0,
+      "optimizer_steps": 0,
+      "paired_queries": 840
+    }
+  ],
+  "incremental_budget_max": {
+    "parents": 2,
+    "full_six_tick_forward": 66,
+    "body_tick_forward": 396,
+    "paired_query_rollouts": 2228,
+    "backward": 34,
+    "optimizer_steps": 32,
+    "nonzero_candidate_slots": 12,
+    "closed_form_10x4_fit_solves": 4,
+    "lagrange_root_iterations_max": 512,
+    "scalar_inverse_targets_max": 48,
+    "interval_cells_max": 196608,
+    "all_root_bisections_max": 3840,
+    "point_equation_calls_max": 397104,
+    "interval_equation_calls_max": 196608,
+    "numerical_threads": 1,
+    "memory_max_bytes": 1073741824,
+    "cpu_seconds_total_max": 360,
+    "active_wall_seconds_total_max": 600,
+    "per_parent_cpu_seconds_max": 180,
+    "per_parent_active_wall_seconds_max": 300,
+    "gpu_calls": 0,
+    "new_editor_api_calls": 0,
+    "old_test_calls": 0,
+    "native_full_forward_calls": 0,
+    "artifact_owner_patch_calls": 0,
+    "production_writes": 0,
+    "proposal_directions_constructed": 6,
+    "nonzero_candidate_slots_semantics": "Evaluated F32 candidate slots; excludes unused real-valued wrong-role/random directions whose construction is nevertheless costed."
+  },
+  "combined_method_budgets_if_every_declared_stage_is_later_authorized_and_fully_used": {
+    "source47_original_pilot": {
+      "F": 33,
+      "B": 17,
+      "optimizer_steps": 16,
+      "paired_queries": 1114,
+      "cpu_seconds_max": 180,
+      "wall_seconds_max": 300
+    },
+    "source47_boundary_extension": {
+      "F": 8,
+      "B": 0,
+      "optimizer_steps": 0,
+      "paired_queries": 560,
+      "cpu_seconds_max": 120,
+      "wall_seconds_max": 180
+    },
+    "target83_137_transfer": {
+      "F": 66,
+      "B": 34,
+      "optimizer_steps": 32,
+      "paired_queries": 2228,
+      "cpu_seconds_max": 360,
+      "wall_seconds_max": 600
+    },
+    "sum": {
+      "F": 107,
+      "B": 51,
+      "optimizer_steps": 48,
+      "paired_queries": 3902,
+      "cpu_seconds_max": 660,
+      "wall_seconds_max": 1080
+    },
+    "not_a_claim_of_actual_consumption": true,
+    "old_engineering_and_native_qualification_budgets_not_recounted_as_new": true
+  },
+  "accounting": {
+    "independent_create_only_started_completed_ledgers": true,
+    "all_shadow_and_equivalent_rollouts_count": true,
+    "scalar_qvi_calls_and_interval_transcendentals_not_called_full_forward_but_costed_separately": true,
+    "cold_cost": "Include each parent's own baseline trace, correct-mask supervision, prototype extraction, inverse roots, real solver, F32 realization, all checks, failures and original source program discovery/preparation where measured.",
+    "reuse_cost": "Incremental transfer reuses program code and source deltas, not target activations or labels. Publish both cold and incremental cost.",
+    "llm_discovery_cost": "No new editor call on rerun; research-conversation planning cost is not measured and must not be called zero.",
+    "partial_exhaustion": "Report started operations, completed operations, all failures, remaining budget. No relaunch under new ID after uncertain execution.",
+    "source_identity": "Every parent/candidate/data trace/full output bound by complete file SHA and original source/normalizer hashes. Candidate evaluation always uses actual candidate bytes and full raw-input6tick model."
+  },
+  "required_before_execution": [
+    "Root reviews root isolation/pure qualification and source program",
+    "Root approves exact execution owner/resources and separate ledger",
+    "Trace/normalizer/actor/F32 helper hashes bound",
+    "All comparator implementations presealed; no output-conditioned edits"
+  ],
+  "execution_counts": {
+    "F": 0,
+    "B": 0,
+    "fit": 0,
+    "scalar_qvi": 0,
+    "optimizer_steps": 0
+  },
+  "predecessor_sha256": "155d4dc03fc26405140099d2ea90f577b3dab65f2aae44dd3db6ce611575c44d",
+  "preexecution_accounting_correction": "The unchanged frozen construct() computes boundary and wrong-role quadratic directions together. Transfer will evaluate only declared RERUN candidates but must count both fits and the unused random/control construction. No result was read; no model or fit executed.",
+  "program_source_seal_v4_sha256": "f9730f7bdb3f10d2f65b628d07f7235b3b61237dc96c067328a5e213eea26e39",
+  "source_revision_reason": "Exact exception-accounting correction only; parents/targets/doses/budgets/fitting rule unchanged; still0 results read."
+}

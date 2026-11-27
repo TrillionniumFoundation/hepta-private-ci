@@ -1,0 +1,244 @@
+{
+  "adapter_files": {
+    "CROSS_PARENT_PREREGISTRATION_V3.json": {
+      "bytes": 11733,
+      "sha256": "0534fd9c58e6c12c5ee7b18e483630aa70e7431518cf36ccf97f548ee6783c7e"
+    },
+    "IDENTITY_AMENDMENT.json": {
+      "bytes": 6248,
+      "sha256": "d7882a9e1d51d317b3ac04451102f0f027daa51e11ecd3c31c08de0439ba92ce"
+    },
+    "README.md": {
+      "bytes": 7816,
+      "sha256": "95403d31d4598fe39ab3f50ab04d8fee353e7f6fa21efe3c4119143405d95e23"
+    },
+    "fetch_predecessor.py": {
+      "bytes": 5479,
+      "sha256": "b73285c9176f0c56cfa0fadad20e79ad27b2085b8dc4d3d4d4684b0625897e1e"
+    },
+    "parent_runner.py": {
+      "bytes": 26177,
+      "sha256": "ca5ab371f132f50aa19178c39924ca4854715cda1637facf864979047a6fa452"
+    },
+    "prepare_public.py": {
+      "bytes": 9356,
+      "sha256": "68ba29126f0cd524030958c6ea0dfb94ff3dde59bb0c160a4349f602ad9a8eb8"
+    },
+    "public_inputs_seed137.json": {
+      "bytes": 9785,
+      "sha256": "242712d7af4b1b98f4ac15c3e51163c9322ce9be8eb7983fd609c86d991c175e"
+    },
+    "public_inputs_seed83.json": {
+      "bytes": 9781,
+      "sha256": "35eb1ca276280d42c669edfca858c1433320e6cc50ce0b9d21c4611dea18e4f0"
+    },
+    "supervise.py": {
+      "bytes": 14278,
+      "sha256": "807d36c1c0657facf96735bc22c18c57993db6ec08615d03bc27239a59a98b07"
+    }
+  },
+  "core_files": {
+    "PREREGISTERED_TARGET_RULES_V2.json": {
+      "bytes": 11869,
+      "sha256": "3f56e3384c516e8ec7dcf970e2a9d535ab32f437b7d690a85946f52d1497adc1"
+    },
+    "boundary_inverse.py": {
+      "bytes": 14412,
+      "sha256": "e6da84d80047492c2afb5d74faafd1be227cc7775d012a50167b035cfdec025a"
+    },
+    "boundary_program.py": {
+      "bytes": 10702,
+      "sha256": "ea36b3768b7617275947e6d955e4d3770c33a5700de9b649b938b642e7744dde"
+    }
+  },
+  "current_no_COPY_upper": {
+    "B": 34,
+    "F": 58,
+    "candidate_slots_evaluated": 8,
+    "optimizer_steps": 32,
+    "planned_candidate_slots": 12
+  },
+  "helper_files": {
+    "PROTOCOL.json": {
+      "bytes": 13570,
+      "sha256": "6faa56b621427de19e15025cde193e0defd2c48f052d3efb5f966d97852e8653"
+    },
+    "candidates.py": {
+      "bytes": 8996,
+      "sha256": "88edf2ac88467272868e3fe030fcb62ca31b58ad15dacfeceb7cf91d6336c023"
+    },
+    "model_adapter.py": {
+      "bytes": 15140,
+      "sha256": "9e43c5a91c9859f1689195068d86eaab9a02b0894103648f7fb0c4f348edc412"
+    },
+    "pilot.py": {
+      "bytes": 19276,
+      "sha256": "5f014690442a3ad456828484dc69a66f40960312d1be4b38cd0e7791f920408b"
+    },
+    "prepare_public.py": {
+      "bytes": 6082,
+      "sha256": "30f5259ee9a94bd54c46f99445277bc1b101bf5f2f3a36e47f0bd6a695f72e6b"
+    },
+    "public_inputs.json": {
+      "bytes": 9781,
+      "sha256": "ae6aea553ae9ab99c8aba0e47056eb1377f2e34dad683a397f3e4163f8bd45ea"
+    },
+    "static_support.py": {
+      "bytes": 8701,
+      "sha256": "80683a7496553acac63fc23226155761bb4354ef7fbb935aff1f9b8ff25c90ea"
+    }
+  },
+  "materialization_allowed_changes": [
+    "status -> FROZEN_FOR_EXECUTION_AFTER_ROOT_REVIEW",
+    "root_review_sha256 -> actual independent root review SHA"
+  ],
+  "normalizer_sha256": "7e82bcff70d5d8b94f9096f66ef6b28a6eedfad12bc763214d5cca68e75b98b0",
+  "original_max_budget": {
+    "B": 34,
+    "F": 66,
+    "body_ticks": 396,
+    "cpu": 360,
+    "fit": 4,
+    "optimizer_steps": 32,
+    "paired_queries": 2228,
+    "scalar_inverse": 48,
+    "wall": 600
+  },
+  "parent_manifests": {
+    "137": {
+      "bytes": 9785,
+      "sha256": "242712d7af4b1b98f4ac15c3e51163c9322ce9be8eb7983fd609c86d991c175e"
+    },
+    "83": {
+      "bytes": 9781,
+      "sha256": "35eb1ca276280d42c669edfca858c1433320e6cc50ce0b9d21c4611dea18e4f0"
+    }
+  },
+  "parent_order": [
+    83,
+    137
+  ],
+  "predecessor_artifact": {
+    "artifact_id": 15188978344,
+    "artifact_name": "hcsn-boundary8-public-45981667341-1",
+    "bytes": 15543,
+    "files": {
+      "DOWNLOAD.json": {
+        "bytes": 596,
+        "sha256": "cd3d226411867a3c84b49813095d0ef05201de8fe8c8a314d0324cb3e1ca36db"
+      },
+      "PREPARED.json": {
+        "bytes": 1669,
+        "sha256": "da89e2e4b082dc2fa2e0a5f0103d183779cf3998a9b1979c1107308eb3cb9f13"
+      },
+      "PREPARED_EVIDENCE.json": {
+        "bytes": 5893,
+        "sha256": "98674b1cf60a29eb7240ef3bc2ee8ec3cdd9b020d8213230d3c18bf56587b9d8"
+      },
+      "PUBLICATION.json": {
+        "bytes": 1006,
+        "sha256": "34666fc931bc60e09c9af00e178007715d773d6feef2c0c323a019f668b771ba"
+      },
+      "PUBLIC_PREPARATION_RESULT.json": {
+        "bytes": 86,
+        "sha256": "0c411a92b204a6911a0121cd6915c06f90c7e01adac7446f7cad0f7896c48fdd"
+      },
+      "SETUP.json": {
+        "bytes": 260,
+        "sha256": "d2b500f782d826c3dc2da153947bddbf6671861774d5bfd4d5984807884c7412"
+      },
+      "packages.txt": {
+        "bytes": 207,
+        "sha256": "7a4c71462fd97680a91c3f702f69b66b2bd79dcbccce95d8564e0906a3b5b057"
+      },
+      "supervised/CHILD_STARTED.json": {
+        "bytes": 467,
+        "sha256": "7c6d0754465b20f3caea98168f3cebc3cf43a39e74f0f6c0c1fbf537f10220e8"
+      },
+      "supervised/OUTER_RESULT.json": {
+        "bytes": 1537,
+        "sha256": "1a2b9134040f1fb01be75c224be2b3e41b8b75de0ca74c9bcc8d2ae8f1fed012"
+      },
+      "supervised/START.json": {
+        "bytes": 450,
+        "sha256": "87473c009693b022858eb2e7d182d048f5fb8db0932c4ccee59c53aa837916a7"
+      },
+      "supervised/child.stderr": {
+        "bytes": 1374,
+        "sha256": "1084dd1d971b096391df6c2baaf0fe90763330f440eaf0cb6d2e5457e34aa93d"
+      },
+      "supervised/child.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "supervised/experiment/ACTUAL_PUBLIC_SOURCE.json": {
+        "bytes": 5350,
+        "sha256": "075d8b38ab4a9393a28c372e0c426ffbeb4b75adb20dbea0611fe090766ed5eb"
+      },
+      "supervised/experiment/ENTRY.json": {
+        "bytes": 485,
+        "sha256": "3d827744288d241925de91cd405beee64260d468d019e408870429cd4c1de718"
+      },
+      "supervised/experiment/RESULT.json": {
+        "bytes": 1067,
+        "sha256": "7bfb6391bdc56f752128dfed5f2a184ba0ff04c33c79b41cf005f5b10f9235da"
+      },
+      "supervised/experiment/calls.jsonl": {
+        "bytes": 4813,
+        "sha256": "477b123f74bb06b54829b818aa63bda3d81a30f99b9ce0da00a125746f69656c"
+      },
+      "supervised/experiment/root_00.json": {
+        "bytes": 12987,
+        "sha256": "7c5199b33eddf1fea23cde3a10f27f3936fe161313de4b0d2d0ca784127dec90"
+      }
+    },
+    "qualified_head_commit": "1e585d59fd23aadbcf1e325ed918b7ce711da0ee",
+    "qualified_head_semantics": "Exact published source identity; actual boundary method scientifically ABSTAINED, not a quality-qualified candidate",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 45981667341,
+    "sha256": "cfec570b404cfdb4e9c266ce7cd24a4311f47c203697eda15ea19f8c4771fd27"
+  },
+  "preexecution_calls": {
+    "B": 0,
+    "F": 0,
+    "fit": 0,
+    "real_scalar_inverse": 0
+  },
+  "publication_policy": "Only these nine new adapter files, materialized binding and byte-identical workflow:11 new files; no existing path modification.",
+  "root_review_sha256": "80f834821f3919b2c225315abeedc714401735da85aaa07e93c2de7e0bd613af",
+  "schema": "hepta.boundary-transfer-public-execution-binding.v1",
+  "source_abstention_files": {
+    "ACTUAL_PUBLIC_SOURCE.json": {
+      "archive_member": "supervised/experiment/ACTUAL_PUBLIC_SOURCE.json",
+      "bytes": 5350,
+      "sha256": "075d8b38ab4a9393a28c372e0c426ffbeb4b75adb20dbea0611fe090766ed5eb"
+    },
+    "ENTRY.json": {
+      "archive_member": "supervised/experiment/ENTRY.json",
+      "bytes": 485,
+      "sha256": "3d827744288d241925de91cd405beee64260d468d019e408870429cd4c1de718"
+    },
+    "RESULT.json": {
+      "archive_member": "supervised/experiment/RESULT.json",
+      "bytes": 1067,
+      "sha256": "7bfb6391bdc56f752128dfed5f2a184ba0ff04c33c79b41cf005f5b10f9235da"
+    },
+    "calls.jsonl": {
+      "archive_member": "supervised/experiment/calls.jsonl",
+      "bytes": 4813,
+      "sha256": "477b123f74bb06b54829b818aa63bda3d81a30f99b9ce0da00a125746f69656c"
+    },
+    "root_00.json": {
+      "archive_member": "supervised/experiment/root_00.json",
+      "bytes": 12987,
+      "sha256": "7c5199b33eddf1fea23cde3a10f27f3936fe161313de4b0d2d0ca784127dec90"
+    }
+  },
+  "source_commit": "bc4912ea657864d33b36a57da0b50eb35bee90af",
+  "status": "FROZEN_FOR_EXECUTION_AFTER_ROOT_REVIEW",
+  "workflow": {
+    "bytes": 9466,
+    "path": ".github/workflows/hcsn-boundary-transfer83-137-pilot.yml",
+    "sha256": "8f41bf6ee2fc690643ce9e2c5c6cc398b59806cea7b987408b239a8d24c8fc65"
+  }
+}
