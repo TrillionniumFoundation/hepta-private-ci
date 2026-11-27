@@ -56,6 +56,11 @@ jobs:
   sdks:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    env:
+      HEPTA_C2_SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     environment:
       name: bazel
       deployment: false
@@ -63,6 +68,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
 
       - name: Install Linux bwrap build dependencies
@@ -92,11 +98,16 @@ jobs:
       - name: Build codex and code-mode host with Bazel
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           codex_target="//codex-rs/cli:codex"
           code_mode_host_target="//codex-rs/code-mode-host:codex-code-mode-host"
+
+          python3 scripts/mcp_conformance/prepare_oauth_fixture.py \
+            --sdk-build-boundary before \
+            --output "${RUNNER_TEMP}/hepta-sdk-original-build"
 
           # Use the shared CI wrapper so fork PRs fall back cleanly when
           # BuildBuddy credentials are unavailable. The SDK tests need both
@@ -106,7 +117,7 @@ jobs:
             --remote-download-toplevel \
             -- \
             build \
-            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=COMMIT_SHA=${HEPTA_C2_SOURCE_HEAD} \
             --build_metadata=TAG_job=sdk \
             -- \
             "${codex_target}" \
@@ -170,6 +181,11 @@ jobs:
           install -m 755 \
             "${code_mode_host_bazel_output_path}" \
             "${install_dir}/codex-code-mode-host"
+          python3 scripts/mcp_conformance/prepare_oauth_fixture.py \
+            --sdk-build-boundary after \
+            --output "${RUNNER_TEMP}/hepta-sdk-original-build" \
+            --original-codex "${codex_bazel_output_path}" \
+            --original-code-mode-host "${code_mode_host_bazel_output_path}"
           echo "CODEX_EXEC_PATH=${install_dir}/codex" >> "$GITHUB_ENV"
 
       - name: Warm up Bazel-built SDK executables
@@ -182,6 +198,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build reviewed OAuth-origin conformance fixture
+        timeout-minutes: 8
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 scripts/mcp_conformance/prepare_oauth_fixture.py
+          --output "${RUNNER_TEMP}/hepta-oauth-origin-fixture"
+          --build-receipt "${RUNNER_TEMP}/hepta-sdk-original-build/RESULT.json"
+
       - name: Build SDK packages
         run: pnpm -r --filter ./sdk/typescript run build
 
@@ -189,7 +214,34 @@ jobs:
         run: pnpm -r --filter ./sdk/typescript run lint
 
       - name: Test SDK packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CODEX_MCP_CONFORMANCE_FIXTURE_RECEIPT: ${{ runner.temp }}/hepta-oauth-origin-fixture/RESULT.json
         run: pnpm -r --filter ./sdk/typescript run test
+
+      - name: Retain reviewed fixture source, controls and CLI
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: reviewed-oauth-origin-fixture-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/RESULT.json
+            ${{ runner.temp }}/hepta-sdk-original-build/
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/identity-before/
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/identity-after/
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/identity-after-failure/
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/identity-observations/
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/*.log
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/controls.json
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/*-source-*.json
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/reviewed-source.patch
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/reviewed-sources/
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/upstream/dist/
+            ${{ runner.temp }}/hepta-oauth-origin-fixture/upstream/package-lock.json
+            ${{ runner.temp }}/codex-mcp-conformance-*.json
+            ${{ runner.temp }}/codex-mcp-review-*.json
 
       - name: Save bazel repository cache
         if: always() && !cancelled() && steps.setup_bazel.outputs.cache-hit != 'true'

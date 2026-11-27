@@ -126,6 +126,9 @@ jobs:
   sdk:
     name: sdk
     needs: scope
+    permissions:
+      contents: read
+      actions: read
     if: needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/sdk.yml
     secrets: inherit

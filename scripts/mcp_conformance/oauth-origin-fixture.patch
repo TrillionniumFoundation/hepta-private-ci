@@ -1,0 +1,495 @@
+diff --git a/src/scenarios/client/auth/token-endpoint-auth.ts b/src/scenarios/client/auth/token-endpoint-auth.ts
+--- a/src/scenarios/client/auth/token-endpoint-auth.ts
++++ b/src/scenarios/client/auth/token-endpoint-auth.ts
+@@ -150,7 +150,10 @@
+     );
+     await this.server.start(app);
+ 
+-    return { serverUrl: `${this.server.getUrl()}/mcp` };
++    return {
++      serverUrl: `${this.server.getUrl()}/mcp`,
++      authUrl: this.authServer.getUrl()
++    };
+   }
+ 
+   async stop() {
+diff --git a/src/scenarios/client/auth/discovery-metadata.ts b/src/scenarios/client/auth/discovery-metadata.ts
+--- a/src/scenarios/client/auth/discovery-metadata.ts
++++ b/src/scenarios/client/auth/discovery-metadata.ts
+@@ -169,7 +169,10 @@
+ 
+       await server.start(app);
+ 
+-      return { serverUrl: `${server.getUrl()}/mcp` };
++      return {
++        serverUrl: `${server.getUrl()}/mcp`,
++        authUrl: authServer.getUrl()
++      };
+     },
+ 
+     async stop() {
+diff --git a/src/runner/client.ts b/src/runner/client.ts
+--- a/src/runner/client.ts
++++ b/src/runner/client.ts
+@@ -29,7 +29,8 @@
+   serverUrl: string,
+   timeout: number = 30000,
+   context?: Record<string, unknown>,
+-  specVersion?: SpecVersion
++  specVersion?: SpecVersion,
++  authUrl?: string
+ ): Promise<ClientExecutionResult> {
+   const commandParts = command.split(' ');
+   const executable = commandParts[0];
+@@ -45,6 +46,31 @@
+   // 2. Simpler to read a string vs parsing JSON just to get the scenario name
+   // 3. Semantic separation: scenario identifies "which test", context provides "test data"
+   const env = { ...process.env };
++  // Only a trusted scenario's own server URL can grant this sideband.
++  // Discovery metadata and inherited environment values grant no authority.
++  for (const key of Object.keys(env)) {
++    if (key.toUpperCase() === 'MCP_CONFORMANCE_AUTHORIZATION_ORIGINS') {
++      delete env[key];
++    }
++  }
++  const authorizationOrigins: string[] = [];
++  if (authUrl !== undefined) {
++    const authorizationServer = new URL(authUrl);
++    if (
++      (authorizationServer.protocol !== 'http:' &&
++        authorizationServer.protocol !== 'https:') ||
++      authorizationServer.username !== '' ||
++      authorizationServer.password !== '' ||
++      authorizationServer.origin === 'null'
++    ) {
++      throw new Error(
++        'Scenario authorization URL must be HTTP(S) without credentials'
++      );
++    }
++    authorizationOrigins.push(authorizationServer.origin);
++  }
++  env.MCP_CONFORMANCE_AUTHORIZATION_ORIGINS =
++    JSON.stringify(authorizationOrigins);
+   env.MCP_CONFORMANCE_SCENARIO = scenarioName;
+   env.MCP_CONFORMANCE_PROTOCOL_VERSION = specVersion ?? LATEST_SPEC_VERSION;
+   if (context) {
+@@ -201,7 +227,8 @@
+       urls.serverUrl,
+       timeout,
+       urls.context,
+-      resolvedVersion
++      resolvedVersion,
++      urls.authUrl
+     );
+ 
+     // Print stdout/stderr if client exited with nonzero code
+diff --git a/src/runner/oauth-authorization-origins.test.ts b/src/runner/oauth-authorization-origins.test.ts
+new file mode 100644
+--- /dev/null
++++ b/src/runner/oauth-authorization-origins.test.ts
+@@ -0,0 +1,405 @@
++import type { ChildProcess, SpawnOptions } from 'node:child_process';
++import { EventEmitter } from 'node:events';
++import type { Application, Request } from 'express';
++import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
++import type { Scenario, ScenarioUrls } from '../types';
++import { runConformanceTest } from './client';
++import {
++  ClientSecretBasicAuthScenario,
++  ClientSecretPostAuthScenario,
++  PublicClientAuthScenario
++} from '../scenarios/client/auth/token-endpoint-auth';
++import {
++  AuthMetadataDefaultScenario,
++  AuthMetadataVar1Scenario,
++  AuthMetadataVar2Scenario,
++  AuthMetadataVar3Scenario
++} from '../scenarios/client/auth/discovery-metadata';
++import type { AuthServerOptions } from '../scenarios/client/auth/helpers/createAuthServer';
++import type { ServerOptions } from '../scenarios/client/auth/helpers/createServer';
++
++const fixture = vi.hoisted(() => ({
++  spawn: vi.fn(),
++  getScenario: vi.fn(),
++  createServerFor: vi.fn(),
++  authFactory: vi.fn(),
++  resourceFactory: vi.fn(),
++  lifecycleCount: 0,
++  events: [] as Array<{ action: 'start' | 'stop'; origin: string }>
++}));
++
++vi.mock('child_process', () => ({ spawn: fixture.spawn }));
++vi.mock('../scenarios', () => ({
++  getScenario: fixture.getScenario,
++  isScenarioApplicableAt: () => {
++    throw new Error('These controls do not request a spec-version override');
++  }
++}));
++vi.mock('../mock-server', () => ({
++  createServerFor: fixture.createServerFor
++}));
++vi.mock('../scenarios/client/auth/helpers/createAuthServer', () => ({
++  createAuthServer: fixture.authFactory
++}));
++vi.mock('../scenarios/client/auth/helpers/createServer', () => ({
++  createServer: fixture.resourceFactory
++}));
++vi.mock('../scenarios/client/auth/helpers/serverLifecycle', () => ({
++  ServerLifecycle: class {
++    private readonly origin =
++      fixture.lifecycleCount++ % 2 === 0
++        ? 'http://localhost:41002'
++        : 'http://localhost:41001';
++    private currentUrl = '';
++
++    getUrl = () => this.currentUrl;
++
++    async start(_app: Application): Promise<string> {
++      this.currentUrl = this.origin;
++      fixture.events.push({ action: 'start', origin: this.origin });
++      return this.currentUrl;
++    }
++
++    async stop(): Promise<void> {
++      fixture.events.push({ action: 'stop', origin: this.origin });
++    }
++  }
++}));
++
++const SIDEBAND = 'MCP_CONFORMANCE_AUTHORIZATION_ORIGINS';
++const RESOURCE = 'http://localhost:41001/mcp';
++const AUTH = 'http://localhost:41002';
++const EXPECTED_LIFECYCLE = [
++  { action: 'start', origin: AUTH },
++  { action: 'start', origin: 'http://localhost:41001' },
++  { action: 'stop', origin: AUTH },
++  { action: 'stop', origin: 'http://localhost:41001' }
++];
++
++function scenarioWith(urls: ScenarioUrls) {
++  const checks = [
++    {
++      id: 'existing-fixture-rejection',
++      name: 'Existing fixture rejection',
++      description: 'An authorization sideband is not protocol conformance.',
++      status: 'FAILURE' as const,
++      timestamp: '2026-01-01T00:00:00.000Z'
++    }
++  ];
++  return {
++    name: 'auth/origin-sideband-fixture',
++    description: 'Owned startup data for the real client runner',
++    source: { introducedIn: '2025-11-25' as const },
++    start: vi.fn(async () => urls),
++    stop: vi.fn(async () => {}),
++    getChecks: vi.fn(() => checks)
++  } satisfies Scenario;
++}
++
++async function runScenario(scenario: Scenario) {
++  fixture.getScenario.mockReturnValue(scenario);
++  return runConformanceTest('fixture-client --fixed', scenario.name, 1000);
++}
++
++function childEnvironment(): NodeJS.ProcessEnv {
++  expect(fixture.spawn).toHaveBeenCalledTimes(1);
++  const [command, args, rawOptions] = fixture.spawn.mock.calls[0];
++  const options = rawOptions as SpawnOptions;
++  expect(command).toBe('fixture-client');
++  expect(args).toEqual(['--fixed', RESOURCE]);
++  expect(options.shell).toBe(true);
++  expect(options.stdio).toBe('pipe');
++  expect(options.env).toBeDefined();
++  return options.env!;
++}
++
++function assertPreservedRun(
++  scenario: ReturnType<typeof scenarioWith>,
++  result: Awaited<ReturnType<typeof runConformanceTest>>
++) {
++  expect(scenario.start).toHaveBeenCalledTimes(1);
++  expect(scenario.stop).toHaveBeenCalledTimes(1);
++  expect(scenario.getChecks).toHaveBeenCalledTimes(1);
++  expect(result.clientOutput).toEqual({
++    exitCode: 0,
++    stdout: '',
++    stderr: '',
++    timedOut: false
++  });
++  expect(result.checks).toEqual(scenario.getChecks.mock.results[0].value);
++  expect(result.checks.map((check) => [check.id, check.status])).toEqual([
++    ['existing-fixture-rejection', 'FAILURE']
++  ]);
++  expect(fixture.createServerFor).not.toHaveBeenCalled();
++}
++
++function lastAuthOptions(): AuthServerOptions {
++  const call = fixture.authFactory.mock.calls.at(-1);
++  expect(call).toBeDefined();
++  expect((call![2] as () => string)()).toBe(AUTH);
++  return call![3] as AuthServerOptions;
++}
++
++function lastResourceOptions(): ServerOptions {
++  const call = fixture.resourceFactory.mock.calls.at(-1);
++  expect(call).toBeDefined();
++  expect((call![2] as () => string)()).toBe('http://localhost:41001');
++  return call![4] as ServerOptions;
++}
++
++function lastApp(factory: typeof fixture.authFactory) {
++  return factory.mock.results.at(-1)!.value as {
++    get: ReturnType<typeof vi.fn>;
++  };
++}
++
++beforeEach(() => {
++  vi.clearAllMocks();
++  fixture.events.length = 0;
++  fixture.getScenario.mockReset();
++  fixture.authFactory.mockImplementation(() => ({ get: vi.fn() }));
++  fixture.resourceFactory.mockImplementation(() => ({ get: vi.fn() }));
++  fixture.createServerFor.mockImplementation(() => {
++    throw new Error('No network server is started by these component controls');
++  });
++  fixture.spawn.mockImplementation(() => {
++    const child = Object.assign(new EventEmitter(), {
++      stdout: new EventEmitter(),
++      stderr: new EventEmitter(),
++      kill: vi.fn(() => true)
++    });
++    queueMicrotask(() => child.emit('close', 0));
++    return child as unknown as ChildProcess;
++  });
++  vi.spyOn(console, 'error').mockImplementation(() => {});
++});
++
++afterEach(() => {
++  vi.unstubAllEnvs();
++  vi.restoreAllMocks();
++});
++
++describe('OAuth authorization origin sideband', () => {
++  it('missing_auth_url_clears_inherited_authorization', async () => {
++    vi.stubEnv(SIDEBAND, '["https://inherited.example"]');
++    vi.stubEnv(
++      'mcp_conformance_authorization_origins',
++      '["https://lowercase.example"]'
++    );
++    vi.stubEnv(
++      'Mcp_Conformance_Authorization_Origins',
++      '["https://mixed.example"]'
++    );
++    const parentEnvironment = { ...process.env };
++    const scenario = scenarioWith({ serverUrl: RESOURCE });
++    const result = await runScenario(scenario);
++    const env = childEnvironment();
++
++    expect(env[SIDEBAND]).toBe('[]');
++    expect(
++      Object.keys(env).filter((key) => key.toUpperCase() === SIDEBAND)
++    ).toEqual([SIDEBAND]);
++    expect(env.MCP_CONFORMANCE_SCENARIO).toBe(scenario.name);
++    expect(env.MCP_CONFORMANCE_PROTOCOL_VERSION).toBe('2025-11-25');
++    expect(process.env).toEqual(parentEnvironment);
++    assertPreservedRun(scenario, result);
++  });
++
++  it('trusted_auth_url_is_the_only_authorization_source', async () => {
++    vi.stubEnv(SIDEBAND, '["https://inherited.example"]');
++    const parentEnvironment = { ...process.env };
++    const scenario = scenarioWith({ serverUrl: RESOURCE, authUrl: AUTH });
++    const result = await runScenario(scenario);
++    const env = childEnvironment();
++
++    expect(env[SIDEBAND]).toBe('["http://localhost:41002"]');
++    expect(JSON.parse(env[SIDEBAND]!)).not.toContain(
++      'http://localhost:41001'
++    );
++    expect(process.env).toEqual(parentEnvironment);
++    assertPreservedRun(scenario, result);
++  });
++
++  it('context_cannot_extend_authorization_sideband', async () => {
++    const context = {
++      name: 'original-context-name-precedence',
++      authorization_origins: ['https://context.example'],
++      MCP_CONFORMANCE_AUTHORIZATION_ORIGINS: '["https://context.example"]',
++      credentials: { client_id: 'fixture-client' }
++    };
++    const scenario = scenarioWith({ serverUrl: RESOURCE, context });
++    const result = await runScenario(scenario);
++    const env = childEnvironment();
++
++    expect(env[SIDEBAND]).toBe('[]');
++    expect(env.MCP_CONFORMANCE_CONTEXT).toBe(
++      JSON.stringify({ name: scenario.name, ...context })
++    );
++    assertPreservedRun(scenario, result);
++  });
++
++  it('canonical_origin_preserves_scheme_host_and_port', async () => {
++    const cases = [
++      [
++        'https://EXAMPLE.test:443/tenant1?source=fixture#metadata',
++        'https://example.test'
++      ],
++      ['http://localhost:41002/tenant1', 'http://localhost:41002'],
++      ['http://[::1]:41002', 'http://[::1]:41002']
++    ];
++    for (const [authUrl, origin] of cases) {
++      fixture.spawn.mockClear();
++      const scenario = scenarioWith({ serverUrl: RESOURCE, authUrl });
++      const result = await runScenario(scenario);
++
++      expect(childEnvironment()[SIDEBAND]).toBe(JSON.stringify([origin]));
++      assertPreservedRun(scenario, result);
++    }
++  });
++
++  it('malformed_fixture_url_prevents_spawn_and_stops_scenario', async () => {
++    for (const authUrl of ['', 'not a URL', 'http://']) {
++      fixture.spawn.mockClear();
++      const scenario = scenarioWith({ serverUrl: RESOURCE, authUrl });
++      await expect(runScenario(scenario)).rejects.toThrow();
++
++      expect(fixture.spawn).not.toHaveBeenCalled();
++      expect(scenario.start).toHaveBeenCalledTimes(1);
++      expect(scenario.stop).toHaveBeenCalledTimes(1);
++      expect(scenario.getChecks).not.toHaveBeenCalled();
++    }
++  });
++
++  it('unsupported_or_credentialed_fixture_url_is_rejected', async () => {
++    vi.stubEnv(SIDEBAND, '["https://inherited.example"]');
++    for (const authUrl of [
++      'file:///tmp/oauth',
++      'data:text/plain,oauth',
++      'ftp://localhost/oauth',
++      'http://user:secret@localhost:41002',
++      'https://user@fixture.example'
++    ]) {
++      fixture.spawn.mockClear();
++      const scenario = scenarioWith({ serverUrl: RESOURCE, authUrl });
++      await expect(runScenario(scenario)).rejects.toThrow(
++        'Scenario authorization URL must be HTTP(S) without credentials'
++      );
++
++      expect(fixture.spawn).not.toHaveBeenCalled();
++      expect(scenario.stop).toHaveBeenCalledTimes(1);
++      expect(scenario.getChecks).not.toHaveBeenCalled();
++    }
++  });
++
++  it('all_three_token_auth_modes_return_owned_auth_server', async () => {
++    const cases = [
++      [new ClientSecretBasicAuthScenario(), 'client_secret_basic'],
++      [new ClientSecretPostAuthScenario(), 'client_secret_post'],
++      [new PublicClientAuthScenario(), 'none']
++    ] as const;
++    for (const [scenario, method] of cases) {
++      fixture.spawn.mockClear();
++      fixture.events.length = 0;
++      const result = await runScenario(scenario);
++      const options = lastAuthOptions();
++      const registration = options.onRegistrationRequest!({} as Request);
++
++      expect(childEnvironment()[SIDEBAND]).toBe('["http://localhost:41002"]');
++      expect(fixture.events).toEqual(EXPECTED_LIFECYCLE);
++      expect(options.tokenEndpointAuthMethodsSupported).toEqual([method]);
++      expect(registration.tokenEndpointAuthMethod).toBe(method);
++      if (method === 'none') {
++        expect(registration.clientSecret).toBeUndefined();
++      } else {
++        expect(registration.clientSecret).toMatch(/^test-secret-/);
++      }
++      expect(lastResourceOptions()).toMatchObject({
++        prmPath: '/.well-known/oauth-protected-resource/mcp',
++        requiredScopes: []
++      });
++      expect(result.checks.map((check) => [check.id, check.status])).toEqual([
++        ['token-endpoint-auth-method', 'FAILURE'],
++        ['resource-parameter-in-authorization', 'FAILURE'],
++        ['resource-parameter-in-token', 'FAILURE']
++      ]);
++    }
++  });
++
++  it('all_four_metadata_variants_return_owned_auth_origin', async () => {
++    const cases = [
++      {
++        scenario: AuthMetadataDefaultScenario,
++        prm: '/.well-known/oauth-protected-resource/mcp',
++        inWwwAuth: true,
++        metadata: '/.well-known/oauth-authorization-server',
++        openId: false,
++        prefix: undefined,
++        rootPrmTrap: true
++      },
++      {
++        scenario: AuthMetadataVar1Scenario,
++        prm: '/.well-known/oauth-protected-resource/mcp',
++        inWwwAuth: false,
++        metadata: '/.well-known/openid-configuration',
++        openId: true,
++        prefix: undefined,
++        rootPrmTrap: false
++      },
++      {
++        scenario: AuthMetadataVar2Scenario,
++        prm: '/.well-known/oauth-protected-resource',
++        inWwwAuth: false,
++        metadata: '/.well-known/oauth-authorization-server/tenant1',
++        openId: false,
++        prefix: '/tenant1',
++        rootPrmTrap: false
++      },
++      {
++        scenario: AuthMetadataVar3Scenario,
++        prm: '/custom/metadata/location.json',
++        inWwwAuth: true,
++        metadata: '/tenant1/.well-known/openid-configuration',
++        openId: true,
++        prefix: '/tenant1',
++        rootPrmTrap: false
++      }
++    ];
++    for (const item of cases) {
++      fixture.spawn.mockClear();
++      fixture.events.length = 0;
++      const result = await runScenario(item.scenario);
++      const authOptions = lastAuthOptions();
++      const resourceOptions = lastResourceOptions();
++      const getIssuer = fixture.resourceFactory.mock.calls.at(-1)![3] as
++        (() => string);
++
++      expect(childEnvironment()[SIDEBAND]).toBe('["http://localhost:41002"]');
++      expect(fixture.events).toEqual(EXPECTED_LIFECYCLE);
++      expect(authOptions.metadataPath).toBe(item.metadata);
++      expect(authOptions.isOpenIdConfiguration).toBe(item.openId);
++      expect(authOptions.routePrefix).toBe(item.prefix);
++      expect(resourceOptions).toEqual({
++        prmPath: item.prm,
++        includePrmInWwwAuth: item.inWwwAuth
++      });
++      expect(getIssuer()).toBe(AUTH + (item.prefix ?? ''));
++      expect(lastApp(fixture.authFactory).get.mock.calls.map((call) => call[0]))
++        .toEqual(
++          item.prefix ? ['/.well-known/oauth-authorization-server'] : []
++        );
++      expect(lastApp(fixture.resourceFactory).get.mock.calls.map((call) => call[0]))
++        .toEqual(
++          item.rootPrmTrap ? ['/.well-known/oauth-protected-resource'] : []
++        );
++      expect(result.checks.map((check) => [check.id, check.status])).toEqual([
++        ...(item.prm === '/.well-known/oauth-protected-resource/mcp'
++          ? [['prm-pathbased-requested', 'FAILURE']]
++          : []),
++        ['authorization-server-metadata', 'FAILURE'],
++        ['client-registration', 'FAILURE'],
++        ['authorization-request', 'FAILURE'],
++        ['token-request', 'FAILURE']
++      ]);
++    }
++  });
++});

@@ -1,0 +1,463 @@
+"""Small data controls for the reviewed fixture receipt and exact test evidence."""
+
+import copy
+import json
+import os
+from http.client import IncompleteRead
+from pathlib import Path
+import tempfile
+import time
+import unittest
+from unittest import mock
+
+import conformance_fixture as fixture
+
+
+def _controls(source: Path) -> tuple[dict, list[str]]:
+    names = [f"source-control-{index}" for index in range(8)]
+    return {
+        "success": True,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0,
+        "numFailedTestSuites": 0,
+        "numPendingTestSuites": 0,
+        "numTotalTests": 8,
+        "numPassedTests": 8,
+        "numTotalTestSuites": 2,
+        "numPassedTestSuites": 2,
+        "testResults": [
+            {
+                "name": str(source.resolve()),
+                "status": "passed",
+                "message": "",
+                "assertionResults": [
+                    {
+                        "title": name,
+                        "fullName": f"Source fixture {name}",
+                        "status": "passed",
+                        "failureMessages": [],
+                    }
+                    for name in names
+                ],
+            }
+        ],
+    }, names
+
+
+class FixtureReceiptTests(unittest.TestCase):
+    def test_exact_executed_file_and_eight_names_are_required(self):
+        source = Path("/fixture/controls.test.ts")
+        report, names = _controls(source)
+        self.assertEqual(len(fixture.validate_controls(report, source, names)), 8)
+        for change in (
+            "zero",
+            "duplicate",
+            "extra",
+            "skipped",
+            "wrong-file",
+            "suite-error",
+        ):
+            with self.subTest(change=change):
+                invalid = copy.deepcopy(report)
+                result = invalid["testResults"][0]
+                if change == "zero":
+                    invalid["numTotalTests"] = invalid["numPassedTests"] = 0
+                    result["assertionResults"] = []
+                elif change == "duplicate":
+                    result["assertionResults"][-1]["title"] = names[0]
+                elif change == "extra":
+                    result["assertionResults"].append(
+                        copy.deepcopy(result["assertionResults"][0])
+                    )
+                elif change == "skipped":
+                    result["assertionResults"][0]["status"] = "skipped"
+                elif change == "wrong-file":
+                    result["name"] = "/fixture/different.test.ts"
+                else:
+                    result["message"] = "setup failed"
+                with self.assertRaises(ValueError):
+                    fixture.validate_controls(invalid, source, names)
+
+    def test_duplicate_json_and_symlink_dist_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            malformed = root / "duplicated.json"
+            malformed.write_text(
+                '{"status":"failed","status":"passed"}', encoding="utf-8"
+            )
+            with self.assertRaisesRegex(ValueError, "duplicate JSON"):
+                fixture.read_json(malformed)
+            dist = root / "dist"
+            dist.mkdir()
+            cli = dist / "index.js"
+            cli.write_text("process.exit(0);\n", encoding="utf-8")
+            first = fixture.snapshot_dist(dist)
+            cli.write_text("process.exit(1);\n", encoding="utf-8")
+            self.assertNotEqual(fixture.snapshot_dist(dist), first)
+            target = root / "outside.js"
+            target.write_text("process.exit(0);\n", encoding="utf-8")
+            cli.unlink()
+            cli.symlink_to(target)
+            with self.assertRaisesRegex(ValueError, "regular file"):
+                fixture.snapshot_dist(dist)
+
+    def test_manifest_stays_closed_without_explicit_root_activation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            manifest = Path(directory) / "manifest.json"
+            for value in (
+                {"schema": "hepta-oauth-origin-fixture-v2", "activated": False},
+                {
+                    "schema": "hepta-oauth-origin-fixture-v2",
+                    "activated": True,
+                    "root_admission": None,
+                },
+                {
+                    "schema": "hepta-oauth-origin-fixture-v2",
+                    "activated": True,
+                    "root_admission": {
+                        "reviewer": "agent",
+                        "accepted": True,
+                        "sha256": "a" * 64,
+                    },
+                },
+            ):
+                with self.subTest(value=value):
+                    manifest.write_text(json.dumps(value), encoding="utf-8")
+                    with self.assertRaises(ValueError):
+                        fixture.load_manifest(manifest)
+
+    def test_raw_commit_preserves_parents_tree_and_message_bytes(self):
+        tree = "1" * 40
+        parents = ["2" * 40, "3" * 40]
+        raw = (
+            f"tree {tree}\nparent {parents[0]}\nparent {parents[1]}\n"
+            "author Source <source@example.invalid> 1 +0000\n"
+            "committer Source <source@example.invalid> 1 +0000\n\nfixture\n"
+        ).encode()
+        identity = fixture.commit_identity(raw)
+        self.assertEqual(identity["tree"], tree)
+        self.assertEqual(identity["parents"], parents)
+        self.assertIs(identity["dirty"], False)
+        self.assertNotEqual(
+            fixture.commit_identity(raw + b"\n")["commit"], identity["commit"]
+        )
+        with self.assertRaisesRegex(ValueError, "tree header"):
+            fixture.commit_identity(raw.replace(b"tree ", b"missing "))
+
+
+class OriginalCandidateIdentityTests(unittest.TestCase):
+    def identity(self):
+        return {
+            "repository": fixture.HEPTA_REPOSITORY,
+            "run_id": 101,
+            "run_attempt": 1,
+            "job_id": 202,
+            "job_name": "sdk / sdks",
+            "runner_id": 303,
+            "runner_name": "current-runner",
+            "event_name": "pull_request",
+            "event_sha": "e" * 40,
+            "source_head": "c" * 40,
+            "source_tree": "b4ad17bcbfedbde12183ccac5036d8b57f80bb01",
+            "source_parents": [fixture.HEPTA_PARENT["head"]],
+            "parent": dict(fixture.HEPTA_PARENT),
+            "pr_number": 404,
+            "workflow_id": 505,
+            "workflow_definition_sha": "e" * 40,
+        }
+
+    def job(self):
+        return {
+            "id": 202,
+            "name": "sdk / sdks",
+            "runner_id": 303,
+            "runner_name": "current-runner",
+            "run_id": 101,
+            "run_attempt": 1,
+            "head_sha": "c" * 40,
+            "status": "in_progress",
+            "conclusion": None,
+            "steps": [
+                {
+                    "name": fixture.BUILD_STEP,
+                    "status": "completed",
+                    "conclusion": "success",
+                },
+                {
+                    "name": fixture.FIXTURE_STEP,
+                    "status": "completed",
+                    "conclusion": "success",
+                },
+                {
+                    "name": fixture.TEST_STEP,
+                    "status": "in_progress",
+                    "conclusion": None,
+                },
+            ],
+        }
+
+    def test_same_head_old_run_attempt_and_job_are_rejected(self):
+        identity = self.identity()
+        source = {
+            "complete": True,
+            "tree": identity["source_tree"],
+            "files": {},
+            "errors": [],
+        }
+        binaries = {
+            name: {"bytes": 7, "sha256": "d" * 64}
+            for name in ("codex", "code_mode_host")
+        }
+        receipt = {
+            "schema": "hepta-sdk-original-build-v1",
+            "status": "pending-original-step-terminal",
+            "build_step": fixture.BUILD_STEP,
+            "original_build_exit_code": 0,
+            "source_before": source,
+            "source_after": copy.deepcopy(source),
+            "identity_before": identity,
+            "identity_after": copy.deepcopy(identity),
+            "original_binaries": binaries,
+            "staged_binaries": copy.deepcopy(binaries),
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "build.json"
+            path.write_text(json.dumps(receipt), encoding="utf-8")
+            with mock.patch.object(
+                fixture, "verified_source", return_value=(identity, source)
+            ) as observation:
+                with mock.patch.object(
+                    fixture, "current_staged_binaries", return_value=binaries
+                ):
+                    self.assertEqual(
+                        fixture.inspect_original_build(
+                            path,
+                            {},
+                            root,
+                            root,
+                            time.monotonic() + 2,
+                            fixture.TEST_STEP,
+                        )["identity"],
+                        identity,
+                    )
+                    for field in ("run_id", "run_attempt", "job_id", "runner_id"):
+                        with self.subTest(field=field):
+                            current = copy.deepcopy(identity)
+                            current[field] += 1
+                            observation.return_value = (current, source)
+                            with self.assertRaisesRegex(
+                                ValueError, "old run/attempt/job"
+                            ):
+                                fixture.inspect_original_build(
+                                    path,
+                                    {},
+                                    root,
+                                    root,
+                                    time.monotonic() + 2,
+                                    fixture.TEST_STEP,
+                                )
+
+    def test_publication_requires_actual_parent_and_exact_roster(self):
+        publication = {
+            "parent": dict(fixture.HEPTA_PARENT),
+            "source_paths": list(fixture.HEPTA_C2_PATHS),
+            "requires_actual_stage_b_parent": True,
+            "root_must_bind_final_candidate": True,
+        }
+        self.assertEqual(
+            fixture.publication_binding({"publication": publication}), publication
+        )
+        for change in (
+            "old-parent",
+            "wrong-tree",
+            "missing-path",
+            "extra-path",
+            "reordered",
+            "authority",
+        ):
+            with self.subTest(change=change):
+                invalid = copy.deepcopy(publication)
+                if change == "old-parent":
+                    invalid["parent"]["head"] = "0" * 40
+                elif change == "wrong-tree":
+                    invalid["parent"]["tree"] = "0" * 40
+                elif change == "missing-path":
+                    invalid["source_paths"].pop()
+                elif change == "extra-path":
+                    invalid["source_paths"].append("unreviewed.py")
+                elif change == "reordered":
+                    invalid["source_paths"].reverse()
+                else:
+                    invalid["root_must_bind_final_candidate"] = False
+                with self.assertRaises(ValueError):
+                    fixture.publication_binding({"publication": invalid})
+
+    def test_binary_receipt_rejects_wrong_bytes_or_missing_sibling(self):
+        original = {
+            name: {"bytes": 7, "sha256": "a" * 64}
+            for name in ("codex", "code_mode_host")
+        }
+        fixture.compare_build_binaries(original, copy.deepcopy(original))
+        for change in ("bytes", "sha256", "missing", "extra"):
+            with self.subTest(change=change):
+                staged = copy.deepcopy(original)
+                if change == "bytes":
+                    staged["codex"]["bytes"] += 1
+                elif change == "sha256":
+                    staged["codex"]["sha256"] = "b" * 64
+                elif change == "missing":
+                    del staged["code_mode_host"]
+                else:
+                    staged["unreviewed"] = staged["codex"]
+                with self.assertRaises(ValueError):
+                    fixture.compare_build_binaries(original, staged)
+
+    def test_binary_mutation_changes_actual_observation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ("codex", "code_mode_host"):
+                (root / name).write_bytes(b"original binary\n")
+                (root / name).chmod(0o755)
+            first = {
+                name: fixture.binary_identity(root / name, time.monotonic() + 2)
+                for name in ("codex", "code_mode_host")
+            }
+            (root / "codex").write_bytes(b"replaced binary\n")
+            after = {
+                name: fixture.binary_identity(root / name, time.monotonic() + 2)
+                for name in first
+            }
+            self.assertNotEqual(first["codex"]["sha256"], after["codex"]["sha256"])
+            with self.assertRaisesRegex(ValueError, "differs from original build"):
+                fixture.compare_build_binaries(first, after)
+
+    def test_full_physical_tree_rejects_changed_file_and_symlink(self):
+        files = {
+            "item": {
+                "bytes": 7,
+                "git_blob": "5a18cd2fbf65e961b0fd3f6cd6b0b6160f2c808e",
+                "mode": "100644",
+            }
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / "item"
+            path.write_bytes(b"source\n")
+            first = fixture.physical_source(root, files, time.monotonic() + 2)
+            self.assertTrue(first["complete"])
+            self.assertEqual(first["tree"], "b4ad17bcbfedbde12183ccac5036d8b57f80bb01")
+            path.write_bytes(b"changed")
+            self.assertFalse(
+                fixture.physical_source(root, files, time.monotonic() + 2)["complete"]
+            )
+            path.unlink()
+            outside = root / "outside"
+            outside.write_bytes(b"source\n")
+            path.symlink_to(outside)
+            failure = fixture.physical_source(root, files, time.monotonic() + 2)
+            self.assertFalse(failure["complete"])
+            self.assertIsNone(failure["tree"])
+            self.assertEqual([row["path"] for row in failure["errors"]], ["item"])
+
+    def test_full_tree_digest_rejects_claimed_wrong_blob(self):
+        tree = "b4ad17bcbfedbde12183ccac5036d8b57f80bb01"
+        document = {
+            "sha": tree,
+            "truncated": False,
+            "tree": [
+                {
+                    "path": "item",
+                    "type": "blob",
+                    "mode": "100644",
+                    "size": 7,
+                    "sha": "5a18cd2fbf65e961b0fd3f6cd6b0b6160f2c808e",
+                },
+            ],
+        }
+        self.assertEqual(fixture.source_map(document, tree)["item"]["bytes"], 7)
+        for change in ("wrong-blob", "truncated", "duplicate", "wrong-mode"):
+            with self.subTest(change=change):
+                invalid = copy.deepcopy(document)
+                if change == "wrong-blob":
+                    invalid["tree"][0]["sha"] = "0" * 40
+                elif change == "truncated":
+                    invalid["truncated"] = True
+                elif change == "duplicate":
+                    invalid["tree"].append(copy.deepcopy(invalid["tree"][0]))
+                else:
+                    invalid["tree"][0]["mode"] = "100755"
+                with self.assertRaises(ValueError):
+                    fixture.source_map(invalid, tree)
+
+    def test_current_job_rejects_ambiguity_and_wrong_attempt(self):
+        job = self.job()
+        self.assertEqual(
+            fixture.select_original_job(
+                [job], 101, 1, "c" * 40, "current-runner", fixture.TEST_STEP
+            ),
+            job,
+        )
+        for rows in (
+            [],
+            [job, copy.deepcopy(job)],
+            [dict(job, run_attempt=2)],
+            [dict(job, head_sha="d" * 40)],
+            [dict(job, runner_name="other-runner")],
+        ):
+            with self.subTest(rows=rows):
+                with self.assertRaises(ValueError):
+                    fixture.select_original_job(
+                        rows, 101, 1, "c" * 40, "current-runner", fixture.TEST_STEP
+                    )
+
+    def test_original_build_prerequisite_cannot_be_pending_or_failed(self):
+        for prior in (fixture.BUILD_STEP, fixture.FIXTURE_STEP):
+            for state, result in (
+                ("in_progress", None),
+                ("completed", "failure"),
+                ("completed", "cancelled"),
+                ("completed", "skipped"),
+            ):
+                with self.subTest(prior=prior, state=state, result=result):
+                    job = self.job()
+                    step = next(row for row in job["steps"] if row["name"] == prior)
+                    step.update(status=state, conclusion=result)
+                    with self.assertRaisesRegex(ValueError, "prerequisite step"):
+                        fixture.select_original_job(
+                            [job], 101, 1, "c" * 40, "current-runner", fixture.TEST_STEP
+                        )
+
+    def test_identity_api_retains_partial_failure_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            response = mock.MagicMock()
+            response.__enter__.return_value = response
+            response.status = 200
+            response.headers = {"x-request-id": "local-negative-control"}
+            response.geturl.return_value = (
+                "https://api.github.com/repos/" + fixture.HEPTA_REPOSITORY + "/local"
+            )
+            failure = IncompleteRead(b"received-prefix", 3)
+            response.read.side_effect = failure
+            opener = mock.Mock()
+            opener.open.return_value = response
+            with mock.patch.dict(os.environ, {"GH_TOKEN": "local-control-only"}):
+                with mock.patch.object(
+                    fixture.urllib.request, "build_opener", return_value=opener
+                ):
+                    api = fixture.IdentityAPI(output, time.monotonic() + 2)
+                    with self.assertRaises(IncompleteRead):
+                        api.get("/local", "partial")
+            self.assertEqual((output / "partial.body").read_bytes(), b"received-prefix")
+            row = json.loads((output / "partial.json").read_text(encoding="utf-8"))
+            self.assertEqual(row["received_bytes"], len(b"received-prefix"))
+            self.assertEqual(row["retained_bytes"], len(b"received-prefix"))
+            self.assertEqual(row["headers"], {"x-request-id": "local-negative-control"})
+            self.assertNotIn("body_eof", row)
+            self.assertIn("body_read_error", row)
+
+
+if __name__ == "__main__":
+    unittest.main()
