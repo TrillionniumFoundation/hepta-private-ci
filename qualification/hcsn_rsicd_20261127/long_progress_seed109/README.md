@@ -1,0 +1,7 @@
+# Ongoing single-seed optimizer state
+
+At capture the registered conventional seed 109 had accumulated 818.25 active elapsed seconds. The two-minute and ten-minute development locks selected the same smaller-rate checkpoint. Only development quality had been examined in this long run. No three-seed long-panel scientific outcome is asserted here.
+
+The archive contains both full trainable modules, all first/second Adam moments and step counts, both NumPy sample generator states, the source-bound training data digest, every completed development checkpoint row up to this snapshot, and the exact weight files needed to restore the development winners through this horizon. The continuing job writes fresh local state each minute. The unchanged short-panel test data must not be used to rank candidates during continuation.
+
+To recover, concatenate the manifest-listed binary files in order, verify their SHA-256 digests and delivery_sha256, decompress the XZ stream, and check the resulting ZIP and all member digests. In the original input workspace extract the contents into long/conventional-109; keep source and data versions fixed. Run study.py fit long conventional 109 using the registered single-thread Python environment. An entirely reconstructed source dataset uses different preparation timing receipts even if all arrays are identical; ensure the exact published prepared.json is paired with the three verified prepared array hashes. Previous validation wall and resource contention cannot be reproduced retrospectively.
