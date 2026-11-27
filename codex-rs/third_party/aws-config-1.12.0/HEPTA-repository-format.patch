@@ -1,0 +1,1828 @@
+--- a/src/credential_process.rs
++++ b/src/credential_process.rs
+@@ -7,11 +7,15 @@
+ 
+ //! Credentials Provider for external process
+ 
+-use crate::json_credentials::{json_parse_loop, InvalidJsonCredentials};
++use crate::json_credentials::json_parse_loop;
++use crate::json_credentials::InvalidJsonCredentials;
+ use crate::sensitive_command::CommandWithSensitiveArgs;
+ use aws_credential_types::attributes::AccountId;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::provider::{self, error::CredentialsError, future, ProvideCredentials};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
+ use aws_credential_types::Credentials;
+ use aws_smithy_json::deserialize::Token;
+ use std::borrow::Cow;
+@@ -284,7 +288,8 @@
+     use crate::sensitive_command::CommandWithSensitiveArgs;
+     use aws_credential_types::credential_feature::AwsCredentialFeature;
+     use aws_credential_types::provider::ProvideCredentials;
+-    use std::time::{Duration, SystemTime};
++    use std::time::Duration;
++    use std::time::SystemTime;
+     use time::format_description::well_known::Rfc3339;
+     use time::OffsetDateTime;
+     use tokio::time::timeout;
+@@ -407,7 +412,8 @@
+ mod windows_tests {
+     use crate::credential_process::CredentialProcessProvider;
+     use aws_credential_types::provider::ProvideCredentials;
+-    use std::path::{Path, PathBuf};
++    use std::path::Path;
++    use std::path::PathBuf;
+ 
+     const CREDS_JSON: &str = "{\"Version\":1,\"AccessKeyId\":\"ASIARTESTID\",\"SecretAccessKey\":\"TESTSECRETKEY\",\"SessionToken\":\"TESTSESSIONTOKEN\",\"Expiration\":\"2035-01-01T00:00:00Z\"}";
+ 
+--- a/src/default_provider/account_id_endpoint_mode.rs
++++ b/src/default_provider/account_id_endpoint_mode.rs
+@@ -43,9 +43,12 @@
+     use super::account_id_endpoint_mode_provider;
+     use super::env;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/app_name.rs
++++ b/src/default_provider/app_name.rs
+@@ -4,9 +4,11 @@
+  */
+ 
+ use crate::provider_config::ProviderConfig;
+-use aws_runtime::env_config::{EnvConfigError, EnvConfigValue};
++use aws_runtime::env_config::EnvConfigError;
++use aws_runtime::env_config::EnvConfigValue;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+-use aws_types::app_name::{AppName, InvalidAppName};
++use aws_types::app_name::AppName;
++use aws_types::app_name::InvalidAppName;
+ 
+ /// Default App Name Provider chain
+ ///
+@@ -90,11 +92,15 @@
+ mod tests {
+     use super::*;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use crate::test_case::{no_traffic_client, InstantSleep};
++    use crate::test_case::no_traffic_client;
++    use crate::test_case::InstantSleep;
+     use aws_smithy_runtime_api::client::behavior_version::BehaviorVersion;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+ 
+     #[tokio::test]
+     async fn prefer_env_to_profile() {
+--- a/src/default_provider/auth_scheme_preference.rs
++++ b/src/default_provider/auth_scheme_preference.rs
+@@ -5,7 +5,8 @@
+ 
+ use crate::provider_config::ProviderConfig;
+ use aws_runtime::env_config::EnvConfigValue;
+-use aws_smithy_runtime_api::client::auth::{AuthSchemeId, AuthSchemePreference};
++use aws_smithy_runtime_api::client::auth::AuthSchemeId;
++use aws_smithy_runtime_api::client::auth::AuthSchemePreference;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+ use std::borrow::Cow;
+ use std::fmt;
+@@ -79,10 +80,8 @@
+ #[cfg(test)]
+ mod test {
+     use super::env;
+-    use crate::{
+-        default_provider::auth_scheme_preference::auth_scheme_preference_provider,
+-        provider_config::ProviderConfig,
+-    };
++    use crate::default_provider::auth_scheme_preference::auth_scheme_preference_provider;
++    use crate::provider_config::ProviderConfig;
+     use aws_types::os_shim_internal::Env;
+     use tracing_test::traced_test;
+ 
+@@ -102,14 +101,15 @@
+     #[cfg(feature = "sso")] // for aws-smithy-runtime-api/http-auth
+     mod http_auth_tests {
+         use super::env;
++        use crate::default_provider::auth_scheme_preference::auth_scheme_preference_provider;
+         #[allow(deprecated)]
+-        use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
+-        use crate::{
+-            default_provider::auth_scheme_preference::auth_scheme_preference_provider,
+-            provider_config::ProviderConfig,
+-        };
++        use crate::profile::profile_file::ProfileFileKind;
++        #[allow(deprecated)]
++        use crate::profile::profile_file::ProfileFiles;
++        use crate::provider_config::ProviderConfig;
+         use aws_smithy_runtime_api::client::auth::AuthSchemePreference;
+-        use aws_types::os_shim_internal::{Env, Fs};
++        use aws_types::os_shim_internal::Env;
++        use aws_types::os_shim_internal::Fs;
+ 
+         #[tokio::test]
+         async fn environment_priority() {
+--- a/src/default_provider/checksums.rs
++++ b/src/default_provider/checksums.rs
+@@ -6,7 +6,8 @@
+ use crate::provider_config::ProviderConfig;
+ use aws_runtime::env_config::EnvConfigValue;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+-use aws_types::sdk_config::{RequestChecksumCalculation, ResponseChecksumValidation};
++use aws_types::sdk_config::RequestChecksumCalculation;
++use aws_types::sdk_config::ResponseChecksumValidation;
+ use std::str::FromStr;
+ 
+ mod env {
+@@ -75,16 +76,17 @@
+ 
+ #[cfg(test)]
+ mod test {
+-    use crate::default_provider::checksums::{
+-        request_checksum_calculation_provider, response_checksum_validation_provider,
+-    };
++    use crate::default_provider::checksums::request_checksum_calculation_provider;
++    use crate::default_provider::checksums::response_checksum_validation_provider;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_smithy_types::checksum_config::{
+-        RequestChecksumCalculation, ResponseChecksumValidation,
+-    };
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_smithy_types::checksum_config::RequestChecksumCalculation;
++    use aws_smithy_types::checksum_config::ResponseChecksumValidation;
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/credentials.rs
++++ b/src/default_provider/credentials.rs
+@@ -5,7 +5,9 @@
+ 
+ use std::borrow::Cow;
+ 
+-use aws_credential_types::provider::{self, future, ProvideCredentials};
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
+ use aws_credential_types::Credentials;
+ use tracing::Instrument;
+ 
+@@ -199,7 +201,8 @@
+ #[cfg(test)]
+ mod test {
+     use crate::default_provider::credentials::DefaultCredentialsChain;
+-    use crate::test_case::{StaticTestProvider, TestEnvironment};
++    use crate::test_case::StaticTestProvider;
++    use crate::test_case::TestEnvironment;
+     use aws_credential_types::provider::ProvideCredentials;
+     use aws_smithy_async::time::StaticTimeSource;
+     use std::time::UNIX_EPOCH;
+--- a/src/default_provider/disable_clock_skew_correction.rs
++++ b/src/default_provider/disable_clock_skew_correction.rs
+@@ -43,9 +43,12 @@
+ mod test {
+     use super::disable_clock_skew_correction_provider;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/disable_request_compression.rs
++++ b/src/default_provider/disable_request_compression.rs
+@@ -43,9 +43,12 @@
+ mod test {
+     use super::disable_request_compression_provider;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/endpoint_url.rs
++++ b/src/default_provider/endpoint_url.rs
+@@ -66,9 +66,12 @@
+     use super::endpoint_url_provider;
+     use super::env;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/ignore_configured_endpoint_urls.rs
++++ b/src/default_provider/ignore_configured_endpoint_urls.rs
+@@ -44,9 +44,12 @@
+     use super::env;
+     use super::ignore_configured_endpoint_urls_provider;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/region.rs
++++ b/src/default_provider/region.rs
+@@ -6,9 +6,11 @@
+ use aws_types::region::Region;
+ 
+ use crate::environment::region::EnvironmentVariableRegionProvider;
+-use crate::meta::region::{ProvideRegion, RegionProviderChain};
++use crate::imds;
++use crate::meta::region::ProvideRegion;
++use crate::meta::region::RegionProviderChain;
++use crate::profile;
+ use crate::provider_config::ProviderConfig;
+-use crate::{imds, profile};
+ 
+ /// Default Region Provider chain
+ ///
+--- a/src/default_provider/request_min_compression_size_bytes.rs
++++ b/src/default_provider/request_min_compression_size_bytes.rs
+@@ -45,9 +45,12 @@
+ mod test {
+     use super::request_min_compression_size_bytes_provider;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/retry_config.rs
++++ b/src/default_provider/retry_config.rs
+@@ -4,10 +4,14 @@
+  */
+ 
+ use crate::provider_config::ProviderConfig;
+-use crate::retry::error::{RetryConfigError, RetryConfigErrorKind};
+-use aws_runtime::env_config::{EnvConfigError, EnvConfigValue};
++use crate::retry::error::RetryConfigError;
++use crate::retry::error::RetryConfigErrorKind;
++use aws_runtime::env_config::EnvConfigError;
++use aws_runtime::env_config::EnvConfigValue;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+-use aws_smithy_types::retry::{RetryConfig, RetryMode, RetrySpec};
++use aws_smithy_types::retry::RetryConfig;
++use aws_smithy_types::retry::RetryMode;
++use aws_smithy_types::retry::RetrySpec;
+ use std::str::FromStr;
+ 
+ /// Default RetryConfig Provider chain
+@@ -157,11 +161,13 @@
+ mod test {
+     use crate::default_provider::retry_config::env;
+     use crate::provider_config::ProviderConfig;
+-    use crate::retry::{
+-        error::RetryConfigError, error::RetryConfigErrorKind, RetryConfig, RetryMode,
+-    };
++    use crate::retry::error::RetryConfigError;
++    use crate::retry::error::RetryConfigErrorKind;
++    use crate::retry::RetryConfig;
++    use crate::retry::RetryMode;
+     use aws_runtime::env_config::EnvConfigError;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+ 
+     async fn test_provider(
+         vars: &[(&str, &str)],
+--- a/src/default_provider/sigv4a_signing_region_set.rs
++++ b/src/default_provider/sigv4a_signing_region_set.rs
+@@ -70,11 +70,10 @@
+ #[cfg(test)]
+ mod test {
+     use super::env;
+-    use crate::{
+-        default_provider::sigv4a_signing_region_set::sigv4a_signing_region_set_provider,
+-        provider_config::ProviderConfig,
+-    };
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use crate::default_provider::sigv4a_signing_region_set::sigv4a_signing_region_set_provider;
++    use crate::provider_config::ProviderConfig;
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use aws_types::region::SigningRegionSet;
+     use tracing_test::traced_test;
+ 
+--- a/src/default_provider/token.rs
++++ b/src/default_provider/token.rs
+@@ -3,11 +3,11 @@
+  * SPDX-License-Identifier: Apache-2.0
+  */
+ 
+-use crate::{
+-    meta::{region::ProvideRegion, token::TokenProviderChain},
+-    provider_config::ProviderConfig,
+-};
+-use aws_credential_types::provider::{future, token::ProvideToken};
++use crate::meta::region::ProvideRegion;
++use crate::meta::token::TokenProviderChain;
++use crate::provider_config::ProviderConfig;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::token::ProvideToken;
+ 
+ /// Default access token provider chain
+ ///
+--- a/src/default_provider/use_dual_stack.rs
++++ b/src/default_provider/use_dual_stack.rs
+@@ -41,9 +41,12 @@
+ mod test {
+     use crate::default_provider::use_dual_stack::use_dual_stack_provider;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/default_provider/use_fips.rs
++++ b/src/default_provider/use_fips.rs
+@@ -41,9 +41,12 @@
+ mod test {
+     use crate::default_provider::use_fips::use_fips_provider;
+     #[allow(deprecated)]
+-    use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++    use crate::profile::profile_file::ProfileFileKind;
++    #[allow(deprecated)]
++    use crate::profile::profile_file::ProfileFiles;
+     use crate::provider_config::ProviderConfig;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use tracing_test::traced_test;
+ 
+     #[tokio::test]
+--- a/src/ecs.rs
++++ b/src/ecs.rs
+@@ -57,19 +57,31 @@
+ 
+ use crate::http_credential_provider::HttpCredentialProvider;
+ use crate::provider_config::ProviderConfig;
+-use aws_credential_types::provider::{self, error::CredentialsError, future, ProvideCredentials};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
+ use aws_smithy_http::endpoint::apply_endpoint;
+-use aws_smithy_runtime_api::client::dns::{ResolveDns, ResolveDnsError, SharedDnsResolver};
++use aws_smithy_runtime_api::client::dns::ResolveDns;
++use aws_smithy_runtime_api::client::dns::ResolveDnsError;
++use aws_smithy_runtime_api::client::dns::SharedDnsResolver;
+ use aws_smithy_runtime_api::client::http::HttpConnectorSettings;
+ use aws_smithy_runtime_api::shared::IntoShared;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ use http::header::InvalidHeaderValue;
+-use http::uri::{InvalidUri, PathAndQuery, Scheme};
+-use http::{HeaderValue, Uri};
++use http::uri::InvalidUri;
++use http::uri::PathAndQuery;
++use http::uri::Scheme;
++use http::HeaderValue;
++use http::Uri;
+ use std::error::Error;
+-use std::fmt::{Display, Formatter};
+-use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
++use std::fmt::Display;
++use std::fmt::Formatter;
++use std::net::IpAddr;
++use std::net::Ipv4Addr;
++use std::net::Ipv6Addr;
+ use std::time::Duration;
+ use tokio::sync::OnceCell;
+ 
+@@ -504,12 +516,14 @@
+ mod test {
+     use super::*;
+     use crate::provider_config::ProviderConfig;
+-    use crate::test_case::{no_traffic_client, GenericTestResult};
++    use crate::test_case::no_traffic_client;
++    use crate::test_case::GenericTestResult;
+     use aws_credential_types::provider::ProvideCredentials;
+     use aws_credential_types::Credentials;
+     use aws_smithy_async::future::never::Never;
+     use aws_smithy_async::rt::sleep::TokioSleep;
+-    use aws_smithy_http_client::test_util::{ReplayEvent, StaticReplayClient};
++    use aws_smithy_http_client::test_util::ReplayEvent;
++    use aws_smithy_http_client::test_util::StaticReplayClient;
+     use aws_smithy_runtime_api::client::dns::DnsFuture;
+     use aws_smithy_runtime_api::client::http::HttpClient;
+     use aws_smithy_runtime_api::shared::IntoShared;
+@@ -523,7 +537,8 @@
+     use std::error::Error;
+     use std::ffi::OsString;
+     use std::net::IpAddr;
+-    use std::time::{Duration, UNIX_EPOCH};
++    use std::time::Duration;
++    use std::time::UNIX_EPOCH;
+     use tracing_test::traced_test;
+ 
+     fn provider(
+--- a/src/env_service_config.rs
++++ b/src/env_service_config.rs
+@@ -6,7 +6,8 @@
+ use aws_runtime::env_config::section::EnvConfigSections;
+ use aws_runtime::env_config::EnvConfigValue;
+ use aws_types::os_shim_internal::Env;
+-use aws_types::service_config::{LoadServiceConfig, ServiceConfigKey};
++use aws_types::service_config::LoadServiceConfig;
++use aws_types::service_config::ServiceConfigKey;
+ 
+ /// The environment variable key used for endpoint URL configuration.
+ const ENDPOINT_URL_ENV_KEY: &str = "AWS_ENDPOINT_URL";
+--- a/src/environment/credentials.rs
++++ b/src/environment/credentials.rs
+@@ -7,7 +7,10 @@
+ 
+ use aws_credential_types::attributes::AccountId;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::provider::{self, error::CredentialsError, future, ProvideCredentials};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
+ use aws_credential_types::Credentials;
+ use aws_types::os_shim_internal::Env;
+ 
+@@ -116,7 +119,8 @@
+ #[cfg(test)]
+ mod test {
+     use aws_credential_types::credential_feature::AwsCredentialFeature;
+-    use aws_credential_types::provider::{error::CredentialsError, ProvideCredentials};
++    use aws_credential_types::provider::error::CredentialsError;
++    use aws_credential_types::provider::ProvideCredentials;
+     use aws_types::os_shim_internal::Env;
+     use futures_util::FutureExt;
+ 
+--- a/src/environment/region.rs
++++ b/src/environment/region.rs
+@@ -3,7 +3,8 @@
+  * SPDX-License-Identifier: Apache-2.0
+  */
+ 
+-use crate::meta::region::{future, ProvideRegion};
++use crate::meta::region::future;
++use crate::meta::region::ProvideRegion;
+ use aws_types::os_shim_internal::Env;
+ use aws_types::region::Region;
+ 
+--- a/src/http_credential_provider.rs
++++ b/src/http_credential_provider.rs
+@@ -8,22 +8,26 @@
+ //!
+ //! Future work will stabilize this interface and enable it to be used directly.
+ 
+-use crate::json_credentials::{parse_json_credentials, JsonCredentials, RefreshableCredentials};
++use crate::json_credentials::parse_json_credentials;
++use crate::json_credentials::JsonCredentials;
++use crate::json_credentials::RefreshableCredentials;
+ use crate::provider_config::ProviderConfig;
+ use aws_credential_types::attributes::AccountId;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::provider::{self, error::CredentialsError};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::{self};
+ use aws_credential_types::Credentials;
+ use aws_smithy_runtime::client::metrics::MetricsRuntimePlugin;
+ use aws_smithy_runtime::client::orchestrator::operation::Operation;
+-use aws_smithy_runtime::client::retries::classifiers::{
+-    HttpStatusCodeClassifier, TransientErrorClassifier,
+-};
++use aws_smithy_runtime::client::retries::classifiers::HttpStatusCodeClassifier;
++use aws_smithy_runtime::client::retries::classifiers::TransientErrorClassifier;
+ use aws_smithy_runtime_api::client::http::HttpConnectorSettings;
+-use aws_smithy_runtime_api::client::interceptors::context::{Error, InterceptorContext};
+-use aws_smithy_runtime_api::client::orchestrator::{
+-    HttpResponse, Metadata, OrchestratorError, SensitiveOutput,
+-};
++use aws_smithy_runtime_api::client::interceptors::context::Error;
++use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
++use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
++use aws_smithy_runtime_api::client::orchestrator::Metadata;
++use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
++use aws_smithy_runtime_api::client::orchestrator::SensitiveOutput;
+ use aws_smithy_runtime_api::client::result::SdkError;
+ use aws_smithy_runtime_api::client::retries::classifiers::ClassifyRetry;
+ use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
+@@ -32,7 +36,8 @@
+ use aws_smithy_types::config_bag::Layer;
+ use aws_smithy_types::retry::RetryConfig;
+ use aws_smithy_types::timeout::TimeoutConfig;
+-use http::header::{ACCEPT, AUTHORIZATION};
++use http::header::ACCEPT;
++use http::header::AUTHORIZATION;
+ use http::HeaderValue;
+ use std::time::Duration;
+ 
+@@ -244,9 +249,12 @@
+     use super::*;
+     use aws_credential_types::credential_feature::AwsCredentialFeature;
+     use aws_credential_types::provider::error::CredentialsError;
+-    use aws_smithy_http_client::test_util::{ReplayEvent, StaticReplayClient};
++    use aws_smithy_http_client::test_util::ReplayEvent;
++    use aws_smithy_http_client::test_util::StaticReplayClient;
+     use aws_smithy_types::body::SdkBody;
+-    use http::{Request, Response, Uri};
++    use http::Request;
++    use http::Response;
++    use http::Uri;
+     use std::time::SystemTime;
+ 
+     async fn provide_creds(
+--- a/src/imds/client/token.rs
++++ b/src/imds/client/token.rs
+@@ -15,30 +15,39 @@
+ //! - Attach the token to the request in the `x-aws-ec2-metadata-token` header
+ 
+ use crate::identity::IdentityCache;
+-use crate::imds::client::error::{ImdsError, TokenError, TokenErrorKind};
++use crate::imds::client::error::ImdsError;
++use crate::imds::client::error::TokenError;
++use crate::imds::client::error::TokenErrorKind;
+ use aws_smithy_async::time::SharedTimeSource;
+ use aws_smithy_runtime::client::orchestrator::operation::Operation;
+ use aws_smithy_runtime::expiring_cache::ExpiringCache;
+ use aws_smithy_runtime_api::box_error::BoxError;
+ use aws_smithy_runtime_api::client::auth::static_resolver::StaticAuthSchemeOptionResolver;
+-use aws_smithy_runtime_api::client::auth::{
+-    AuthScheme, AuthSchemeEndpointConfig, AuthSchemeId, Sign,
+-};
+-use aws_smithy_runtime_api::client::identity::{
+-    Identity, IdentityFuture, ResolveIdentity, SharedIdentityResolver,
+-};
+-use aws_smithy_runtime_api::client::orchestrator::{HttpRequest, HttpResponse, OrchestratorError};
+-use aws_smithy_runtime_api::client::runtime_components::{
+-    GetIdentityResolver, RuntimeComponents, RuntimeComponentsBuilder,
+-};
+-use aws_smithy_runtime_api::client::runtime_plugin::{RuntimePlugin, SharedRuntimePlugin};
++use aws_smithy_runtime_api::client::auth::AuthScheme;
++use aws_smithy_runtime_api::client::auth::AuthSchemeEndpointConfig;
++use aws_smithy_runtime_api::client::auth::AuthSchemeId;
++use aws_smithy_runtime_api::client::auth::Sign;
++use aws_smithy_runtime_api::client::identity::Identity;
++use aws_smithy_runtime_api::client::identity::IdentityFuture;
++use aws_smithy_runtime_api::client::identity::ResolveIdentity;
++use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
++use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
++use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
++use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
++use aws_smithy_runtime_api::client::runtime_components::GetIdentityResolver;
++use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
++use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
++use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
++use aws_smithy_runtime_api::client::runtime_plugin::SharedRuntimePlugin;
+ use aws_smithy_types::body::SdkBody;
+ use aws_smithy_types::config_bag::ConfigBag;
+-use http::{HeaderValue, Uri};
++use http::HeaderValue;
++use http::Uri;
+ use std::borrow::Cow;
+ use std::fmt;
+ use std::sync::Arc;
+-use std::time::{Duration, SystemTime};
++use std::time::Duration;
++use std::time::SystemTime;
+ 
+ /// Token Refresh Buffer
+ ///
+--- a/src/imds/client.rs
++++ b/src/imds/client.rs
+@@ -7,32 +7,40 @@
+ //!
+ //! Client for direct access to IMDSv2.
+ 
+-use crate::imds::client::error::{BuildError, ImdsError, InnerImdsError, InvalidEndpointMode};
++use crate::imds::client::error::BuildError;
++use crate::imds::client::error::ImdsError;
++use crate::imds::client::error::InnerImdsError;
++use crate::imds::client::error::InvalidEndpointMode;
+ use crate::imds::client::token::TokenRuntimePlugin;
+ use crate::provider_config::ProviderConfig;
+ use crate::PKG_VERSION;
+-use aws_runtime::user_agent::{ApiMetadata, AwsUserAgent, UserAgentInterceptor};
++use aws_runtime::user_agent::ApiMetadata;
++use aws_runtime::user_agent::AwsUserAgent;
++use aws_runtime::user_agent::UserAgentInterceptor;
+ use aws_smithy_runtime::client::metrics::MetricsRuntimePlugin;
+ use aws_smithy_runtime::client::orchestrator::operation::Operation;
+ use aws_smithy_runtime::client::retries::strategy::StandardRetryStrategy;
+ use aws_smithy_runtime_api::box_error::BoxError;
+ use aws_smithy_runtime_api::client::auth::AuthSchemeOptionResolverParams;
+-use aws_smithy_runtime_api::client::endpoint::{
+-    EndpointFuture, EndpointResolverParams, ResolveEndpoint,
+-};
++use aws_smithy_runtime_api::client::endpoint::EndpointFuture;
++use aws_smithy_runtime_api::client::endpoint::EndpointResolverParams;
++use aws_smithy_runtime_api::client::endpoint::ResolveEndpoint;
+ use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
+-use aws_smithy_runtime_api::client::orchestrator::{
+-    HttpRequest, Metadata, OrchestratorError, SensitiveOutput,
+-};
++use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
++use aws_smithy_runtime_api::client::orchestrator::Metadata;
++use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
++use aws_smithy_runtime_api::client::orchestrator::SensitiveOutput;
+ use aws_smithy_runtime_api::client::result::ConnectorError;
+ use aws_smithy_runtime_api::client::result::SdkError;
+-use aws_smithy_runtime_api::client::retries::classifiers::{
+-    ClassifyRetry, RetryAction, SharedRetryClassifier,
+-};
++use aws_smithy_runtime_api::client::retries::classifiers::ClassifyRetry;
++use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
++use aws_smithy_runtime_api::client::retries::classifiers::SharedRetryClassifier;
+ use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+-use aws_smithy_runtime_api::client::runtime_plugin::{RuntimePlugin, SharedRuntimePlugin};
++use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
++use aws_smithy_runtime_api::client::runtime_plugin::SharedRuntimePlugin;
+ use aws_smithy_types::body::SdkBody;
+-use aws_smithy_types::config_bag::{FrozenLayer, Layer};
++use aws_smithy_types::config_bag::FrozenLayer;
++use aws_smithy_types::config_bag::Layer;
+ use aws_smithy_types::endpoint::Endpoint;
+ use aws_smithy_types::retry::RetryConfig;
+ use aws_smithy_types::timeout::TimeoutConfig;
+@@ -647,31 +655,39 @@
+ 
+ #[cfg(test)]
+ pub(crate) mod test {
+-    use crate::imds::client::{Client, EndpointMode, ImdsResponseRetryClassifier};
++    use crate::imds::client::Client;
++    use crate::imds::client::EndpointMode;
++    use crate::imds::client::ImdsResponseRetryClassifier;
+     use crate::provider_config::ProviderConfig;
+     use aws_smithy_async::rt::sleep::TokioSleep;
+-    use aws_smithy_async::test_util::{instant_time_and_sleep, InstantSleep};
+-    use aws_smithy_http_client::test_util::{capture_request, ReplayEvent, StaticReplayClient};
++    use aws_smithy_async::test_util::instant_time_and_sleep;
++    use aws_smithy_async::test_util::InstantSleep;
++    use aws_smithy_http_client::test_util::capture_request;
++    use aws_smithy_http_client::test_util::ReplayEvent;
++    use aws_smithy_http_client::test_util::StaticReplayClient;
+     use aws_smithy_runtime::test_util::capture_test_logs::capture_test_logs;
+-    use aws_smithy_runtime_api::client::interceptors::context::{
+-        Input, InterceptorContext, Output,
+-    };
++    use aws_smithy_runtime_api::client::interceptors::context::Input;
++    use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
++    use aws_smithy_runtime_api::client::interceptors::context::Output;
++    use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
++    use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+     use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
+-    use aws_smithy_runtime_api::client::orchestrator::{HttpRequest, HttpResponse};
+     use aws_smithy_runtime_api::client::result::ConnectorError;
+-    use aws_smithy_runtime_api::client::retries::classifiers::{
+-        ClassifyRetry, RetryAction, SharedRetryClassifier,
+-    };
++    use aws_smithy_runtime_api::client::retries::classifiers::ClassifyRetry;
++    use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
++    use aws_smithy_runtime_api::client::retries::classifiers::SharedRetryClassifier;
+     use aws_smithy_types::body::SdkBody;
+     use aws_smithy_types::error::display::DisplayErrorContext;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use http::header::USER_AGENT;
+     use http::Uri;
+     use serde::Deserialize;
+     use std::collections::HashMap;
+     use std::error::Error;
+     use std::io;
+-    use std::time::{Duration, UNIX_EPOCH};
++    use std::time::Duration;
++    use std::time::UNIX_EPOCH;
+     use tracing_test::traced_test;
+ 
+     macro_rules! assert_full_error_contains {
+--- a/src/imds/credentials.rs
++++ b/src/imds/credentials.rs
+@@ -9,19 +9,27 @@
+ //! This credential provider will NOT fallback to IMDSv1. Ensure that IMDSv2 is enabled on your instances.
+ 
+ use super::client::error::ImdsError;
+-use crate::imds::{self, Client};
+-use crate::json_credentials::{parse_json_credentials, JsonCredentials, RefreshableCredentials};
++use crate::imds::Client;
++use crate::imds::{self};
++use crate::json_credentials::parse_json_credentials;
++use crate::json_credentials::JsonCredentials;
++use crate::json_credentials::RefreshableCredentials;
+ use crate::provider_config::ProviderConfig;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::provider::{self, error::CredentialsError, future, ProvideCredentials};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
+ use aws_credential_types::Credentials;
+ use aws_smithy_async::time::SharedTimeSource;
+ use aws_types::os_shim_internal::Env;
+ use std::borrow::Cow;
+ use std::error::Error as StdError;
+ use std::fmt;
+-use std::sync::{Arc, RwLock};
+-use std::time::{Duration, SystemTime};
++use std::sync::Arc;
++use std::sync::RwLock;
++use std::time::Duration;
++use std::time::SystemTime;
+ 
+ const CREDENTIAL_EXPIRATION_INTERVAL: Duration = Duration::from_secs(10 * 60);
+ const WARNING_FOR_EXTENDING_CREDENTIALS_EXPIRY: &str =
+@@ -288,16 +296,20 @@
+ #[cfg(test)]
+ mod test {
+     use super::*;
+-    use crate::imds::client::test::{
+-        imds_request, imds_response, make_imds_client, token_request, token_response,
+-    };
++    use crate::imds::client::test::imds_request;
++    use crate::imds::client::test::imds_response;
++    use crate::imds::client::test::make_imds_client;
++    use crate::imds::client::test::token_request;
++    use crate::imds::client::test::token_response;
+     use crate::provider_config::ProviderConfig;
+     use aws_credential_types::credential_feature::AwsCredentialFeature;
+     use aws_credential_types::provider::ProvideCredentials;
+     use aws_smithy_async::test_util::instant_time_and_sleep;
+-    use aws_smithy_http_client::test_util::{ReplayEvent, StaticReplayClient};
++    use aws_smithy_http_client::test_util::ReplayEvent;
++    use aws_smithy_http_client::test_util::StaticReplayClient;
+     use aws_smithy_types::body::SdkBody;
+-    use std::time::{Duration, UNIX_EPOCH};
++    use std::time::Duration;
++    use std::time::UNIX_EPOCH;
+     use tracing_test::traced_test;
+ 
+     const TOKEN_A: &str = "token_a";
+--- a/src/imds/region.rs
++++ b/src/imds/region.rs
+@@ -8,8 +8,10 @@
+ //! Load region from IMDS from `/latest/meta-data/placement/region`
+ //! This provider has a 5 second timeout.
+ 
+-use crate::imds::{self, Client};
+-use crate::meta::region::{future, ProvideRegion};
++use crate::imds::Client;
++use crate::imds::{self};
++use crate::meta::region::future;
++use crate::meta::region::ProvideRegion;
+ use crate::provider_config::ProviderConfig;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+ use aws_types::os_shim_internal::Env;
+@@ -116,11 +118,15 @@
+ 
+ #[cfg(test)]
+ mod test {
+-    use crate::imds::client::test::{imds_request, imds_response, token_request, token_response};
++    use crate::imds::client::test::imds_request;
++    use crate::imds::client::test::imds_response;
++    use crate::imds::client::test::token_request;
++    use crate::imds::client::test::token_response;
+     use crate::imds::region::ImdsRegionProvider;
+     use crate::provider_config::ProviderConfig;
+     use aws_smithy_async::rt::sleep::TokioSleep;
+-    use aws_smithy_http_client::test_util::{ReplayEvent, StaticReplayClient};
++    use aws_smithy_http_client::test_util::ReplayEvent;
++    use aws_smithy_http_client::test_util::StaticReplayClient;
+     use aws_smithy_types::body::SdkBody;
+     use aws_types::region::Region;
+     use tracing_test::traced_test;
+--- a/src/json_credentials.rs
++++ b/src/json_credentials.rs
+@@ -2,13 +2,17 @@
+  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+  * SPDX-License-Identifier: Apache-2.0
+  */
++use aws_smithy_json::deserialize::json_token_iter;
+ use aws_smithy_json::deserialize::token::skip_value;
+-use aws_smithy_json::deserialize::{json_token_iter, EscapeError, Token};
++use aws_smithy_json::deserialize::EscapeError;
++use aws_smithy_json::deserialize::Token;
+ use aws_smithy_types::date_time::Format;
+ use aws_smithy_types::DateTime;
+ use std::borrow::Cow;
+ use std::error::Error;
+-use std::fmt::{self, Display, Formatter};
++use std::fmt::Display;
++use std::fmt::Formatter;
++use std::fmt::{self};
+ use std::time::SystemTime;
+ 
+ #[derive(Debug)]
+@@ -255,10 +259,12 @@
+ 
+ #[cfg(test)]
+ mod test {
+-    use crate::json_credentials::{
+-        parse_json_credentials, InvalidJsonCredentials, JsonCredentials, RefreshableCredentials,
+-    };
+-    use std::time::{Duration, UNIX_EPOCH};
++    use crate::json_credentials::parse_json_credentials;
++    use crate::json_credentials::InvalidJsonCredentials;
++    use crate::json_credentials::JsonCredentials;
++    use crate::json_credentials::RefreshableCredentials;
++    use std::time::Duration;
++    use std::time::UNIX_EPOCH;
+ 
+     #[test]
+     fn json_credentials_success_response() {
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -101,12 +101,12 @@
+ 
+ pub use aws_smithy_runtime_api::client::behavior_version::BehaviorVersion;
+ // Re-export types from aws-types
+-pub use aws_types::{
+-    app_name::{AppName, InvalidAppName},
+-    region::Region,
+-    sdk_ua_metadata::{FrameworkMetadata, InvalidFrameworkMetadata},
+-    SdkConfig,
+-};
++pub use aws_types::app_name::AppName;
++pub use aws_types::app_name::InvalidAppName;
++pub use aws_types::region::Region;
++pub use aws_types::sdk_ua_metadata::FrameworkMetadata;
++pub use aws_types::sdk_ua_metadata::InvalidFrameworkMetadata;
++pub use aws_types::SdkConfig;
+ /// Load default sources for all configuration with override support
+ pub use loader::ConfigLoader;
+ 
+@@ -218,42 +218,57 @@
+ 
+ mod loader {
+     use crate::env_service_config::EnvServiceConfig;
+-    use aws_credential_types::provider::{
+-        token::{ProvideToken, SharedTokenProvider},
+-        ProvideCredentials, SharedCredentialsProvider,
+-    };
++    use aws_credential_types::provider::token::ProvideToken;
++    use aws_credential_types::provider::token::SharedTokenProvider;
++    use aws_credential_types::provider::ProvideCredentials;
++    use aws_credential_types::provider::SharedCredentialsProvider;
+     use aws_credential_types::Credentials;
+-    use aws_smithy_async::rt::sleep::{default_async_sleep, AsyncSleep, SharedAsyncSleep};
+-    use aws_smithy_async::time::{SharedTimeSource, TimeSource};
++    use aws_smithy_async::rt::sleep::default_async_sleep;
++    use aws_smithy_async::rt::sleep::AsyncSleep;
++    use aws_smithy_async::rt::sleep::SharedAsyncSleep;
++    use aws_smithy_async::time::SharedTimeSource;
++    use aws_smithy_async::time::TimeSource;
+     use aws_smithy_runtime::client::identity::IdentityCache;
+     use aws_smithy_runtime_api::client::auth::AuthSchemePreference;
+     use aws_smithy_runtime_api::client::behavior_version::BehaviorVersion;
+     use aws_smithy_runtime_api::client::http::HttpClient;
+-    use aws_smithy_runtime_api::client::identity::{ResolveCachedIdentity, SharedIdentityCache};
++    use aws_smithy_runtime_api::client::identity::ResolveCachedIdentity;
++    use aws_smithy_runtime_api::client::identity::SharedIdentityCache;
+     use aws_smithy_runtime_api::client::stalled_stream_protection::StalledStreamProtectionConfig;
+     use aws_smithy_runtime_api::shared::IntoShared;
+-    use aws_smithy_schema::protocol::{ClientProtocol, SharedClientProtocol};
+-    use aws_smithy_types::checksum_config::{
+-        RequestChecksumCalculation, ResponseChecksumValidation,
+-    };
++    use aws_smithy_schema::protocol::ClientProtocol;
++    use aws_smithy_schema::protocol::SharedClientProtocol;
++    use aws_smithy_types::checksum_config::RequestChecksumCalculation;
++    use aws_smithy_types::checksum_config::ResponseChecksumValidation;
+     use aws_smithy_types::retry::RetryConfig;
+     use aws_smithy_types::timeout::TimeoutConfig;
+     use aws_types::app_name::AppName;
+     use aws_types::docs_for;
+     use aws_types::endpoint_config::AccountIdEndpointMode;
+     use aws_types::origin::Origin;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use aws_types::region::SigningRegionSet;
+     use aws_types::sdk_config::SharedHttpClient;
+     use aws_types::sdk_ua_metadata::FrameworkMetadata;
+     use aws_types::SdkConfig;
+ 
+-    use crate::default_provider::{
+-        account_id_endpoint_mode, app_name, auth_scheme_preference, checksums, credentials,
+-        disable_clock_skew_correction, disable_request_compression, endpoint_url,
+-        ignore_configured_endpoint_urls as ignore_ep, region, request_min_compression_size_bytes,
+-        retry_config, sigv4a_signing_region_set, timeout_config, use_dual_stack, use_fips,
+-    };
++    use crate::default_provider::account_id_endpoint_mode;
++    use crate::default_provider::app_name;
++    use crate::default_provider::auth_scheme_preference;
++    use crate::default_provider::checksums;
++    use crate::default_provider::credentials;
++    use crate::default_provider::disable_clock_skew_correction;
++    use crate::default_provider::disable_request_compression;
++    use crate::default_provider::endpoint_url;
++    use crate::default_provider::ignore_configured_endpoint_urls as ignore_ep;
++    use crate::default_provider::region;
++    use crate::default_provider::request_min_compression_size_bytes;
++    use crate::default_provider::retry_config;
++    use crate::default_provider::sigv4a_signing_region_set;
++    use crate::default_provider::timeout_config;
++    use crate::default_provider::use_dual_stack;
++    use crate::default_provider::use_fips;
+     use crate::meta::region::ProvideRegion;
+     #[allow(deprecated)]
+     use crate::profile::profile_file::ProfileFiles;
+@@ -1146,25 +1161,32 @@
+ 
+     #[cfg(test)]
+     mod test {
++        use crate::defaults;
+         #[allow(deprecated)]
+-        use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
+-        use crate::test_case::{no_traffic_client, InstantSleep};
++        use crate::profile::profile_file::ProfileFileKind;
++        #[allow(deprecated)]
++        use crate::profile::profile_file::ProfileFiles;
++        use crate::test_case::no_traffic_client;
++        use crate::test_case::InstantSleep;
+         use crate::BehaviorVersion;
+-        use crate::{defaults, ConfigLoader};
++        use crate::ConfigLoader;
+         use aws_credential_types::provider::ProvideCredentials;
+         use aws_smithy_async::rt::sleep::TokioSleep;
+         use aws_smithy_async::test_util::tick_advance_sleep::tick_advance_time_and_sleep;
+-        use aws_smithy_http_client::test_util::{infallible_client_fn, NeverClient};
++        use aws_smithy_http_client::test_util::infallible_client_fn;
++        use aws_smithy_http_client::test_util::NeverClient;
+         use aws_smithy_runtime::test_util::capture_test_logs::capture_test_logs;
+-        use aws_smithy_runtime_api::client::identity::{
+-            ResolveCachedIdentity, SharedIdentityResolver,
+-        };
++        use aws_smithy_runtime_api::client::identity::ResolveCachedIdentity;
++        use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
+         use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+         use aws_types::app_name::AppName;
+         use aws_types::origin::Origin;
+-        use aws_types::os_shim_internal::{Env, Fs};
+-        use aws_types::sdk_config::{RequestChecksumCalculation, ResponseChecksumValidation};
+-        use std::sync::atomic::{AtomicUsize, Ordering};
++        use aws_types::os_shim_internal::Env;
++        use aws_types::os_shim_internal::Fs;
++        use aws_types::sdk_config::RequestChecksumCalculation;
++        use aws_types::sdk_config::ResponseChecksumValidation;
++        use std::sync::atomic::AtomicUsize;
++        use std::sync::atomic::Ordering;
+         use std::sync::Arc;
+         use std::time::Duration;
+ 
+--- a/src/login/cache.rs
++++ b/src/login/cache.rs
+@@ -3,13 +3,15 @@
+  * SPDX-License-Identifier: Apache-2.0
+  */
+ 
+-use crate::login::token::{LoginToken, LoginTokenError};
++use crate::login::token::LoginToken;
++use crate::login::token::LoginTokenError;
+ use crate::login::PROVIDER_NAME;
+ use aws_credential_types::Credentials;
+ use aws_runtime::fs_util::home_dir;
+ use aws_runtime::fs_util::Os;
++use aws_smithy_json::deserialize::json_token_iter;
+ use aws_smithy_json::deserialize::token::skip_value;
+-use aws_smithy_json::deserialize::{json_token_iter, Token};
++use aws_smithy_json::deserialize::Token;
+ use aws_smithy_json::serialize::JsonObjectWriter;
+ use aws_smithy_types::date_time::Format;
+ use aws_smithy_types::DateTime;
+--- a/src/login/dpop.rs
++++ b/src/login/dpop.rs
+@@ -6,24 +6,31 @@
+ use aws_sdk_signin::config::auth::Params;
+ use aws_smithy_json::serialize::JsonObjectWriter;
+ use aws_smithy_runtime_api::box_error::BoxError;
+-use aws_smithy_runtime_api::client::auth::{
+-    AuthScheme, AuthSchemeEndpointConfig, AuthSchemeId, AuthSchemeOption, AuthSchemeOptionsFuture,
+-    Sign,
+-};
+-use aws_smithy_runtime_api::client::identity::{
+-    Identity, IdentityCacheLocation, IdentityCachePartition, IdentityFuture, ResolveIdentity,
+-    SharedIdentityResolver,
+-};
++use aws_smithy_runtime_api::client::auth::AuthScheme;
++use aws_smithy_runtime_api::client::auth::AuthSchemeEndpointConfig;
++use aws_smithy_runtime_api::client::auth::AuthSchemeId;
++use aws_smithy_runtime_api::client::auth::AuthSchemeOption;
++use aws_smithy_runtime_api::client::auth::AuthSchemeOptionsFuture;
++use aws_smithy_runtime_api::client::auth::Sign;
++use aws_smithy_runtime_api::client::identity::Identity;
++use aws_smithy_runtime_api::client::identity::IdentityCacheLocation;
++use aws_smithy_runtime_api::client::identity::IdentityCachePartition;
++use aws_smithy_runtime_api::client::identity::IdentityFuture;
++use aws_smithy_runtime_api::client::identity::ResolveIdentity;
++use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
+ use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
+-use aws_smithy_runtime_api::client::runtime_components::{GetIdentityResolver, RuntimeComponents};
++use aws_smithy_runtime_api::client::runtime_components::GetIdentityResolver;
++use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+ use aws_smithy_types::config_bag::ConfigBag;
+ use aws_smithy_types::Number;
+ use p256::ecdsa::signature::RandomizedSigner;
+-use p256::ecdsa::{Signature, SigningKey};
++use p256::ecdsa::Signature;
++use p256::ecdsa::SigningKey;
+ use p256::elliptic_curve::sec1::ToSec1Point;
+ use p256::SecretKey;
+ use rand::SeedableRng;
+-use std::sync::{Arc, LazyLock};
++use std::sync::Arc;
++use std::sync::LazyLock;
+ use std::time::SystemTime;
+ 
+ pub(super) struct Header {
+--- a/src/login/token.rs
++++ b/src/login/token.rs
+@@ -12,7 +12,8 @@
+ use std::error::Error as StdError;
+ use std::fmt;
+ use std::path::PathBuf;
+-use std::time::{Duration, SystemTime};
++use std::time::Duration;
++use std::time::SystemTime;
+ use zeroize::Zeroizing;
+ 
+ /// A login session token created by CLI and loaded from cache
+--- a/src/login.rs
++++ b/src/login.rs
+@@ -10,8 +10,10 @@
+ mod dpop;
+ mod token;
+ 
+-use crate::login::cache::{load_cached_token, save_cached_token};
+-use crate::login::token::{LoginToken, LoginTokenError};
++use crate::login::cache::load_cached_token;
++use crate::login::cache::save_cached_token;
++use crate::login::token::LoginToken;
++use crate::login::token::LoginTokenError;
+ use crate::provider_config::ProviderConfig;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+ use aws_credential_types::provider;
+@@ -19,11 +21,13 @@
+ use aws_credential_types::provider::ProvideCredentials;
+ use aws_sdk_signin::config::Builder as SignInClientConfigBuilder;
+ use aws_sdk_signin::operation::create_o_auth2_token::CreateOAuth2TokenError;
+-use aws_sdk_signin::types::{CreateOAuth2TokenRequestBody, OAuth2ErrorCode};
++use aws_sdk_signin::types::CreateOAuth2TokenRequestBody;
++use aws_sdk_signin::types::OAuth2ErrorCode;
+ use aws_sdk_signin::Client as SignInClient;
+ use aws_smithy_async::time::SharedTimeSource;
+ use aws_smithy_runtime::expiring_cache::ExpiringCache;
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ use aws_types::SdkConfig;
+ use std::sync::Arc;
+ use std::sync::Mutex;
+@@ -269,21 +273,24 @@
+     use aws_credential_types::provider::ProvideCredentials;
+     use aws_sdk_signin::config::RuntimeComponents;
+     use aws_smithy_async::rt::sleep::TokioSleep;
+-    use aws_smithy_async::time::{SharedTimeSource, StaticTimeSource};
+-    use aws_smithy_runtime_api::client::{
+-        http::{
+-            HttpClient, HttpConnector, HttpConnectorFuture, HttpConnectorSettings,
+-            SharedHttpConnector,
+-        },
+-        orchestrator::{HttpRequest, HttpResponse},
+-    };
++    use aws_smithy_async::time::SharedTimeSource;
++    use aws_smithy_async::time::StaticTimeSource;
++    use aws_smithy_runtime_api::client::http::HttpClient;
++    use aws_smithy_runtime_api::client::http::HttpConnector;
++    use aws_smithy_runtime_api::client::http::HttpConnectorFuture;
++    use aws_smithy_runtime_api::client::http::HttpConnectorSettings;
++    use aws_smithy_runtime_api::client::http::SharedHttpConnector;
++    use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
++    use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+     use aws_smithy_types::body::SdkBody;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use aws_types::region::Region;
+     use serde::Deserialize;
+     use std::collections::HashMap;
+     use std::error::Error;
+-    use std::time::{Duration, UNIX_EPOCH};
++    use std::time::Duration;
++    use std::time::UNIX_EPOCH;
+ 
+     #[derive(Deserialize, Debug)]
+     #[serde(rename_all = "camelCase")]
+--- a/src/meta/credentials/chain.rs
++++ b/src/meta/credentials/chain.rs
+@@ -3,16 +3,18 @@
+  * SPDX-License-Identifier: Apache-2.0
+  */
+ 
+-use aws_credential_types::{
+-    provider::{self, error::CredentialsError, future, ProvideCredentials},
+-    Credentials,
+-};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
++use aws_credential_types::Credentials;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+ use std::borrow::Cow;
+ use std::fmt::Debug;
+ use tracing::Instrument;
+ 
+-use crate::meta::{ProviderAttempt, ProviderChainError};
++use crate::meta::ProviderAttempt;
++use crate::meta::ProviderChainError;
+ 
+ /// Credentials provider that checks a series of inner providers
+ ///
+@@ -139,11 +141,11 @@
+ mod tests {
+     use std::time::Duration;
+ 
+-    use aws_credential_types::{
+-        credential_fn::provide_credentials_fn,
+-        provider::{error::CredentialsError, future, ProvideCredentials},
+-        Credentials,
+-    };
++    use aws_credential_types::credential_fn::provide_credentials_fn;
++    use aws_credential_types::provider::error::CredentialsError;
++    use aws_credential_types::provider::future;
++    use aws_credential_types::provider::ProvideCredentials;
++    use aws_credential_types::Credentials;
+     use aws_smithy_async::future::timeout::Timeout;
+ 
+     use crate::meta::credentials::CredentialsProviderChain;
+--- a/src/meta/region.rs
++++ b/src/meta/region.rs
+@@ -93,7 +93,8 @@
+ pub mod future {
+     use std::future::Future;
+     use std::pin::Pin;
+-    use std::task::{Context, Poll};
++    use std::task::Context;
++    use std::task::Poll;
+ 
+     use aws_smithy_async::future::now_or_later::NowOrLater;
+ 
+--- a/src/meta/token.rs
++++ b/src/meta/token.rs
+@@ -5,14 +5,16 @@
+ 
+ //! Token providers that augment existing token providers to add functionality
+ 
+-use aws_credential_types::provider::{
+-    error::TokenError, future, token::ProvideToken, token::Result,
+-};
++use aws_credential_types::provider::error::TokenError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::token::ProvideToken;
++use aws_credential_types::provider::token::Result;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+ use std::borrow::Cow;
+ use tracing::Instrument;
+ 
+-use crate::meta::{ProviderAttempt, ProviderChainError};
++use crate::meta::ProviderAttempt;
++use crate::meta::ProviderChainError;
+ 
+ /// Access token provider that checks a series of inner providers.
+ ///
+--- a/src/profile/credentials/exec.rs
++++ b/src/profile/credentials/exec.rs
+@@ -3,7 +3,8 @@
+  * SPDX-License-Identifier: Apache-2.0
+  */
+ 
+-use super::repr::{self, BaseProvider};
++use super::repr::BaseProvider;
++use super::repr::{self};
+ #[cfg(feature = "credentials-process")]
+ use crate::credential_process::CredentialProcessProvider;
+ #[cfg(feature = "credentials-login")]
+@@ -11,10 +12,12 @@
+ use crate::profile::credentials::ProfileFileError;
+ use crate::provider_config::ProviderConfig;
+ use crate::sts;
+-use crate::web_identity_token::{StaticConfiguration, WebIdentityTokenCredentialsProvider};
+-use aws_credential_types::provider::{
+-    self, error::CredentialsError, ProvideCredentials, SharedCredentialsProvider,
+-};
++use crate::web_identity_token::StaticConfiguration;
++use crate::web_identity_token::WebIdentityTokenCredentialsProvider;
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::SharedCredentialsProvider;
++use aws_credential_types::provider::{self};
+ use aws_sdk_sts::config::Credentials;
+ use aws_sdk_sts::Client as StsClient;
+ use aws_smithy_async::time::SharedTimeSource;
+@@ -172,7 +175,8 @@
+             } => {
+                 #[cfg(feature = "sso")]
+                 {
+-                    use crate::sso::{credentials::SsoProviderConfig, SsoCredentialsProvider};
++                    use crate::sso::credentials::SsoProviderConfig;
++                    use crate::sso::SsoCredentialsProvider;
+                     use aws_types::region::Region;
+ 
+                     let (Some(sso_account_id), Some(sso_role_name)) =
+@@ -256,7 +260,8 @@
+ mod test {
+     use crate::profile::credentials::exec::named::NamedProviderFactory;
+     use crate::profile::credentials::exec::ProviderChain;
+-    use crate::profile::credentials::repr::{BaseProvider, ProfileChain};
++    use crate::profile::credentials::repr::BaseProvider;
++    use crate::profile::credentials::repr::ProfileChain;
+     use crate::provider_config::ProviderConfig;
+     use crate::test_case::no_traffic_client;
+ 
+--- a/src/profile/credentials/repr.rs
++++ b/src/profile/credentials/repr.rs
+@@ -13,7 +13,8 @@
+ //! multiple actions into the same profile).
+ 
+ use crate::profile::credentials::ProfileFileError;
+-use crate::profile::{Profile, ProfileSet};
++use crate::profile::Profile;
++use crate::profile::ProfileSet;
+ use crate::sensitive_command::CommandWithSensitiveArgs;
+ use aws_credential_types::attributes::AccountId;
+ use aws_credential_types::Credentials;
+--- a/src/profile/credentials.rs
++++ b/src/profile/credentials.rs
+@@ -29,15 +29,17 @@
+ use crate::profile::ProfileFileLoadError;
+ use crate::provider_config::ProviderConfig;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::{
+-    provider::{self, error::CredentialsError, future, ProvideCredentials},
+-    Credentials,
+-};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
++use aws_credential_types::Credentials;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+ use std::borrow::Cow;
+ use std::collections::HashMap;
+ use std::error::Error;
+-use std::fmt::{Display, Formatter};
++use std::fmt::Display;
++use std::fmt::Formatter;
+ use std::sync::Arc;
+ use tracing::Instrument;
+ 
+@@ -664,7 +666,9 @@
+     #[tokio::test]
+     async fn profile_use_fips_endpoint_propagates_to_sts_client() {
+         #[allow(deprecated)]
+-        use crate::profile::profile_file::{ProfileFileKind, ProfileFiles};
++        use crate::profile::profile_file::ProfileFileKind;
++        #[allow(deprecated)]
++        use crate::profile::profile_file::ProfileFiles;
+         use crate::provider_config::ProviderConfig;
+         use aws_smithy_http_client::test_util::capture_request;
+         use aws_smithy_types::body::SdkBody;
+@@ -721,19 +725,21 @@
+ 
+ #[cfg(all(test, feature = "sso"))]
+ mod sso_tests {
+-    use crate::{profile::credentials::Builder, provider_config::ProviderConfig};
++    use crate::profile::credentials::Builder;
++    use crate::provider_config::ProviderConfig;
+     use aws_credential_types::credential_feature::AwsCredentialFeature;
+     use aws_credential_types::provider::ProvideCredentials;
+     use aws_sdk_sso::config::RuntimeComponents;
+-    use aws_smithy_runtime_api::client::{
+-        http::{
+-            HttpClient, HttpConnector, HttpConnectorFuture, HttpConnectorSettings,
+-            SharedHttpConnector,
+-        },
+-        orchestrator::{HttpRequest, HttpResponse},
+-    };
++    use aws_smithy_runtime_api::client::http::HttpClient;
++    use aws_smithy_runtime_api::client::http::HttpConnector;
++    use aws_smithy_runtime_api::client::http::HttpConnectorFuture;
++    use aws_smithy_runtime_api::client::http::HttpConnectorSettings;
++    use aws_smithy_runtime_api::client::http::SharedHttpConnector;
++    use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
++    use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+     use aws_smithy_types::body::SdkBody;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use std::collections::HashMap;
+ 
+     #[derive(Debug)]
+@@ -896,17 +902,19 @@
+     use aws_credential_types::provider::error::CredentialsError;
+     use aws_credential_types::provider::ProvideCredentials;
+     use aws_sdk_signin::config::RuntimeComponents;
+-    use aws_smithy_runtime_api::client::{
+-        http::{
+-            HttpClient, HttpConnector, HttpConnectorFuture, HttpConnectorSettings,
+-            SharedHttpConnector,
+-        },
+-        orchestrator::{HttpRequest, HttpResponse},
+-    };
++    use aws_smithy_runtime_api::client::http::HttpClient;
++    use aws_smithy_runtime_api::client::http::HttpConnector;
++    use aws_smithy_runtime_api::client::http::HttpConnectorFuture;
++    use aws_smithy_runtime_api::client::http::HttpConnectorSettings;
++    use aws_smithy_runtime_api::client::http::SharedHttpConnector;
++    use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
++    use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+     use aws_smithy_types::body::SdkBody;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use std::collections::HashMap;
+-    use std::sync::atomic::{AtomicUsize, Ordering};
++    use std::sync::atomic::AtomicUsize;
++    use std::sync::atomic::Ordering;
+     use std::sync::Arc;
+ 
+     #[derive(Debug, Clone)]
+--- a/src/profile/parser.rs
++++ b/src/profile/parser.rs
+@@ -7,13 +7,15 @@
+ 
+ use aws_runtime::env_config::file::EnvConfigFiles as ProfileFiles;
+ use aws_runtime::env_config::source;
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ use std::borrow::Cow;
+ 
+ pub use aws_runtime::env_config::error::EnvConfigFileLoadError as ProfileFileLoadError;
+ pub use aws_runtime::env_config::parse::EnvConfigParseError as ProfileParseError;
+ pub use aws_runtime::env_config::property::Property;
+-pub use aws_runtime::env_config::section::{EnvConfigSections as ProfileSet, Profile};
++pub use aws_runtime::env_config::section::EnvConfigSections as ProfileSet;
++pub use aws_runtime::env_config::section::Profile;
+ 
+ /// Read & parse AWS config files
+ ///
+--- a/src/profile/region.rs
++++ b/src/profile/region.rs
+@@ -5,7 +5,8 @@
+ 
+ //! Load a region from an AWS profile
+ 
+-use crate::meta::region::{future, ProvideRegion};
++use crate::meta::region::future;
++use crate::meta::region::ProvideRegion;
+ #[allow(deprecated)]
+ use crate::profile::profile_file::ProfileFiles;
+ use crate::profile::ProfileSet;
+@@ -161,7 +162,8 @@
+     use crate::profile::ProfileFileRegionProvider;
+     use crate::provider_config::ProviderConfig;
+     use crate::test_case::no_traffic_client;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use aws_types::region::Region;
+     use futures_util::FutureExt;
+     use tracing_test::traced_test;
+--- a/src/profile/token.rs
++++ b/src/profile/token.rs
+@@ -11,10 +11,12 @@
+ use crate::profile::ProfileSet;
+ use crate::provider_config::ProviderConfig;
+ use crate::sso::SsoTokenProvider;
+-use aws_credential_types::provider::{
+-    error::TokenError, future, token::ProvideToken, token::Result as TokenResult,
+-};
+-use aws_types::{region::Region, SdkConfig};
++use aws_credential_types::provider::error::TokenError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::token::ProvideToken;
++use aws_credential_types::provider::token::Result as TokenResult;
++use aws_types::region::Region;
++use aws_types::SdkConfig;
+ 
+ async fn load_profile_set(provider_config: &ProviderConfig) -> Result<&ProfileSet, TokenError> {
+     provider_config
+--- a/src/profile.rs
++++ b/src/profile.rs
+@@ -27,7 +27,9 @@
+ #[doc(inline)]
+ pub use aws_runtime::env_config::property::Property;
+ #[doc(inline)]
+-pub use aws_runtime::env_config::section::{EnvConfigSections as ProfileSet, Profile};
++pub use aws_runtime::env_config::section::EnvConfigSections as ProfileSet;
++#[doc(inline)]
++pub use aws_runtime::env_config::section::Profile;
+ #[doc(inline)]
+ pub use credentials::ProfileFileCredentialsProvider;
+ #[doc(inline)]
+@@ -37,7 +39,8 @@
+ 
+ mod cell {
+     use std::future::Future;
+-    use std::sync::{Arc, Mutex};
++    use std::sync::Arc;
++    use std::sync::Mutex;
+     use tokio::sync::OnceCell;
+ 
+     /// Once cell with a result where the error can be taken.
+@@ -82,10 +85,9 @@
+     #[cfg(test)]
+     mod tests {
+         use crate::profile::cell::ErrorTakingOnceCell;
+-        use std::sync::{
+-            atomic::{AtomicUsize, Ordering},
+-            Arc,
+-        };
++        use std::sync::atomic::AtomicUsize;
++        use std::sync::atomic::Ordering;
++        use std::sync::Arc;
+ 
+         #[derive(Debug)]
+         enum Error {
+--- a/src/provider_config.rs
++++ b/src/provider_config.rs
+@@ -9,21 +9,27 @@
+ use crate::profile;
+ #[allow(deprecated)]
+ use crate::profile::profile_file::ProfileFiles;
+-use crate::profile::{ProfileFileLoadError, ProfileSet};
+-use aws_smithy_async::rt::sleep::{default_async_sleep, AsyncSleep, SharedAsyncSleep};
+-use aws_smithy_async::time::{SharedTimeSource, TimeSource};
++use crate::profile::ProfileFileLoadError;
++use crate::profile::ProfileSet;
++use aws_smithy_async::rt::sleep::default_async_sleep;
++use aws_smithy_async::rt::sleep::AsyncSleep;
++use aws_smithy_async::rt::sleep::SharedAsyncSleep;
++use aws_smithy_async::time::SharedTimeSource;
++use aws_smithy_async::time::TimeSource;
+ use aws_smithy_runtime_api::client::behavior_version::BehaviorVersion;
+ use aws_smithy_runtime_api::client::http::HttpClient;
+ use aws_smithy_runtime_api::shared::IntoShared;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+ use aws_smithy_types::retry::RetryConfig;
+ use aws_smithy_types::timeout::TimeoutConfig;
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ use aws_types::region::Region;
+ use aws_types::sdk_config::SharedHttpClient;
+ use aws_types::SdkConfig;
+ use std::borrow::Cow;
+-use std::fmt::{Debug, Formatter};
++use std::fmt::Debug;
++use std::fmt::Formatter;
+ use std::sync::Arc;
+ use tokio::sync::OnceCell;
+ 
+--- a/src/sso/cache.rs
++++ b/src/sso/cache.rs
+@@ -3,15 +3,20 @@
+  * SPDX-License-Identifier: Apache-2.0
+  */
+ 
+-use aws_runtime::fs_util::{home_dir, Os};
++use aws_runtime::fs_util::home_dir;
++use aws_runtime::fs_util::Os;
++use aws_smithy_json::deserialize::json_token_iter;
+ use aws_smithy_json::deserialize::token::skip_value;
++use aws_smithy_json::deserialize::EscapeError;
+ use aws_smithy_json::deserialize::Token;
+-use aws_smithy_json::deserialize::{json_token_iter, EscapeError};
+ use aws_smithy_json::serialize::JsonObjectWriter;
+-use aws_smithy_types::date_time::{DateTimeFormatError, Format};
++use aws_smithy_types::date_time::DateTimeFormatError;
++use aws_smithy_types::date_time::Format;
+ use aws_smithy_types::DateTime;
+-use aws_types::os_shim_internal::{Env, Fs};
+-use sha1::{Digest, Sha1};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
++use sha1::Digest;
++use sha1::Sha1;
+ use std::borrow::Cow;
+ use std::error::Error as StdError;
+ use std::fmt;
+--- a/src/sso/credentials.rs
++++ b/src/sso/credentials.rs
+@@ -15,13 +15,17 @@
+ use crate::provider_config::ProviderConfig;
+ use crate::sso::SsoTokenProvider;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::provider::{self, error::CredentialsError, future, ProvideCredentials};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
+ use aws_credential_types::Credentials;
+ use aws_sdk_sso::types::RoleCredentials;
+ use aws_sdk_sso::Client as SsoClient;
+ use aws_smithy_async::time::SharedTimeSource;
+ use aws_smithy_types::DateTime;
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ use aws_types::region::Region;
+ use aws_types::SdkConfig;
+ 
+--- a/src/sso/token.rs
++++ b/src/sso/token.rs
+@@ -11,29 +11,33 @@
+ //! This provider is included automatically when profiles are loaded.
+ 
+ use crate::identity::IdentityCache;
+-use crate::sso::cache::{
+-    load_cached_token, save_cached_token, CachedSsoToken, CachedSsoTokenError,
+-};
++use crate::sso::cache::load_cached_token;
++use crate::sso::cache::save_cached_token;
++use crate::sso::cache::CachedSsoToken;
++use crate::sso::cache::CachedSsoTokenError;
++use aws_credential_types::provider::error::TokenError;
++use aws_credential_types::provider::future::ProvideToken as ProvideTokenFuture;
+ use aws_credential_types::provider::token::ProvideToken;
+-use aws_credential_types::provider::{
+-    error::TokenError, future::ProvideToken as ProvideTokenFuture,
+-};
+ use aws_sdk_ssooidc::error::DisplayErrorContext;
+ use aws_sdk_ssooidc::operation::create_token::CreateTokenOutput;
+ use aws_sdk_ssooidc::Client as SsoOidcClient;
+ use aws_smithy_async::time::SharedTimeSource;
+ use aws_smithy_runtime::expiring_cache::ExpiringCache;
+ use aws_smithy_runtime_api::client::identity::http::Token;
+-use aws_smithy_runtime_api::client::identity::{IdentityFuture, ResolveIdentity};
++use aws_smithy_runtime_api::client::identity::IdentityFuture;
++use aws_smithy_runtime_api::client::identity::ResolveIdentity;
+ use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+ use aws_smithy_types::config_bag::ConfigBag;
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ use aws_types::region::Region;
+ use aws_types::SdkConfig;
+ use std::error::Error as StdError;
+ use std::fmt;
+-use std::sync::{Arc, Mutex};
+-use std::time::{Duration, SystemTime};
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::time::Duration;
++use std::time::SystemTime;
+ use zeroize::Zeroizing;
+ 
+ const REFRESH_BUFFER_TIME: Duration = Duration::from_secs(5 * 60 /* 5 minutes */);
+@@ -402,14 +406,17 @@
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+-    use aws_sdk_sso::config::{AsyncSleep, SharedAsyncSleep};
++    use aws_sdk_sso::config::AsyncSleep;
++    use aws_sdk_sso::config::SharedAsyncSleep;
+     use aws_smithy_async::rt::sleep::TokioSleep;
+     use aws_smithy_async::test_util::instant_time_and_sleep;
+-    use aws_smithy_async::time::{StaticTimeSource, TimeSource};
+-    use aws_smithy_http_client::test_util::{capture_request, ReplayEvent, StaticReplayClient};
+-    use aws_smithy_runtime::{
+-        assert_str_contains, test_util::capture_test_logs::capture_test_logs,
+-    };
++    use aws_smithy_async::time::StaticTimeSource;
++    use aws_smithy_async::time::TimeSource;
++    use aws_smithy_http_client::test_util::capture_request;
++    use aws_smithy_http_client::test_util::ReplayEvent;
++    use aws_smithy_http_client::test_util::StaticReplayClient;
++    use aws_smithy_runtime::assert_str_contains;
++    use aws_smithy_runtime::test_util::capture_test_logs::capture_test_logs;
+     use aws_smithy_runtime_api::client::http::HttpClient;
+     use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+     use aws_smithy_types::body::SdkBody;
+--- a/src/sts/assume_role.rs
++++ b/src/sts/assume_role.rs
+@@ -6,12 +6,15 @@
+ //! Assume credentials for a role through the AWS Security Token Service (STS).
+ 
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::provider::{
+-    self, error::CredentialsError, future, ProvideCredentials, SharedCredentialsProvider,
+-};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::SharedCredentialsProvider;
++use aws_credential_types::provider::{self};
+ use aws_sdk_sts::operation::assume_role::builders::AssumeRoleFluentBuilder;
+ use aws_sdk_sts::operation::assume_role::AssumeRoleError;
+-use aws_sdk_sts::types::{PolicyDescriptorType, Tag};
++use aws_sdk_sts::types::PolicyDescriptorType;
++use aws_sdk_sts::types::Tag;
+ use aws_sdk_sts::Client as StsClient;
+ use aws_smithy_runtime::client::identity::IdentityCache;
+ use aws_smithy_runtime_api::client::result::SdkError;
+@@ -371,12 +374,16 @@
+     use crate::sts::AssumeRoleProvider;
+     use aws_credential_types::credential_feature::AwsCredentialFeature;
+     use aws_credential_types::credential_fn::provide_credentials_fn;
+-    use aws_credential_types::provider::{ProvideCredentials, SharedCredentialsProvider};
++    use aws_credential_types::provider::ProvideCredentials;
++    use aws_credential_types::provider::SharedCredentialsProvider;
+     use aws_credential_types::Credentials;
+-    use aws_smithy_async::rt::sleep::{SharedAsyncSleep, TokioSleep};
++    use aws_smithy_async::rt::sleep::SharedAsyncSleep;
++    use aws_smithy_async::rt::sleep::TokioSleep;
+     use aws_smithy_async::test_util::instant_time_and_sleep;
+     use aws_smithy_async::time::StaticTimeSource;
+-    use aws_smithy_http_client::test_util::{capture_request, ReplayEvent, StaticReplayClient};
++    use aws_smithy_http_client::test_util::capture_request;
++    use aws_smithy_http_client::test_util::ReplayEvent;
++    use aws_smithy_http_client::test_util::StaticReplayClient;
+     use aws_smithy_runtime::test_util::capture_test_logs::capture_test_logs;
+     use aws_smithy_runtime_api::client::behavior_version::BehaviorVersion;
+     use aws_smithy_types::body::SdkBody;
+@@ -384,7 +391,8 @@
+     use aws_types::region::Region;
+     use aws_types::SdkConfig;
+     use http::header::AUTHORIZATION;
+-    use std::time::{Duration, UNIX_EPOCH};
++    use std::time::Duration;
++    use std::time::UNIX_EPOCH;
+ 
+     #[tokio::test]
+     async fn configures_session_length() {
+--- a/src/sts/util.rs
++++ b/src/sts/util.rs
+@@ -4,11 +4,14 @@
+  */
+ 
+ use aws_credential_types::attributes::AccountId;
+-use aws_credential_types::provider::{self, error::CredentialsError};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::{self};
+ use aws_credential_types::Credentials as AwsCredentials;
+-use aws_sdk_sts::types::{AssumedRoleUser, Credentials as StsCredentials};
++use aws_sdk_sts::types::AssumedRoleUser;
++use aws_sdk_sts::types::Credentials as StsCredentials;
+ 
+-use std::time::{SystemTime, UNIX_EPOCH};
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
+ 
+ /// Convert STS credentials to aws_auth::Credentials
+ pub(crate) fn into_credentials(
+--- a/src/sts.rs
++++ b/src/sts.rs
+@@ -5,7 +5,8 @@
+ 
+ //! Credential provider augmentation through the AWS Security Token Service (STS).
+ 
+-pub use assume_role::{AssumeRoleProvider, AssumeRoleProviderBuilder};
++pub use assume_role::AssumeRoleProvider;
++pub use assume_role::AssumeRoleProviderBuilder;
+ 
+ mod assume_role;
+ pub(crate) mod util;
+--- a/src/test_case.rs
++++ b/src/test_case.rs
+@@ -6,22 +6,31 @@
+ use crate::default_provider::use_dual_stack::use_dual_stack_provider;
+ use crate::default_provider::use_fips::use_fips_provider;
+ use crate::provider_config::ProviderConfig;
+-use aws_smithy_async::rt::sleep::{AsyncSleep, Sleep, TokioSleep};
+-use aws_smithy_http_client::test_util::dvr::{NetworkTraffic, RecordingClient, ReplayingClient};
++use aws_smithy_async::rt::sleep::AsyncSleep;
++use aws_smithy_async::rt::sleep::Sleep;
++use aws_smithy_async::rt::sleep::TokioSleep;
++use aws_smithy_http_client::test_util::dvr::NetworkTraffic;
++use aws_smithy_http_client::test_util::dvr::RecordingClient;
++use aws_smithy_http_client::test_util::dvr::ReplayingClient;
+ use aws_smithy_runtime::test_util::capture_test_logs::capture_test_logs;
+ use aws_smithy_runtime_api::box_error::BoxError;
+ use aws_smithy_runtime_api::shared::IntoShared;
+-use aws_smithy_types::{date_time::Format, error::display::DisplayErrorContext, DateTime};
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_smithy_types::date_time::Format;
++use aws_smithy_types::error::display::DisplayErrorContext;
++use aws_smithy_types::DateTime;
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ use aws_types::sdk_config::SharedHttpClient;
+ use serde::Deserialize;
+ use std::collections::HashMap;
+ use std::error::Error;
+ use std::fmt::Debug;
+ use std::future::Future;
+-use std::path::{Path, PathBuf};
++use std::path::Path;
++use std::path::PathBuf;
+ use std::pin::Pin;
+-use std::time::{Duration, UNIX_EPOCH};
++use std::time::Duration;
++use std::time::UNIX_EPOCH;
+ 
+ mod sealed {
+     /// Trait that provides secret values for a given test output type (credentials or tokens)
+--- a/src/web_identity_token.rs
++++ b/src/web_identity_token.rs
+@@ -64,14 +64,20 @@
+ use crate::provider_config::ProviderConfig;
+ use crate::sts;
+ use aws_credential_types::credential_feature::AwsCredentialFeature;
+-use aws_credential_types::provider::{self, error::CredentialsError, future, ProvideCredentials};
+-use aws_sdk_sts::{types::PolicyDescriptorType, Client as StsClient};
++use aws_credential_types::provider::error::CredentialsError;
++use aws_credential_types::provider::future;
++use aws_credential_types::provider::ProvideCredentials;
++use aws_credential_types::provider::{self};
++use aws_sdk_sts::types::PolicyDescriptorType;
++use aws_sdk_sts::Client as StsClient;
+ use aws_smithy_async::time::SharedTimeSource;
+ use aws_smithy_types::error::display::DisplayErrorContext;
+-use aws_types::os_shim_internal::{Env, Fs};
++use aws_types::os_shim_internal::Env;
++use aws_types::os_shim_internal::Fs;
+ 
+ use std::borrow::Cow;
+-use std::path::{Path, PathBuf};
++use std::path::Path;
++use std::path::PathBuf;
+ 
+ const ENV_VAR_TOKEN_FILE: &str = "AWS_WEB_IDENTITY_TOKEN_FILE";
+ const ENV_VAR_ROLE_ARN: &str = "AWS_ROLE_ARN";
+@@ -285,13 +291,15 @@
+ mod test {
+     use crate::provider_config::ProviderConfig;
+     use crate::test_case::no_traffic_client;
+-    use crate::web_identity_token::{
+-        Builder, ENV_VAR_ROLE_ARN, ENV_VAR_SESSION_NAME, ENV_VAR_TOKEN_FILE,
+-    };
++    use crate::web_identity_token::Builder;
++    use crate::web_identity_token::ENV_VAR_ROLE_ARN;
++    use crate::web_identity_token::ENV_VAR_SESSION_NAME;
++    use crate::web_identity_token::ENV_VAR_TOKEN_FILE;
+     use aws_credential_types::provider::error::CredentialsError;
+     use aws_smithy_async::rt::sleep::TokioSleep;
+     use aws_smithy_types::error::display::DisplayErrorContext;
+-    use aws_types::os_shim_internal::{Env, Fs};
++    use aws_types::os_shim_internal::Env;
++    use aws_types::os_shim_internal::Fs;
+     use aws_types::region::Region;
+     use std::collections::HashMap;
+ 
