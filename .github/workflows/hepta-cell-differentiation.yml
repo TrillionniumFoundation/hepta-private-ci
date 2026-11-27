@@ -84,6 +84,12 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Resolve repository-pinned V8
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 -B scripts/hepta_ci_v8.py
       - name: Bind exact source and repository toolchain
         shell: bash
         run: |
@@ -93,6 +99,14 @@ jobs:
           git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/cell-native-evidence/source.txt"
           cp codex-rs/rust-toolchain.toml "$RUNNER_TEMP/cell-native-evidence/"
           sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/cell-native-evidence/lock.sha256"
+      - name: Build and bind the same-source inference test helper
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/cell-native-evidence/helpers" \
+            --github-env "$GITHUB_ENV"
       - name: Run the existing package test entry point
         working-directory: codex-rs
         shell: bash
@@ -109,6 +123,15 @@ jobs:
             --all-targets -- -D clippy::correctness -D clippy::await_holding_lock \
             -D clippy::await_holding_invalid_type \
             2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/clippy.log"
+      - name: Verify the helper remained bound to the tested source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/cell-native-evidence/helpers" \
+            > "$RUNNER_TEMP/cell-native-evidence/helpers-after.json"
       - name: Check formatting without rewriting the tested source
         if: always()
         working-directory: codex-rs
@@ -124,6 +147,12 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: cell-differentiation-native-${{ env.SOURCE_SHA }}
-          path: ${{ runner.temp }}/cell-native-evidence/
+          path: |
+            ${{ runner.temp }}/cell-native-evidence/*.log
+            ${{ runner.temp }}/cell-native-evidence/*.txt
+            ${{ runner.temp }}/cell-native-evidence/*.toml
+            ${{ runner.temp }}/cell-native-evidence/*.sha256
+            ${{ runner.temp }}/cell-native-evidence/*.json
+            ${{ runner.temp }}/cell-native-evidence/helpers/manifest.json
           if-no-files-found: error
           retention-days: 14
