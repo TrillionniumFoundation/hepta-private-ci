@@ -31,6 +31,7 @@ use crate::bottom_pane::ChatComposerConfig;
 use crate::bottom_pane::ComposerDraftSnapshot;
 use crate::history_cell;
 use crate::history_cell::HistoryCell;
+use crate::input_clock::InputClock;
 use crate::key_hint;
 use crate::keymap::RuntimeKeymap;
 use crate::legacy_core::config::Config;
@@ -94,6 +95,7 @@ pub(crate) struct StartupDraftPump {
     initial_screen: StartupDraftInitialScreen,
     session_action: StartupDraftSessionAction,
     pending_paste_newline: Option<(Instant, String)>,
+    input_clock: InputClock,
 }
 
 impl StartupDraft {
@@ -129,6 +131,7 @@ impl StartupDraft {
                 initial_screen,
                 session_action,
                 pending_paste_newline: None,
+                input_clock: InputClock::default(),
             },
         };
         draft.pump.show_initial_screen(&mut draft.tui)?;
@@ -246,7 +249,8 @@ impl StartupDraftPump {
     /// Resolve an ambiguous paste newline before its provisional input owner disappears.
     pub(crate) async fn flush_pending_paste_newline(&mut self, tui: &mut Tui) -> io::Result<()> {
         while let Some((started_at, _)) = &self.pending_paste_newline {
-            let Some(remaining) = STARTUP_PASTE_NEWLINE_TIMEOUT.checked_sub(started_at.elapsed())
+            let Some(remaining) = STARTUP_PASTE_NEWLINE_TIMEOUT
+                .checked_sub(self.input_clock.now().duration_since(*started_at))
             else {
                 self.pending_paste_newline = None;
                 break;
@@ -297,9 +301,11 @@ impl StartupDraftPump {
                     kind: KeyEventKind::Press | KeyEventKind::Repeat,
                     ..
                 }) if modifiers.is_empty() => {
-                    if started_at.elapsed() <= STARTUP_PASTE_NEWLINE_TIMEOUT {
+                    if self.input_clock.now().duration_since(started_at)
+                        <= STARTUP_PASTE_NEWLINE_TIMEOUT
+                    {
                         newlines.push('\n');
-                        self.pending_paste_newline = Some((Instant::now(), newlines));
+                        self.pending_paste_newline = Some((self.input_clock.now(), newlines));
                     }
                     return Ok(());
                 }
@@ -313,7 +319,10 @@ impl StartupDraftPump {
                 }
                 TuiEvent::Key(_) => false,
             };
-            if continues_paste && started_at.elapsed() <= STARTUP_PASTE_NEWLINE_TIMEOUT {
+            if continues_paste
+                && self.input_clock.now().duration_since(started_at)
+                    <= STARTUP_PASTE_NEWLINE_TIMEOUT
+            {
                 self.bottom_pane.handle_paste(newlines);
             }
         }
@@ -338,7 +347,8 @@ impl StartupDraftPump {
                         .saturating_sub(text_len)
                         > 1
                     {
-                        self.pending_paste_newline = Some((Instant::now(), "\n".to_string()));
+                        self.pending_paste_newline =
+                            Some((self.input_clock.now(), "\n".to_string()));
                     }
                 }
                 handle_startup_draft_key(&mut self.bottom_pane, key).inspect_err(|error| {

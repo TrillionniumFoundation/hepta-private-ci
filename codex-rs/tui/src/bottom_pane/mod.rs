@@ -1713,6 +1713,11 @@ impl BottomPane {
         self.composer.flush_paste_burst_if_due()
     }
 
+    #[cfg(test)]
+    pub(crate) fn set_input_clock_for_test(&mut self, clock: crate::input_clock::InputClock) {
+        self.composer.set_input_clock_for_test(clock);
+    }
+
     pub(crate) fn is_in_paste_burst(&self) -> bool {
         // A view can hold paste-burst state independently of the primary
         // composer, so check it first.

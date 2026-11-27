@@ -22,6 +22,9 @@ use crate::resume_picker::SessionSelection;
 use crate::tui::FrameRequester;
 use crate::tui::TuiEvent;
 
+#[path = "startup_draft_clock_tests.rs"]
+mod clock_tests;
+
 fn startup_test_pump<I>(events: I) -> StartupDraftPump
 where
     I: Iterator<Item = TuiEvent> + Send + 'static,
@@ -39,6 +42,7 @@ where
         initial_screen: StartupDraftInitialScreen::Composer,
         session_action: StartupDraftSessionAction::New,
         pending_paste_newline: None,
+        input_clock: crate::input_clock::InputClock::default(),
     }
 }
 
@@ -363,6 +367,8 @@ async fn startup_draft_preserves_non_bracketed_multiline_pastes_without_submitti
             ))
         });
     let mut pump = startup_test_pump(events);
+    // These queued events form one paste regardless of real terminal draw cost.
+    clock_tests::freeze_input_clock(&mut pump);
     let mut tui = crate::tui::test_support::make_test_tui().expect("create test terminal");
 
     pump.flush_pending_events(&mut tui)
