@@ -1,0 +1,32 @@
+{
+  "baseline": "0e43224a1da27560785a7ff696ae14ef563ee6f7",
+  "original_failures": [
+    140594591559,
+    140594591636
+  ],
+  "source_pins": {
+    "workspace_root_test_launcher.bat.tpl": {
+      "bytes": 8363,
+      "sha256": "322a74b8696b2f3f88f883ad759e7c1024d739e49b1b10c9aea06916c6507cc0"
+    },
+    "codex-rs/cli/BUILD.bazel": {
+      "bytes": 802,
+      "sha256": "25bfe4bd6ee523d5859654f34ba3caab21778d3372c239c83f8e07565a03e532"
+    },
+    "codex-rs/exec-server/BUILD.bazel": {
+      "bytes": 890,
+      "sha256": "7ebe1f8d7aa1f5bbe8eb55b8f3914af11ca97032cd604cc68686ad4fd2cc2244"
+    },
+    ".github/workflows/hia-windows-sandbox-runfiles.yml": {
+      "bytes": 3104,
+      "sha256": "562515156ead371f0364dae5b7364f384c40c19e311c99f7c51ba8be6844b97b"
+    }
+  },
+  "original_target_count": 3,
+  "core_original_shards": 16,
+  "product_code_modified": false,
+  "read_denial_checks_modified": false,
+  "timeouts_changed": false,
+  "full_matrix_pass": false,
+  "actual_windows_execution": "OPEN"
+}

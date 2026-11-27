@@ -1,0 +1,35 @@
+{
+  "artifact": {
+    "CRC": "PASS",
+    "archive": {
+      "bytes": 4664343,
+      "sha256": "dcd1510e13c7158d2294624c996bfaae7e88063bb2981f6a1973c4d7b36d4142"
+    },
+    "artifact_id": 15222282886,
+    "members": {
+      "bazel-execution-logs/execution-log-test-original-sandbox-runfiles-732.zst": {
+        "bytes": 4526576,
+        "sha256": "a7c122c00dfb447d72933bfe672e718ac6a52bf8899678538c3f582e282b5963"
+      },
+      "windows-sandbox-runfiles.log": {
+        "bytes": 787115,
+        "sha256": "7b190f084bffe430d6f8b71e23b4d518ea0d93f9c51475c217b96ef9e2ae9efb"
+      }
+    },
+    "seconds": 8.155348332831636
+  },
+  "job_id": 140642486749,
+  "raw": {
+    "bytes": 1038993,
+    "sha256": "90fb14288170497c360811fa39787cf7f021130bc84c0548a892d8e82929819b"
+  },
+  "run_id": 46039259473,
+  "source_commit": "d455e55cf25bfada9ff0adb4db4fd8eda6b7ac59",
+  "status": "FAIL",
+  "targets": {
+    "cli": "FAIL (setup helper program not found)",
+    "core_all": "FLAKY (3 failures among 19 attempts for original 16 shards); not PASS",
+    "exec_server": "FAIL (49 passed, 8 failed, 2 original ignored)"
+  },
+  "whole_bazel_matrix_qualified": false
+}

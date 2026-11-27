@@ -1,0 +1,65 @@
+diff --git a/.github/workflows/hia-windows-sandbox-runfiles.yml b/.github/workflows/hia-windows-sandbox-runfiles.yml
+index 2d926842..b2250d55 100644
+--- a/.github/workflows/hia-windows-sandbox-runfiles.yml
++++ b/.github/workflows/hia-windows-sandbox-runfiles.yml
+@@ -4,7 +4,9 @@ on:
+   push:
+     branches:
+       - codex/hia-windows-sandbox-runfiles-20261127-2ac5
++      - codex/hia-windows-sandbox-runfiles-resolved-20261127-2ac5
+     paths:
++      - defs.bzl
+       - workspace_root_test_launcher.bat.tpl
+       - codex-rs/cli/BUILD.bazel
+       - codex-rs/exec-server/BUILD.bazel
+diff --git a/codex-rs/cli/BUILD.bazel b/codex-rs/cli/BUILD.bazel
+index a64e4a8d..713a82ee 100644
+--- a/codex-rs/cli/BUILD.bazel
++++ b/codex-rs/cli/BUILD.bazel
+@@ -12,6 +12,14 @@ codex_rust_crate(
+     ],
+     rustc_flags_extra = MACOS_WEBRTC_RUSTC_LINK_FLAGS,
+     test_data_extra = glob(["src/**/snapshots/**"]),
++    # These unsharded sandbox consumers need the same absolute helper runfiles
++    # environment as the existing sharded Windows launcher.
++    test_runfile_env = {
++        "cli-sandbox_cloud_config-test": {
++            "//codex-rs/windows-sandbox-rs:codex-command-runner": "CARGO_BIN_EXE_codex-command-runner",
++            "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup": "CARGO_BIN_EXE_codex-windows-sandbox-setup",
++        },
++    },
+ )
+ 
+ multiplatform_binaries(
+diff --git a/codex-rs/exec-server/BUILD.bazel b/codex-rs/exec-server/BUILD.bazel
+index 73c71a65..29e18f0e 100644
+--- a/codex-rs/exec-server/BUILD.bazel
++++ b/codex-rs/exec-server/BUILD.bazel
+@@ -20,6 +20,14 @@ codex_rust_crate(
+     # process-global test-binary dispatch state, and the remote exec-server
+     # cases already rely on serialization around the full CLI path.
+     integration_test_args = ["--test-threads=1"],
++    # These unsharded sandbox consumers need the same absolute helper runfiles
++    # environment as the existing sharded Windows launcher.
++    test_runfile_env = {
++        "exec-server-file_system_windows-test": {
++            "//codex-rs/windows-sandbox-rs:codex-command-runner": "CARGO_BIN_EXE_codex-command-runner",
++            "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup": "CARGO_BIN_EXE_codex-windows-sandbox-setup",
++        },
++    },
+     test_tags = ["no-sandbox"],
+     unit_test_args = ["--test-threads=1"],
+ )
+diff --git a/defs.bzl b/defs.bzl
+index 4e8fdc88..c225c3e3 100644
+--- a/defs.bzl
++++ b/defs.bzl
+@@ -736,7 +736,7 @@ def codex_rust_crate(
+                 workspace_root_test(
+                     name = test_name,
+                     chdir_workspace_root = False,
+-                    runfile_env = fixture_runfile_env,
++                    runfile_env = integration_test_cargo_env_runfiles | fixture_runfile_env,
+                     runfile_environment_only = True,
+                     test_bin = ":" + integration_test_binary,
+                     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
