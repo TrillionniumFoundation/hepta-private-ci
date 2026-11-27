@@ -340,7 +340,8 @@ async fn cancellation_preserves_in_flight_queue_ack_before_scheduler_exit() {
     stop.cancel();
     assert!(timeout(Duration::from_millis(30), &mut task).await.is_err());
     queue.release.notify_one();
-    timeout(Duration::from_secs(2), task)
+    // Include the real SQLite acknowledgement after the mock queue reply.
+    timeout(Duration::from_secs(10), task)
         .await
         .expect("bounded drain")
         .expect("task join")

@@ -3971,12 +3971,18 @@ mod tests {
     async fn mcp_http_probe_falls_back_to_get_when_head_times_out() {
         let listener = TcpListener::bind("127.0.0.1:0").expect("bind test listener");
         let addr = listener.local_addr().expect("listener address");
+        // Gate HEAD on completion of the GET fallback rather than using two
+        // extremely short racing wall-clock sleeps. This forces HEAD to time
+        // out while allowing the independent GET to complete on a busy host.
+        let (release_head_tx, release_head_rx) = std::sync::mpsc::channel::<()>();
         let server = std::thread::spawn(move || {
             let (mut head_stream, _) = listener.accept().expect("accept HEAD probe request");
             let head = std::thread::spawn(move || {
                 let mut request = [0; 1024];
                 let _ = head_stream.read(&mut request);
-                std::thread::sleep(Duration::from_millis(50));
+                release_head_rx
+                    .recv_timeout(Duration::from_secs(10))
+                    .expect("GET fallback must release the pending HEAD response");
             });
 
             let (mut get_stream, _) = listener.accept().expect("accept GET probe request");
@@ -3987,12 +3993,15 @@ mod tests {
                     b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
                 )
                 .expect("write response");
+            release_head_tx
+                .send(())
+                .expect("release the withheld HEAD response after GET");
             head.join().expect("HEAD holder should finish");
         });
 
         let status = mcp_http_probe_url_with_timeout(
             &format!("http://{addr}/mcp"),
-            Duration::from_millis(10),
+            Duration::from_secs(2),
         )
         .await;
         server.join().expect("probe server thread should finish");

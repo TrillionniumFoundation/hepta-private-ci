@@ -14,8 +14,10 @@ use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerRequest;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
+use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
+use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput as V2UserInput;
 use codex_config::types::AuthCredentialsStoreMode;
 use core_test_support::responses;
@@ -23,6 +25,7 @@ use core_test_support::responses::WebSocketConnectionConfig;
 use core_test_support::responses::start_websocket_server_with_headers;
 use core_test_support::skip_if_no_network;
 use pretty_assertions::assert_eq;
+use std::collections::VecDeque;
 use std::path::Path;
 use tempfile::TempDir;
 use tokio::time::Duration;
@@ -37,6 +40,7 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
 {
     skip_if_no_network!(Ok(()));
 
+    // Prewarm and the user turn share a socket when their connection context is stable.
     let websocket_server = start_websocket_server_with_headers(vec![WebSocketConnectionConfig {
         requests: vec![
             vec![
@@ -94,12 +98,19 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
         bail!("expected initialize response, got {initialized:?}");
     };
 
+    let mut attestation_requests = 0;
+    let mut pending_messages = VecDeque::new();
     let thread_request_id = mcp
         .send_thread_start_request_with_auto_env(ThreadStartParams::default())
         .await?;
     let thread_response: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(thread_request_id)),
+        read_response_while_answering_attestation(
+            &mut mcp,
+            RequestId::Integer(thread_request_id),
+            &mut attestation_requests,
+            &mut pending_messages,
+        ),
     )
     .await??;
     let ThreadStartResponse { thread, .. } = to_response(thread_response)?;
@@ -117,46 +128,53 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
         .await?;
     let turn_response: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(turn_request_id)),
+        read_response_while_answering_attestation(
+            &mut mcp,
+            RequestId::Integer(turn_request_id),
+            &mut attestation_requests,
+            &mut pending_messages,
+        ),
     )
     .await??;
-    let _: TurnStartResponse = to_response(turn_response)?;
+    let started: TurnStartResponse = to_response(turn_response)?;
 
-    let mut attestation_requests = 0;
-    timeout(DEFAULT_READ_TIMEOUT, async {
+    let completed = timeout(DEFAULT_READ_TIMEOUT, async {
         loop {
-            match mcp.read_next_message().await? {
+            let message = match pending_messages.pop_front() {
+                Some(message) => message,
+                None => mcp.read_next_message().await?,
+            };
+            match message {
                 JSONRPCMessage::Request(request) => {
-                    let request = ServerRequest::try_from(request)?;
-                    let ServerRequest::AttestationGenerate { request_id, .. } = request else {
-                        bail!("expected attestation/generate request, got {request:?}");
-                    };
-                    attestation_requests += 1;
-                    mcp.send_response(
-                        request_id,
-                        serde_json::to_value(AttestationGenerateResponse {
-                            token: ATTESTATION_HEADER.into(),
-                        })?,
+                    answer_attestation_generate(
+                        &mut mcp,
+                        ServerRequest::try_from(request)?,
+                        &mut attestation_requests,
                     )
                     .await?;
                 }
                 JSONRPCMessage::Notification(notification)
                     if notification.method == "turn/completed" =>
                 {
-                    break Ok(());
+                    let Some(params) = notification.params else {
+                        bail!("turn/completed notification missing parameters");
+                    };
+                    let completed = serde_json::from_value::<TurnCompletedNotification>(params)?;
+                    break Ok::<_, anyhow::Error>(completed);
                 }
                 _ => {}
             }
         }
     })
     .await??;
-    assert!(attestation_requests > 0);
+    assert_eq!(completed.turn.id, started.turn.id);
+    assert_eq!(completed.turn.status, TurnStatus::Completed);
+    // A shared provider socket is attested once, before either request uses it.
+    assert_eq!(attestation_requests, 1);
 
-    assert!(
-        websocket_server
-            .wait_for_handshakes(/*expected*/ 1, DEFAULT_READ_TIMEOUT)
-            .await
-    );
+    let connections = websocket_server.connections();
+    assert_eq!(connections.len(), 1);
+    assert_eq!(connections[0].len(), 2);
     let handshake = websocket_server.single_handshake();
     assert_eq!(
         handshake.header("x-oai-attestation").as_deref(),
@@ -164,6 +182,65 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
     );
 
     websocket_server.shutdown().await;
+    Ok(())
+}
+
+// Attestation is a server-to-client request and may precede the response
+// being awaited. Handle it inside the caller's existing single deadline.
+async fn read_response_while_answering_attestation(
+    mcp: &mut TestAppServer,
+    expected_id: RequestId,
+    attestation_requests: &mut usize,
+    pending_messages: &mut VecDeque<JSONRPCMessage>,
+) -> Result<JSONRPCResponse> {
+    loop {
+        let message = if let Some(index) = pending_messages.iter().position(|message| {
+            matches!(message, JSONRPCMessage::Response(response) if response.id == expected_id)
+                || matches!(message, JSONRPCMessage::Error(error) if error.id == expected_id)
+        }) {
+            let Some(message) = pending_messages.remove(index) else {
+                bail!("buffered response disappeared");
+            };
+            message
+        } else {
+            mcp.read_next_message().await?
+        };
+        match message {
+            JSONRPCMessage::Request(request) => {
+                answer_attestation_generate(
+                    mcp,
+                    ServerRequest::try_from(request)?,
+                    attestation_requests,
+                )
+                .await?;
+            }
+            JSONRPCMessage::Response(response) if response.id == expected_id => {
+                return Ok(response);
+            }
+            JSONRPCMessage::Error(error) if error.id == expected_id => {
+                bail!("request failed while answering attestation: {error:?}");
+            }
+            message => pending_messages.push_back(message),
+        }
+    }
+}
+
+async fn answer_attestation_generate(
+    mcp: &mut TestAppServer,
+    request: ServerRequest,
+    attestation_requests: &mut usize,
+) -> Result<()> {
+    let ServerRequest::AttestationGenerate { request_id, .. } = request else {
+        bail!("expected attestation/generate request, got {request:?}");
+    };
+    *attestation_requests += 1;
+    mcp.send_response(
+        request_id,
+        serde_json::to_value(AttestationGenerateResponse {
+            token: ATTESTATION_HEADER.into(),
+        })?,
+    )
+    .await?;
     Ok(())
 }
 

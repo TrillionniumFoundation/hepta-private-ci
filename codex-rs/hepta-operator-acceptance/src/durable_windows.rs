@@ -6,6 +6,11 @@ use std::path::Path;
 use super::invalid;
 use crate::AcceptanceError;
 
+#[path = "durable_windows_private.rs"]
+mod private;
+pub(super) use private::LockOpen;
+pub(super) use private::ParentPin;
+
 // Windows SDK file flags. Keep the final path component as a reparse point so
 // its own handle attributes can reject it instead of inspecting its target.
 const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
@@ -71,9 +76,10 @@ pub(super) fn verify_unchanged(
 }
 
 pub(super) fn verify_path(path: &Path, label: &str) -> Result<(), AcceptanceError> {
-    let file = open_without_following(path)?;
+    let parent = ParentPin::for_file(path)?;
+    let file = parent.read(path)?;
     let before = FileSnapshot::capture(&file, label)?;
-    verify_unchanged(&file, path, &before, label)
+    parent.verify(&file, path, &before, label)
 }
 
 fn open_without_following(path: &Path) -> Result<File, AcceptanceError> {
@@ -86,3 +92,7 @@ fn open_without_following(path: &Path) -> Result<File, AcceptanceError> {
 #[cfg(test)]
 #[path = "durable_windows_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "durable_windows_private_tests.rs"]
+mod private_tests;

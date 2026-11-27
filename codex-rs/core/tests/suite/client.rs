@@ -710,7 +710,7 @@ fn write_auth_json(
         "OPENAI_API_KEY": openai_api_key,
         "tokens": tokens,
         // RFC3339 datetime; value doesn't matter for these tests
-        "last_refresh": chrono::Utc::now(),
+        "last_refresh": codex_utils_time::Timestamp::now(),
     });
 
     std::fs::write(
@@ -1483,6 +1483,7 @@ async fn send_provider_auth_request(server: &MockServer, auth: ModelProviderAuth
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     };
 
     send_request_with_provider(provider).await;
@@ -2973,6 +2974,7 @@ async fn azure_responses_request_does_not_store_and_preserves_prefixed_item_ids(
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     };
 
     let codex_home = TempDir::new().unwrap();
@@ -3605,6 +3607,7 @@ async fn azure_overrides_assign_properties_used_for_responses_url() {
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     };
 
     // Init session
@@ -3689,6 +3692,7 @@ async fn env_var_overrides_loaded_auth() {
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     };
 
     // Init session

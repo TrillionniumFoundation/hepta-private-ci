@@ -52,7 +52,9 @@ if [[ -n "${BAZEL_OUTPUT_USER_ROOT:-}" ]]; then
 fi
 
 run_bazel() (
-  if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
+  # CI tests can select a different platform's configuration on this host.
+  # Use the native transport for an MSYS shell regardless of that selection.
+  if [[ "${RUNNER_OS:-}" == "Windows" || "${OSTYPE:-}" == msys* ]]; then
     # Bash writes its full array without spawning a native process with that
     # array. A large target roster can exceed Windows' native argv limit before
     # Python or Bazel starts; only the transport path crosses this boundary.
@@ -275,6 +277,14 @@ if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then
 fi
 
 post_config_bazel_args=()
+if [[ "${RUNNER_OS:-}" == "macOS" ]]; then
+  # Remote --jobs=800 also selects the local Skyframe executor parallelism.
+  # Hosted macOS runners exhausted native threads before completing the test
+  # roster. Keep this host at the repository's ordinary 30-job bound after the
+  # remote config, with the same targets, sandbox strategy and test deadlines.
+  post_config_bazel_args+=(--jobs=30)
+fi
+
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then
   has_host_platform_override=0
   for arg in "${bazel_args[@]}"; do

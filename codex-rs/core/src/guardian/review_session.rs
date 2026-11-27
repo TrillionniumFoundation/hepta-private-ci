@@ -1184,6 +1184,12 @@ async fn run_review_on_session(
             }),
         TurnInputMode::StartIfIdle,
     );
+    let submission = async {
+        if let Some(completion) = review_session.session.pending_admission_fence_completion() {
+            completion.await;
+        }
+        submission.await
+    };
     let submit_result = run_before_review_deadline(
         deadline,
         params.external_cancel.as_ref(),
@@ -1312,6 +1318,22 @@ async fn wait_for_guardian_review(
                     }
                     Ok(event) => match event.msg {
                         EventMsg::TurnComplete(turn_complete) => {
+                            // Core emits TurnComplete before its normal finish owner retires.
+                            // Reuse must wait for this turn's history-mutation fence to clear.
+                            let finish = async {
+                                if let Some(completion) = review_session
+                                    .session
+                                    .pending_normal_turn_finish_completion(expected_turn_id)
+                                {
+                                    completion.await;
+                                }
+                            };
+                            if let Err(outcome) =
+                                run_before_review_deadline(deadline, external_cancel, finish).await
+                            {
+                                // The terminal event was consumed; do not start a second drain.
+                                return (outcome, false, false);
+                            }
                             analytics_result.time_to_first_token_ms = turn_complete
                                 .time_to_first_token_ms
                                 .and_then(|ms| u64::try_from(ms).ok());
@@ -1468,8 +1490,10 @@ async fn run_before_review_deadline<T>(
     future: impl Future<Output = T>,
 ) -> Result<T, GuardianReviewSessionOutcome> {
     tokio::select! {
+        // A delayed poll can observe the timeout and the work as ready together.
+        // Honor the deadline and cancellation before accepting that result.
+        biased;
         _ = tokio::time::sleep_until(deadline) => Err(GuardianReviewSessionOutcome::TimedOut),
-        result = future => Ok(result),
         _ = async {
             if let Some(cancel_token) = external_cancel {
                 cancel_token.cancelled().await;
@@ -1477,6 +1501,7 @@ async fn run_before_review_deadline<T>(
                 std::future::pending::<()>().await;
             }
         } => Err(GuardianReviewSessionOutcome::Aborted),
+        result = future => Ok(result),
     }
 }
 
@@ -1499,13 +1524,30 @@ async fn interrupt_and_drain_turn(
 ) -> anyhow::Result<()> {
     let _ = review_session.io.submit(Op::Interrupt).await;
 
-    tokio::time::timeout(GUARDIAN_INTERRUPT_DRAIN_TIMEOUT, async {
+    let deadline = tokio::time::Instant::now() + GUARDIAN_INTERRUPT_DRAIN_TIMEOUT;
+    tokio::time::timeout_at(deadline, async {
         loop {
             let event = review_session.io.next_event().await?;
             if !event_matches_turn(&event, expected_turn_id) {
                 continue;
             }
             review_session.admit_node_repl_evidence(&event).await;
+            if matches!(&event.msg, EventMsg::TurnComplete(_)) {
+                // Normal owner retirement shares the original event-drain budget.
+                let finish = async {
+                    if let Some(completion) = review_session
+                        .session
+                        .pending_normal_turn_finish_completion(expected_turn_id)
+                    {
+                        completion.await;
+                    }
+                };
+                run_before_review_deadline(deadline, /*external_cancel*/ None, finish)
+                    .await
+                    .map_err(|_| {
+                        anyhow!("timed out draining guardian review session after interrupt")
+                    })?;
+            }
             if matches!(
                 event.msg,
                 EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_)
@@ -1521,6 +1563,10 @@ async fn interrupt_and_drain_turn(
 }
 
 #[cfg(test)]
+#[path = "review_session_completion_tests.rs"]
+mod completion_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use codex_protocol::openai_models::AutoReviewMessages;
@@ -1531,7 +1577,7 @@ mod tests {
     use codex_protocol::protocol::TurnAbortedEvent;
     use codex_protocol::protocol::TurnCompleteEvent;
 
-    async fn test_review_session() -> (
+    pub(super) async fn test_review_session() -> (
         GuardianReviewSession,
         async_channel::Sender<Event>,
         async_channel::Receiver<Submission>,
@@ -1572,7 +1618,7 @@ mod tests {
         )
     }
 
-    fn turn_complete_event(
+    pub(super) fn turn_complete_event(
         turn_id: &str,
         last_agent_message: Option<&str>,
         time_to_first_token_ms: Option<i64>,
@@ -2045,6 +2091,46 @@ mod tests {
             outcome,
             Err(GuardianReviewSessionOutcome::TimedOut)
         ));
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_before_review_deadline_rejects_ready_result_after_deadline() {
+        let mut polled = false;
+        let outcome = run_before_review_deadline(
+            tokio::time::Instant::now() - Duration::from_secs(1),
+            /*external_cancel*/ None,
+            async {
+                polled = true;
+            },
+        )
+        .await;
+
+        assert!(matches!(
+            outcome,
+            Err(GuardianReviewSessionOutcome::TimedOut)
+        ));
+        assert!(!polled, "expired review work must not be polled");
+    }
+
+    #[tokio::test(flavor = "current_thread")]
+    async fn run_before_review_deadline_aborts_before_polling_ready_result() {
+        let cancel_token = CancellationToken::new();
+        cancel_token.cancel();
+        let mut polled = false;
+        let outcome = run_before_review_deadline(
+            tokio::time::Instant::now() + Duration::from_secs(60),
+            Some(&cancel_token),
+            async {
+                polled = true;
+            },
+        )
+        .await;
+
+        assert!(matches!(
+            outcome,
+            Err(GuardianReviewSessionOutcome::Aborted)
+        ));
+        assert!(!polled, "cancelled review work must not be polled");
     }
 
     #[tokio::test(flavor = "current_thread")]

@@ -26,11 +26,13 @@ const WS_V2_BETA_HEADER_VALUE: &str = "responses_websockets=2026-02-06";
 async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![ev_response_created("resp-1"), ev_completed("resp-1")],
-        vec![ev_response_created("resp-2"), ev_completed("resp-2")],
-    ]])
+    let server = start_websocket_server(vec![
+        vec![
+            vec![ev_response_created("warm-1"), ev_completed("warm-1")],
+            vec![ev_response_created("resp-1"), ev_completed("resp-1")],
+        ],
+        vec![vec![ev_response_created("resp-2"), ev_completed("resp-2")]],
+    ])
     .await;
 
     let mut builder = test_codex()
@@ -46,8 +48,33 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
         .with_model("gpt-5.2");
     let test = builder.build_with_websocket_server(&server).await?;
 
-    test.submit_turn("non-lite turn").await?;
     test.codex
+        .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+            text: "non-lite turn".into(),
+            text_elements: Vec::new(),
+        }]))
+        .await?;
+    let EventMsg::TurnComplete(first_turn) = wait_for_event(&test.codex, |event| {
+        matches!(event, EventMsg::TurnComplete(_))
+    })
+    .await
+    else {
+        unreachable!("predicate guarantees a turn complete event");
+    };
+    assert!(
+        first_turn.error.is_none(),
+        "initial sampling should succeed"
+    );
+    // The next model starts after the original turn's exact cleanup owner
+    // releases the slot, not only after emitting TurnComplete.
+    if let Some(completion) = test
+        .codex
+        .pending_normal_turn_finish_completion(&first_turn.turn_id)
+    {
+        tokio::time::timeout(Duration::from_secs(10), completion).await?;
+    }
+    let submission = test
+        .codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
                 text: "lite turn".into(),
@@ -59,22 +86,29 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
             }),
         )
         .await?;
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
-    })
-    .await;
+    let codex_core::TurnInputSubmission::Started { turn_id } = submission else {
+        anyhow::bail!("model switch must start a new turn: {submission:?}");
+    };
+    let EventMsg::TurnComplete(second_turn) = wait_for_event(
+        &test.codex,
+        |event| matches!(event, EventMsg::TurnComplete(event) if event.turn_id == turn_id),
+    )
+    .await
+    else {
+        unreachable!("predicate guarantees the new model's turn complete event");
+    };
+    assert!(
+        second_turn.error.is_none(),
+        "switched sampling should succeed"
+    );
 
-    assert_eq!(server.handshakes().len(), 1);
-    let connection = server.single_connection();
-    assert_eq!(connection.len(), 3);
-    let non_lite_turn = connection
-        .get(1)
-        .expect("missing non-lite turn request")
-        .body_json();
-    let lite_turn = connection
-        .get(2)
-        .expect("missing lite turn request")
-        .body_json();
+    // A model switch changes the trusted transport metadata. Reuse the
+    // prewarm for the first model, but never carry it to the switched model.
+    assert_eq!(server.handshakes().len(), 2);
+    let connections = server.connections();
+    assert_eq!(connections.iter().map(Vec::len).collect::<Vec<_>>(), [2, 1]);
+    let non_lite_turn = connections[0][1].body_json();
+    let lite_turn = connections[1][0].body_json();
 
     assert_eq!(non_lite_turn["model"].as_str(), Some("gpt-5.2"));
     assert_eq!(lite_turn["model"].as_str(), Some("gpt-5.4"));

@@ -36,6 +36,7 @@ use crate::protocol::FsReadFileParams;
 use crate::protocol::FsRemoveParams;
 use crate::protocol::FsWalkParams;
 use crate::protocol::FsWriteFileParams;
+use crate::rpc::AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE;
 
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 const METHOD_NOT_FOUND_ERROR_CODE: i64 = -32601;
@@ -510,6 +511,13 @@ fn unsupported_authorized_read() -> io::Error {
 
 fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
     match error {
+        ExecServerError::Server {
+            code: AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE,
+            ..
+        } => io::Error::new(
+            io::ErrorKind::InvalidData,
+            "authorized file read exceeds bound",
+        ),
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
@@ -518,7 +526,7 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
             ..
         } => io::Error::new(
             io::ErrorKind::InvalidInput,
-            "remote authorized file read was rejected",
+            "remote authorized file read is not permitted",
         ),
         ExecServerError::Server { code, .. } if code == NOT_FOUND_ERROR_CODE => io::Error::new(
             io::ErrorKind::NotFound,

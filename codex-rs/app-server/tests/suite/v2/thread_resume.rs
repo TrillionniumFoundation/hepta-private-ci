@@ -16,7 +16,6 @@ use app_test_support::rollout_path;
 use app_test_support::test_absolute_path;
 use app_test_support::to_response;
 use app_test_support::write_chatgpt_auth;
-use chrono::Utc;
 use codex_app_server_protocol::ActivePermissionProfile;
 use codex_app_server_protocol::ApprovalsReviewer;
 use codex_app_server_protocol::AskForApproval;
@@ -1200,10 +1199,118 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
                 extends: Some(BUILT_IN_PERMISSION_PROFILE_READ_ONLY.to_string()),
             })
         );
+        // Runtime roots identify the persisted environment. The current profile
+        // decides which permissions that environment receives after resume.
+        assert_eq!(
+            runtime_workspace_roots,
+            vec![AbsolutePathBuf::from_absolute_path(
+                previous_workspace_root.path()
+            )?]
+        );
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn cold_resume_read_only_profile_rejects_patch_to_persisted_workspace_root() -> Result<()> {
+    // The separate profile-resolution test also covers remote environments;
+    // this write probe needs its target and absence check on the same host.
+    skip_if_remote!(
+        Ok(()),
+        "apply-patch target and absence check are materialized on the host"
+    );
+
+    for history_mode in [ThreadHistoryMode::Legacy, ThreadHistoryMode::Paginated] {
+        let codex_home = TempDir::new()?;
+        let previous_workspace_root = TempDir::new()?;
+        let persisted_root = AbsolutePathBuf::from_absolute_path(previous_workspace_root.path())?;
+        let denied_path = previous_workspace_root
+            .path()
+            .join("resume-write-probe.txt");
+        let patch = format!(
+            "*** Begin Patch\n*** Add File: {}\n+must not be written\n*** End Patch\n",
+            denied_path.display()
+        );
+        let server = responses::start_mock_server().await;
+        let response_mock = responses::mount_sse_sequence(
+            &server,
+            vec![
+                create_final_assistant_message_sse_response("persisted profile")?,
+                create_final_assistant_message_sse_response("persisted environment")?,
+                create_apply_patch_sse_response(&patch, "resume-write-probe")?,
+                create_final_assistant_message_sse_response("write rejected")?,
+            ],
+        )
+        .await;
+        write_dev_permission_config(&server.uri(), codex_home.path(), ":workspace")?;
+        let thread_id = {
+            let mut mcp = TestAppServer::builder()
+                .with_codex_home(codex_home.path())
+                .without_managed_config()
+                .build_initialized()
+                .await?;
+            let thread_id = materialize_dev_permission_thread(&mut mcp, history_mode).await?;
+            timeout(
+                DEFAULT_READ_TIMEOUT,
+                mcp.start_turn_and_wait_for_completion(TurnStartParams {
+                    thread_id: thread_id.clone(),
+                    runtime_workspace_roots: Some(vec![persisted_root.clone()]),
+                    input: vec![UserInput::Text {
+                        text: "persist runtime workspace roots".to_string(),
+                        text_elements: Vec::new(),
+                    }],
+                    ..Default::default()
+                }),
+            )
+            .await??;
+            thread_id
+        };
+
+        write_dev_permission_config(&server.uri(), codex_home.path(), ":read-only")?;
+        let mut mcp = TestAppServer::builder()
+            .with_codex_home(codex_home.path())
+            .without_managed_config()
+            .build_initialized()
+            .await?;
+        let resume_id = mcp
+            .send_thread_resume_request(ThreadResumeParams {
+                thread_id: thread_id.clone(),
+                ..Default::default()
+            })
+            .await?;
+        let resumed: ThreadResumeResponse =
+            timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+        assert!(matches!(resumed.sandbox, AppSandboxPolicy::ReadOnly { .. }));
+        assert_eq!(resumed.approval_policy, AskForApproval::Never);
+        assert_eq!(resumed.runtime_workspace_roots, vec![persisted_root]);
+
+        // Do not override permissions on turn/start: the resumed effective
+        // profile itself must reject writes even to a retained runtime root.
+        let completed = timeout(
+            DEFAULT_READ_TIMEOUT,
+            mcp.start_turn_and_wait_for_completion(TurnStartParams {
+                thread_id,
+                input: vec![UserInput::Text {
+                    text: "try writing to the persisted workspace root".to_string(),
+                    text_elements: Vec::new(),
+                }],
+                ..Default::default()
+            }),
+        )
+        .await??;
+        assert_eq!(completed.turn.status, TurnStatus::Completed);
+        let output = response_mock
+            .function_call_output_text("resume-write-probe")
+            .expect("the model must receive the rejected write's tool output");
         assert!(
-            !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
-                previous_workspace_root.path(),
-            )?)
+            output.contains(
+                "patch rejected: writing is blocked by read-only sandbox; rejected by user approval settings"
+            ),
+            "expected the resumed read-only permission check to reject the patch: {output}"
+        );
+        assert!(
+            !denied_path.try_exists()?,
+            "cold resume must not restore the previous profile's write permission"
         );
     }
     Ok(())
@@ -5462,8 +5569,11 @@ fn mock_responses_config(server_uri: &str) -> MockResponsesConfig {
 
 #[allow(dead_code)]
 fn set_rollout_mtime(path: &Path, updated_at_rfc3339: &str) -> Result<()> {
-    let parsed = chrono::DateTime::parse_from_rfc3339(updated_at_rfc3339)?.with_timezone(&Utc);
-    let times = FileTimes::new().set_modified(parsed.into());
+    let parsed = codex_utils_time::Timestamp::parse_from_rfc3339(updated_at_rfc3339)?;
+    let modified = parsed.to_system_time().ok_or_else(|| {
+        anyhow::anyhow!("rollout timestamp is outside the platform file-time range")
+    })?;
+    let times = FileTimes::new().set_modified(modified);
     std::fs::OpenOptions::new()
         .append(true)
         .open(path)?

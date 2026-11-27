@@ -86,7 +86,10 @@ impl ChatWidget {
         let from_replay = render_source.is_replay();
         let replay_kind = render_source.replay_kind();
         match item {
-            ThreadItem::UserMessage { content, .. } => {
+            ThreadItem::UserMessage { id, content, .. } => {
+                if !from_replay {
+                    self.note_safety_retry_user_item(&turn_id, id);
+                }
                 self.on_committed_user_message(&content, from_replay);
             }
             ThreadItem::AgentMessage {

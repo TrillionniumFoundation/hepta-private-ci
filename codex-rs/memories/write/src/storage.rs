@@ -160,7 +160,7 @@ pub fn rollout_summary_file_stem(memory: &Stage1Output) -> String {
 
 fn rollout_summary_file_stem_from_parts(
     thread_id: codex_protocol::ThreadId,
-    source_updated_at: chrono::DateTime<chrono::Utc>,
+    source_updated_at: codex_utils_time::Timestamp,
     rollout_slug: Option<&str>,
 ) -> String {
     const ROLLOUT_SLUG_MAX_LEN: usize = 60;
@@ -175,14 +175,14 @@ fn rollout_summary_file_stem_from_parts(
                 .get_timestamp()
                 .and_then(|uuid_timestamp| {
                     let (seconds, nanos) = uuid_timestamp.to_unix();
-                    i64::try_from(seconds).ok().and_then(|secs| {
-                        chrono::DateTime::<chrono::Utc>::from_timestamp(secs, nanos)
-                    })
+                    i64::try_from(seconds)
+                        .ok()
+                        .and_then(|secs| codex_utils_time::Timestamp::from_timestamp(secs, nanos))
                 })
                 .unwrap_or(source_updated_at);
             let short_hash_seed = (thread_uuid.as_u128() & 0xFFFF_FFFF) as u32;
             (
-                timestamp.format("%Y-%m-%dT%H-%M-%S").to_string(),
+                timestamp.format_utc(codex_utils_time::UtcFormat::Filename),
                 short_hash_seed,
             )
         }
@@ -194,7 +194,7 @@ fn rollout_summary_file_stem_from_parts(
                     .wrapping_add(u32::from(byte));
             }
             (
-                source_updated_at.format("%Y-%m-%dT%H-%M-%S").to_string(),
+                source_updated_at.format_utc(codex_utils_time::UtcFormat::Filename),
                 short_hash_seed,
             )
         }

@@ -1,0 +1,350 @@
+{
+  "crate": "oauth2",
+  "version": "5.0.0",
+  "registry_archive_sha256": "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d",
+  "cargo_lock_checksum": "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d",
+  "source": "https://crates.io/api/v1/crates/oauth2/5.0.0/download",
+  "upstream_vcs": {
+    "git": {
+      "sha1": "f3424b4b2190c83c6d031fdc71eed2351d49e0df"
+    },
+    "path_in_vcs": ""
+  },
+  "excluded_packaging_files": [
+    "Cargo.lock",
+    "Cargo-1.65.lock",
+    ".gitignore",
+    ".cargo_vcs_info.json",
+    ".github/FUNDING.yml",
+    ".github/workflows/main.yml"
+  ],
+  "semantic_patch": "HEPTA-TIME-MIGRATION.patch.gz",
+  "semantic_patch_sha256": "6a765f56532d570d2c2c2cabcd2c8868e50912a5ebd9dcfa7303760b654bade5",
+  "formatting_command": "just fmt (repository imports_granularity=Item)",
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "upstream_sha256": "534e3ece9c871d8e93f2695db3e2a2a9e70a8f7ee2b4b8b3f451c059270814e4",
+      "adapted_before_repository_formatting_sha256": "e6c3397ff59e2c733e685b56ff2f02ee99d56c5eff08bfb8b7b021236869757c",
+      "proposed_sha256": "e6c3397ff59e2c733e685b56ff2f02ee99d56c5eff08bfb8b7b021236869757c",
+      "proposed_bytes": 2790,
+      "semantic_change": true,
+      "repository_format_changed": false
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "upstream_sha256": "d099f68920dddb291377f334bd79bafac76babbd992ef7e98bd4332d9905237f",
+      "adapted_before_repository_formatting_sha256": "378cb7b124864a9414ffa1a8d5e5a61cab63748a7d162a07b0d6d39928db6a95",
+      "proposed_sha256": "378cb7b124864a9414ffa1a8d5e5a61cab63748a7d162a07b0d6d39928db6a95",
+      "proposed_bytes": 2000,
+      "semantic_change": true,
+      "repository_format_changed": false
+    },
+    {
+      "path": "LICENSE-APACHE",
+      "upstream_sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "adapted_before_repository_formatting_sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "proposed_sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "proposed_bytes": 10847,
+      "semantic_change": false,
+      "repository_format_changed": false
+    },
+    {
+      "path": "LICENSE-MIT",
+      "upstream_sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+      "adapted_before_repository_formatting_sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+      "proposed_sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+      "proposed_bytes": 1057,
+      "semantic_change": false,
+      "repository_format_changed": false
+    },
+    {
+      "path": "README.md",
+      "upstream_sha256": "ce176d0967895ca13a601e0ae56eb2bbb44db3dde396c13030877a60d4fad3db",
+      "adapted_before_repository_formatting_sha256": "ce176d0967895ca13a601e0ae56eb2bbb44db3dde396c13030877a60d4fad3db",
+      "proposed_sha256": "ce176d0967895ca13a601e0ae56eb2bbb44db3dde396c13030877a60d4fad3db",
+      "proposed_bytes": 1312,
+      "semantic_change": false,
+      "repository_format_changed": false
+    },
+    {
+      "path": "UPGRADE.md.gz",
+      "upstream_sha256": "cea2935ee38a039d3254bd9152072c07e9399d755d8236eb554351b4232a9272",
+      "adapted_before_repository_formatting_sha256": "cea2935ee38a039d3254bd9152072c07e9399d755d8236eb554351b4232a9272",
+      "proposed_sha256": "6dc8f0b7bfe7b39f79d6e7d6e4d51ee4e3dfe89123cea93b6eec3423381673ba",
+      "proposed_bytes": 4212,
+      "semantic_change": false,
+      "repository_format_changed": false,
+      "upstream_path": "UPGRADE.md",
+      "storage_encoding": "gzip",
+      "uncompressed_sha256": "cea2935ee38a039d3254bd9152072c07e9399d755d8236eb554351b4232a9272",
+      "uncompressed_bytes": 12112
+    },
+    {
+      "path": "examples/github.rs",
+      "upstream_sha256": "aa5c64c342f1852da8fc85eb5a9b46e736239c73131af335c508dfe110c3871f",
+      "adapted_before_repository_formatting_sha256": "aa5c64c342f1852da8fc85eb5a9b46e736239c73131af335c508dfe110c3871f",
+      "proposed_sha256": "25df5d273a310753081124890f4e8cd8bb08ec42144bba36616539bfb1c3881c",
+      "proposed_bytes": 5123,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/github_async.rs",
+      "upstream_sha256": "be241134519e81ad1d546ed5ec93923b1892fa03cc585f27feaa56b45b918bd9",
+      "adapted_before_repository_formatting_sha256": "be241134519e81ad1d546ed5ec93923b1892fa03cc585f27feaa56b45b918bd9",
+      "proposed_sha256": "53fca9c35bce76333aed53ebe10bdfb687e2e4b5f08c94b6dcb8a496a0b18f79",
+      "proposed_bytes": 5336,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/google.rs",
+      "upstream_sha256": "73945b85ee074fd03688cf7b5a64b0dc8e1c29bd0dbba9b70147ab45ae82ad1d",
+      "adapted_before_repository_formatting_sha256": "73945b85ee074fd03688cf7b5a64b0dc8e1c29bd0dbba9b70147ab45ae82ad1d",
+      "proposed_sha256": "7525e092ac451d0ba6451b308f690d96889b5a542bb71ef0c17eecac96320352",
+      "proposed_bytes": 5648,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/google_devicecode.rs",
+      "upstream_sha256": "43e05034eba4c626b82238ca5a8287a3486ff2392be58c5dc1e3b3b687bee46f",
+      "adapted_before_repository_formatting_sha256": "43e05034eba4c626b82238ca5a8287a3486ff2392be58c5dc1e3b3b687bee46f",
+      "proposed_sha256": "5d7ad21d9e4e659e64c8aed72dfab68fd9b5d555efb4d1d5e83238455d554b81",
+      "proposed_bytes": 3377,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/letterboxd.rs",
+      "upstream_sha256": "0e0eb35495c7a0a45cf15da4a64f901e31b25d7f385304d48affb44f0d3f99c0",
+      "adapted_before_repository_formatting_sha256": "0e0eb35495c7a0a45cf15da4a64f901e31b25d7f385304d48affb44f0d3f99c0",
+      "proposed_sha256": "9b7748d6db9dba302e2b93d3c4537124471d08362f1a95f8c3bce8015b947030",
+      "proposed_bytes": 5632,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/microsoft_devicecode_common_user.rs",
+      "upstream_sha256": "18e7d4d9e760293ece42c3e7ea66bf7056e1c39c1ad3555f7fec9678030f2434",
+      "adapted_before_repository_formatting_sha256": "18e7d4d9e760293ece42c3e7ea66bf7056e1c39c1ad3555f7fec9678030f2434",
+      "proposed_sha256": "c07e0ac309007b7adffe108af4e99582a043d77782cd9590468830fc67fae001",
+      "proposed_bytes": 1628,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/microsoft_devicecode_tenant_user.rs",
+      "upstream_sha256": "1083ab35ea2cfb276476973b192f092208df7347ab39cc3091895836d6c4ef83",
+      "adapted_before_repository_formatting_sha256": "1083ab35ea2cfb276476973b192f092208df7347ab39cc3091895836d6c4ef83",
+      "proposed_sha256": "6385979881af037ab042799248e6dec025ef5b576981b8cea3e006da9e4c30c3",
+      "proposed_bytes": 1885,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/msgraph.rs",
+      "upstream_sha256": "b52fb628ba00ea6d26a2a2d0c864a00c3875b61de5d819153857d48c08527041",
+      "adapted_before_repository_formatting_sha256": "b52fb628ba00ea6d26a2a2d0c864a00c3875b61de5d819153857d48c08527041",
+      "proposed_sha256": "6d6201927077296afdc0584e178f768092eb535687f5f65263775f38434d8fee",
+      "proposed_bytes": 5667,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "examples/wunderlist.rs",
+      "upstream_sha256": "6e3c322345444efa2a6a1fe9e635867c3b6693a8566077453a3bfe44fd090d85",
+      "adapted_before_repository_formatting_sha256": "6e3c322345444efa2a6a1fe9e635867c3b6693a8566077453a3bfe44fd090d85",
+      "proposed_sha256": "cd822aa149871ae2d4962c62f9001b20c83c3b823e14feaf6060c7ee648f48e5",
+      "proposed_bytes": 8877,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/basic.rs",
+      "upstream_sha256": "962b19e5dcfd7ae762e4be1afe97d9599c14716a8c77c4110627204dffd866e5",
+      "adapted_before_repository_formatting_sha256": "962b19e5dcfd7ae762e4be1afe97d9599c14716a8c77c4110627204dffd866e5",
+      "proposed_sha256": "5c5f356390693a8d8ddedd9160b8a48a4a8483b8a482419486e72bc535d7efb0",
+      "proposed_bytes": 6840,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/client.rs",
+      "upstream_sha256": "e80047ff1a4a9a76ea72ea1efdf96eddb608c1477c3314c9a12d06ef8246f5f2",
+      "adapted_before_repository_formatting_sha256": "e80047ff1a4a9a76ea72ea1efdf96eddb608c1477c3314c9a12d06ef8246f5f2",
+      "proposed_sha256": "f33786218d9a27387a44e7237385e50c08a53e7ee96b5d27ab3f23518d8a8fdc",
+      "proposed_bytes": 42924,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/code.rs",
+      "upstream_sha256": "e22e57e04ffbad48c6205d77ebdacc69a1e81235f2fbbff38c35747fe5c0cbc2",
+      "adapted_before_repository_formatting_sha256": "e22e57e04ffbad48c6205d77ebdacc69a1e81235f2fbbff38c35747fe5c0cbc2",
+      "proposed_sha256": "ffe7cb05c2767654596316010ed4c596346a3537cef962dbcf4300edf9f295a1",
+      "proposed_bytes": 12621,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/curl_client.rs",
+      "upstream_sha256": "ff86e959e3f68e3bb295075244c888d80543471c9aa198e0edcb709bb707f4d2",
+      "adapted_before_repository_formatting_sha256": "ff86e959e3f68e3bb295075244c888d80543471c9aa198e0edcb709bb707f4d2",
+      "proposed_sha256": "689a98c4dc79d19f9cc0916f69d2e7ea1555f6e8f7b095e9bda1778506b92d58",
+      "proposed_bytes": 2640,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/devicecode.rs",
+      "upstream_sha256": "259d4190d435e3999a07b1a3440a10d4105dbf9837ecc86d70e910f95a5ec09b",
+      "adapted_before_repository_formatting_sha256": "29056efe5a18c6187620a8f7696388e11434ef3ec445be6c0d326ac74f294403",
+      "proposed_sha256": "121b4cfd1e25d583d560b4aa00aa42acc24a2a6d0f7b055eb6673e2db71e9edc",
+      "proposed_bytes": 45225,
+      "semantic_change": true,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/devicecode_time_tests.rs",
+      "upstream_sha256": null,
+      "adapted_before_repository_formatting_sha256": "c7db6244d491dc5fd9b7aae7e718fe463e936bd5032387b6eb51646aa8ef82c4",
+      "proposed_sha256": "c7db6244d491dc5fd9b7aae7e718fe463e936bd5032387b6eb51646aa8ef82c4",
+      "proposed_bytes": 3282,
+      "semantic_change": true,
+      "repository_format_changed": false
+    },
+    {
+      "path": "src/endpoint.rs",
+      "upstream_sha256": "4ff23ce2997b3165b633a86eb2e0d78860a596dfd3a30abd1a8c5c60136bbd24",
+      "adapted_before_repository_formatting_sha256": "4ff23ce2997b3165b633a86eb2e0d78860a596dfd3a30abd1a8c5c60136bbd24",
+      "proposed_sha256": "7ade4cf03b74ab6a223baed395f3fa6a7dfddfb0029bbe3e3aaa7ed365e1db76",
+      "proposed_bytes": 8862,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/error.rs",
+      "upstream_sha256": "17101aaf0e968f96004595c3e0dde5a78eb5b1581b7009745dd7b7b637a46545",
+      "adapted_before_repository_formatting_sha256": "17101aaf0e968f96004595c3e0dde5a78eb5b1581b7009745dd7b7b637a46545",
+      "proposed_sha256": "ebaa69bb114cc9bd51d34eff66ca622f98f85bd87e200d449faa2e3dd7a36ef1",
+      "proposed_bytes": 6664,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/helpers.rs",
+      "upstream_sha256": "f566dd190559e17d4aaba65cf581ce0820fcba538c79d6d962258ed0643c68a7",
+      "adapted_before_repository_formatting_sha256": "f566dd190559e17d4aaba65cf581ce0820fcba538c79d6d962258ed0643c68a7",
+      "proposed_sha256": "f5ffaf8d00a227346e227d92685605d23ad14b4aa3c2ef5768f29ce751e0e2f3",
+      "proposed_bytes": 12032,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/introspection.rs",
+      "upstream_sha256": "0a517a1e18f78fbb8336bd7fc1e2025d1e11101d862f82191939036aab73b41b",
+      "adapted_before_repository_formatting_sha256": "784d9cdc4a209c6173638daef8eeab155de1ad6760f0fd2a114ca342c64a50a1",
+      "proposed_sha256": "fd620787a37a299a118874125501f8bd81eef918dc8ceec34f09b9cc885d6a84",
+      "proposed_bytes": 21967,
+      "semantic_change": true,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/lib.rs",
+      "upstream_sha256": "584e3a02899a65cf7c0b0e9eb03422700a2b43a3bd6987ab2db3906152ebcf62",
+      "adapted_before_repository_formatting_sha256": "222f7af7c41bb8a59d3ba964a02d5fa04165ad6d4ed58d09f528239a20d5cc0d",
+      "proposed_sha256": "11b56557ebed008dd612e41205704c224fffb5a35c70761ddb84af8040cc02db",
+      "proposed_bytes": 23885,
+      "semantic_change": true,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/reqwest_client.rs",
+      "upstream_sha256": "a5c96e2a7608f3cab349876f50fe78aaaf03fc048ce7f8bed3d562101b839bec",
+      "adapted_before_repository_formatting_sha256": "a5c96e2a7608f3cab349876f50fe78aaaf03fc048ce7f8bed3d562101b839bec",
+      "proposed_sha256": "981a788e5991c5ef4059e8f8c7eb45e6057a26b5390ebc3a8c059f0ecb7e28e2",
+      "proposed_bytes": 2133,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/revocation.rs",
+      "upstream_sha256": "793f79ccce6fcb2f78feffe3e4bd20d74acfafcb699f137d1867688c9e6c619c",
+      "adapted_before_repository_formatting_sha256": "793f79ccce6fcb2f78feffe3e4bd20d74acfafcb699f137d1867688c9e6c619c",
+      "proposed_sha256": "38773ee876db434647110a68d98ce498740e8f58e68dc0b123096ca779468dce",
+      "proposed_bytes": 22509,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/tests.rs",
+      "upstream_sha256": "37af053ccb0fd6e939ecf1d96d72a6bbba4db020e71392e884c1b46ceb6c8410",
+      "adapted_before_repository_formatting_sha256": "37af053ccb0fd6e939ecf1d96d72a6bbba4db020e71392e884c1b46ceb6c8410",
+      "proposed_sha256": "663877b94be1e0caf670bb75d8ac76cdf8034cc1f14485a7ae4519fd95823ad1",
+      "proposed_bytes": 11669,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/timestamp.rs",
+      "upstream_sha256": null,
+      "adapted_before_repository_formatting_sha256": "58e1011bb47e7c695107df5faf82ee5ab3fb36f9a995f6b6ec4a3b1d86f67118",
+      "proposed_sha256": "8421bb0f47e5994ffa4540b3d84e20de79b625216a98b62b9a8a338d1f0446b3",
+      "proposed_bytes": 2101,
+      "semantic_change": true,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/timestamp_tests.rs",
+      "upstream_sha256": null,
+      "adapted_before_repository_formatting_sha256": "aba60447b7a3c168df636e36cdfbbc21f3a47104abfd651b4a3c0f6ed469f86b",
+      "proposed_sha256": "073ea070e3bc50079fd8610bfdf72169a7bbbe0e3699bd715bf84f727e493aff",
+      "proposed_bytes": 3207,
+      "semantic_change": true,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/token/mod.rs",
+      "upstream_sha256": "152205e3e1e46634e996a212b622a82adbc004826117adc0af9e63ca66de860a",
+      "adapted_before_repository_formatting_sha256": "152205e3e1e46634e996a212b622a82adbc004826117adc0af9e63ca66de860a",
+      "proposed_sha256": "1689a71bbc8a3f9989ab9641263e3aa4d3e5698eb186f78085d7c62e98430be4",
+      "proposed_bytes": 24881,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/token/tests.rs",
+      "upstream_sha256": "027ed2000cdf85ac85234dfbaa6b021474368db35acc36e74ddf950e2f492e7c",
+      "adapted_before_repository_formatting_sha256": "027ed2000cdf85ac85234dfbaa6b021474368db35acc36e74ddf950e2f492e7c",
+      "proposed_sha256": "1e8f343d43417c749c9d69d5de38a18d0d47014dcb9b312d7eca5b9f05f9f7af",
+      "proposed_bytes": 44629,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/types.rs",
+      "upstream_sha256": "69383d90256e2d78344854612bf80011d80a7a062b0df6c00327bd89d8b4f40a",
+      "adapted_before_repository_formatting_sha256": "69383d90256e2d78344854612bf80011d80a7a062b0df6c00327bd89d8b4f40a",
+      "proposed_sha256": "8fd9edc27fae2fe96aaefa27c01aa815b6f28d42ce47b6eb62996c8c632987ec",
+      "proposed_bytes": 21677,
+      "semantic_change": false,
+      "repository_format_changed": true
+    },
+    {
+      "path": "src/ureq_client.rs",
+      "upstream_sha256": "b6552e7940e049d1d4ca0e88db124c893ab4c0e76bfbccc593743cd91af98685",
+      "adapted_before_repository_formatting_sha256": "b6552e7940e049d1d4ca0e88db124c893ab4c0e76bfbccc593743cd91af98685",
+      "proposed_sha256": "401d4a37d1a48ca2a8304ab9f81aea591e939bcf71ddd2d28b0e0c73005066dc",
+      "proposed_bytes": 1949,
+      "semantic_change": false,
+      "repository_format_changed": true
+    }
+  ],
+  "semantic_patch_encoding": "gzip",
+  "semantic_patch_uncompressed_sha256": "38e17f1eb2b20fc9950456bf9d91015c46d3ab2bc31592a2def5972b9dafe09b",
+  "semantic_patch_uncompressed_bytes": 19606,
+  "semantic_patch_bytes": 5072,
+  "raw_artifact_storage_note": "Lossless gzip preserves required semantic-diff context whitespace and the exact upstream upgrade notes. Decompress the named carriers before inspection or applying the patch. No compiled upstream or adapted Rust source bytes were changed by this storage transformation."
+}

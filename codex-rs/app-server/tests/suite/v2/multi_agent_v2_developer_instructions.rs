@@ -621,6 +621,9 @@ async fn cold_resume_preserves_effective_developer_instructions_for_worker(
         ),
         None => "[features.multi_agent_v2]\nenabled = true".to_string(),
     };
+    // This fixture checks recorded instructions, not the production wait budget.
+    // If the worker finishes before the wait subscribes, no new activity will wake it.
+    feature_config.push_str("\nmin_wait_timeout_ms = 1000\ndefault_wait_timeout_ms = 1000");
     let codex_home = TempDir::new()?;
     let role_path = codex_home.path().join("worker.toml");
     if let Some(agent_type) = agent_type {

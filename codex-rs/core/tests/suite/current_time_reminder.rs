@@ -4,11 +4,10 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
+use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
-use chrono::DateTime;
-use chrono::Local;
-use chrono::Utc;
+use codex_core::CodexThread;
 use codex_core::SleepFuture;
 use codex_core::TimeFuture;
 use codex_core::TimeProvider;
@@ -17,9 +16,12 @@ use codex_core::config::CurrentTimeReminderConfig;
 use codex_features::CurrentTimeReminderDeliveryMode;
 use codex_features::CurrentTimeSource;
 use codex_features::Feature;
+use codex_history::RolloutItem;
+use codex_history::RolloutLine;
 use codex_model_provider_info::built_in_model_providers;
 use codex_protocol::ThreadId;
 use codex_protocol::models::PermissionProfile;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::CodexErrorInfo;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
@@ -69,7 +71,7 @@ impl TimeProvider for TestTimeProvider {
     fn current_time(&self, _thread_id: ThreadId) -> TimeFuture<'_> {
         let timestamp = self.current_time.fetch_add(60, Ordering::Relaxed);
         Box::pin(async move {
-            Ok(DateTime::<Utc>::from_timestamp(timestamp, 0)
+            Ok(codex_utils_time::Timestamp::from_timestamp(timestamp, 0)
                 .expect("test timestamp should be valid"))
         })
     }
@@ -99,6 +101,27 @@ fn current_time_reminders(request: &ResponsesRequest) -> Vec<String> {
         .into_iter()
         .filter(|text| text.starts_with("<current_time_reminder>"))
         .collect()
+}
+
+async fn rollout_has_kind(codex: &CodexThread, kind: &str) -> Result<bool> {
+    codex.ensure_rollout_materialized().await;
+    codex.flush_rollout().await?;
+    let path = codex.rollout_path().context("rollout path")?;
+    let rollout = tokio::fs::read_to_string(path).await?;
+    for line in rollout.lines() {
+        let line = serde_json::from_str::<RolloutLine>(line)?;
+        if let RolloutItem::ResponseItem(envelope) = line.item
+            && let ResponseItem::Message {
+                internal_chat_message_metadata_passthrough: Some(metadata),
+                ..
+            } = envelope.item
+            && let Some([content_kind]) = metadata.content_item_kinds.as_deref()
+            && content_kind.0 == kind
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 fn enable_current_time_reminder(
@@ -147,18 +170,18 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
         .store(FIRST_TIME_UNIX_SECONDS + 86_400, Ordering::Relaxed);
     test.submit_turn("second simulated day").await?;
 
+    assert!(rollout_has_kind(&test.codex, "environments.environment_context").await?);
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
     for (request, timestamp) in requests
         .iter()
         .zip([FIRST_TIME_UNIX_SECONDS, FIRST_TIME_UNIX_SECONDS + 86_400])
     {
-        assert!(request.has_content_kinds(&["environments.environment_context"]));
-        let current_date = DateTime::<Utc>::from_timestamp(timestamp, 0)
+        // The third-party fixture receives the text but not internal metadata.
+        assert!(!request.has_content_kinds(&["environments.environment_context"]));
+        let current_date = codex_utils_time::Timestamp::from_timestamp(timestamp, 0)
             .expect("test timestamp should be valid")
-            .with_timezone(&Local)
-            .format("%Y-%m-%d")
-            .to_string();
+            .format_local(codex_utils_time::LocalFormat::Date);
         assert!(request.message_input_texts("user").iter().any(|text| {
             text.contains("<environment_context>")
                 && text.contains(&format!("<current_date>{current_date}</current_date>"))
@@ -343,7 +366,8 @@ async fn system_time_source_adds_current_time_reminder() -> Result<()> {
     test.submit_turn("what time is it?").await?;
 
     let request = responses.single_request();
-    assert!(request.has_content_kinds(&["current_time.reminder"]));
+    assert!(rollout_has_kind(&test.codex, "current_time.reminder").await?);
+    assert!(!request.has_content_kinds(&["current_time.reminder"]));
     let reminders = current_time_reminders(&request);
     assert_eq!(reminders.len(), 1);
     assert_regex_match(

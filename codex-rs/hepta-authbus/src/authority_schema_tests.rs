@@ -26,7 +26,18 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             // handle closes. Each mutation and owner reopen remains real and
             // isolated, without repeating all migration DDL for every trigger.
             std::fs::copy(&fixture_path, &path).unwrap();
-            std::fs::File::open(&path).unwrap().sync_all().unwrap();
+            // Flush the checkpointed copy through a writable file handle.
+            // Windows rejects FlushFileBuffers on the read-only handle from
+            // File::open even though the fixture file itself is writable.
+            #[cfg(windows)]
+            let checkpointed = std::fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&path)
+                .unwrap();
+            #[cfg(not(windows))]
+            let checkpointed = std::fs::File::open(&path).unwrap();
+            checkpointed.sync_all().unwrap();
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
             // These identifiers come from the freshly migrated reference.
             // Quote and escape them before forming identifier-only DDL; no
