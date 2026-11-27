@@ -35,6 +35,11 @@ pub(super) async fn host_device_kind() -> Option<&'static str> {
     use tokio::process::Command;
     use tokio::sync::OnceCell;
 
+    #[cfg(test)]
+    if let Some(kind) = fixture::current() {
+        return kind;
+    }
+
     static HOST_DEVICE_KIND: OnceCell<Option<&'static str>> = OnceCell::const_new();
 
     HOST_DEVICE_KIND
@@ -66,8 +71,17 @@ pub(super) async fn host_device_kind() -> Option<&'static str> {
 
 #[cfg(not(target_os = "macos"))]
 pub(super) async fn host_device_kind() -> Option<&'static str> {
+    #[cfg(test)]
+    if let Some(kind) = fixture::current() {
+        return kind;
+    }
+
     None
 }
+
+#[cfg(test)]
+#[path = "host_device_fixture.rs"]
+pub(super) mod fixture;
 
 #[cfg(test)]
 #[path = "host_device_tests.rs"]

@@ -2547,21 +2547,26 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     let (transport_event_tx, _transport_event_rx) =
         mpsc::channel::<TransportEvent>(CHANNEL_CAPACITY);
     let shutdown_token = CancellationToken::new();
-    let (remote_task, remote_handle) = start_remote_control(
-        RemoteControlStartConfig {
-            remote_control_url,
-            installation_id: TEST_INSTALLATION_ID.to_string(),
-            policy: RemoteControlPolicy::Allowed,
-        },
-        Some(state_db.clone()),
-        remote_control_auth_manager_with_home(&codex_home),
-        transport_event_tx,
-        shutdown_token.clone(),
-        /*app_server_client_name_rx*/ None,
-        RemoteControlStartupMode::EnabledEphemeral,
+    let host_device_fixture = host_device::fixture::HostDeviceKindFixture::from_profile(
+        br#"{"SPHardwareDataType":[{"machine_name":"Mac mini"}]}"#,
     )
-    .await
-    .expect("remote control should start");
+    .expect("fixed host device profile should parse");
+    let (remote_task, remote_handle) = host_device_fixture
+        .scope(start_remote_control(
+            RemoteControlStartConfig {
+                remote_control_url,
+                installation_id: TEST_INSTALLATION_ID.to_string(),
+                policy: RemoteControlPolicy::Allowed,
+            },
+            Some(state_db.clone()),
+            remote_control_auth_manager_with_home(&codex_home),
+            transport_event_tx,
+            shutdown_token.clone(),
+            /*app_server_client_name_rx*/ None,
+            RemoteControlStartupMode::EnabledEphemeral,
+        ))
+        .await
+        .expect("remote control should start");
     let mut status_rx = remote_handle.status_receiver();
 
     let refresh_request = accept_http_request_observed(
@@ -2605,6 +2610,13 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
         Some(&stale_enrollment.server_id)
     );
     assert_eq!(
+        websocket_request
+            .headers
+            .get(host_device::REMOTE_CONTROL_HOST_DEVICE_KIND_HEADER)
+            .map(String::as_str),
+        Some("mac_mini")
+    );
+    assert_eq!(
         websocket_request.headers.get("authorization"),
         Some(&format!(
             "Bearer {TEST_REFRESHED_REMOTE_CONTROL_SERVER_TOKEN}"
@@ -2640,6 +2652,13 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     assert_eq!(
         handshake_request.headers.get("x-codex-server-id"),
         Some(&stale_enrollment.server_id)
+    );
+    assert_eq!(
+        handshake_request
+            .headers
+            .get(host_device::REMOTE_CONTROL_HOST_DEVICE_KIND_HEADER)
+            .map(String::as_str),
+        Some("mac_mini")
     );
     assert_eq!(
         handshake_request.headers.get("authorization"),

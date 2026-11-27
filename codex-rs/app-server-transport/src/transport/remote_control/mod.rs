@@ -1005,7 +1005,7 @@ pub async fn start_remote_control(
     let installation_id_for_log = installation_id.clone();
     let server_name_for_log = server_name.clone();
     let shutdown_token_for_log = shutdown_token.clone();
-    let join_handle = tokio::spawn(async move {
+    let websocket_task = async move {
         info!(
             remote_control_url = %remote_control_url_for_log,
             installation_id = %installation_id_for_log,
@@ -1064,7 +1064,10 @@ pub async fn start_remote_control(
                 std::panic::resume_unwind(panic);
             }
         }
-    });
+    };
+    #[cfg(test)]
+    let websocket_task = host_device::fixture::inherit_for_controller(websocket_task);
+    let join_handle = tokio::spawn(websocket_task);
 
     Ok((
         join_handle,
