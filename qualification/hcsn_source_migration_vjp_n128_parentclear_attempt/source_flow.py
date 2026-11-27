@@ -482,4 +482,3 @@ def exact_fraction_transpose(snapshot, amplitude_vjp):
     probability.extend(amplitude[128:, 0].tolist())
     content.extend(amplitude[128:, 1:].tolist())
     return np.asarray(probability), np.asarray(content)
-

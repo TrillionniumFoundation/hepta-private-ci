@@ -115,6 +115,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261127/hcsn-frozen-vjp-sources/raw-evidence-storage.json": (
+        "e6d0268d8f0338066a9d6c7549656e913a864fdc2dae2013c16fe7ee1f54d080"
+    ),
     "qa/repository-consolidation/20261127/hcsn-historical-source-pins/raw-evidence-storage.json": (
         "91b0fa2237b9db16b90539be072c553479e5d81352f3b12889b54f5576412099"
     ),
@@ -248,6 +251,45 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_source_migration_vjp_n128_parentclear_attempt/REQUEST.json": (
+        "517e444413b5d1156399b68afdfe9294f7c788fd00c750874deda689ae7d66c2"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_parentclear_attempt/admission_inspector.py": (
+        "520a4458a06c5af9029b840d5eca2a6550cade26307f8e59cb6959dc4884ae3f"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_parentclear_attempt/native_probe.py": (
+        "1d6ab9db71ec8220da4482942bcaf081bc2740da963a82e40d9497f145c7643d"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_parentclear_attempt/source_flow.py": (
+        "dcd25a833f5be575a3ea295d35026134301d5cbbfdcc36dd5ea0451ba03624de"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_scalepreserve_attempt/REQUEST.json": (
+        "39df57dd725bce6dd4701f0f5e880dda1e58c751b034caac138d739aa505b334"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_scalepreserve_attempt/admission_inspector.py": (
+        "d43c4d0d6cc8ec6abbe89f71a72eb183c3dd30241e4000dcccb0002645943c91"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_scalepreserve_attempt/native_probe.py": (
+        "e97e17bce2a4a5af49f3a648422cf07e87fa95d333d04f94ec614c76dc0b2514"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_scalepreserve_attempt/source_flow.py": (
+        "c49d0389f3bba905b32d62f2a21daf5855a2e5f53dabdcf9bd8e374c0be68923"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_stretch_attempt/FORENSIC.json": (
+        "719a84dc583cd492d9d52635d3cb17943659e3d244697308f9f07a85d1ce140d"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_stretch_attempt/REQUEST.json": (
+        "5849283db0a0f69ec4a12d44622f589c32bfb455336ef893a664ebe504bb3d81"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_stretch_attempt/admission_inspector.py": (
+        "771a95d944d602a403e960335f8e4c0accf70657d5d236dd97097f2eb852d5ec"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_stretch_attempt/native_probe.py": (
+        "810d4de44d4a38fbefa5423fe07632bfcbfa9a693e2878f50ad719f6c54dfb3a"
+    ),
+    "qualification/hcsn_source_migration_vjp_n128_stretch_attempt/source_flow.py": (
+        "98aa4dc5e9e1ab6a6769eb6407ab95b6c4489d0bdd01a9add11a320e80989cb9"
+    ),
     "qualification/hcsn_differentiable/evidence/p0p5-20261110/p2/hcsn-effective32-derived-summary.json": (
         "305c456f257b86b3a07337496cbee438bd317f89766577fa77e0f72e651416d0"
     ),
