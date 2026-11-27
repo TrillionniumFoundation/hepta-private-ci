@@ -653,6 +653,11 @@ ignored = [
 # across local dev builds.
 debug = "limited"
 
+# StoreCipher instantiates PBKDF2-HMAC-SHA256 here. Keep its fixed 200,000-round
+# key derivation optimized in development and inherited test profiles too.
+[profile.dev.package.matrix-sdk-store-encryption]
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0

@@ -1,0 +1,83 @@
+{
+  "base": "5766f10e806dfaaae2538aeef7db2719cb734494",
+  "candidate_qualified": false,
+  "changed_source": {
+    ".github/workflows/hia-windows-matrix-cipher.yml": "055b99f6e54059f9606df2e606522b63cef56fc10bd47d896286dcd811c33238",
+    "MODULE.bazel": "04e040030979e158f0ad54f9a76f8cc7963ae03940a5d672eadcfefa377ced88",
+    "codex-rs/Cargo.toml": "17c155d6a00013d2b64e862ee6ae2b2dc4e50c5623f8780f648ddbc61019af9a"
+  },
+  "gates": {
+    "diffcheck": {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "bytes": 0,
+      "cwd": "/Users/qianqi/work/codex-matrix-cipher-codegen-20261127-2ac5/source",
+      "label": "diffcheck",
+      "returncode": 0,
+      "seconds": 0.01578500005416572,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fmt": {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "bytes": 0,
+      "cwd": "/Users/qianqi/work/codex-matrix-cipher-codegen-20261127-2ac5/source/codex-rs",
+      "label": "fmt",
+      "returncode": 0,
+      "seconds": 0.1492038748692721,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "module-lock-check": {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "bazel-lock-check"
+      ],
+      "bytes": 715,
+      "cwd": "/Users/qianqi/work/codex-matrix-cipher-codegen-20261127-2ac5/source",
+      "label": "module-lock-check",
+      "returncode": 0,
+      "seconds": 2.3332132501527667,
+      "sha256": "3dfc3be51b4e9ea91ed624f0e94da1f54af6159436c140e7b11f5c4173fc38c7"
+    },
+    "module-lock-update": {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "bazel-lock-update"
+      ],
+      "bytes": 1308,
+      "cwd": "/Users/qianqi/work/codex-matrix-cipher-codegen-20261127-2ac5/source",
+      "label": "module-lock-update",
+      "returncode": 0,
+      "seconds": 4.847805958008394,
+      "sha256": "b6c45f52bc49dd51b7cd89e6d809e26007aebfe6b2de00d7fee23fb86211c592"
+    }
+  },
+  "lock_after": {
+    "MODULE.bazel.lock": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+    "codex-rs/Cargo.lock": "3f314e2537b62aee2e303ff51f4ac29bb88afd3b73d05c6f175a35916559ef85"
+  },
+  "lock_before": {
+    "MODULE.bazel.lock": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+    "codex-rs/Cargo.lock": "3f314e2537b62aee2e303ff51f4ac29bb88afd3b73d05c6f175a35916559ef85"
+  },
+  "mac_original_package_status": "RUNNING_ORIGINAL_JUST_TEST",
+  "original_common": "827a77079cb5937ea9236381491163896cf16ed6",
+  "original_failed_job": 140594591559,
+  "original_failed_run": 46025167575,
+  "original_failure_log": "qualification/common-current-ci-d0f3-20261127/original-windows-shard-2-failure-job.log.gz",
+  "original_failure_raw_sha256": "fb78add8bcd5203849fb02ecdfe7027b6024a6b7c030479aa90b29a161e6593a",
+  "rounds": 200000,
+  "startup_timeout_seconds": 5,
+  "unchanged_source": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": "bd39ae7a81ceebc8d7c0ad2d607684ffe8ef237abb37620694ffed1cef0cf29b",
+    "codex-rs/hepta-matrix-sdk/tests/fixtures/matrix_0_18.json": "505078cea6816e40770e01e228482fef5212f730a3f78b565737116b64f94aed",
+    "codex-rs/hepta-matrix-sdk/tests/storage_upgrade.rs": "89e982b53747d80890a1a7169ddd57d3c5490547d99bc3294dfbc2c1d44ddc21",
+    "codex-rs/third_party/matrix-sdk-sqlite-0.19.1/src/store_cipher.rs": "828956ff36fe6763f243d2b1081c26299a772cf731fbecfb34f6711620eb639b"
+  },
+  "windows_original_targets_status": "PENDING_ACTUAL_CANDIDATE_CI"
+}

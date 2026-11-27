@@ -357,6 +357,12 @@ crate.from_cargo(
 bazel_dep(name = "zstd", version = "1.5.7")
 
 crate.annotation(
+    # Bazel does not consume Cargo profiles. Optimize the StoreCipher owner of
+    # PBKDF2's generic loop without changing its round count or startup budget.
+    crate = "matrix-sdk-store-encryption",
+    rustc_flags = ["-Copt-level=3"],
+)
+crate.annotation(
     # rules_rust appends CFLAGS without replacing the toolchain flags.
     build_script_env = {
         "CFLAGS": "-DSQLITE_DEFAULT_FILE_PERMISSIONS=0600",
