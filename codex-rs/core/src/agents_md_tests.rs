@@ -67,6 +67,7 @@ struct FailingFileSystem {
 struct MetadataCallCounts {
     paths: Mutex<Vec<PathUri>>,
     started: Notify,
+    first_marker_release: Semaphore,
     release: Semaphore,
 }
 
@@ -75,6 +76,7 @@ impl Default for MetadataCallCounts {
         Self {
             paths: Mutex::new(Vec::new()),
             started: Notify::new(),
+            first_marker_release: Semaphore::new(0),
             release: Semaphore::new(0),
         }
     }
@@ -129,11 +131,16 @@ impl FailingFileSystem {
         sandbox: Option<&FileSystemSandboxContext>,
     ) -> io::Result<FileMetadata> {
         let path_abs = path.to_abs_path()?;
-        self.metadata_calls
-            .paths
-            .lock()
-            .expect("metadata paths lock")
-            .push(path.clone());
+        let first_probe = {
+            let mut paths = self
+                .metadata_calls
+                .paths
+                .lock()
+                .expect("metadata paths lock");
+            let first_probe = paths.is_empty();
+            paths.push(path.clone());
+            first_probe
+        };
         self.metadata_calls.started.notify_one();
         match self.failure {
             InjectedFailure::Metadata(kind) if path_abs == self.path => {
@@ -154,8 +161,12 @@ impl FailingFileSystem {
                     .and_then(|name| name.to_str())
                     .is_some_and(|name| name.starts_with(prefix)) =>
             {
-                self.metadata_calls
-                    .release
+                let release = if first_probe {
+                    &self.metadata_calls.first_marker_release
+                } else {
+                    &self.metadata_calls.release
+                };
+                release
                     .acquire()
                     .await
                     .expect("metadata release semaphore")
@@ -891,7 +902,10 @@ async fn project_root_marker_search_limits_concurrent_probes_and_preserves_order
             expected_initial_probes[..CONCURRENCY_LIMIT]
         );
 
-        metadata_calls.release.add_permits(1);
+        // Ordered buffering advances only when its first probe finishes. A shared
+        // semaphore can wake a later probe after cooperative scheduling changes
+        // acquisition order, even though the recorded start order is correct.
+        metadata_calls.first_marker_release.add_permits(1);
         tokio::time::timeout(std::time::Duration::from_secs(5), async {
             loop {
                 let started = metadata_calls.started.notified();

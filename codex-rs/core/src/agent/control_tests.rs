@@ -428,7 +428,33 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         }
     })
     .await
-    .expect("aborted fixture should finish its exact terminalization owners");
+    .unwrap_or_else(|error| {
+        let active = thread
+            .session
+            .active_turn
+            .try_lock()
+            .ok()
+            .map(|active| active.is_some());
+        let starts = thread
+            .session
+            .pending_start_transition_completions
+            .lock()
+            .expect("start completion registry")
+            .iter()
+            .map(|(id, completion, _)| (id.clone(), completion.is_complete()))
+            .collect::<Vec<_>>();
+        let terminalizations = thread
+            .session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("task completion registry")
+            .iter()
+            .map(|(id, completion, _, _, _, _)| (id.clone(), completion.is_complete()))
+            .collect::<Vec<_>>();
+        panic!(
+            "aborted fixture should finish its exact terminalization owners: {error}; active={active:?}; starts={starts:?}; terminalizations={terminalizations:?}"
+        );
+    });
     thread
         .inject_response_items(vec![user_message(message)])
         .await

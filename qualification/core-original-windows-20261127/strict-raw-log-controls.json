@@ -1,0 +1,46 @@
+{
+  "controls": {
+    "cached_summary": {
+      "actual_exit": 1,
+      "expected_success": false,
+      "stdout": ""
+    },
+    "eleventh_attempt": {
+      "actual_exit": 1,
+      "expected_success": false,
+      "stdout": "::error::Original core suite had a failed or retried attempt.\n"
+    },
+    "failed_attempt": {
+      "actual_exit": 1,
+      "expected_success": false,
+      "stdout": "::error::Original core suite had a failed or retried attempt.\n"
+    },
+    "hundredth_attempt": {
+      "actual_exit": 1,
+      "expected_success": false,
+      "stdout": "::error::Original core suite had a failed or retried attempt.\n"
+    },
+    "missing_summary": {
+      "actual_exit": 1,
+      "expected_success": false,
+      "stdout": ""
+    },
+    "original_35e_flaky": {
+      "actual_exit": 1,
+      "expected_success": false,
+      "stdout": "::error::Original core suite had a failed or retried attempt.\n"
+    },
+    "pass": {
+      "actual_exit": 0,
+      "expected_success": true,
+      "stdout": "Original core suite: PASS, retries=0, flaky=0\n"
+    },
+    "second_attempt": {
+      "actual_exit": 1,
+      "expected_success": false,
+      "stdout": "::error::Original core suite had a failed or retried attempt.\n"
+    }
+  },
+  "real_windows_execution_claimed": false,
+  "scope": "LOG_ADMISSION_CONTROLS_ONLY"
+}

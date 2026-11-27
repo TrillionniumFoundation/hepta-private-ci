@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - codex/hia-core-fixture-terminalization-20261127-2ac5
+      - codex/hia-native-integration-20261127-2ac5
     paths:
       - codex-rs/core/**
       - .github/workflows/codex-hia-windows-core-fixture.yml
@@ -47,13 +48,21 @@ jobs:
             --test_verbose_timeout_warnings \
             --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
             -- \
-            //codex-rs/core:core-unit-tests
+            //codex-rs/core:core-unit-tests 2>&1 | tee "$RUNNER_TEMP/windows-core-original.log"
+          if grep -Eq 'FLAKY|test result: FAILED|Attempt #([2-9][0-9]*|1[0-9]+)' "$RUNNER_TEMP/windows-core-original.log"; then
+            echo "::error::Original core suite had a failed or retried attempt."
+            exit 1
+          fi
+          grep -Eq '^//codex-rs/core:core-unit-tests[[:space:]]+PASSED in ' "$RUNNER_TEMP/windows-core-original.log"
+          echo "Original core suite: PASS, retries=0, flaky=0"
       - name: Preserve Bazel execution evidence
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: windows-core-original-tests
-          path: ${{ runner.temp }}/bazel-execution-logs
+          path: |
+            ${{ runner.temp }}/bazel-execution-logs
+            ${{ runner.temp }}/windows-core-original.log
           if-no-files-found: warn
       - name: Check for a clean worktree
         if: always() && !cancelled()

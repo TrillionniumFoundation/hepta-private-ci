@@ -1,0 +1,25 @@
+{
+  "common_followup_actual_windows_run": "PENDING",
+  "complete_original_target": "//codex-rs/core:core-unit-tests",
+  "decoded_log": {
+    "bytes": 407918,
+    "sha256": "e2d5a20a3b979af09fd7015696c2a282610f05024943beed3087421681d7f2f7"
+  },
+  "failed_attempts": 3,
+  "failed_cases": [
+    "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+    "agents_md::tests::project_root_marker_search_limits_concurrent_probes_and_preserves_order",
+    "guardian::tests::guardian_reuses_prompt_cache_key_and_appends_prior_reviews"
+  ],
+  "failure_reclassified_as_pass": false,
+  "github_job_conclusion": "success",
+  "gzip": {
+    "bytes": 63882,
+    "sha256": "ee82593dfd699ae0ad9bbc446634b29682f2e954a197834ef03d82f7ebb2d1f6"
+  },
+  "job_id": 140559177991,
+  "qualification_status": "FAIL_FLAKY",
+  "run_id": 46014830498,
+  "source_commit": "35e43b3904a8a416158525f3526bab77723ab835",
+  "total_attempts": 11
+}
