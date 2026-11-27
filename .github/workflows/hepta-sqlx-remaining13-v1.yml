@@ -1,0 +1,319 @@
+name: SQLx remaining explicit Chrono and native twelve
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-sqlx-remaining13-v1.yml"
+      - "scripts/run_sqlx_remaining13_v1.py"
+      - "scripts/hepta_sqlx_remaining13_inputs_v1.json"
+      - "scripts/run_sqlx_temporal_contract_v1.py"
+      - "qualification/sqlx_native_remaining_v1/**"
+
+permissions:
+  contents: read
+
+jobs:
+  remaining:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-sqlx-remaining13-20261127-7c9e' &&
+      github.event.pull_request.base.ref == 'fix/hepta-sdk-oauth-schema-generation-20261126-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 48
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: source-head
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      V8_FROM_SOURCE: "0"
+      RUSTY_V8_ARCHIVE: ""
+      RUSTY_V8_SRC_BINDING_PATH: ""
+    steps:
+      - name: Record the first continuation clock before checkout
+        id: job_scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, re, time
+          head, run = os.environ["SOURCE_SHA"], os.environ["GITHUB_RUN_ID"]
+          assert re.fullmatch(r"[0-9a-f]{40}", head) and run.isdigit()
+          assert os.environ["GITHUB_RUN_ATTEMPT"] == "1"
+          stage = pathlib.Path(os.environ["RUNNER_TEMP"]) / f"sqlx-remaining-{head}-{run}-1"
+          stage.mkdir(mode=0o700)
+          evidence = stage / "evidence"
+          evidence.mkdir(mode=0o700)
+          value = {"head": head, "run_id": run, "run_attempt": "1",
+                   "monotonic_seconds": time.monotonic(),
+                   "boot_id": pathlib.Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+                   "original_failed_job": 140249367364,
+                   "original_whole_debit_seconds": 442}
+          with (evidence / "job-start.json").open("x") as output:
+              output.write(json.dumps(value, sort_keys=True) + "\n")
+              output.flush()
+              os.fsync(output.fileno())
+          with open(os.environ["GITHUB_ENV"], "a") as output:
+              output.write(f"SQLX_REMAINING_STAGE={stage}\n")
+          PY
+      - name: Acquire the exact new head and actual7161 parent
+        id: checkout
+        timeout-minutes: 1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Enforce the remaining checkout allocation
+        id: checkout_clock
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, time
+          root = pathlib.Path(os.environ["SQLX_REMAINING_STAGE"]) / "evidence"
+          start = json.loads((root / "job-start.json").read_bytes())
+          now = time.monotonic()
+          with (root / "checkout-end.json").open("x") as output:
+              output.write(json.dumps({"run_id": start["run_id"], "monotonic_seconds": now}) + "\n")
+              output.flush()
+              os.fsync(output.fileno())
+          assert 0 <= now - start["monotonic_seconds"] <= 45
+          PY
+      - name: Prepare the original Rust compiler
+        id: rust
+        timeout-minutes: 1
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - name: Prepare the original native wrapper versions
+        id: tools
+        timeout-minutes: 2
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve the original verified V8 pair
+        id: v8
+        timeout-minutes: 2
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Issue only the first remaining positive and native work
+        id: remaining
+        timeout-minutes: 39
+        env:
+          SQLX_ALL_STEPS: ${{ toJSON(steps) }}
+        run: python3 -I -B scripts/run_sqlx_remaining13_v1.py
+      - name: Preserve owner outcome and missing-result failures
+        id: retention
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        env:
+          SQLX_ALL_STEPS: ${{ toJSON(steps) }}
+        shell: bash
+        run: |
+          python3 -I -B - <<'PY'
+          import hashlib, json, os, pathlib, stat, time
+          root = pathlib.Path(os.environ["SQLX_REMAINING_STAGE"]) / "evidence"
+          started = time.monotonic()
+          deadline = started + 60
+          steps = json.loads(os.environ["SQLX_ALL_STEPS"])
+          def put(path, value):
+              raw = json.dumps(value, sort_keys=True, indent=2).encode() + b"\n"
+              with path.open("xb") as output:
+                  output.write(raw)
+                  output.flush()
+                  os.fsync(output.fileno())
+              return hashlib.sha256(raw).hexdigest()
+          put(root / "retention-start.json", {
+              "monotonic_seconds": started,
+              "steps": steps,
+              "remaining_step_outcome": steps.get("remaining", {}).get("outcome"),
+              "qualification": False,
+          })
+          native = root / "native"
+          native.mkdir(mode=0o700, exist_ok=True)
+          missing = [name for name in ("RESULT.json", "TERMINAL.json")
+                     if not (native / name).is_file()]
+          if missing:
+              source = {"source_sha": os.environ["SOURCE_SHA"],
+                        "tested_sha": os.environ["TESTED_SHA"],
+                        "parent": "3ab4e1dc379be6f1a19a35c7ba17200eb93b8b48",
+                        "status": "incomplete_owner_evidence", "files": {},
+                        "missing_owner_files": missing,
+                        "qualification": False}
+              checkout = pathlib.Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+              spec_path = checkout / "scripts/hepta_sqlx_remaining13_inputs_v1.json"
+              spec = {}
+              try:
+                  spec = json.loads(spec_path.read_bytes())
+              except Exception as error:
+                  source["input_error"] = f"{type(error).__name__}: {error}"
+              rows = {}
+              for key in ("source_pins", "accepted_locks"):
+                  values = spec.get(key, {})
+                  if isinstance(values, dict) and len(values) <= 256:
+                      rows.update(values)
+              rows["scripts/hepta_sqlx_remaining13_inputs_v1.json"] = None
+              for name, key in (
+                  ("qualification/sqlx_native_generation_acceptance_v2.json", "generation_acceptance_pin"),
+                  ("qualification/sqlx_native_remaining_v1/admission_v1.json", "remaining_admission_pin"),
+                  ("qualification/sqlx_native_remaining_v1/prior7160_observations_v1.json", "prior_observations_pin"),
+              ):
+                  rows[name] = spec.get(key)
+              for name, expected in sorted(rows.items()):
+                  row = source["files"][name] = {"expected": expected, "status": "failed"}
+                  try:
+                      if time.monotonic() >= deadline:
+                          raise TimeoutError("fallback source retention deadline exhausted")
+                      path = pathlib.Path(name)
+                      if (path.is_absolute() or ".." in path.parts or path.as_posix() != name
+                              or not (checkout / path).resolve().is_relative_to(checkout)):
+                          raise ValueError("fallback source path escapes checkout")
+                      fd = os.open(checkout / path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+                      with os.fdopen(fd, "rb") as stream:
+                          before = os.fstat(stream.fileno())
+                          if not stat.S_ISREG(before.st_mode) or not 0 <= before.st_size <= 64 * 1024 * 1024:
+                              raise ValueError("fallback source is not a bounded regular file")
+                          raw = stream.read(64 * 1024 * 1024 + 1)
+                          after = os.fstat(stream.fileno())
+                      fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+                      if len(raw) != before.st_size or any(getattr(before, x) != getattr(after, x) for x in fields):
+                          raise ValueError("fallback source changed while reading")
+                      row["observed"] = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+                      if isinstance(expected, dict):
+                          if any(row["observed"][key] != expected.get(key) for key in ("bytes", "sha256")):
+                              raise ValueError("fallback source pin differs")
+                      row["status"] = "observed_only_not_owner_success"
+                  except Exception as error:
+                      row["error"] = f"{type(error).__name__}: {error}"
+              errors = {}
+              try:
+                  put(root / "FALLBACK_SOURCE.json", source)
+              except Exception as error:
+                  errors["FALLBACK_SOURCE.json"] = f"{type(error).__name__}: {error}"
+              if "RESULT.json" in missing:
+                  try:
+                      put(native / "RESULT.json", {
+                          "schema": "hepta-sqlx-remaining-workflow-fallback-v1",
+                          "status": "failed", "qualification": False,
+                          "reason": "owner result absent after the original step",
+                          "original_scope_status": "FAIL", "original_whole_job_debit_seconds": 442,
+                          "remaining_step_outcome": steps.get("remaining", {}).get("outcome"),
+                          "native_observations": None,
+                          "owned_process_terminal_evidence": "unavailable",
+                          "source_fallback_errors": errors,
+                      })
+                  except Exception as error:
+                      errors["RESULT.json"] = f"{type(error).__name__}: {error}"
+              if "TERMINAL.json" in missing:
+                  try:
+                      result_file = native / "RESULT.json"
+                      put(native / "TERMINAL.json", {
+                          "status": "failed", "exit_code": 2,
+                          "result_sha256": hashlib.sha256(result_file.read_bytes()).hexdigest()
+                              if result_file.is_file() else None,
+                          "result_retained": result_file.is_file(),
+                          "original_owner_terminal": False,
+                          "requires_actual_original_CI_exit_and_full_job_cost": True,
+                          "retention_errors": errors,
+                      })
+                  except Exception as error:
+                      errors["TERMINAL.json"] = f"{type(error).__name__}: {error}"
+              print(json.dumps({"fallback": True, "errors": errors, "qualification": False}), flush=True)
+              if errors or time.monotonic() > deadline:
+                  raise SystemExit(2)
+          PY
+      - name: Retain successful and failed continuation evidence
+        id: upload
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sqlx-remaining13-${{ env.SOURCE_SHA }}-${{ github.run_id }}-1
+          path: ${{ env.SQLX_REMAINING_STAGE }}/evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Account through upload and require the original terminal
+        id: final_account
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        env:
+          SQLX_ALL_STEPS: ${{ toJSON(steps) }}
+        shell: bash
+        run: |
+          python3 -I -B - <<'PY'
+          import hashlib, json, math, os, pathlib, time
+          root = pathlib.Path(os.environ["SQLX_REMAINING_STAGE"]) / "evidence"
+          steps = json.loads(os.environ["SQLX_ALL_STEPS"])
+          receipt = {"schema": "sqlx-remaining-account-through-upload-v1",
+                     "qualification": False, "status": "failed",
+                     "original_scope_status": "FAIL", "original_whole_job_debit_seconds": 442,
+                     "original_GitHub_job_and_queue_still_required": True,
+                     "this_record_does_not_claim_to_include_its_own_final_IO": True,
+                     "steps": steps}
+          code = 2
+          try:
+              start = json.loads((root / "job-start.json").read_bytes())
+              retention = json.loads((root / "retention-start.json").read_bytes())
+              raw = (root / "native/RESULT.json").read_bytes()
+              result = json.loads(raw)
+              terminal = json.loads((root / "native/TERMINAL.json").read_bytes())
+              pre = result["admission"]["pre_dispatch_debits"]
+              controls, binding = pre["parser_controls_seconds"], pre["metadata_binding_seconds"]
+              assert type(controls) in (int, float) and math.isfinite(controls) and controls == 13
+              assert type(binding) in (int, float) and math.isfinite(binding) and 0 <= binding <= 20
+              elapsed = time.monotonic() - start["monotonic_seconds"]
+              retained_elapsed = time.monotonic() - retention["monotonic_seconds"]
+              receipt.update(
+                  continuation_seconds_through_upload=elapsed,
+                  retention_seconds_through_upload=retained_elapsed,
+                  pre_dispatch_debits=pre,
+                  total_original_and_new_seconds_through_upload=442 + controls + binding + elapsed,
+                  new_allocation_seconds_used_through_upload=controls + binding + elapsed,
+                  original_generation_debit_seconds_separate=334,
+                  unallocated_seconds_not_borrowed=293,
+              )
+              assert 0 <= elapsed <= 2852 - binding
+              assert 0 <= retained_elapsed <= 200
+              assert controls + binding + elapsed <= 2865
+              assert 442 + controls + binding + elapsed <= 3307
+              assert all(steps[name]["outcome"] == "success"
+                         for name in ("remaining", "retention", "upload"))
+              assert terminal["status"] == "passed" and terminal["exit_code"] == 0
+              assert terminal["result_retained"] is True and terminal["retention_errors"] == {}
+              assert terminal["result_sha256"] == hashlib.sha256(raw).hexdigest()
+              assert terminal["cancellation"]["requested"] is False
+              assert result["schema"] == "hepta-sqlx-remaining13-observation-v1"
+              assert result["status"] == "passed_pending_terminal"
+              assert result["all_observed_owned_commands_reaped"] is True
+              assert result["source_postcheck_errors"] == {}
+              assert result["explicit_chrono_positive"]["status"] == "passed"
+              assert result["native_binary_manifest"]["status"] == "verified"
+              assert result["metadata_postcheck"] == result["binary_manifest_postcheck"] == "passed"
+              assert len(result["native"]["native_cases"]) == 12
+              assert result["native_junit_collection"]["status"] == "passed"
+              receipt["status"], code = "passed_pending_full_original_job", 0
+          except Exception as error:
+              receipt["error"] = f"{type(error).__name__}: {error}"
+          with (root / "ACCOUNT_THROUGH_UPLOAD.json").open("x") as output:
+              output.write(json.dumps(receipt, sort_keys=True, indent=2) + "\n")
+              output.flush()
+              os.fsync(output.fileno())
+          print(json.dumps(receipt, sort_keys=True), flush=True)
+          if "continuation_seconds_through_upload" in receipt:
+              if time.monotonic() - start["monotonic_seconds"] > 2852 - binding:
+                  code = 124
+              if time.monotonic() - retention["monotonic_seconds"] > 200:
+                  code = 124
+          raise SystemExit(code)
+          PY
