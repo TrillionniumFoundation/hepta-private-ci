@@ -1,0 +1,154 @@
+{
+  "schema": "codex.hia.evidence-publication-policy-correction.v1",
+  "prior_head": "b5d641763c10b782acb57e0a047108b5601947a1",
+  "prior_failed_checks": [
+    {
+      "run_id": 46068966616,
+      "job_id": 140741032339,
+      "kind": "original 512000-byte blob policy",
+      "bytes": 1921839,
+      "sha256": "efa639e245eb356993bb094ebec05fe22f1cff8e63a699b22129bf65dc860682",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46068966616/job/140741032339"
+    },
+    {
+      "run_id": 46068966616,
+      "job_id": 140741032375,
+      "kind": "binary archive parts were treated as text by the spelling checker",
+      "bytes": 54702,
+      "sha256": "7f83e2e8f2a094d78978569388623413a43f428b5f9e773e992036062be0ede9",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46068966616/job/140741032375"
+    }
+  ],
+  "unchanged_original_blob_limit": 512000,
+  "binary_parts": 58,
+  "part_max_bytes": 458745,
+  "original_archive_bytes": 26340328,
+  "original_archive_sha256": "02002143a97fa44f02e14fd50450f3f3f1afc37a724f1093e99b7367a3dd0261",
+  "archive_recompressed": false,
+  "original_owner_gates_rerun": false,
+  "source_changed": false,
+  "spelling_exclusions": [
+    "./hia/evidence/source-admission-20261127/execution-evidence.tar.xz.part[0-9][0-9][0-9]",
+    "hia/evidence/source-admission-20261127/execution-evidence.tar.xz.part[0-9][0-9][0-9]"
+  ],
+  "json_and_source_text_still_checked": true,
+  "execution_job": "1a21ef298f2-ffbe-56ab",
+  "execution_receipt_sha256": "01f7c371841f61bf0b7b45700c82ce592357d5f68288af72e0834cc499f5b6f1",
+  "execution": {
+    "schema": "codex.hia.evidence-blob-policy.v3",
+    "passed": true,
+    "original_archive_unchanged": true,
+    "original_reports_unchanged": true,
+    "original_max_bytes": 512000,
+    "parts_max_bytes": 458745,
+    "binary_parts": 58,
+    "report_parts": 4,
+    "commands": [
+      {
+        "label": "archive-reconstruct",
+        "argv": [
+          "/usr/bin/python3",
+          "-I",
+          "-B",
+          "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/checkout/hia/evidence/source-admission-20261127/reconstruct_evidence.py",
+          "--output",
+          "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/reconstructed.tar.xz"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.1644733641296625,
+        "stdout": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/archive-reconstruct.stdout",
+          "bytes": 238,
+          "sha256": "6c0308d1c1cb0c051adcced8c29bc54aac49e3818140b30d3b4dce4e326eb60f"
+        },
+        "stderr": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/archive-reconstruct.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "label": "reports-reconstruct",
+        "argv": [
+          "/usr/bin/python3",
+          "-I",
+          "-B",
+          "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/checkout/hia/evidence/native38-recovery-20261127/reconstruct_reports.py",
+          "--output-directory",
+          "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/reports-output"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.11439960123971105,
+        "stdout": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/reports-reconstruct.stdout",
+          "bytes": 284,
+          "sha256": "183d9a68e692c9c72db299e96ec33c46bfc65689a85e3eb8d67f4e74740082da"
+        },
+        "stderr": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/reports-reconstruct.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "label": "codespell-install",
+        "argv": [
+          "/usr/bin/python3",
+          "-m",
+          "pip",
+          "install",
+          "--disable-pip-version-check",
+          "--target",
+          "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/codespell-lib",
+          "codespell==2.4.3"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 2.921055929735303,
+        "stdout": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/codespell-install.stdout",
+          "bytes": 226,
+          "sha256": "7c74e59cfddd7c2a00fd677d153931a6ced8f3ba25c88bc20054e94811744cff"
+        },
+        "stderr": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/codespell-install.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "label": "codespell",
+        "argv": [
+          "/usr/bin/python3",
+          "-B",
+          "-m",
+          "codespell_lib",
+          "--ignore-words",
+          ".codespellignore",
+          "--skip",
+          "./.git"
+        ],
+        "returncode": 0,
+        "elapsed_seconds": 0.26478447671979666,
+        "stdout": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/codespell.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/dependency-publication-v1/blob-policy-v3/codespell.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ],
+    "original_owner_gates_rerun": false,
+    "source_head": "b5d641763c10b782acb57e0a047108b5601947a1",
+    "all_changed_assets_below_original_limit": true,
+    "archive_sha256": "02002143a97fa44f02e14fd50450f3f3f1afc37a724f1093e99b7367a3dd0261",
+    "parts_manifest_sha256": "4548eb1b6d0407dada1246e6fe22c766d3517c943783d7b16e3d83328912d8bc",
+    "large_reports_manifest_sha256": "1c19155b7ccfda2aebbb812e224f7c754e4b07f3e2ab7d1ecfefcb35eeb9c404",
+    "codespell_config_sha256": "ea1c8f75b057ccfb543144598e03ed75272dba62cb98aa26e3abb1c390c73e0d"
+  },
+  "whole_stack_rewrite_complete": false,
+  "retirement_approved": false
+}

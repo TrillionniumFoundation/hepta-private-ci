@@ -16,7 +16,7 @@ The complete physical workspace was materialized and checked: 10,216 tracked fil
 
 ## Complete selected execution evidence
 
-The 27 parts form one 26,340,328-byte tar.xz archive with SHA256:
+The 58 parts, each at most 458,745 bytes, form one 26,340,328-byte tar.xz archive with SHA256:
 
 `02002143a97fa44f02e14fd50450f3f3f1afc37a724f1093e99b7367a3dd0261`
 
@@ -29,5 +29,7 @@ python3 reconstruct_evidence.py --output /absolute/new/location/execution-eviden
 ```
 
 The script verifies every part's length, SHA256, Git blob identity, offset and the complete archive identity before reporting success. It refuses to overwrite an existing output. Inspect `evidence-index.json` to locate each original report and full output. The reports, rather than rounded elapsed values in the overview, are the execution authority.
+
+The original 512,000-byte repository blob limit also applies to evidence assets. This partition keeps the archive byte-for-byte unchanged. Only the exact binary archive-part naming pattern is excluded from the spelling checker; JSON reports, source and other text remain checked. The earlier 27-part layout and its failed repository checks remain in the parent history.
 
 This checkpoint does not qualify the new publication's full CI, the complete HIA stack, a fresh native16 predecessor generation, or retirement of the old implementation.
