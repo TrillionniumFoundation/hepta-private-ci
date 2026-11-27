@@ -1,0 +1,73 @@
+{
+  "torch": "2.8.0",
+  "system": "26.6.2",
+  "mps_available": true,
+  "fallback_enabled": false,
+  "arms": {
+    "physical": {
+      "all_grad_finite": true,
+      "front_gradient_norms": {
+        "feedback": 0.004192802123725414,
+        "content.weight": 0.04386503994464874,
+        "content.bias": 0.16727422177791595,
+        "drive.weight": 0.02203793078660965,
+        "drive.bias": 0.004710115026682615
+      },
+      "cpu_logit_max_abs": 7.152557373046875e-07,
+      "loss": 5.94807243347168,
+      "tokens": 109
+    },
+    "smooth": {
+      "all_grad_finite": true,
+      "front_gradient_norms": {
+        "feedback": 0.00397445447742939,
+        "content.weight": 0.04277266934514046,
+        "content.bias": 0.16799652576446533,
+        "drive.weight": 0.01979566551744938,
+        "drive.bias": 0.00551424128934741
+      },
+      "cpu_logit_max_abs": 6.556510925292969e-07,
+      "loss": 5.947863578796387,
+      "tokens": 109
+    },
+    "mean": {
+      "all_grad_finite": true,
+      "front_gradient_norms": {
+        "content.weight": 0.044312458485364914,
+        "content.bias": 0.17287786304950714
+      },
+      "cpu_logit_max_abs": 7.152557373046875e-07,
+      "loss": 5.947657585144043,
+      "tokens": 109
+    },
+    "dense": {
+      "all_grad_finite": true,
+      "front_gradient_norms": {
+        "content.weight": 0.0714811310172081,
+        "content.bias": 0.23919641971588135
+      },
+      "cpu_logit_max_abs": 7.152557373046875e-07,
+      "loss": 5.925372123718262,
+      "tokens": 109
+    }
+  },
+  "production_batch_24": {
+    "384": {
+      "params": 10892280,
+      "loss": 5.871471881866455,
+      "wall_s": 1.19905766681768,
+      "gpu_allocated": 260765440,
+      "driver_allocated": 332152832
+    },
+    "640": {
+      "params": 39797240,
+      "loss": 5.772215843200684,
+      "wall_s": 0.3870394160039723,
+      "gpu_allocated": 746750464,
+      "driver_allocated": 911900672
+    }
+  },
+  "utc_epoch": 1795822579.2941859,
+  "source_sha256": "40dacfd435b5b8723ffdab24b120985ffcf5c56a7c4f735965552c3a450712d8"
+}
+
