@@ -104,7 +104,7 @@ impl SqliteConfig {
         &self,
         path: &Path,
     ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {
-        if path.parent() != Some(self.home()) {
+        if !has_parent(path, self.home()) {
             #[cfg(unix)]
             report_bind_failure("config_parent");
             return Err(SqliteRecoveryError::Indeterminate);
@@ -133,6 +133,24 @@ impl SqliteConfig {
         guard.revalidate_for(self)?;
         Err(SqliteRecoveryError::Unavailable)
     }
+}
+
+// AbsolutePathBuf strips a safe Windows verbatim prefix, whereas filesystem
+// canonicalization can return it. These are namespace spellings of the same
+// path, not permission to resolve aliases or skip the retained-handle checks.
+fn has_parent(path: &Path, expected_parent: &Path) -> bool {
+    path.parent().is_some_and(|parent| {
+        #[cfg(windows)]
+        {
+            use codex_utils_path::normalize_for_native_workdir;
+
+            normalize_for_native_workdir(parent) == normalize_for_native_workdir(expected_parent)
+        }
+        #[cfg(not(windows))]
+        {
+            parent == expected_parent
+        }
+    })
 }
 
 #[cfg(unix)]
@@ -238,7 +256,7 @@ impl ExistingSqliteRecoveryGuard {
     }
 
     fn revalidate_for(&self, config: &SqliteConfig) -> Result<(), SqliteRecoveryError> {
-        if self.inner.database_path.parent() != Some(config.home()) {
+        if !has_parent(&self.inner.database_path, config.home()) {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         self.revalidate()

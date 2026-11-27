@@ -1,0 +1,70 @@
+{
+  "agentd": {
+    "failed": 1,
+    "ignored": 0,
+    "original_failures_no_longer_observed": 14,
+    "passed": 166,
+    "remaining_case": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+    "remaining_failure": "first bind classifies an absent Windows control socket as an existing non-socket"
+  },
+  "all_seven_packages_passed": false,
+  "artifact": {
+    "bytes": 3639237,
+    "download_failure": "Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/15203601106/zip\": dial tcp 140.82.121.6:443: i/o timeout\n",
+    "download_verified": false,
+    "github_digest": "sha256:add367a027707a7c885c738f6723c17284f4f04175a0f5facfb4cb361c4c97f7",
+    "id": 15203601106
+  },
+  "compressed_log": {
+    "bytes": 43936,
+    "sha256": "1db103b1a414c9f75b1b338580743d46c03c713090bb46965af99b2c816bad53"
+  },
+  "conclusion": "failure",
+  "head": "ea3aa59502f9f1eee89f730ebe5d0afc556eec2f",
+  "job_id": 140534666456,
+  "raw_log": {
+    "bytes": 347856,
+    "sha256": "0bb75fda325fdca8d98fe647664db9cb5daa0697288aa1e0635804b973f7146b"
+  },
+  "run_attempt": 1,
+  "run_id": 46007608780,
+  "schema": "hepta.windows-private-state-fleet-readback.v1",
+  "targets": [
+    {
+      "seconds": 1.7,
+      "status": "PASSED",
+      "target": "//codex-rs/hepta-fleet:hepta-fleet-unit-tests"
+    },
+    {
+      "seconds": 5.3,
+      "status": "PASSED",
+      "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests"
+    },
+    {
+      "seconds": 58.4,
+      "status": "PASSED",
+      "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+    },
+    {
+      "seconds": 70.4,
+      "status": "PASSED",
+      "target": "//codex-rs/hepta-prompt-registry:hepta-prompt-registry-unit-tests"
+    },
+    {
+      "seconds": 92.7,
+      "status": "PASSED",
+      "target": "//codex-rs/utils/path-utils:path-utils-unit-tests"
+    },
+    {
+      "seconds": 9.1,
+      "status": "FAILED",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests"
+    },
+    {
+      "seconds": 78.1,
+      "status": "PASSED",
+      "target": "//codex-rs/state:state-unit-tests"
+    }
+  ],
+  "whole_windows_control_plane_qualified": false
+}

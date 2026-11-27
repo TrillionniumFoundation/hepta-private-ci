@@ -6,9 +6,12 @@
 
 mod nt;
 mod snapshot;
+mod socket;
 
 pub use snapshot::FileSnapshot;
 pub use snapshot::snapshot_private_file;
+pub use socket::PrivateSocket;
+pub use socket::PrivateSocketDirectory;
 
 use std::fs::File;
 use std::io;
@@ -26,8 +29,17 @@ pub struct PrivateDirectory {
 }
 
 impl PrivateDirectory {
+    /// Creates one private directory atomically, refusing any existing entry.
+    pub fn create_new_directory(path: &Path) -> io::Result<Self> {
+        Self::open_with_creation(path, nt::Disposition::CreateNew)
+    }
+
     /// Opens or creates one directory. Its parent must already exist.
     pub fn open_or_create(path: &Path) -> io::Result<Self> {
+        Self::open_with_creation(path, nt::Disposition::OpenOrCreate)
+    }
+
+    fn open_with_creation(path: &Path, disposition: nt::Disposition) -> io::Result<Self> {
         let identity = CurrentIdentity::read()?;
         let descriptor = OwnerSecurityDescriptor::new(
             &identity.user,
@@ -37,7 +49,7 @@ impl PrivateDirectory {
             path,
             nt::Access::ReadWrite,
             nt::Kind::Directory,
-            nt::Disposition::OpenOrCreate,
+            disposition,
             Some(&descriptor),
         )?;
         if !snapshot::snapshot(&file, &identity)?.is_directory() {

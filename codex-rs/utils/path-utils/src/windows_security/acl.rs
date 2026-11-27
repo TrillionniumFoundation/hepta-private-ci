@@ -30,6 +30,26 @@ pub(crate) fn private_security(
     handle: BorrowedHandle<'_>,
     identity: &CurrentIdentity,
 ) -> io::Result<SecuritySnapshot> {
+    private_security_scope(handle, identity, SecurityScope::CurrentObject)
+}
+
+pub(crate) fn private_child_creation_security(
+    handle: BorrowedHandle<'_>,
+    identity: &CurrentIdentity,
+) -> io::Result<SecuritySnapshot> {
+    private_security_scope(handle, identity, SecurityScope::CurrentAndInherited)
+}
+
+enum SecurityScope {
+    CurrentObject,
+    CurrentAndInherited,
+}
+
+fn private_security_scope(
+    handle: BorrowedHandle<'_>,
+    identity: &CurrentIdentity,
+    scope: SecurityScope,
+) -> io::Result<SecuritySnapshot> {
     let descriptor = LocalDescriptor::from_handle(
         handle,
         OWNER_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
@@ -93,9 +113,11 @@ pub(crate) fn private_security(
             // Basic ACCESS_ALLOWED_ACE: the SID follows its header and mask.
             0 => {
                 let trustee = Sid::from_bytes(&ace[8..])?;
-                // An inherit-only ACE grants nothing on this object. Every
-                // child created by this API receives its own protected DACL.
-                if u32::from(header[1]) & INHERIT_ONLY_ACE == 0
+                // Ordinary state creation supplies a protected child DACL.
+                // AF_UNIX bind instead inherits the parent's DACL, so its
+                // parent must also reject foreign inherit-only grants.
+                if (u32::from(header[1]) & INHERIT_ONLY_ACE == 0
+                    || matches!(scope, SecurityScope::CurrentAndInherited))
                     && trustee != identity.user
                     && !trustee.privileged()
                 {

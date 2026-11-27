@@ -98,6 +98,62 @@ async fn windows_retained_file_set_never_grants_a_path_based_recovery_pool() -> 
     Ok(())
 }
 
+#[tokio::test]
+async fn windows_verbatim_spelling_keeps_recovery_bound_to_the_same_private_files()
+-> anyhow::Result<()> {
+    for canonical_source in [false, true] {
+        let fixture = Fixture::new()?;
+        fixture.write("source.sqlite3", b"retained database")?;
+        fixture.write("source.sqlite3-wal", b"retained wal")?;
+        fixture.directory.sync_all()?;
+        let canonical_home = fixture.home.canonicalize()?;
+        let source_home = if canonical_source {
+            &canonical_home
+        } else {
+            &fixture.home
+        };
+        let target_home = if canonical_source {
+            &fixture.home
+        } else {
+            &canonical_home
+        };
+        let source = source_home.join("source.sqlite3");
+        let guard = fixture.config.bind_existing_recovery_database(&source)?;
+        guard.verify_inspection_unchanged()?;
+        assert!(matches!(
+            fixture.config.open_immutable_recovery_pool(&guard).await,
+            Err(SqliteRecoveryError::Unavailable)
+        ));
+        assert_eq!(
+            fixture.config.materialize_identity_bound_recovery_copy(
+                &guard,
+                &target_home.join("source.sqlite3"),
+            ),
+            Err(SqliteRecoveryError::Indeterminate)
+        );
+        let other = fixture.home.with_file_name("other-root");
+        PrivateDirectory::open_or_create(&other)?;
+        assert_eq!(
+            fixture
+                .config
+                .materialize_identity_bound_recovery_copy(&guard, &other.join("copy.sqlite3")),
+            Err(SqliteRecoveryError::Indeterminate)
+        );
+        let candidate = target_home.join("copy.sqlite3");
+        fixture
+            .config
+            .materialize_identity_bound_recovery_copy(&guard, &candidate)?;
+        assert_eq!(std::fs::read(&source)?, b"retained database");
+        assert_eq!(std::fs::read(&candidate)?, b"retained database");
+        assert_eq!(
+            std::fs::read(target_home.join("copy.sqlite3-wal"))?,
+            b"retained wal"
+        );
+        assert!(!other.join("copy.sqlite3").exists());
+    }
+    Ok(())
+}
+
 #[test]
 fn windows_recovery_rejects_replaced_files_and_hard_links_for_every_role() -> anyhow::Result<()> {
     for selected in [
@@ -159,14 +215,32 @@ fn windows_recovery_rejects_root_replacement_and_new_sidecars() -> anyhow::Resul
         .config
         .bind_existing_recovery_database(&fixture.home.join("source.sqlite3"))?;
     let old = fixture._temp.path().join("retained");
+    let root_before = snapshot_private_file(fixture.directory.as_file())?;
+    // Windows refuses a directory rename while its retained child files are
+    // open (MS-FSA 2.1.5.15.12). The attempted replacement must be blocked by
+    // the kernel, leaving this live recovery authority unchanged.
+    let error = std::fs::rename(&fixture.home, &old).unwrap_err();
+    assert_eq!(error.raw_os_error(), Some(5));
+    assert!(!old.exists());
+    guard.verify_inspection_unchanged()?;
+    assert_eq!(
+        snapshot_private_file(fixture.directory.as_file())?,
+        root_before
+    );
+    assert_eq!(
+        std::fs::read(fixture.home.join("source.sqlite3"))?,
+        b"retained"
+    );
+    // Once the recovery child handles are gone, replacement is possible. The
+    // retained directory still denotes the old object, never the new path.
+    drop(guard);
     std::fs::rename(&fixture.home, &old)?;
     let replacement = PrivateDirectory::open_or_create(&fixture.home)?;
     replacement.create_new("source.sqlite3")?.sync_all()?;
-    assert_eq!(
-        guard.verify_inspection_unchanged(),
-        Err(SqliteRecoveryError::Indeterminate)
-    );
+    assert!(root_before.same_file(&snapshot_private_file(fixture.directory.as_file())?));
+    assert!(!root_before.same_file(&snapshot_private_file(replacement.as_file())?));
     assert_eq!(std::fs::read(old.join("source.sqlite3"))?, b"retained");
+    assert_eq!(std::fs::read(fixture.home.join("source.sqlite3"))?, b"");
     Ok(())
 }
 

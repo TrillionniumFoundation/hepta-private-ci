@@ -133,5 +133,6 @@ async fn junction_and_its_descendants_are_rejected() {
         std::fs::read(real.join("retained")).expect("read source"),
         b"unchanged"
     );
+    assert_eq!(std::fs::read_dir(&real).expect("read target").count(), 1);
     std::fs::remove_dir(alias).expect("remove junction");
 }

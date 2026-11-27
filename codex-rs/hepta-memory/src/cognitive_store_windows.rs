@@ -51,6 +51,12 @@ pub(super) fn create_private_directory(path: &Path) -> Result<PathBuf, Cognitive
             Err(error) => return Err(unavailable(error)),
         }
     }
+    if canonical_path_without_redirection(ancestor)
+        .map_err(unavailable)?
+        .is_none()
+    {
+        return Err(invalid("cognitive root is redirected"));
+    }
     // Each new component receives a private DACL at creation. NT opens reject
     // reparse points before any write, including in an existing ancestor.
     for directory in missing.into_iter().rev() {

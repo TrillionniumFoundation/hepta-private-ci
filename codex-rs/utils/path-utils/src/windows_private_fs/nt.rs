@@ -4,7 +4,6 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::fs::File;
 use std::io;
-use std::mem::offset_of;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
 use std::os::windows::io::AsRawHandle;
@@ -35,7 +34,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
-use windows_sys::Win32::Storage::FileSystem::FileRenameInfo;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
@@ -45,12 +43,16 @@ use crate::windows_security::OwnerSecurityDescriptor;
 const FILE_DIRECTORY_FILE: u32 = 0x0000_0001;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x0000_0020;
 const FILE_NON_DIRECTORY_FILE: u32 = 0x0000_0040;
+const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
 const SYNCHRONIZE_ACCESS: u32 = 0x0010_0000;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
+const FILE_RENAME_INFORMATION: u32 = 10;
 
 pub(super) enum Kind {
     Directory,
     RegularFile,
+    PinnedDirectory,
+    SocketRendezvous,
 }
 
 pub(super) enum Access {
@@ -90,6 +92,14 @@ unsafe extern "system" {
         ea_buffer: *const c_void,
         ea_length: u32,
     ) -> NTSTATUS;
+
+    fn NtSetInformationFile(
+        file_handle: HANDLE,
+        io_status_block: *mut IO_STATUS_BLOCK,
+        file_information: *const c_void,
+        length: u32,
+        file_information_class: u32,
+    ) -> NTSTATUS;
 }
 
 pub(super) fn open_absolute(
@@ -128,6 +138,9 @@ fn open(
     disposition: Disposition,
     descriptor: Option<&OwnerSecurityDescriptor>,
 ) -> io::Result<File> {
+    if matches!(kind, Kind::SocketRendezvous) && directory.is_none() {
+        return Err(invalid_name("socket entries require a retained parent"));
+    }
     let length = u16::try_from(name.len() * size_of::<u16>())
         .map_err(|_| invalid_name("filesystem name is too long"))?;
     let object_name = UNICODE_STRING {
@@ -145,7 +158,14 @@ fn open(
         length: size_of::<ObjectAttributes>() as u32,
         root_directory: directory.map_or(ptr::null_mut(), AsRawHandle::as_raw_handle),
         object_name: &object_name,
-        attributes: OBJ_CASE_INSENSITIVE | OBJ_DONT_REPARSE,
+        attributes: OBJ_CASE_INSENSITIVE
+            | if matches!(kind, Kind::SocketRendezvous) {
+                // Only a validated single child name can reach this mode.
+                // Open the final reparse object itself; never process its tag.
+                0
+            } else {
+                OBJ_DONT_REPARSE
+            },
         security_descriptor: descriptor.map_or(ptr::null(), OwnerSecurityDescriptor::as_ptr),
         security_quality_of_service: (&raw const quality).cast(),
     };
@@ -155,8 +175,15 @@ fn open(
         Access::Rename => FILE_READ_ATTRIBUTES | READ_CONTROL | DELETE,
     };
     let create_options = match kind {
-        Kind::Directory => FILE_DIRECTORY_FILE,
+        Kind::Directory | Kind::PinnedDirectory => FILE_DIRECTORY_FILE,
         Kind::RegularFile => FILE_NON_DIRECTORY_FILE,
+        Kind::SocketRendezvous => FILE_NON_DIRECTORY_FILE | FILE_OPEN_REPARSE_POINT,
+    };
+    let share_access = match kind {
+        Kind::Directory | Kind::RegularFile => {
+            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE
+        }
+        Kind::PinnedDirectory | Kind::SocketRendezvous => FILE_SHARE_READ | FILE_SHARE_WRITE,
     };
     let create_disposition = match disposition {
         Disposition::Existing => 1,
@@ -167,7 +194,9 @@ fn open(
     let mut handle = ptr::null_mut();
     // SAFETY: all pointed-to buffers and the optional parent handle remain
     // live for this synchronous call. No inherited or path-based fallback is
-    // used; OBJ_DONT_REPARSE covers every component resolved by the kernel.
+    // used. State opens keep OBJ_DONT_REPARSE for every resolved component.
+    // Socket opens have one validated leaf under an already retained parent,
+    // bypass final-tag processing, and require a separate exact AF_UNIX check.
     let status = unsafe {
         NtCreateFile(
             &mut handle,
@@ -176,7 +205,7 @@ fn open(
             &mut io_status,
             ptr::null(),
             FILE_ATTRIBUTE_NORMAL,
-            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+            share_access,
             create_disposition,
             create_options | FILE_SYNCHRONOUS_IO_NONALERT,
             ptr::null(),
@@ -201,11 +230,18 @@ fn open(
 
 pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io::Result<()> {
     let name = child_name(destination)?;
-    let name_bytes = name.len() * size_of::<u16>();
-    let size =
-        (offset_of!(FILE_RENAME_INFO, FileName) + name_bytes).max(size_of::<FILE_RENAME_INFO>());
+    let name_bytes = name
+        .len()
+        .checked_mul(size_of::<u16>())
+        .ok_or_else(|| invalid_name("destination name is too long"))?;
+    // NtSetInformationFile requires the fixed structure size plus the complete
+    // counted name, including the structure's trailing alignment padding.
+    let size = size_of::<FILE_RENAME_INFO>()
+        .checked_add(name_bytes)
+        .ok_or_else(|| invalid_name("rename buffer is too large"))?;
     let mut storage = vec![0_usize; size.div_ceil(size_of::<usize>())];
     let info = storage.as_mut_ptr().cast::<FILE_RENAME_INFO>();
+    let mut io_status = IO_STATUS_BLOCK::default();
     // SAFETY: the allocation is aligned for this pointer-containing struct,
     // includes the complete variable name, and outlives the synchronous call.
     unsafe {
@@ -220,14 +256,20 @@ pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io:
             (&raw mut (*info).FileName).cast(),
             name.len(),
         );
-        if SetFileInformationByHandle(
+        // The native counted-name API resolves RootDirectory directly. The
+        // Win32 rename wrapper may resolve a relative name in the process
+        // namespace instead of accepting the retained directory handle.
+        let status = NtSetInformationFile(
             source.as_raw_handle(),
-            FileRenameInfo,
+            &mut io_status,
             storage.as_ptr().cast(),
             u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?,
-        ) == 0
-        {
-            return Err(io::Error::last_os_error());
+            FILE_RENAME_INFORMATION,
+        );
+        if status < 0 {
+            return Err(io::Error::from_raw_os_error(
+                RtlNtStatusToDosError(status) as i32
+            ));
         }
     }
     Ok(())

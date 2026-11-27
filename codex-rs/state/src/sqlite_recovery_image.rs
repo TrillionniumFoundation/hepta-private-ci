@@ -157,7 +157,12 @@ impl SqliteConfig {
         }
         #[cfg(windows)]
         {
-            if target.parent() != Some(self.home()) || target == guard.inner.database_path {
+            use codex_utils_path::normalize_for_native_workdir;
+
+            if !super::has_parent(target, self.home())
+                || normalize_for_native_workdir(target)
+                    == normalize_for_native_workdir(&guard.inner.database_path)
+            {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
             guard.revalidate_for(self)?;
