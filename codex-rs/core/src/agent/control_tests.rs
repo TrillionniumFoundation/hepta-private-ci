@@ -2650,15 +2650,24 @@ async fn spawn_agent_fork_last_n_turns_keeps_only_recent_turns() {
         .await
         .expect("parent rollout should flush");
 
+    // Inspect the fork baseline before a real model turn rebuilds its context.
+    let child_path = AgentPath::root().join("forked").expect("forked child path");
     let child_thread_id = harness
         .control
-        .spawn_agent_with_metadata(
+        .spawn_agent_with_communication(
             harness.config.clone(),
-            text_input("child task"),
+            InterAgentCommunication::new(
+                AgentPath::root(),
+                child_path.clone(),
+                Vec::new(),
+                "child task".to_string(),
+                /*trigger_turn*/ false,
+            ),
+            AgentCommunicationContext::new(AgentCommunicationKind::Spawn, parent_thread_id),
             Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
                 parent_thread_id,
                 depth: 1,
-                agent_path: None,
+                agent_path: Some(child_path),
                 agent_nickname: None,
                 agent_role: None,
             })),
@@ -2777,15 +2786,24 @@ async fn spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_li
         .await
         .expect("parent rollout should flush");
 
+    // Inspect the fork baseline before a real model turn rebuilds its context.
+    let child_path = AgentPath::root().join("forked").expect("forked child path");
     let child_thread_id = harness
         .control
-        .spawn_agent_with_metadata(
+        .spawn_agent_with_communication(
             harness.config.clone(),
-            text_input("child task"),
+            InterAgentCommunication::new(
+                AgentPath::root(),
+                child_path.clone(),
+                Vec::new(),
+                "child task".to_string(),
+                /*trigger_turn*/ false,
+            ),
+            AgentCommunicationContext::new(AgentCommunicationKind::Spawn, parent_thread_id),
             Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
                 parent_thread_id,
                 depth: 1,
-                agent_path: None,
+                agent_path: Some(child_path),
                 agent_nickname: None,
                 agent_role: None,
             })),
