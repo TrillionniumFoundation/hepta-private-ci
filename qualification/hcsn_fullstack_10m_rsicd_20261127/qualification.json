@@ -1,0 +1,114 @@
+{
+ "literal": {
+  "params": 11101984,
+  "nll": 6.937558650970459,
+  "early_patch_gradient_L1": 34.22694778442383,
+  "future_to_prefix_max": 0.0,
+  "wire_gradient": 0.07422471046447754,
+  "wire_intervention": 0.01973956823348999,
+  "mass_error": 4.172325134277344e-07,
+  "equity_intervention": 0.011106625199317932,
+  "equity_feedback_gradient": 0.020518586039543152,
+  "monetary_loss_intervention": 0.014359205961227417,
+  "monetary_loss_feedback_gradient": 0.004286444745957851,
+  "initial_release_mean_per_layer": [
+   0.06508932262659073,
+   0.04815540462732315,
+   0.04967021569609642,
+   0.048896849155426025,
+   0.04544829577207565,
+   0.045324597507715225
+  ],
+  "untrained_grid4_to_12": {
+   "max_logit": 0.07654798030853271,
+   "nll_delta": -0.0022821426391601562,
+   "release_mean_abs_by_layer": [
+    0.015879979357123375,
+    0.014542353339493275,
+    0.011726216413080692,
+    0.011538995429873466,
+    0.010942109860479832,
+    0.010914251208305359
+   ]
+  }
+ },
+ "smooth": {
+  "params": 11101984,
+  "nll": 6.912490367889404,
+  "early_patch_gradient_L1": 59.24241638183594,
+  "future_to_prefix_max": 0.0,
+  "wire_gradient": 0.08967957645654678,
+  "wire_intervention": 0.03069332242012024,
+  "mass_error": 4.172325134277344e-07,
+  "equity_intervention": 0.018128424882888794,
+  "equity_feedback_gradient": 0.022832857444882393,
+  "monetary_loss_intervention": 0.02158990502357483,
+  "monetary_loss_feedback_gradient": 0.006173483561724424
+ },
+ "no_wire": {
+  "params": 11101984,
+  "nll": 6.937709331512451,
+  "early_patch_gradient_L1": 34.241729736328125,
+  "future_to_prefix_max": 0.0,
+  "wire_gradient": 0.0,
+  "wire_intervention": 0.0,
+  "mass_error": 4.76837158203125e-07,
+  "equity_intervention": 0.011293202638626099,
+  "equity_feedback_gradient": 0.02279181219637394,
+  "monetary_loss_intervention": 0.014356151223182678,
+  "monetary_loss_feedback_gradient": 0.004848775919526815
+ },
+ "no_E": {
+  "params": 11101984,
+  "nll": 6.852486610412598,
+  "early_patch_gradient_L1": 106.90129089355469,
+  "future_to_prefix_max": 0.0,
+  "wire_gradient": 0.11208005249500275,
+  "wire_intervention": 0.04351550340652466,
+  "mass_error": 4.172325134277344e-07,
+  "equity_intervention": 0.0,
+  "equity_feedback_gradient": 0.0,
+  "monetary_loss_intervention": 0.040133118629455566,
+  "monetary_loss_feedback_gradient": 0.00591311464086175
+ },
+ "no_L": {
+  "params": 11101984,
+  "nll": 6.940381050109863,
+  "early_patch_gradient_L1": 33.467445373535156,
+  "future_to_prefix_max": 0.0,
+  "wire_gradient": 0.07469110935926437,
+  "wire_intervention": 0.019390374422073364,
+  "mass_error": 4.172325134277344e-07,
+  "equity_intervention": 0.01101994514465332,
+  "equity_feedback_gradient": 0.020055891945958138,
+  "monetary_loss_intervention": 0.0,
+  "monetary_loss_feedback_gradient": 0.0
+ },
+ "no_prices": {
+  "params": 11101984,
+  "nll": 6.860637664794922,
+  "early_patch_gradient_L1": 103.2514877319336,
+  "future_to_prefix_max": 0.0,
+  "wire_gradient": 0.11127908527851105,
+  "wire_intervention": 0.04050157964229584,
+  "mass_error": 3.5762786865234375e-07,
+  "equity_intervention": 0.0,
+  "equity_feedback_gradient": 0.0,
+  "monetary_loss_intervention": 0.0,
+  "monetary_loss_feedback_gradient": 0.0
+ },
+ "lif": {
+  "params": 11101984,
+  "nll": 6.835777759552002,
+  "early_patch_gradient_L1": 220.94895935058594,
+  "future_to_prefix_max": 0.0,
+  "wire_gradient": 0.18532317876815796,
+  "wire_intervention": 1.0648319721221924
+ },
+ "sdpa": {
+  "params": 10860512,
+  "nll": 6.738264560699463,
+  "early_patch_gradient_L1": 406.89788818359375,
+  "future_to_prefix_max": 0.0
+ }
+}
