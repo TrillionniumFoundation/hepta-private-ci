@@ -19,7 +19,7 @@ Example: `7_jackson_32.wav`
 ### How to use with Hub
 A simple way of using this dataset is with [Activeloop](https://activeloop.ai)'s python package [Hub](https://github.com/activeloopai/Hub)!
 
-First, run `pip install hub` (or `pip3 install hub`). 
+First, run `pip install hub` (or `pip3 install hub`).
 
 ```python
 import hub
@@ -86,4 +86,3 @@ Did you use FSDD in a paper, project or app? Add it here!
 
 ### License
 [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/)
-

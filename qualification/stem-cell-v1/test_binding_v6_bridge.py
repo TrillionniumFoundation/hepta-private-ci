@@ -34,7 +34,7 @@ class FactBridgeTests(unittest.TestCase):
         self.assertTrue(torch.equal(rng, torch.random.get_rng_state()),
                         "constructing matched arms must not contaminate global RNG")
         for arm, model in models.items():
-            self.assertEqual(sum(p.numel() for p in model.parameters()) -  
+            self.assertEqual(sum(p.numel() for p in model.parameters()) -
                              sum(p.numel() for p in __import__('token_reader').TokenReader(8, 8).parameters()), 256)
             self.assertFalse(model.training)
             self.assertTrue(all(not p.requires_grad for p in model.parameters()))

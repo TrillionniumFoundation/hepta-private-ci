@@ -106,7 +106,9 @@ HISTORICAL_INVENTORY_DOCUMENTS_INDEX = (
 )
 C2_ORIGINAL_STATUS_INDEX = "qa/repository-consolidation/20261126/c2-original-status/raw-evidence-storage.json"
 HISTORICAL_UPSTREAM_TEST_RECIPES_INDEX = "qa/repository-consolidation/20261126/upstream-test-recipe-custody/raw-evidence-storage.json"
+FSDD_UPSTREAM_ATTRIBUTION_INDEX = "qa/repository-consolidation/20261126/fsdd-upstream-attribution/raw-evidence-storage.json"
 INDEX_SHA256 = {
+    FSDD_UPSTREAM_ATTRIBUTION_INDEX: "2ad6221210c32b84c49c86924edc525996aeb226c3fd8c13916e3348b6b1255b",
     HISTORICAL_UPSTREAM_TEST_RECIPES_INDEX: "6be8378b48363ca551fe0e9437d5df336d52fa76d87b861c9b04f1f2e65865e5",
     C2_ORIGINAL_STATUS_INDEX: "3830a7eedfde9596e53c213d4a9b35068d5e388b87573622eca9d8115289253e",
     HISTORICAL_INVENTORY_DOCUMENTS_INDEX: "12a0a89718be4e89d2820cc213d7334efd497267397204ff8704ab43a9059948",
@@ -199,6 +201,7 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "experiments/hcsn_free_boundary_v1/data/FSDD_UPSTREAM_README.md": "f59207b4ee0ec917162a23a7d5471dc9341c92ad17f95373996f93d438ac686c",
     "qualification/hcsn_differentiable/replay_v1/evidence/native-desktop-20261112-d706/ORIGINAL_C2_STATUS.json": (
         "88ce606e73060d46d67b54f907f103b6533a428d80f157bbd78c1398bf8941a9"
     ),

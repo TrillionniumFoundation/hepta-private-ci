@@ -190,8 +190,9 @@ The stream implementation avoids a second complete compressed temporary copy.
 FSDD attribution: Jakobovski/free-spoken-digit-dataset and its contributors;
 commit `26eb9aaf76e81b692f806f9140c2d2777410d7a1`, CC-BY-SA-4.0. Retain that
 attribution and license when redistributing the audio or its derivatives.
-The source URL is in the manifest; the original README is preserved separately
-as [data/FSDD_UPSTREAM_README.md](data/FSDD_UPSTREAM_README.md).
+The source URL is in the manifest. The [upstream README](data/FSDD_UPSTREAM_README.md)
+is displayed with whitespace normalized; the [original bytes](data/FSDD_UPSTREAM_README.md.evidence.gz)
+are preserved separately.
 MNIST provenance and byte hashes are retained in the source manifest.
 
 The CfC cell and Apache-2.0 license are copied unmodified from the pinned
