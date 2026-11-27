@@ -75,7 +75,11 @@ impl LaunchDesktop {
         let restricting_sids = unsafe { private_desktop_restricting_sids(h_token)? };
         if use_private_desktop {
             let private_desktop = PrivateDesktop::create(restricting_sids, logs_base_dir)?;
-            let startup_name = to_wide(format!("Winsta0\\{}", private_desktop.name));
+            let startup_name = to_wide(format!(
+                "{}\\{}",
+                current_window_station_name()?,
+                private_desktop.name
+            ));
             Ok(Self {
                 _private_desktop: Some(private_desktop),
                 startup_name,
@@ -94,6 +98,44 @@ impl LaunchDesktop {
     pub fn startup_info_desktop(&self) -> *mut u16 {
         self.startup_name.as_ptr() as *mut u16
     }
+}
+
+// The elevated runner uses a station created only for its private logon session.
+// Do not redirect that owned desktop to the interactive Winsta0 namespace.
+fn current_window_station_name() -> Result<String> {
+    use windows_sys::Win32::System::StationsAndDesktops::GetProcessWindowStation;
+    use windows_sys::Win32::System::StationsAndDesktops::GetUserObjectInformationW;
+    use windows_sys::Win32::System::StationsAndDesktops::UOI_NAME;
+
+    let station = unsafe { GetProcessWindowStation() };
+    if station == 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let mut needed = 0;
+    unsafe { GetUserObjectInformationW(station, UOI_NAME, ptr::null_mut(), 0, &mut needed) };
+    if needed < 2 || needed > 65_536 || needed % 2 != 0 {
+        anyhow::bail!("invalid native window station name length: {needed}");
+    }
+    let mut name = vec![0u16; needed as usize / 2];
+    if unsafe {
+        GetUserObjectInformationW(
+            station,
+            UOI_NAME,
+            name.as_mut_ptr().cast(),
+            needed,
+            &mut needed,
+        )
+    } == 0
+    {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let Some(end) = name.iter().position(|value| *value == 0) else {
+        anyhow::bail!("native window station name is not terminated");
+    };
+    if end == 0 {
+        anyhow::bail!("native window station name is empty");
+    }
+    Ok(String::from_utf16(&name[..end])?)
 }
 
 struct PrivateDesktop {

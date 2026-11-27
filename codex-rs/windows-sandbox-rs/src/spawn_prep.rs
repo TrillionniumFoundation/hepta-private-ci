@@ -435,22 +435,17 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         proxy_enforced,
         proxy_settings_mode,
     )?;
-    let caps = load_or_create_cap_sids(codex_home)?;
-    let (psid_to_use, cap_sids) = if uses_write_capabilities {
-        let cap_sids = root_capability_sids(codex_home, cwd, effective_write_roots)?
-            .into_iter()
-            .map(|root_sid| root_sid.sid_str)
-            .collect::<Vec<_>>();
-        if cap_sids.is_empty() {
-            anyhow::bail!("workspace-write sandbox has no writable root capability SIDs");
-        }
-        (LocalSid::from_string(&cap_sids[0])?, cap_sids)
-    } else {
-        (
-            LocalSid::from_string(&caps.readonly)?,
-            vec![caps.readonly.clone()],
-        )
-    };
+    let cap_sids = crate::setup::filesystem_capability_sids_for_permissions(
+        &permissions,
+        cwd,
+        env_map,
+        codex_home,
+        read_roots_override,
+        read_roots_include_platform_defaults,
+        setup_write_roots_override,
+        deny_read_paths_override,
+    )?;
+    let psid_to_use = LocalSid::from_string(&cap_sids[0])?;
 
     unsafe {
         allow_null_device(psid_to_use.as_ptr());

@@ -218,7 +218,13 @@ impl HeldObject {
         })
     }
 
-    fn set_access(&mut self, right: u32, access: Access, everyone: *mut c_void) -> Result<()> {
+    fn set_access(
+        &mut self,
+        right: u32,
+        access: Access,
+        everyone: *mut c_void,
+        read_cap: Option<*mut c_void>,
+    ) -> Result<()> {
         let trustee = TRUSTEE_W {
             pMultipleTrustee: std::ptr::null_mut(),
             MultipleTrusteeOperation: 0,
@@ -244,8 +250,22 @@ impl HeldObject {
                 },
             );
         }
+        if let Some(read_cap) = read_cap {
+            // This extra ACE changes neither deletion route. Both the host and
+            // private-account matrix receive these exact same read-only bytes.
+            entries.push(EXPLICIT_ACCESS_W {
+                grfAccessPermissions: FILE_GENERIC_READ
+                    | windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE,
+                grfAccessMode: GRANT_ACCESS,
+                grfInheritance: 0,
+                Trustee: TRUSTEE_W {
+                    ptstrName: read_cap.cast(),
+                    ..trustee
+                },
+            });
+        }
         let mut acl = std::ptr::null_mut();
-        // SAFETY: all entries and the validated Everyone SID remain live. A NULL
+        // SAFETY: all entries and the validated Everyone/read SIDs remain live. A NULL
         // old ACL deliberately excludes every inherited or hidden identity grant.
         let code = unsafe {
             SetEntriesInAclW(
@@ -354,6 +374,17 @@ pub(crate) struct DeleteMatrix(Vec<DeleteRow>);
 
 impl DeleteMatrix {
     pub(crate) fn new(root: &Path) -> Result<Self> {
+        Self::new_with_optional_read_cap(root, None)
+    }
+
+    pub(crate) fn new_with_read_cap(
+        root: &Path,
+        read_cap: &crate::token::LocalSid,
+    ) -> Result<Self> {
+        Self::new_with_optional_read_cap(root, Some(read_cap.as_ptr()))
+    }
+
+    fn new_with_optional_read_cap(root: &Path, read_cap: Option<*mut c_void>) -> Result<Self> {
         fs::create_dir(root)?;
         let everyone = crate::token::LocalSid::from_string("S-1-1-0")?;
         let mut rows = Vec::new();
@@ -378,9 +409,14 @@ impl DeleteMatrix {
                 DeleteRoute::ParentOnly | DeleteRoute::Both => Access::Allow,
                 DeleteRoute::Neither | DeleteRoute::TargetOnly => Access::Deny,
             };
-            parent.set_access(FILE_DELETE_CHILD, parent_access, everyone.as_ptr())?;
-            file.set_access(DELETE, target_access, everyone.as_ptr())?;
-            directory.set_access(DELETE, target_access, everyone.as_ptr())?;
+            parent.set_access(
+                FILE_DELETE_CHILD,
+                parent_access,
+                everyone.as_ptr(),
+                read_cap,
+            )?;
+            file.set_access(DELETE, target_access, everyone.as_ptr(), read_cap)?;
+            directory.set_access(DELETE, target_access, everyone.as_ptr(), read_cap)?;
             rows.push(DeleteRow {
                 route,
                 parent,

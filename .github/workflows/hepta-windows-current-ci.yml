@@ -1,70 +1,170 @@
-name: Windows original CI regressions (declared scope only)
+name: Windows owned credential nine regressions
 
 on:
   pull_request:
-    paths:
-      - ".github/workflows/hepta-windows-current-ci.yml"
-      - ".github/scripts/windows_current_ci.py"
-      - ".github/scripts/test_windows_current_ci.py"
-      - ".github/fixtures/windows-current-ci-scope.json"
-      - "codex-rs/git-utils/src/git_process_tests.rs"
-      - "codex-rs/state/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-operator-acceptance/**"
-      - "codex-rs/hepta-shadow-qualification/**"
-      - "codex-rs/windows-sandbox-rs/**"
-      - "codex-rs/Cargo.lock"
-  workflow_dispatch:
+    types: [opened]
+    branches:
+      - "fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e"
 
 permissions:
   contents: read
+  actions: read
+  pull-requests: read
 
 concurrency:
-  group: hepta-windows-current-ci-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: hepta-windows-credentials-nine-20261127-7c9e
+  cancel-in-progress: false
 
 env:
-  RUSTUP_TOOLCHAIN: 1.96.0
-  CARGO_BUILD_JOBS: "1"
-  CARGO_INCREMENTAL: "0"
-  CARGO_PROFILE_DEV_DEBUG: "0"
-  CARGO_PROFILE_TEST_DEBUG: "0"
-  CARGO_TERM_COLOR: never
+  RUSTUP_TOOLCHAIN: "1.96.0"
   PYTHONDONTWRITEBYTECODE: "1"
   PYTHONUTF8: "1"
+  GIT_CONFIG_COUNT: "3"
+  GIT_CONFIG_KEY_0: core.autocrlf
+  GIT_CONFIG_VALUE_0: "false"
+  GIT_CONFIG_KEY_1: core.symlinks
+  GIT_CONFIG_VALUE_1: "false"
+  GIT_CONFIG_KEY_2: core.longpaths
+  GIT_CONFIG_VALUE_2: "true"
 
 jobs:
-  original-regressions:
-    runs-on: windows-latest
-    timeout-minutes: 65
+  owned-credential-nine:
+    if: >-
+      ${{ github.event_name == 'pull_request' &&
+      github.event.action == 'opened' &&
+      github.run_attempt == 1 &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'fix/hepta-windows-credentials-owned-nine-20261127-7c9e' &&
+      github.event.pull_request.base.ref == 'fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e' &&
+      github.event.pull_request.base.sha == '1b2ae899a8956ee96201956bced828f0824ea5f3' &&
+      github.actor == 'ProfHepta' &&
+      github.event.pull_request.user.login == 'ProfHepta' }}
+    runs-on: windows-2025
+    timeout-minutes: 40
     steps:
-      - name: Checkout the exact source head
+      - name: Open the original shared cost ledger
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ($env:GITHUB_RUN_ATTEMPT -ne "1") { throw "Original attempt required" }
+          $out = Join-Path $env:RUNNER_TEMP ("hepta-windows-credentials-nine-" + $env:GITHUB_RUN_ID)
+          $toolsRoot = [IO.Path]::GetFullPath((Join-Path $env:RUNNER_TEMP ("hepta-windows-credentials-tools-" + $env:GITHUB_RUN_ID)))
+          if (Test-Path -LiteralPath $out) { throw "Original observation directory already exists" }
+          if (Test-Path -LiteralPath $toolsRoot) { throw "Explicit tool homes already exist" }
+          $rustupHome = Join-Path $toolsRoot "rustup"
+          $cargoHome = Join-Path $toolsRoot "cargo"
+          $toolchainBin = Join-Path $rustupHome "toolchains/1.96.0-x86_64-pc-windows-msvc/bin"
+          $toolchainBin = [IO.Path]::GetFullPath($toolchainBin)
+          $tick = [Environment]::TickCount64
+          $utc = [DateTimeOffset]::UtcNow.ToString("o")
+          [IO.Directory]::CreateDirectory($out) | Out-Null
+          $boot = @{
+            schema = "hepta.windows_credentials.original_job_clock.v1"
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            tick_count_ms = $tick
+            utc = $utc
+            shared_whole_seconds = 2400
+            working_seconds = 2100
+            retention_seconds = 300
+            includes_checkout_tools_diagnostics_failures_and_upload = $true
+            tool_homes = @{
+              schema = "hepta.windows_credentials.explicit_tool_homes.v1"
+              root = $toolsRoot
+              rustup_home = $rustupHome
+              cargo_home = $cargoHome
+              toolchain = "1.96.0-x86_64-pc-windows-msvc"
+              toolchain_bin = $toolchainBin
+              selection = "explicit-before-provision-no-defaults"
+            }
+          } | ConvertTo-Json -Depth 8
+          [IO.File]::WriteAllText((Join-Path $out "BOOTSTRAP.json"), $boot, [Text.UTF8Encoding]::new($false))
+          [IO.Directory]::CreateDirectory($rustupHome) | Out-Null
+          [IO.Directory]::CreateDirectory($cargoHome) | Out-Null
+          $homes = "RUSTUP_HOME=$rustupHome" + [Environment]::NewLine + "CARGO_HOME=$cargoHome" + [Environment]::NewLine
+          [IO.File]::AppendAllText($env:GITHUB_ENV, $homes, [Text.UTF8Encoding]::new($false))
+      - name: Checkout the original opened source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
           persist-credentials: false
-      - name: Install the pinned native compiler
+          clean: true
+      - name: Provision the pinned compiler request
         uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
-      - name: Install repository test runners
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
-      - name: Verify strict receipt rejection controls
+          toolchain: "1.96.0"
+          targets: x86_64-pc-windows-msvc
+      - name: Observe the owned nine credential cases
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEPTA_WINDOWS_CREDENTIALS_INPUT_SHA256: "79b18ba4f374d39b00a796d80f663ef6dc7e691d572b63a105acda7b8d8e584c"
         run: |
-          python -m unittest discover -s .github/scripts -p test_windows_current_ci.py
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Run the original process, transport and backend regressions
-        shell: pwsh
-        run: |
-          $env:CARGO_TARGET_DIR = Join-Path $env:RUNNER_TEMP "hepta-windows-current-target"
-          python .github/scripts/windows_current_ci.py --expected-head "${{ github.event.pull_request.head.sha || github.sha }}" --output "$env:RUNNER_TEMP/hepta-windows-current-ci"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Retain every result with exact source identity
+          $ErrorActionPreference = "Stop"
+          $out = Join-Path $env:RUNNER_TEMP ("hepta-windows-credentials-nine-" + $env:GITHUB_RUN_ID)
+          $started = [Environment]::TickCount64
+          $code = 1
+          $failure = $null
+          try {
+            $bootstrap = @'
+          import hashlib
+          from pathlib import Path
+          import sys
+          path = Path(sys.argv[1]).absolute()
+          raw = path.read_bytes()
+          if len(raw) > 131072 or hashlib.sha256(raw).hexdigest() != sys.argv[2]:
+              raise SystemExit("original runner source bytes differ")
+          scope = {"__name__": "__main__", "__file__": str(path), "__package__": ""}
+          exec(compile(raw, str(path), "exec"), scope)
+          '@
+            & python -I -B -X utf8 -c $bootstrap (Join-Path $env:GITHUB_WORKSPACE "scripts/run_hepta_windows_credentials_nine_v1.py") "fb38432604bf422d3a11557c1f86922693d80b78604439db25ac9fc9d95f1099"
+            $code = $LASTEXITCODE
+            if ($null -eq $code) { $code = 1; throw "No original Python exit code" }
+          } catch {
+            $failure = $_.Exception.Message
+            $code = 1
+          } finally {
+            $terminal = @{
+              schema = "hepta.windows_credentials.bootstrap_terminal.v1"
+              exit_code = $code
+              failure = $failure
+              started_tick_ms = $started
+              completed_tick_ms = [Environment]::TickCount64
+              result_exists = (Test-Path -LiteralPath (Join-Path $out "RESULT.json"))
+              after_io_exists = (Test-Path -LiteralPath (Join-Path $out "AFTER_IO.json"))
+              whole_job_and_upload_still_require_original_platform_readback = $true
+            } | ConvertTo-Json -Depth 8
+            [IO.File]::WriteAllText((Join-Path $out "BOOTSTRAP_TERMINAL.json"), $terminal, [Text.UTF8Encoding]::new($false))
+          }
+          exit $code
+      - name: Retain the original evidence including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: windows-current-ci-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/hepta-windows-current-ci/
+          name: windows-owned-credentials-nine-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/BOOTSTRAP*.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/RESULT.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/AFTER_IO.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/*.ORIGINAL_ATTEMPT.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/INPUT.original.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/ORIGINAL_EVENT.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/SOURCE_*.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/TOOLS_*.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/*BEFORE.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/*AFTER.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/source-*.original
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/*.original.txt
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/*.original.jsonl
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/*.windows.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/COLD_BUILD_ORIGINAL_RECEIPT.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/COMPLETE_LIBRARY_INVENTORY.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/NATIVE_CONTEXT.original.json
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/original-api/
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/commands/
+            ${{ runner.temp }}/hepta-windows-credentials-nine-${{ github.run_id }}/exact-nine/
           if-no-files-found: error
           retention-days: 14
+          compression-level: 6

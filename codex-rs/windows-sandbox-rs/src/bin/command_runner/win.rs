@@ -87,6 +87,121 @@ struct IpcSpawnedProcess {
     conpty_owner: Option<codex_windows_sandbox::ConptyInstance>,
     hpc_handle: Option<HANDLE>,
     _pipe_handles: Option<PipeSpawnHandles>,
+    // On returning/error paths, desktop owners drop before the station guard.
+    // The existing normal std::process::exit path ends this runner directly.
+    _private_station: PrivateWindowStation,
+}
+
+// This runner owns one command. Switch only its process, before starting any
+// child/transport worker, to a create-only station for this new logon session.
+// No DACL on the inherited interactive station or desktop is changed.
+struct PrivateWindowStation {
+    owned: isize,
+    previous: isize,
+}
+
+impl PrivateWindowStation {
+    fn create_for_token(token: HANDLE) -> Result<Self> {
+        use windows_sys::Win32::Security::GetTokenInformation;
+        use windows_sys::Win32::Security::InitializeSecurityDescriptor;
+        use windows_sys::Win32::Security::SECURITY_ATTRIBUTES;
+        use windows_sys::Win32::Security::SECURITY_DESCRIPTOR;
+        use windows_sys::Win32::Security::SetSecurityDescriptorDacl;
+        use windows_sys::Win32::Security::TOKEN_DEFAULT_DACL;
+        use windows_sys::Win32::Security::TokenDefaultDacl;
+        use windows_sys::Win32::System::StationsAndDesktops::CloseWindowStation;
+        use windows_sys::Win32::System::StationsAndDesktops::CreateWindowStationW;
+        use windows_sys::Win32::System::StationsAndDesktops::GetProcessWindowStation;
+        use windows_sys::Win32::System::StationsAndDesktops::SetProcessWindowStation;
+        use windows_sys::Win32::UI::WindowsAndMessaging::CWF_CREATE_ONLY;
+
+        let previous = unsafe { GetProcessWindowStation() };
+        if previous == 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        let mut needed = 0;
+        unsafe { GetTokenInformation(token, TokenDefaultDacl, ptr::null_mut(), 0, &mut needed) };
+        if needed < std::mem::size_of::<TOKEN_DEFAULT_DACL>() as u32 || needed > 65_536 {
+            anyhow::bail!("invalid native default-DACL length: {needed}");
+        }
+        // TOKEN_DEFAULT_DACL contains a pointer and needs aligned backing storage.
+        let mut buffer = vec![0usize; (needed as usize).div_ceil(std::mem::size_of::<usize>())];
+        if unsafe {
+            GetTokenInformation(
+                token,
+                TokenDefaultDacl,
+                buffer.as_mut_ptr().cast(),
+                needed,
+                &mut needed,
+            )
+        } == 0
+        {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        let dacl = unsafe { &*buffer.as_ptr().cast::<TOKEN_DEFAULT_DACL>() };
+        if dacl.DefaultDacl.is_null() {
+            anyhow::bail!("private station requires an explicit token default DACL");
+        }
+        let mut descriptor: SECURITY_DESCRIPTOR = unsafe { std::mem::zeroed() };
+        if unsafe {
+            InitializeSecurityDescriptor((&mut descriptor as *mut SECURITY_DESCRIPTOR).cast(), 1)
+        } == 0
+        {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        if unsafe {
+            SetSecurityDescriptorDacl(
+                (&mut descriptor as *mut SECURITY_DESCRIPTOR).cast(),
+                1,
+                dacl.DefaultDacl,
+                0,
+            )
+        } == 0
+        {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        let attributes = SECURITY_ATTRIBUTES {
+            nLength: std::mem::size_of::<SECURITY_ATTRIBUTES>() as u32,
+            lpSecurityDescriptor: (&mut descriptor as *mut SECURITY_DESCRIPTOR).cast(),
+            bInheritHandle: 0,
+        };
+        // NULL requests the OS name for this logon session. Non-admin private
+        // accounts cannot choose a station name. CREATE_ONLY rejects reuse.
+        let owned =
+            unsafe { CreateWindowStationW(ptr::null(), CWF_CREATE_ONLY, 0x1000_0000, &attributes) };
+        if owned == 0 {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        if unsafe { SetProcessWindowStation(owned) } == 0 {
+            let error = std::io::Error::last_os_error();
+            unsafe { CloseWindowStation(owned) };
+            return Err(error.into());
+        }
+        Ok(Self { owned, previous })
+    }
+}
+
+impl Drop for PrivateWindowStation {
+    fn drop(&mut self) {
+        use windows_sys::Win32::System::StationsAndDesktops::CloseWindowStation;
+        use windows_sys::Win32::System::StationsAndDesktops::SetProcessWindowStation;
+        // A failed restoration is not recoverable by running another command
+        // under the wrong process station. The runner owns only this command.
+        if unsafe { SetProcessWindowStation(self.previous) } == 0 {
+            eprintln!(
+                "failed to restore runner window station: {}",
+                std::io::Error::last_os_error()
+            );
+            std::process::abort();
+        }
+        if unsafe { CloseWindowStation(self.owned) } == 0 {
+            eprintln!(
+                "failed to close owned runner window station: {}",
+                std::io::Error::last_os_error()
+            );
+            std::process::abort();
+        }
+    }
 }
 
 /// Small RAII wrapper for raw Win32 handles.
@@ -282,6 +397,11 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
             }
         }
     }?);
+    let private_station = PrivateWindowStation::create_for_token(h_token.raw())
+        .context("prepare private capability window station")?;
+    // Full capability tokens never use the interactive desktop, including when
+    // a caller did not request the optional old desktop mode.
+    let use_private_desktop = true;
     unsafe {
         // These ACL adjustments need the raw SID values, but ownership stays with `cap_psids`.
         // We do not manually `LocalFree` anything here; the wrappers handle every return path.
@@ -302,7 +422,7 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
             &req.command,
             &effective_cwd,
             &req.env,
-            req.use_private_desktop,
+            use_private_desktop,
             Some(log_dir.as_path()),
         )?;
         let job = conpty
@@ -345,7 +465,7 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
             } else {
                 ConsoleMode::Inherit
             },
-            req.use_private_desktop,
+            use_private_desktop,
             Some(log_dir.as_path()),
         )?;
         let pi = spawned_pipes.process;
@@ -368,6 +488,7 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
         conpty_owner,
         hpc_handle,
         _pipe_handles: pipe_handles,
+        _private_station: private_station,
     })
 }
 
@@ -541,6 +662,149 @@ fn spawn_input_loop(
     })
 }
 
+// Only the host test fixture can add these keys after the public transport has
+// rejected every caller-supplied reserved key. They are removed before policy
+// selection and before either CPAS/ConPTY child environment is constructed.
+struct OriginalChildObservation {
+    job: OwnedWinHandle,
+    witness: File,
+    acknowledge: File,
+}
+
+impl OriginalChildObservation {
+    fn take_from_env(env: &mut std::collections::HashMap<String, String>) -> Result<Option<Self>> {
+        const KEYS: [&str; 4] = [
+            "__HEPTA_NATIVE_JOB_HANDLE",
+            "__HEPTA_NATIVE_WITNESS_WRITE",
+            "__HEPTA_NATIVE_ACK_READ",
+            "__HEPTA_NATIVE_BRIDGE_VERSION",
+        ];
+        let found = KEYS.iter().filter(|key| env.contains_key(**key)).count();
+        if found == 0 {
+            anyhow::ensure!(
+                !env.keys()
+                    .any(|key| key.to_ascii_uppercase().starts_with("__HEPTA_NATIVE_")),
+                "unrecognized reserved native observation key"
+            );
+            return Ok(None);
+        }
+        anyhow::ensure!(
+            found == KEYS.len(),
+            "incomplete original native observation bridge"
+        );
+        let version = env
+            .remove(KEYS[3])
+            .context("native bridge version disappeared")?;
+        anyhow::ensure!(
+            version == "1",
+            "unsupported original native observation bridge"
+        );
+        let mut handles = Vec::with_capacity(3);
+        for key in &KEYS[..3] {
+            let text = env
+                .remove(*key)
+                .context("native bridge handle disappeared")?;
+            let value: isize = text
+                .parse()
+                .context("native bridge handle is not a decimal native value")?;
+            anyhow::ensure!(
+                value > 0 && value.to_string() == text && !handles.contains(&value),
+                "original native bridge handle is null, duplicated or malformed"
+            );
+            handles.push(value);
+        }
+        anyhow::ensure!(
+            !env.keys()
+                .any(|key| key.to_ascii_uppercase().starts_with("__HEPTA_NATIVE_")),
+            "unexpected additional original native bridge key"
+        );
+        let job = OwnedWinHandle::new(handles[0]);
+        let witness = unsafe { File::from_raw_handle(handles[1] as _) };
+        let acknowledge = unsafe { File::from_raw_handle(handles[2] as _) };
+        let mut member = 0;
+        let ok = unsafe {
+            windows_sys::Win32::System::JobObjects::IsProcessInJob(
+                windows_sys::Win32::System::Threading::GetCurrentProcess(),
+                job.raw(),
+                &mut member,
+            )
+        };
+        anyhow::ensure!(
+            ok != 0 && member != 0,
+            "original private runner does not belong to the supplied query-only outer Job"
+        );
+        Ok(Some(Self {
+            job,
+            witness,
+            acknowledge,
+        }))
+    }
+
+    fn retain_original_child_until_ack(mut self, process: HANDLE) -> Result<()> {
+        use std::io::Read;
+        use std::io::Write;
+        let pid = unsafe { GetProcessId(process) };
+        let mut created: windows_sys::Win32::Foundation::FILETIME = unsafe { std::mem::zeroed() };
+        let mut exited = created;
+        let mut kernel = created;
+        let mut user = created;
+        let times = unsafe {
+            windows_sys::Win32::System::Threading::GetProcessTimes(
+                process,
+                &mut created,
+                &mut exited,
+                &mut kernel,
+                &mut user,
+            )
+        };
+        if pid == 0 || times == 0 {
+            return Err(std::io::Error::last_os_error())
+                .context("original child hProcess identity for native witness");
+        }
+        let mut in_job = 0;
+        let membership = unsafe {
+            windows_sys::Win32::System::JobObjects::IsProcessInJob(
+                process,
+                self.job.raw(),
+                &mut in_job,
+            )
+        };
+        if membership == 0 {
+            return Err(std::io::Error::last_os_error())
+                .context("original CPAS/ConPTY hProcess outer Job membership");
+        }
+        let words = [
+            0x4850_5441_434c_4431u64,
+            1,
+            u64::from(pid),
+            process as u64,
+            (u64::from(created.dwHighDateTime) << 32) | u64::from(created.dwLowDateTime),
+            u64::from(in_job != 0),
+            self.job.raw() as u64,
+            0,
+        ];
+        let mut raw = [0u8; 64];
+        for (chunk, word) in raw.chunks_exact_mut(8).zip(words) {
+            chunk.copy_from_slice(&word.to_le_bytes());
+        }
+        self.witness
+            .write_all(&raw)
+            .context("write bounded original child-object witness")?;
+        // pi.hProcess remains owned by IpcSpawnedProcess throughout this wait.
+        // The host's existing 15-second SpawnReady deadline is shared with this
+        // acknowledgment. Losing that original host endpoint yields pipe EOF.
+        let mut acknowledgment = [0u8; 1];
+        self.acknowledge
+            .read_exact(&mut acknowledgment)
+            .context("read original host child-object acknowledgment")?;
+        anyhow::ensure!(
+            in_job != 0 && acknowledgment == [1],
+            "original host refused child identity or exact outer Job custody"
+        );
+        Ok(())
+    }
+}
+
 /// Entry point for the Windows command runner process.
 pub fn main() -> Result<()> {
     let mut pipe_in = None;
@@ -570,7 +834,7 @@ pub fn main() -> Result<()> {
         File::from_raw_handle(h_pipe_out.into_raw() as _)
     }));
 
-    let req = match read_spawn_request(&mut pipe_read) {
+    let mut req = match read_spawn_request(&mut pipe_read) {
         Ok(v) => v,
         Err(err) => {
             let _ = send_error(
@@ -580,6 +844,19 @@ pub fn main() -> Result<()> {
                 err.to_string(),
             );
             return Err(err);
+        }
+    };
+
+    let original_child_observation = match OriginalChildObservation::take_from_env(&mut req.env) {
+        Ok(value) => value,
+        Err(error) => {
+            let _ = send_error(
+                &pipe_write,
+                ErrorStage::ReadSpawnRequest,
+                windows_error_code(&error),
+                error.to_string(),
+            );
+            return Err(error);
         }
     };
 
@@ -595,6 +872,17 @@ pub fn main() -> Result<()> {
             return Err(err);
         }
     };
+    if let Some(observation) = original_child_observation {
+        if let Err(error) = observation.retain_original_child_until_ack(ipc_spawn.pi.hProcess) {
+            let _ = send_error(
+                &pipe_write,
+                ErrorStage::SpawnChild,
+                windows_error_code(&error),
+                error.to_string(),
+            );
+            return Err(error);
+        }
+    }
     let log_dir = Some(ipc_spawn.log_dir.as_path());
     let pi = ipc_spawn.pi;
     let stdout_handle = ipc_spawn.stdout_handle;

@@ -58,6 +58,8 @@ mod allow;
 mod audit;
 #[cfg(target_os = "windows")]
 mod cap;
+#[cfg(target_os = "windows")]
+mod credential_store;
 #[cfg(all(test, target_os = "windows"))]
 #[path = "delete_permission_matrix_tests.rs"]
 mod delete_permission_matrix;
@@ -75,6 +77,8 @@ mod env;
 mod helper_materialization;
 #[cfg(target_os = "windows")]
 mod hide_users;
+#[cfg(all(target_os = "windows", test))]
+mod hosted_credential_lifetime;
 #[cfg(target_os = "windows")]
 mod identity;
 #[cfg(target_os = "windows")]
@@ -173,6 +177,8 @@ pub use audit::apply_world_writable_scan_and_denies_for_permissions;
 #[cfg(target_os = "windows")]
 pub use cap::load_or_create_cap_sids;
 #[cfg(target_os = "windows")]
+pub use cap::readable_root_cap_sid_for_path;
+#[cfg(target_os = "windows")]
 pub use cap::workspace_cap_sid_for_cwd;
 #[cfg(target_os = "windows")]
 pub use cap::workspace_write_cap_sid_for_root;
@@ -184,6 +190,22 @@ pub use cap::workspace_write_root_overlaps_path;
 pub use conpty::ConptyInstance;
 #[cfg(target_os = "windows")]
 pub use conpty::spawn_conpty_process_as_user;
+#[cfg(target_os = "windows")]
+pub use credential_store::ProtectedCredentialFile;
+#[cfg(target_os = "windows")]
+pub use credential_store::ProtectedCredentialState;
+#[cfg(target_os = "windows")]
+pub use credential_store::SANDBOX_USERS_GROUP;
+#[cfg(target_os = "windows")]
+pub use credential_store::local_private_sandbox_account_sid;
+#[cfg(target_os = "windows")]
+pub use credential_store::local_private_sandbox_group_sid;
+#[cfg(target_os = "windows")]
+pub use credential_store::prepare_protected_sandbox_credentials;
+#[cfg(target_os = "windows")]
+pub use credential_store::require_private_accounts_absent;
+#[cfg(target_os = "windows")]
+pub use credential_store::verify_protected_sandbox_credentials;
 #[cfg(target_os = "windows")]
 pub use deny_read_acl::apply_deny_read_acls;
 #[cfg(target_os = "windows")]

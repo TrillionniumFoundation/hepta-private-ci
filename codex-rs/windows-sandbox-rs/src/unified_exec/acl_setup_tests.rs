@@ -1,10 +1,13 @@
+use super::AuthorizedReadOnlySandboxFixture;
+use super::authorized_elevated_fixture;
 use super::collect_stdout_and_exit;
 use super::current_thread_runtime;
-use super::legacy_process_test_guard;
-use super::sandbox_cwd;
-use super::spawn_windows_sandbox_session_legacy;
+use super::elevated_process_test_guard;
+use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::workspace_roots_for;
-use crate::run_windows_sandbox_capture_with_filesystem_overrides;
+use crate::ElevatedSandboxProfileCaptureRequest;
+use crate::hosted_credential_lifetime::HostedCredentialCase;
+use crate::run_windows_sandbox_capture_for_permission_profile_elevated;
 use crate::token::LocalSid;
 use crate::winutil::to_wide;
 use codex_protocol::models::PermissionProfile;
@@ -24,7 +27,6 @@ use std::path::PathBuf;
 use std::ptr;
 use std::rc::Rc;
 use std::time::Duration;
-use tempfile::TempDir;
 use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Foundation::ERROR_NO_TOKEN;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
@@ -189,9 +191,10 @@ impl Drop for DaclRestore {
 }
 
 struct AclSetupFailureFixture {
-    // Restore the ACL before TempDir tries to remove the fixture.
+    // Restore the actual ACL before shared policy handoff and owned data cleanup.
     _acl_restore: DaclRestore,
-    _test_root: TempDir,
+    _codex_home: HostedCredentialCase,
+    _test_root: AuthorizedReadOnlySandboxFixture,
     workspace: PathBuf,
     codex_home: PathBuf,
     protected_file: AbsolutePathBuf,
@@ -199,13 +202,62 @@ struct AclSetupFailureFixture {
 }
 
 impl AclSetupFailureFixture {
-    fn new() -> Self {
-        let test_root = TempDir::new_in(sandbox_cwd()).expect("create ACL failure test root");
+    fn new(test_name: &str) -> Self {
+        let test_root = authorized_elevated_fixture();
+        let private_home = HostedCredentialCase::new(test_name, test_root.path())
+            .expect("join original owned credential run and case lease");
         let workspace = test_root.path().join("workspace");
         fs::create_dir(&workspace).expect("create workspace");
-        let codex_home = test_root.path().join("codex-home");
+        let codex_home = private_home.path().to_path_buf();
         let protected_path = test_root.path().join("protected.txt");
         fs::write(&protected_path, "protected").expect("seed protected file");
+        // Establish the real private-account route before installing the ACL
+        // refusal. A preflight failure cannot masquerade as the tested rejection.
+        let profile = PermissionProfile::workspace_write();
+        let roots = workspace_roots_for(&workspace);
+        let healthy = run_windows_sandbox_capture_for_permission_profile_elevated(
+            ElevatedSandboxProfileCaptureRequest {
+                permission_profile: &profile,
+                workspace_roots: &roots,
+                codex_home: &codex_home,
+                command: vec![
+                    "C:\\Windows\\System32\\cmd.exe".to_string(),
+                    "/d".to_string(),
+                    "/c".to_string(),
+                    "echo private-route-ready".to_string(),
+                ],
+                cwd: &workspace,
+                env_map: HashMap::from([
+                    ("TEMP".to_string(), workspace.display().to_string()),
+                    ("TMP".to_string(), workspace.display().to_string()),
+                ]),
+                timeout_ms: Some(5_000),
+                cancellation: None,
+                use_private_desktop: true,
+                proxy_enforced: false,
+                network_proxy_restricting_sid: None,
+                read_roots_override: None,
+                read_roots_include_platform_defaults: false,
+                write_roots_override: None,
+                deny_read_paths_override: &[],
+                deny_write_paths_override: &[],
+            },
+        )
+        .expect("healthy elevated route before ACL refusal");
+        assert_eq!((healthy.exit_code, healthy.timed_out), (0, false));
+        assert!(String::from_utf8_lossy(&healthy.stdout).contains("private-route-ready"));
+        assert!(
+            crate::setup_error::read_setup_error_report(&codex_home)
+                .expect("inspect helper report after healthy route")
+                .is_none(),
+            "the negative control must start with no previous helper failure report",
+        );
+        assert!(
+            !workspace
+                .join("process-started.txt")
+                .try_exists()
+                .expect("inspect initial process marker")
+        );
         let file = OpenOptions::new()
             .access_mode(READ_CONTROL | WRITE_DAC)
             .open(&protected_path)
@@ -300,6 +352,7 @@ impl AclSetupFailureFixture {
         );
         let write_dac_error = match OpenOptions::new()
             .access_mode(WRITE_DAC)
+            .custom_flags(windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS)
             .open(&protected_path)
         {
             Ok(_) => None,
@@ -313,6 +366,7 @@ impl AclSetupFailureFixture {
 
         Self {
             _acl_restore: acl_restore,
+            _codex_home: private_home,
             marker: workspace.join("process-started.txt"),
             _test_root: test_root,
             workspace,
@@ -343,50 +397,81 @@ impl AclSetupFailureFixture {
     }
 
     fn assert_rejected(&self, error: anyhow::Error) {
+        let chain = format!("{error:#}");
+        let report = crate::setup_error::read_setup_error_report(&self.codex_home)
+            .expect("read original helper failure report")
+            .expect("failed real helper must retain its structured report");
+        let expected_path = format!("deny ACE failed on {}", self.protected_file.display());
+        for evidence in [&chain, &report.message] {
+            assert!(
+                evidence.contains("setup refresh"),
+                "wrong failure phase: {evidence}"
+            );
+            assert!(
+                evidence.contains(&expected_path),
+                "wrong failed object: {evidence}"
+            );
+            assert!(
+                evidence.contains("(os error 5)"),
+                "native WRITE_DAC denial missing: {evidence}"
+            );
+        }
         assert_eq!(
-            (
-                error.to_string(),
-                // ACL repair retains one WRITE_DAC handle. This fixture must
-                // fail at that open, before any native setter or child spawn.
-                error
-                    .root_cause()
-                    .downcast_ref::<std::io::Error>()
-                    .and_then(std::io::Error::raw_os_error),
-                self.marker.try_exists().expect("inspect process marker"),
-            ),
-            (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                Some(ERROR_ACCESS_DENIED as i32),
-                false,
-            ),
+            self.marker.try_exists().expect("inspect process marker"),
+            false
         );
+        assert_eq!(
+            fs::read_to_string(self.protected_file.as_path()).expect("read protected file"),
+            "protected"
+        );
+    }
+
+    fn finish(self) {
+        let Self {
+            _acl_restore,
+            mut _codex_home,
+            _test_root,
+            ..
+        } = self;
+        drop(_acl_restore);
+        _codex_home
+            .prepare_handoff()
+            .expect("archive original helper report and reset owned shared policy");
+        _test_root.close().expect("close owned ACL refusal fixture");
+        _codex_home
+            .finish()
+            .expect("retain case completion awaiting original outer native terminal");
     }
 }
 
 #[test]
-fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
-    let _guard = legacy_process_test_guard();
-    // Keep privilege removal local to this thread, including the native setup
-    // calls in the current-thread runtime. The process token remains unchanged.
-    let _caller = PrivilegeRestrictedCaller::enter();
+fn elevated_session_rejects_deny_acl_setup_failure_before_spawn() {
+    let _guard = elevated_process_test_guard();
+    // Construct and probe under the process primary identity first. Command::new
+    // does not pass this later thread impersonation token to the refresh helper.
+    let fixture = AclSetupFailureFixture::new(
+        "unified_exec::tests::acl_setup_tests::elevated_session_rejects_deny_acl_setup_failure_before_spawn",
+    );
+    let caller = PrivilegeRestrictedCaller::enter();
     current_thread_runtime().block_on(async {
-        let fixture = AclSetupFailureFixture::new();
-        let result = spawn_windows_sandbox_session_legacy(
+        let result = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &PermissionProfile::workspace_write(),
             &workspace_roots_for(&fixture.workspace),
             &fixture.codex_home,
             AclSetupFailureFixture::command(),
             &fixture.workspace,
             fixture.env(),
+            false,
+            None,
             Some(5_000),
+            None,
+            false,
+            None,
             &[],
             std::slice::from_ref(&fixture.protected_file),
-            /*tty*/ false,
-            /*stdin_open*/ false,
-            /*use_private_desktop*/ true,
+            false,
+            false,
+            true,
         )
         .await;
         let result = match result {
@@ -399,29 +484,42 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
         };
         fixture.assert_rejected(result.expect_err("ACL setup failure must prevent session spawn"));
     });
+    drop(caller);
+    fixture.finish();
 }
 
 #[test]
-fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
-    let _guard = legacy_process_test_guard();
-    let _caller = PrivilegeRestrictedCaller::enter();
-    let fixture = AclSetupFailureFixture::new();
-    let result = run_windows_sandbox_capture_with_filesystem_overrides(
-        &PermissionProfile::workspace_write(),
-        &workspace_roots_for(&fixture.workspace),
-        &fixture.codex_home,
-        AclSetupFailureFixture::command(),
-        &fixture.workspace,
-        fixture.env(),
-        Some(5_000),
-        /*cancellation*/ None,
-        &[],
-        std::slice::from_ref(&fixture.protected_file),
-        /*use_private_desktop*/ true,
+fn elevated_capture_rejects_deny_acl_setup_failure_before_spawn() {
+    let _guard = elevated_process_test_guard();
+    let fixture = AclSetupFailureFixture::new(
+        "unified_exec::tests::acl_setup_tests::elevated_capture_rejects_deny_acl_setup_failure_before_spawn",
+    );
+    let caller = PrivilegeRestrictedCaller::enter();
+    let result = run_windows_sandbox_capture_for_permission_profile_elevated(
+        ElevatedSandboxProfileCaptureRequest {
+            permission_profile: &PermissionProfile::workspace_write(),
+            workspace_roots: &workspace_roots_for(&fixture.workspace),
+            codex_home: &fixture.codex_home,
+            command: AclSetupFailureFixture::command(),
+            cwd: &fixture.workspace,
+            env_map: fixture.env(),
+            timeout_ms: Some(5_000),
+            cancellation: None,
+            use_private_desktop: true,
+            proxy_enforced: false,
+            network_proxy_restricting_sid: None,
+            read_roots_override: None,
+            read_roots_include_platform_defaults: false,
+            write_roots_override: None,
+            deny_read_paths_override: &[],
+            deny_write_paths_override: std::slice::from_ref(&fixture.protected_file),
+        },
     );
     fixture.assert_rejected(
         result
             .map(|_| ())
             .expect_err("ACL setup failure must prevent capture spawn"),
     );
+    drop(caller);
+    fixture.finish();
 }

@@ -395,11 +395,11 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     )
 }
 
-/// Create a restricted token that includes all provided capability SIDs, the token user SID, and
-/// any additional restricting SIDs.
+/// Create a full restricted token for the dedicated elevated sandbox account.
 ///
-/// This is intended for the elevated sandbox backend, where the token user is the dedicated
-/// sandbox account rather than the real signed-in user.
+/// The account remains the ordinary identity. It is not a restricting SID: filesystem
+/// access must also match a currently authorized read or write capability. Route
+/// identity markers are never granted filesystem or default-object permissions.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -432,11 +432,11 @@ pub unsafe fn create_readonly_token_with_caps_from(
     )
 }
 
-/// Create a restricted token that includes all provided capability SIDs, the token user SID, and
-/// any additional restricting SIDs.
+/// Create a full restricted token for the dedicated elevated sandbox account.
 ///
-/// This is intended for the elevated sandbox backend, where the token user is the dedicated
-/// sandbox account rather than the real signed-in user.
+/// The account remains the ordinary identity. It is not a restricting SID: filesystem
+/// access must also match a currently authorized read or write capability. Route
+/// identity markers are never granted filesystem or default-object permissions.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -457,17 +457,85 @@ unsafe fn create_token_with_caps_user_and_additional_restrictions_from(
     psid_capabilities: &[*mut c_void],
     additional_restricting_sids: &[*mut c_void],
 ) -> Result<HANDLE> {
-    let mut user_sid_bytes = get_user_sid_bytes(base_token)?;
-    let psid_user = user_sid_bytes.as_mut_ptr() as *mut c_void;
-    let mut extra_restricting_sids = Vec::with_capacity(additional_restricting_sids.len() + 1);
-    extra_restricting_sids.push(psid_user);
-    extra_restricting_sids.extend_from_slice(additional_restricting_sids);
-    create_token_with_caps_from(
+    if psid_capabilities.is_empty() {
+        return Err(anyhow!("no filesystem capability SIDs provided"));
+    }
+    let mut user_sid = get_user_sid_bytes(base_token)?;
+    let mut logon_sid = get_logon_sid_bytes(base_token)?;
+    let mut everyone_sid = world_sid()?;
+    let common_identities = [
+        LocalSid::from_string("S-1-5-11")?,
+        LocalSid::from_string("S-1-5-18")?,
+        LocalSid::from_string("S-1-5-19")?,
+        LocalSid::from_string("S-1-5-20")?,
+        LocalSid::from_string("S-1-5-32-544")?,
+        LocalSid::from_string("S-1-5-32-545")?,
+    ];
+    let mut forbidden = vec![
+        user_sid.as_mut_ptr().cast::<c_void>(),
+        logon_sid.as_mut_ptr().cast::<c_void>(),
+        everyone_sid.as_mut_ptr().cast::<c_void>(),
+    ];
+    forbidden.extend(common_identities.iter().map(LocalSid::as_ptr));
+    for sid in psid_capabilities.iter().chain(additional_restricting_sids) {
+        if forbidden
+            .iter()
+            .any(|identity| windows_sys::Win32::Security::EqualSid(*sid, *identity) != 0)
+        {
+            return Err(anyhow!(
+                "an ambient identity cannot be a filesystem capability or route marker"
+            ));
+        }
+    }
+
+    // Fresh for this token lineage; never installed on pre-existing filesystem
+    // roots. Sharing the read capability in a GENERIC_ALL default DACL would
+    // turn old child-created files into writable objects in later read scopes.
+    let object_sid = LocalSid::from_string(&crate::cap::make_random_cap_sid_string())?;
+    let mut entries: Vec<SID_AND_ATTRIBUTES> = psid_capabilities
+        .iter()
+        .chain(additional_restricting_sids)
+        .map(|sid| SID_AND_ATTRIBUTES {
+            Sid: *sid,
+            Attributes: 0,
+        })
+        .collect();
+    entries.push(SID_AND_ATTRIBUTES {
+        Sid: object_sid.as_ptr(),
+        Attributes: 0,
+    });
+    let mut new_token: HANDLE = 0;
+    // WRITE_RESTRICTED is deliberately absent: read and both native deletion
+    // routes must pass the restricting-SID check as well as the normal check.
+    if CreateRestrictedToken(
         base_token,
-        psid_capabilities,
-        &extra_restricting_sids,
-        RestrictingIdentity::Include,
-    )
+        DISABLE_MAX_PRIVILEGE | LUA_TOKEN,
+        0,
+        std::ptr::null(),
+        0,
+        std::ptr::null(),
+        entries.len() as u32,
+        entries.as_mut_ptr(),
+        &mut new_token,
+    ) == 0
+    {
+        return Err(anyhow!("CreateRestrictedToken failed: {}", GetLastError()));
+    }
+    let default_object_sids = [
+        user_sid.as_mut_ptr().cast(),
+        logon_sid.as_mut_ptr().cast(),
+        object_sid.as_ptr(),
+        // Ordinary host/service access does not add either SID to the restricted set.
+        common_identities[1].as_ptr(), // LocalSystem
+        common_identities[4].as_ptr(), // Administrators
+    ];
+    if let Err(error) = set_default_dacl(new_token, &default_object_sids)
+        .and_then(|()| enable_single_privilege(new_token, "SeChangeNotifyPrivilege"))
+    {
+        CloseHandle(new_token);
+        return Err(error);
+    }
+    Ok(new_token)
 }
 
 enum RestrictingIdentity {
@@ -499,7 +567,8 @@ unsafe fn create_token_with_caps_from(
         .collect();
     // A restricting SID is an alternative ACE match, not an additional requirement.
     // Legacy workspace writes must not pass via a broad parent Logon/Everyone ACE.
-    // Readonly and dedicated elevated-account tokens retain their existing policy.
+    // These legacy paths remain admission-gated; elevated tokens use the full
+    // capability constructor above.
     if matches!(restricting_identity, RestrictingIdentity::Include) {
         entries.push(SID_AND_ATTRIBUTES {
             Sid: psid_logon,

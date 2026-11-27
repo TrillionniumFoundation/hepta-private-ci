@@ -1,8 +1,7 @@
-use crate::dpapi;
+use crate::credential_store;
 use crate::logging::debug_log;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
 use crate::setup::SandboxNetworkIdentity;
-use crate::setup::SandboxUserRecord;
 use crate::setup::SandboxUsersFile;
 use crate::setup::SetupMarker;
 use crate::setup::gather_read_roots;
@@ -10,13 +9,10 @@ use crate::setup::gather_write_roots_for_permissions;
 use crate::setup::offline_proxy_settings_from_env;
 use crate::setup::run_elevated_setup_with_proxy_settings;
 use crate::setup::run_setup_refresh_with_overrides_and_proxy_settings;
-use crate::setup::sandbox_users_path;
 use crate::setup::setup_marker_path;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -73,50 +69,10 @@ fn load_marker(codex_home: &Path) -> Result<Option<SetupMarker>> {
 }
 
 fn load_users(codex_home: &Path) -> Result<Option<SandboxUsersFile>> {
-    let path = sandbox_users_path(codex_home);
-    let file = match fs::read_to_string(&path) {
-        Ok(contents) => contents,
-        Err(err) if err.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(err) => {
-            debug_log(
-                &format!("sandbox users read failed: {err}"),
-                Some(codex_home),
-            );
-            return Ok(None);
-        }
-    };
-    match serde_json::from_str::<SandboxUsersFile>(&file) {
-        Ok(users) => Ok(Some(users)),
-        Err(err) => {
-            debug_log(
-                &format!("sandbox users parse failed: {err}"),
-                Some(codex_home),
-            );
-            Ok(None)
-        }
-    }
-}
-
-fn remove_sandbox_users_file(codex_home: &Path, reason: &str) -> Result<()> {
-    let path = sandbox_users_path(codex_home);
-    debug_log(
-        &format!("{reason}; deleting {}", path.display()),
-        Some(codex_home),
-    );
-    match fs::remove_file(&path) {
-        Ok(()) => Ok(()),
-        Err(err) if err.kind() == std::io::ErrorKind::NotFound => Ok(()),
-        Err(err) => Err(err).with_context(|| format!("delete {}", path.display())),
-    }
-}
-
-fn decode_password(record: &SandboxUserRecord) -> Result<String> {
-    let blob = BASE64_STANDARD
-        .decode(record.password.as_bytes())
-        .context("base64 decode password")?;
-    let decrypted = dpapi::unprotect(&blob)?;
-    let pwd = String::from_utf8(decrypted).context("sandbox password not utf-8")?;
-    Ok(pwd)
+    // Only genuine absence is None. Inaccessible, redirected, unprotected,
+    // malformed or incompatible credentials cannot trigger fresh provisioning.
+    credential_store::read_protected_users(codex_home)
+        .context("validate retained sandbox credential file without changing it")
 }
 
 fn select_identity(
@@ -127,19 +83,12 @@ fn select_identity(
         Some(m) if m.version_matches() => m,
         _ => return Ok(None),
     };
-    let users = match load_users(codex_home)? {
-        Some(u) if u.version_matches() => u,
-        _ => return Ok(None),
+    let Some((username, password)) =
+        credential_store::verified_identity(codex_home, network_identity)?
+    else {
+        return Ok(None);
     };
-    let chosen = match network_identity {
-        SandboxNetworkIdentity::Offline => users.offline,
-        SandboxNetworkIdentity::Online => users.online,
-    };
-    let password = decode_password(&chosen)?;
-    Ok(Some(SandboxIdentity {
-        username: chosen.username,
-        password,
-    }))
+    Ok(Some(SandboxIdentity { username, password }))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -156,6 +105,9 @@ pub fn require_logon_sandbox_creds(
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
 ) -> Result<SandboxCreds> {
+    // Validate existing credential storage even when the readiness marker is
+    // absent or stale. A broken existing file is never treated as a new home.
+    let _existing_users = load_users(codex_home)?;
     let sandbox_dir = crate::setup::sandbox_dir(codex_home);
     let needed_read = read_roots_override
         .map(<[PathBuf]>::to_vec)
@@ -272,40 +224,57 @@ fn desired_offline_proxy_settings(
     }
 }
 
+fn revalidate_retained_identity(
+    network_identity: SandboxNetworkIdentity,
+    codex_home: &Path,
+) -> Result<SandboxCreds> {
+    let _existing_users = load_users(codex_home)?;
+    let identity = select_identity(network_identity, codex_home)?
+        .context("sandbox login revalidation requires an existing ready marker and protected credentials; no reset or provisioning was attempted")?;
+    Ok(SandboxCreds {
+        username: identity.username,
+        password: identity.password,
+    })
+}
+
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn refresh_logon_sandbox_creds(
     permissions: &ResolvedWindowsSandboxPermissions,
-    command_cwd: &Path,
+    _command_cwd: &Path,
     env_map: &HashMap<String, String>,
     codex_home: &Path,
-    read_roots_override: Option<&[PathBuf]>,
-    read_roots_include_platform_defaults: bool,
-    write_roots_override: Option<&[PathBuf]>,
-    deny_read_paths_override: &[PathBuf],
-    deny_write_paths_override: &[PathBuf],
+    _read_roots_override: Option<&[PathBuf]>,
+    _read_roots_include_platform_defaults: bool,
+    _write_roots_override: Option<&[PathBuf]>,
+    _deny_read_paths_override: &[PathBuf],
+    _deny_write_paths_override: &[PathBuf],
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
 ) -> Result<SandboxCreds> {
-    remove_sandbox_users_file(codex_home, "sandbox user login failed")?;
-    require_logon_sandbox_creds(
-        permissions,
-        command_cwd,
-        env_map,
-        codex_home,
-        read_roots_override,
-        read_roots_include_platform_defaults,
-        write_roots_override,
-        deny_read_paths_override,
-        deny_write_paths_override,
-        proxy_enforced,
+    let network_identity = SandboxNetworkIdentity::from_permissions(permissions, proxy_enforced);
+    let marker = load_marker(codex_home)?
+        .filter(|marker| marker.version_matches())
+        .context(
+            "sandbox login revalidation has no current readiness marker; no reset attempted",
+        )?;
+    let desired = desired_offline_proxy_settings(
+        Some(&marker),
         proxy_settings_mode,
-    )
+        env_map,
+        network_identity,
+    );
+    if let Some(reason) = marker.request_mismatch_reason(network_identity, &desired) {
+        anyhow::bail!("sandbox login revalidation cannot change shared network setup: {reason}");
+    }
+    // The existing one retry may reauthenticate the same fixed local identities.
+    // It cannot delete ciphertext, rotate passwords or invoke a setup helper.
+    revalidate_retained_identity(network_identity, codex_home)
 }
 
 #[cfg(test)]
 mod tests {
     use super::desired_offline_proxy_settings;
-    use super::remove_sandbox_users_file;
+    use super::revalidate_retained_identity;
     use crate::WindowsSandboxProxySettingsMode;
     use crate::setup::SandboxNetworkIdentity;
     use crate::setup::SetupMarker;
@@ -316,24 +285,45 @@ mod tests {
     use tempfile::TempDir;
 
     #[test]
-    fn remove_sandbox_users_file_deletes_existing_file() {
+    fn failed_login_revalidation_preserves_existing_credential_bytes() {
         let codex_home = TempDir::new().expect("tempdir");
         let users_path = sandbox_users_path(codex_home.path());
         fs::create_dir_all(users_path.parent().expect("sandbox secrets dir"))
             .expect("create sandbox secrets dir");
-        fs::write(&users_path, "users").expect("write users");
+        let original = b"invalid-existing-credential-evidence";
+        fs::write(&users_path, original).expect("write original failure evidence");
 
-        remove_sandbox_users_file(codex_home.path(), "stale creds").expect("remove users");
-        assert!(!users_path.exists());
+        let result =
+            revalidate_retained_identity(SandboxNetworkIdentity::Offline, codex_home.path());
+        assert!(
+            result.is_err(),
+            "invalid existing credentials must remain a failure"
+        );
+        assert_eq!(
+            fs::read(&users_path).expect("read preserved original"),
+            original
+        );
     }
 
     #[test]
-    fn remove_sandbox_users_file_ignores_missing_file() {
+    fn failed_login_revalidation_does_not_create_missing_credentials() {
         let codex_home = TempDir::new().expect("tempdir");
         let users_path = sandbox_users_path(codex_home.path());
+        let parent = users_path.parent().expect("sandbox secrets dir");
+        assert!(!parent.try_exists().expect("read initial directory absence"));
 
-        remove_sandbox_users_file(codex_home.path(), "stale creds").expect("remove users");
-        assert!(!users_path.exists());
+        let result =
+            revalidate_retained_identity(SandboxNetworkIdentity::Offline, codex_home.path());
+        assert!(
+            result.is_err(),
+            "missing credentials must not cause automatic rebuilding"
+        );
+        assert!(!users_path.try_exists().expect("read original file absence"));
+        assert!(
+            !parent
+                .try_exists()
+                .expect("read original directory absence")
+        );
     }
 
     #[test]
