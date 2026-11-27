@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: blocking-ci-${{ github.event.pull_request.number || github.ref }}
+  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -133,14 +133,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Compute exact base and candidate reverse dependencies
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: >-
-          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA"
-          --tested "$TESTED_SHA" --output "$RUNNER_TEMP/cargo-impact.json"
 
       - name: Prepare native test prerequisites before compilation
         run: |
