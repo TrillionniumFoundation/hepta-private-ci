@@ -20,6 +20,7 @@ use windows_sys::Win32::Foundation::UNICODE_STRING;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_LIST_DIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
@@ -101,7 +102,9 @@ pub(super) fn retain_no_reparse(path: &Path) -> Result<OwnedHandle> {
     open_or_create(
         path,
         ptr::null(),
-        FILE_READ_ATTRIBUTES,
+        // Attribute-only opens do not participate in NT sharing checks.
+        // Retain directory-read access so denying delete sharing binds its name.
+        FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         FILE_OPEN,
     )

@@ -1,0 +1,43 @@
+{
+  "changed_source": {
+    "after_sha256": "7def3b8c5239d48fea860462d32dff5d29f7339fb176c79c4f8d0afc3acb398c",
+    "before_sha256": "ef912dbe162801c652fd0bbe7676d7243f4d26f3ce1dcaa52037ed3b9a30f428",
+    "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs"
+  },
+  "command": [
+    "/opt/homebrew/bin/just",
+    "fmt"
+  ],
+  "official_algorithm": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-fsa/8c0e3f4f-0729-49f4-a14d-7f7add593819",
+  "original_zip": {
+    "bytes": 2121932,
+    "members": 2,
+    "sha256": "4332271b0d408d752eae90690fb1f191815c9b20ab8942beaf301e24cbe9fb99"
+  },
+  "previous_job": 140788070969,
+  "previous_result": {
+    "failed": 1,
+    "ignored": 2,
+    "passed": 30,
+    "tests": 33,
+    "worker_observations": [
+      {
+        "ignored": 0,
+        "passed": 1
+      },
+      {
+        "ignored": 0,
+        "passed": 1
+      }
+    ]
+  },
+  "previous_run": 46083626928,
+  "previous_source": "2c8c552c69a77ee02636413d1003c83494da0f87",
+  "raw_log": {
+    "bytes": 245138,
+    "sha256": "09f4ba73405a177ff6b954ff9be99e108323ce1a15471f01c7c73ac618bb4928"
+  },
+  "regression_status": "PENDING_REAL_WINDOWS_ORIGINAL_33_TEST_TARGET",
+  "returncode": 0,
+  "seconds": 0.2492006248794496
+}
