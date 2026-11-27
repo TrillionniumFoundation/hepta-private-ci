@@ -83,7 +83,7 @@ jobs:
       HEPTA_SOURCE: ${{ github.workspace }}/Hepta
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
+      CARGO_BUILD_JOBS: "4"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
     defaults:
@@ -124,6 +124,8 @@ jobs:
             git -C Hepta rev-parse HEAD
           } > "$RUNNER_TEMP/hia-toolchain.log"
           cat "$RUNNER_TEMP/hia-toolchain.log"
+          python3 -c 'import json,os,pathlib; paths=("/proc/meminfo","/sys/fs/cgroup/cpu.max","/sys/fs/cgroup/memory.max"); print(json.dumps({"logical_cpus":os.cpu_count(),"affinity_cpus":sorted(os.sched_getaffinity(0)),"cargo_build_jobs":os.environ["CARGO_BUILD_JOBS"],"resources":{p:pathlib.Path(p).read_text() for p in paths if pathlib.Path(p).is_file()}},sort_keys=True))' > "$RUNNER_TEMP/hia-runner-resources.json"
+          cat "$RUNNER_TEMP/hia-runner-resources.json"
 
       - name: Verify standalone Rust formatter editions and source stability
         run: |
