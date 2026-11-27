@@ -1,0 +1,3 @@
+# Accelerator acquisition observations
+
+On 2026-11-27 at approximately 09:33–09:52 UTC the machine registry listed the configured ROG and desktop. Two read-only SSH health probes reported an authenticated response. The operator command starts and terminal help request did not return an execution identity. The registry then returned `tunnel_client_not_connected` while inspecting the existing compute entry point and hardware. No account-level allocation, GPU kernel run, GPU time, or release was established through those calls. The separately named CPU panel reports PyTorch 2.15 CPU in each process and measures its own actual resource use. Later acquisition attempts, if any, are recorded separately with original job identities.

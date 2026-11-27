@@ -1,0 +1,47 @@
+{
+  "device": "cpu",
+  "reference_grid": 4096,
+  "lookup_max_abs": {
+    "equity": 5.4452486011769e-05,
+    "year": 1.2427749340737648e-07,
+    "quarter": 3.27194030980138e-07,
+    "step": 2.2735428029108107e-07
+  },
+  "causality": "exact-prefix",
+  "shared_init": "identical",
+  "probe_vocab": 503,
+  "arms": {
+    "hcsn": {
+      "parameters": 276788,
+      "router_gradient_norms": [
+        0.0016004859935492277,
+        0.00010056093742605299,
+        4.469270788831636e-05
+      ]
+    },
+    "smooth": {
+      "parameters": 276788,
+      "router_gradient_norms": [
+        0.0015790850156918168,
+        0.00011590816575335339,
+        4.2673327698139474e-05
+      ]
+    },
+    "lif": {
+      "parameters": 276788,
+      "router_gradient_norms": [
+        0.0005239174352027476,
+        5.9747835621237755e-05,
+        0.0
+      ]
+    },
+    "mean": {
+      "parameters": 276384,
+      "router_gradient_norms": []
+    },
+    "dense": {
+      "parameters": 276384,
+      "router_gradient_norms": []
+    }
+  }
+}
