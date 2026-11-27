@@ -1021,6 +1021,16 @@ async fn check_v2_agent_reload(route: V2ReloadRoute) {
         .into_iter()
         .find(|entry| captured_op_matches(entry, &expected));
     assert!(captured.is_some());
+    if matches!(route, V2ReloadRoute::Sender) {
+        reloaded_child
+            .shutdown_and_wait()
+            .await
+            .expect("reloaded child should shut down");
+        parent_thread
+            .shutdown_and_wait()
+            .await
+            .expect("root thread should shut down");
+    }
 }
 
 #[tokio::test]
@@ -1363,10 +1373,10 @@ async fn spawn_agent_fork_from_paginated_parent_uses_model_context_prefix() {
         .shutdown_live_agent(child_thread_id)
         .await
         .expect("child shutdown should submit");
-    let _ = parent_thread
-        .submit(Op::Shutdown {})
+    parent_thread
+        .shutdown_and_wait()
         .await
-        .expect("parent shutdown should submit");
+        .expect("parent shutdown should complete");
 }
 
 #[tokio::test]
@@ -2856,10 +2866,10 @@ async fn spawn_agent_fork_last_n_turns_strips_parent_usage_hints() {
         .shutdown_live_agent(child_thread_id)
         .await
         .expect("child shutdown should submit");
-    let _ = parent_thread
-        .submit(Op::Shutdown {})
+    parent_thread
+        .shutdown_and_wait()
         .await
-        .expect("parent shutdown should submit");
+        .expect("parent shutdown should complete");
 }
 
 #[tokio::test]
