@@ -204,6 +204,7 @@ impl CellParameterBundleV1 {
     /// component references.  `seal` never repairs malformed inheritance.
     pub fn seal(&mut self) -> Result<(), CellParameterBundleErrorV1> {
         self.validate_shape()?;
+        self.validate_manifest_entries()?;
         self.identity.lineage_digest =
             compute_lineage_digest(&self.identity, self.parent_predecessor.as_ref());
         self.artifact_manifest.seal()?;
@@ -219,10 +220,30 @@ impl CellParameterBundleV1 {
             return Err(CellParameterBundleErrorV1::DigestMismatch("cell lineage"));
         }
         self.artifact_manifest.validate()?;
+        self.validate_manifest_entries()?;
         if self.bundle_digest != digest_bundle(self)? {
             return Err(CellParameterBundleErrorV1::DigestMismatch("bundle"));
         }
         Ok(())
+    }
+
+    fn validate_manifest_entries(&self) -> Result<(), CellParameterBundleErrorV1> {
+        if let [first, second, third] = self.artifact_manifest.entries.as_slice() {
+            let mut actual = [first, second, third];
+            let mut expected = [
+                &self.shared_base,
+                &self.adapter.artifact,
+                &self.head.artifact,
+            ];
+            actual.sort_unstable();
+            expected.sort_unstable();
+            if actual == expected {
+                return Ok(());
+            }
+        }
+        Err(CellParameterBundleErrorV1::InvalidManifest(
+            "manifest must contain the exact shared base, adapter and head references",
+        ))
     }
 
     fn validate_shape(&self) -> Result<(), CellParameterBundleErrorV1> {
@@ -241,24 +262,6 @@ impl CellParameterBundleV1 {
         self.shared_base.validate("shared base")?;
         self.adapter.validate("adapter")?;
         self.head.validate("head")?;
-        let expected_artifacts = [
-            &self.shared_base,
-            &self.adapter.artifact,
-            &self.head.artifact,
-        ];
-        if self.artifact_manifest.entries.len() != expected_artifacts.len()
-            || expected_artifacts.iter().any(|artifact| {
-                !self
-                    .artifact_manifest
-                    .entries
-                    .iter()
-                    .any(|entry| entry.artifact_id == artifact.artifact_id)
-            })
-        {
-            return Err(CellParameterBundleErrorV1::InvalidManifest(
-                "manifest must contain exactly the shared base, adapter and head",
-            ));
-        }
         if self.adapter.component_id == self.head.component_id {
             return Err(CellParameterBundleErrorV1::MalformedInheritance(
                 "adapter and head identities must differ",

@@ -141,6 +141,29 @@ fn sealed_bundle_round_trip_binds_lineage_manifest_and_bundle_digest() {
 }
 
 #[test]
+fn manifest_references_must_match_the_entire_artifact() {
+    let mut bundle = genesis();
+    bundle.artifact_manifest.entries[0].encoded_size_bytes += 1;
+    bundle
+        .artifact_manifest
+        .seal()
+        .expect("valid standalone manifest");
+    bundle.bundle_digest = digest_bundle(&bundle).expect("canonical bundle encoding");
+
+    let mut owner = CellParameterBundleOwnerV1::new(bundle.identity.scope_digest).expect("owner");
+    assert!(matches!(
+        owner.append(Digest32::ZERO, bundle.clone()),
+        Err(CellParameterBundleErrorV1::InvalidManifest(_))
+    ));
+    assert_eq!(owner.head_digest(), Digest32::ZERO);
+    assert!(owner.records().is_empty());
+    assert!(matches!(
+        bundle.seal(),
+        Err(CellParameterBundleErrorV1::InvalidManifest(_))
+    ));
+}
+
+#[test]
 fn malformed_inheritance_fails_closed() {
     let parent = genesis();
     let mut child = successor(&parent);
