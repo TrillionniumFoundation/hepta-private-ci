@@ -387,6 +387,13 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // An existing finish/abort owner intentionally outlives ordinary abort callers.
+    // Observe its completion before writing this durable, idle-only fixture.
+    if let Some(completion) = thread.pending_admission_fence_completion() {
+        timeout(Duration::from_secs(10), completion)
+            .await
+            .expect("terminal cleanup should finish before persisting resume context");
+    }
     thread
         .inject_response_items(vec![user_message(message)])
         .await

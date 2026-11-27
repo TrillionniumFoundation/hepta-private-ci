@@ -2044,6 +2044,13 @@ async fn duplicate_queued_client_ids_dispatch_to_core_once() -> anyhow::Result<(
         matches!(event, EventMsg::TurnComplete(_)).then_some(())
     })
     .await;
+    // TurnComplete is published before terminal cleanup releases admission.
+    // This manual idle notification is for duplicate reconciliation after cleanup.
+    if let Some(completion) = test.codex.pending_admission_fence_completion() {
+        tokio::time::timeout(Duration::from_secs(10), completion)
+            .await
+            .context("terminal cleanup should finish before duplicate reconciliation")?;
+    }
     emit_idle(&service, thread_id).await;
 
     assert!(service.list(thread_id).await?.is_empty());
