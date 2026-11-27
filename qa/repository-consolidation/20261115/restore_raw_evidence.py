@@ -111,6 +111,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/neuroscience-reference-source-seals/raw-evidence-storage.json": (
+        "6c969dc4d3100d574997756f12b6ccffd5247dac6d5e355b50c4982047f84df5"
+    ),
     "qa/repository-consolidation/20261126/native-publication-source-seal/raw-evidence-storage.json": (
         "c625443574e9b011a714cd15661ff517272bf9e64e617cbe62cac7c0dd4368be"
     ),
@@ -214,6 +217,12 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/neuroscience-20261110/study.py": (
+        "f1619da3595976f13cdad1ae02c6265f5e72c356de6d78f711d6b9b6ab5f92e1"
+    ),
+    "qualification/neuroscience-20261110/test_credit_order_invariance.py": (
+        "7bf4197258d93282956bdfe622f3d377f69bbb03ddc79780208c0473ff96f0ce"
+    ),
     "qualification/hcsn_differentiable/replay_v1/evidence/native-desktop-20261112-d706/native_github_blob_upload.py": (
         "60ac36f7e99f8b75385055bf3a2d230f8d9b34de20e00c616c96ffb9424bcddc"
     ),
