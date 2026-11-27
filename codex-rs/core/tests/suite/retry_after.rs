@@ -1359,21 +1359,22 @@ async fn websocket_connection_limit_retries_with_local_backoff() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let mut telemetry = RetryTelemetryCapture::install();
-    // Prewarm has a different provider compatibility projection from the turn.
     let server = responses::start_websocket_server(vec![
-        vec![vec![
-            responses::ev_response_created("prewarm"),
-            responses::ev_completed("prewarm"),
-        ]],
-        vec![vec![json!({
-            "type": "error",
-            "status": 400,
-            "error": {
-                "type": "invalid_request_error",
-                "code": "websocket_connection_limit_reached",
-                "message": "Responses websocket connection limit reached (60 minutes). Create a new websocket connection to continue."
-            }
-        })]],
+        vec![
+            vec![
+                responses::ev_response_created("prewarm"),
+                responses::ev_completed("prewarm"),
+            ],
+            vec![json!({
+                "type": "error",
+                "status": 400,
+                "error": {
+                    "type": "invalid_request_error",
+                    "code": "websocket_connection_limit_reached",
+                    "message": "Responses websocket connection limit reached (60 minutes). Create a new websocket connection to continue."
+                }
+            })],
+        ],
         vec![vec![
             responses::ev_response_created("recovered"),
             responses::ev_completed("recovered"),
@@ -1404,10 +1405,9 @@ async fn websocket_connection_limit_retries_with_local_backoff() -> Result<()> {
     wait_for_turn_completion(&test).await;
 
     let connections = server.connections();
-    assert_eq!(
-        connections.iter().map(Vec::len).collect::<Vec<_>>(),
-        [1, 1, 1]
-    );
+    assert_eq!(connections.len(), 2);
+    let request_count: usize = connections.iter().map(Vec::len).sum();
+    assert_eq!(request_count, 3);
     assert_eq!(
         telemetry.events.try_recv(),
         Err(mpsc::error::TryRecvError::Empty)
@@ -1424,12 +1424,12 @@ async fn websocket_rate_limit_with_nested_retry_after_is_terminal() -> Result<()
     skip_if_no_network!(Ok(()));
 
     let mut telemetry = RetryTelemetryCapture::install();
-    let server = responses::start_websocket_server(vec![
-        vec![vec![
+    let server = responses::start_websocket_server(vec![vec![
+        vec![
             responses::ev_response_created("prewarm"),
             responses::ev_completed("prewarm"),
-        ]],
-        vec![vec![json!({
+        ],
+        vec![json!({
             "type": "error",
             "status": 429,
             "error": {
@@ -1438,8 +1438,8 @@ async fn websocket_rate_limit_with_nested_retry_after_is_terminal() -> Result<()
                 "message": "Rate limit exceeded.",
                 "headers": { "Retry-After": "1" }
             }
-        })]],
-    ])
+        })],
+    ]])
     .await;
     let test = test_codex()
         .with_config(|config| {
@@ -1480,12 +1480,8 @@ async fn websocket_rate_limit_with_nested_retry_after_is_terminal() -> Result<()
 
     assert_eq!(error_events, 1);
     assert_eq!(stream_error_events, 0);
-    let connections = server.connections();
-    assert_eq!(
-        connections.iter().map(Vec::len).collect::<Vec<_>>(),
-        [1, 1],
-        "expected only one prewarm and one terminal request"
-    );
+    let request_count: usize = server.connections().iter().map(Vec::len).sum();
+    assert_eq!(request_count, 2, "expected only prewarm and terminal error");
     assert_eq!(
         telemetry.events.try_recv(),
         Err(mpsc::error::TryRecvError::Empty)
@@ -1501,12 +1497,12 @@ async fn websocket_rate_limit_without_retry_after_is_terminal() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let mut telemetry = RetryTelemetryCapture::install();
-    let server = responses::start_websocket_server(vec![
-        vec![vec![
+    let server = responses::start_websocket_server(vec![vec![
+        vec![
             responses::ev_response_created("prewarm"),
             responses::ev_completed("prewarm"),
-        ]],
-        vec![vec![json!({
+        ],
+        vec![json!({
             "type": "error",
             "status": 429,
             "error": {
@@ -1514,8 +1510,8 @@ async fn websocket_rate_limit_without_retry_after_is_terminal() -> Result<()> {
                 "code": "rate_limit_exceeded",
                 "message": "Rate limit exceeded."
             }
-        })]],
-    ])
+        })],
+    ]])
     .await;
     let test = test_codex()
         .with_config(|config| {
@@ -1556,12 +1552,8 @@ async fn websocket_rate_limit_without_retry_after_is_terminal() -> Result<()> {
 
     assert_eq!(error_events, 1);
     assert_eq!(stream_error_events, 0);
-    let connections = server.connections();
-    assert_eq!(
-        connections.iter().map(Vec::len).collect::<Vec<_>>(),
-        [1, 1],
-        "expected only one prewarm and one terminal request"
-    );
+    let request_count: usize = server.connections().iter().map(Vec::len).sum();
+    assert_eq!(request_count, 2, "expected only prewarm and terminal error");
     assert_eq!(
         telemetry.events.try_recv(),
         Err(mpsc::error::TryRecvError::Empty)
@@ -1578,12 +1570,12 @@ async fn websocket_overload_with_nested_retry_after_is_terminal() -> Result<()> 
     skip_if_no_network!(Ok(()));
 
     let mut telemetry = RetryTelemetryCapture::install();
-    let server = responses::start_websocket_server(vec![
-        vec![vec![
+    let server = responses::start_websocket_server(vec![vec![
+        vec![
             responses::ev_response_created("prewarm"),
             responses::ev_completed("prewarm"),
-        ]],
-        vec![vec![json!({
+        ],
+        vec![json!({
             "type": "error",
             "status": 503,
             "error": {
@@ -1591,8 +1583,8 @@ async fn websocket_overload_with_nested_retry_after_is_terminal() -> Result<()> 
                 "message": "This model is disabled.",
                 "headers": { "Retry-After": "1" }
             }
-        })]],
-    ])
+        })],
+    ]])
     .await;
     let test = test_codex()
         .with_config(|config| {
@@ -1643,12 +1635,8 @@ async fn websocket_overload_with_nested_retry_after_is_terminal() -> Result<()> 
         fallback_warning_events, 0,
         "websocket must not fall back to HTTP"
     );
-    let connections = server.connections();
-    assert_eq!(
-        connections.iter().map(Vec::len).collect::<Vec<_>>(),
-        [1, 1],
-        "expected only one prewarm and one terminal request"
-    );
+    let request_count: usize = server.connections().iter().map(Vec::len).sum();
+    assert_eq!(request_count, 2, "expected only prewarm and terminal error");
     assert_eq!(
         telemetry.events.try_recv(),
         Err(mpsc::error::TryRecvError::Empty)
@@ -1664,20 +1652,20 @@ async fn websocket_overload_without_retry_after_is_terminal() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let mut telemetry = RetryTelemetryCapture::install();
-    let server = responses::start_websocket_server(vec![
-        vec![vec![
+    let server = responses::start_websocket_server(vec![vec![
+        vec![
             responses::ev_response_created("prewarm"),
             responses::ev_completed("prewarm"),
-        ]],
-        vec![vec![json!({
+        ],
+        vec![json!({
             "type": "error",
             "status": 503,
             "error": {
                 "code": "server_is_overloaded",
                 "message": "This model is disabled."
             }
-        })]],
-    ])
+        })],
+    ]])
     .await;
     let test = test_codex()
         .with_config(|config| {
@@ -1728,12 +1716,8 @@ async fn websocket_overload_without_retry_after_is_terminal() -> Result<()> {
         fallback_warning_events, 0,
         "websocket must not fall back to HTTP"
     );
-    let connections = server.connections();
-    assert_eq!(
-        connections.iter().map(Vec::len).collect::<Vec<_>>(),
-        [1, 1],
-        "expected only one prewarm and one terminal request"
-    );
+    let request_count: usize = server.connections().iter().map(Vec::len).sum();
+    assert_eq!(request_count, 2, "expected only prewarm and terminal error");
     assert_eq!(
         telemetry.events.try_recv(),
         Err(mpsc::error::TryRecvError::Empty)
