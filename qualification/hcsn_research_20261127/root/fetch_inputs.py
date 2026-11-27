@@ -30,18 +30,21 @@ setups += [(ann+s+'.json',s+'.json') for s in ['train','val','test']]
 with ThreadPoolExecutor(7) as ex:
  for f in as_completed([ex.submit(setup,it) for it in setups]):
   print('ready',f.result(),flush=True)
-records={}; seen=set()
-for sp,n in [('train',1024),('val',192),('test',384)]:
- rows=j(C/(sp+'.json'));d={}
- for row in rows:
-  name=row['image'].split('/')[-1]; caps=row['caption'];caps=[caps] if isinstance(caps,str) else caps
-  r=d.setdefault(name,{'file':name,'path':row['image'],'captions':[]})
-  for cap in caps:
-   if cap not in r['captions'] and len(r['captions'])<5:r['captions'].append(cap)
- selected=sorted(d,key=lambda k:digest(('hepta-hcsn-coco-20261127-v1:'+k).encode()))[:n]
- assert not (seen&set(selected)) and len(selected)==n
- seen.update(selected); records[sp]=[d[k] for k in selected]
-(C/'selected.json').write_text(json.dumps(records,ensure_ascii=False))
+if (C/'selected.json').is_file():
+ records=j(C/'selected.json')
+else:
+ records={}; seen=set()
+ for sp,n in [('train',1024),('val',192),('test',384)]:
+  rows=j(C/(sp+'.json'));d={}
+  for row in rows:
+   name=row['image'].split('/')[-1]; caps=row['caption'];caps=[caps] if isinstance(caps,str) else caps
+   r=d.setdefault(name,{'file':name,'path':row['image'],'captions':[]})
+   for cap in caps:
+    if cap not in r['captions'] and len(r['captions'])<5:r['captions'].append(cap)
+  selected=sorted(d,key=lambda k:digest(('hepta-hcsn-coco-20261127-v1:'+k).encode()))[:n]
+  assert not (seen&set(selected)) and len(selected)==n
+  seen.update(selected); records[sp]=[d[k] for k in selected]
+ (C/'selected.json').write_text(json.dumps(records,ensure_ascii=False))
 (C/'images').mkdir(exist_ok=True)
 def one(rec):
  p=C/'images'/rec['file'];url='https://s3.amazonaws.com/images.cocodataset.org/'+rec['path']
@@ -49,7 +52,7 @@ def one(rec):
  with p.open('rb') as f:assert f.read(2)==b'\xff\xd8'
  return rec['file'],digest(p.read_bytes()),p.stat().st_size
 roster=[];errors=[]
-with ThreadPoolExecutor(16) as ex:
+with ThreadPoolExecutor(8) as ex:
  futures={ex.submit(one,r):r['file'] for rows in records.values() for r in rows}
  for f in as_completed(futures):
   try:roster.append(f.result())
