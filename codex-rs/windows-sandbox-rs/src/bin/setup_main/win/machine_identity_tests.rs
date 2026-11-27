@@ -201,9 +201,31 @@ fn cross_process_homes_keep_the_first_credentials() -> Result<()> {
     }
     let outputs = children
         .into_iter()
-        .map(std::process::Child::wait_with_output)
+        .map(|child| {
+            let pid = child.id();
+            child.wait_with_output().map(|output| (pid, output))
+        })
         .collect::<std::io::Result<Vec<_>>>()?;
-    for output in outputs {
+    for (index, (pid, output)) in outputs.iter().enumerate() {
+        println!(
+            "HIA_MACHINE_IDENTITY_WORKER_TERMINAL {}",
+            serde_json::to_string(&serde_json::json!({
+                "schema": "hia.windows.machine-identity-worker-terminal.v1",
+                "worker": index,
+                "pid": pid,
+                "exit_code": output.status.code(),
+                "same_test_binary": executable,
+                "method": "win::machine_identity::tests::credential_provisioning_worker",
+                "arguments": ["--ignored", "--exact", "win::machine_identity::tests::credential_provisioning_worker", "--nocapture"],
+                "stdout_bytes": output.stdout.len(),
+                "stdout_base64": STANDARD.encode(&output.stdout),
+                "stderr_bytes": output.stderr.len(),
+                "stderr_base64": STANDARD.encode(&output.stderr),
+                "wait_completed": true
+            }))?
+        );
+    }
+    for (_, output) in outputs {
         ensure!(
             output.status.success(),
             "actual provisioning worker failed: {} {}",

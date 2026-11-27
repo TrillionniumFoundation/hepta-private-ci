@@ -1,0 +1,39 @@
+{
+  "source": "9f971725d5f228c86396dc469db7a515330f9bd2",
+  "run": 46059348514,
+  "job": 140709542873,
+  "original_complete_setup_target_passed": true,
+  "passed": 28,
+  "failed": 0,
+  "filtered": 0,
+  "outer_ignored_entries": 1,
+  "ignored_entry": "win::machine_identity::tests::credential_provisioning_worker",
+  "actual_worker_invocations_verified_by_parent": 2,
+  "each_worker_zero_exit_and_exact_one_pass_zero_ignore_verified": true,
+  "individual_worker_stdout_bytes_preserved": false,
+  "individual_worker_terminal_custody_followup_required": true,
+  "full_consumer_matrix_passed": false,
+  "raw_log": {
+    "bytes": 226197,
+    "sha256": "247f630bc169d80cd76b8f6f6e1cf6f6350ff9ac700a4ba11c41a9ab7940b856"
+  },
+  "artifact": {
+    "id": 15227943522,
+    "size": 2115997,
+    "sha256": "c5713b01f8c9fbc33ea18215246e91e293f6088115b0f592f5aaa54e15ab83ef"
+  },
+  "members": [
+    {
+      "name": "bazel-execution-logs/execution-log-test-original-setup-identity-1506.zst",
+      "bytes": 2111046,
+      "sha256": "a886c2f2e6b3cf0a381e7469b0ef95e7834efce2a82faa94b58dfbacc66c41c2",
+      "crc32": 2424934513
+    },
+    {
+      "name": "windows-machine-identity.log",
+      "bytes": 47991,
+      "sha256": "65b795e01fe168e281bb63f57f5026964246b7f6eacbf19f66505c3ffd5aa249",
+      "crc32": 3668218440
+    }
+  ]
+}
