@@ -111,6 +111,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/hcsn-training-domain-adapter/raw-evidence-storage.json": (
+        "7af31342eac4c95f5d96d217c3dda087bd46be83cf0b55ae16dd53f29463f216"
+    ),
     JOINT_GENERATION_SOURCE_SEALS_INDEX: "77bbf4f7ec7429c78c00c135419f06ee839269479804055f84d6ade317320778",
     FSDD_UPSTREAM_ATTRIBUTION_INDEX: "2ad6221210c32b84c49c86924edc525996aeb226c3fd8c13916e3348b6b1255b",
     HISTORICAL_UPSTREAM_TEST_RECIPES_INDEX: "6be8378b48363ca551fe0e9437d5df336d52fa76d87b861c9b04f1f2e65865e5",
@@ -205,6 +208,9 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_boundary_audit/audit_training_domain.py": (
+        "446b9564813d80548a6b170da6a89232607f06bcbb8ed0c1a6615144a1ef4d9b"
+    ),
     "qualification/joint-generation/fit-group-holdout/group_data.py": "248cc4eb80a13f7204d63ec2656b069daa1e22f4356096c75ca60292ab9af972",
     "qualification/joint-generation/semantic-temperature-replication/validation_noise.py": "9c5fec8ab708e9b6278f184224df03b27dfc5739dfa2cf63d5774abb42c2c258",
     "qualification/joint-generation/source-scene-replication/replication_group_data.py": "3d6a03a9d95f608118a3554e1ef5106b8669d6dc225b32436c604bc4e33febf1",
