@@ -80,19 +80,18 @@ async fn managed_residency_overrides_provider_headers(transport: ModelTransport)
         ]),
     )
     .await;
-    // Exercise the managed header on both the warmup and the next connection.
-    // The mock closes its first socket after the warmup completes.
-    let websocket_server = responses::start_websocket_server(vec![
-        vec![vec![
+    // The managed header applies to the socket shared by prewarm and the user turn.
+    let websocket_server = responses::start_websocket_server(vec![vec![
+        vec![
             responses::ev_response_created("prewarm-response"),
             responses::ev_completed("prewarm-response"),
-        ]],
-        vec![vec![
+        ],
+        vec![
             responses::ev_response_created("websocket-response"),
             responses::ev_assistant_message("websocket-message", "done"),
             responses::ev_completed("websocket-response"),
-        ]],
-    ])
+        ],
+    ]])
     .await;
     let model_base_url = match transport {
         ModelTransport::Http => http_server.uri(),
@@ -177,18 +176,18 @@ async fn managed_residency_overrides_provider_headers(transport: ModelTransport)
             );
         }
         ModelTransport::Websocket => {
-            let handshakes = websocket_server.handshakes();
-            assert_eq!(handshakes.len(), 2);
-            for handshake in handshakes {
-                assert_eq!(
-                    handshake.header(RESIDENCY_HEADER_NAME).as_deref(),
-                    Some("us")
-                );
-                assert_eq!(
-                    handshake.header("x-provider-header").as_deref(),
-                    Some("preserved")
-                );
-            }
+            let connections = websocket_server.connections();
+            assert_eq!(connections.len(), 1);
+            assert_eq!(connections[0].len(), 2);
+            let handshake = websocket_server.single_handshake();
+            assert_eq!(
+                handshake.header(RESIDENCY_HEADER_NAME).as_deref(),
+                Some("us")
+            );
+            assert_eq!(
+                handshake.header("x-provider-header").as_deref(),
+                Some("preserved")
+            );
         }
     }
 

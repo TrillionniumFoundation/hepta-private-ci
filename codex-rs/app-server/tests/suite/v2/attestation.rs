@@ -14,8 +14,10 @@ use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerRequest;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
+use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartResponse;
+use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput as V2UserInput;
 use codex_config::types::AuthCredentialsStoreMode;
 use core_test_support::responses;
@@ -38,30 +40,23 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
 {
     skip_if_no_network!(Ok(()));
 
-    // Prewarm and the user turn can have distinct connection contexts. The
-    // scripted listener handles one connection at a time: release the
-    // prewarm connection after its response so the turn can complete.
-    let websocket_server = start_websocket_server_with_headers(vec![
-        WebSocketConnectionConfig {
-            requests: vec![vec![
+    // Prewarm and the user turn share a socket when their connection context is stable.
+    let websocket_server = start_websocket_server_with_headers(vec![WebSocketConnectionConfig {
+        requests: vec![
+            vec![
                 responses::ev_response_created("warm-1"),
                 responses::ev_completed("warm-1"),
-            ]],
-            response_headers: Vec::new(),
-            accept_delay: None,
-            close_after_requests: true,
-        },
-        WebSocketConnectionConfig {
-            requests: vec![vec![
+            ],
+            vec![
                 responses::ev_response_created("resp-1"),
                 responses::ev_assistant_message("msg-1", "Done"),
                 responses::ev_completed("resp-1"),
-            ]],
-            response_headers: Vec::new(),
-            accept_delay: None,
-            close_after_requests: true,
-        },
-    ])
+            ],
+        ],
+        response_headers: Vec::new(),
+        accept_delay: None,
+        close_after_requests: true,
+    }])
     .await;
 
     let codex_home = TempDir::new()?;
@@ -141,9 +136,9 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
         ),
     )
     .await??;
-    let _: TurnStartResponse = to_response(turn_response)?;
+    let started: TurnStartResponse = to_response(turn_response)?;
 
-    timeout(DEFAULT_READ_TIMEOUT, async {
+    let completed = timeout(DEFAULT_READ_TIMEOUT, async {
         loop {
             let message = match pending_messages.pop_front() {
                 Some(message) => message,
@@ -161,23 +156,30 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
                 JSONRPCMessage::Notification(notification)
                     if notification.method == "turn/completed" =>
                 {
-                    break Ok::<(), anyhow::Error>(());
+                    let Some(params) = notification.params else {
+                        bail!("turn/completed notification missing parameters");
+                    };
+                    let completed = serde_json::from_value::<TurnCompletedNotification>(params)?;
+                    break Ok::<_, anyhow::Error>(completed);
                 }
                 _ => {}
             }
         }
     })
     .await??;
-    assert!(attestation_requests >= 2);
+    assert_eq!(completed.turn.id, started.turn.id);
+    assert_eq!(completed.turn.status, TurnStatus::Completed);
+    // A shared provider socket is attested once, before either request uses it.
+    assert_eq!(attestation_requests, 1);
 
-    let handshakes = websocket_server.handshakes();
-    assert_eq!(handshakes.len(), 2);
-    for handshake in handshakes {
-        assert_eq!(
-            handshake.header("x-oai-attestation").as_deref(),
-            Some(APP_SERVER_ATTESTATION_HEADER)
-        );
-    }
+    let connections = websocket_server.connections();
+    assert_eq!(connections.len(), 1);
+    assert_eq!(connections[0].len(), 2);
+    let handshake = websocket_server.single_handshake();
+    assert_eq!(
+        handshake.header("x-oai-attestation").as_deref(),
+        Some(APP_SERVER_ATTESTATION_HEADER)
+    );
 
     websocket_server.shutdown().await;
     Ok(())
