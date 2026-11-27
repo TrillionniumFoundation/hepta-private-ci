@@ -1,0 +1,136 @@
+{
+ "input_or_transcript_exact_matches": {
+  "train_vs_test": {
+   "all": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "audio": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "normalized_transcript": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "text": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "vision": {
+    "later_rows_seen_in_earlier": 1,
+    "shared_distinct_keys": 1
+   }
+  },
+  "train_vs_valid": {
+   "all": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "audio": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "normalized_transcript": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "text": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "vision": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   }
+  },
+  "valid_vs_test": {
+   "all": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "audio": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "normalized_transcript": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "text": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   },
+   "vision": {
+    "later_rows_seen_in_earlier": 0,
+    "shared_distinct_keys": 0
+   }
+  }
+ },
+ "scope": "Features and transcript strings only. Text, audio, vision and all hashes are taken on the six bins actually given to the encoders. No regression target enters these checks.",
+ "split_checks": {
+  "test": {
+   "all_zero_raw_stream_on_valid_positions": {
+    "audio": 0,
+    "text": 0,
+    "vision": 1
+   },
+   "clips": 686,
+   "unique_keys": {
+    "all": 685,
+    "audio": 685,
+    "normalized_transcript": 685,
+    "text": 685,
+    "vision": 685
+   },
+   "utterance_tokens_1pct_median_99pct": [
+    3.0,
+    12.0,
+    48.0
+   ],
+   "videos": 31
+  },
+  "train": {
+   "all_zero_raw_stream_on_valid_positions": {
+    "audio": 0,
+    "text": 0,
+    "vision": 1
+   },
+   "clips": 1284,
+   "unique_keys": {
+    "all": 1284,
+    "audio": 1284,
+    "normalized_transcript": 1284,
+    "text": 1284,
+    "vision": 1284
+   },
+   "utterance_tokens_1pct_median_99pct": [
+    3.0,
+    10.0,
+    43.0
+   ],
+   "videos": 52
+  },
+  "valid": {
+   "all_zero_raw_stream_on_valid_positions": {
+    "audio": 0,
+    "text": 0,
+    "vision": 0
+   },
+   "clips": 229,
+   "unique_keys": {
+    "all": 228,
+    "audio": 228,
+    "normalized_transcript": 228,
+    "text": 228,
+    "vision": 228
+   },
+   "utterance_tokens_1pct_median_99pct": [
+    2.0,
+    10.0,
+    37.72
+   ],
+   "videos": 10
+  }
+ }
+}
