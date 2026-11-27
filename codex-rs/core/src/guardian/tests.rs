@@ -2373,6 +2373,9 @@ async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow:
         /*max_attempts*/ 1,
     )
     .await;
+    let (GuardianReviewOutcome::Completed(first_assessment), first_metadata) = first_outcome else {
+        panic!("expected first guardian assessment, observed {first_outcome:?}");
+    };
     session
         .record_conversation_items(
             turn.as_ref(),
@@ -2424,11 +2427,23 @@ async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow:
         /*max_attempts*/ 1,
     )
     .await;
-    let committed_rollout_items = session
+    let (GuardianReviewOutcome::Completed(second_assessment), second_metadata) = second_outcome
+    else {
+        panic!("expected second guardian assessment, observed {second_outcome:?}");
+    };
+    let Some(committed_rollout_items) = session
         .guardian_review_session
         .committed_fork_rollout_items_for_test()
         .await
-        .expect("committed guardian fork snapshot");
+    else {
+        let persistence = session
+            .guardian_review_session
+            .fork_snapshot_diagnostics_for_test()
+            .await;
+        panic!(
+            "committed guardian fork snapshot: {persistence}; first assessment={first_assessment:?}, first metadata={first_metadata:?}; second assessment={second_assessment:?}, second metadata={second_metadata:?}"
+        );
+    };
     assert_eq!(
         committed_rollout_items
             .iter()
@@ -2519,13 +2534,6 @@ async fn guardian_reuses_prompt_cache_key_and_appends_prior_reviews() -> anyhow:
     )
     .await;
 
-    let (GuardianReviewOutcome::Completed(first_assessment), first_metadata) = first_outcome else {
-        panic!("expected first guardian assessment, observed {first_outcome:?}");
-    };
-    let (GuardianReviewOutcome::Completed(second_assessment), second_metadata) = second_outcome
-    else {
-        panic!("expected second guardian assessment, observed {second_outcome:?}");
-    };
     let (GuardianReviewOutcome::Completed(third_assessment), third_metadata) = third_outcome else {
         panic!("expected third guardian assessment, observed {third_outcome:?}");
     };
