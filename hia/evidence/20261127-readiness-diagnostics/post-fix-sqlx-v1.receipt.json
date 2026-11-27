@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--test",
+    "fleet_harness_diagnostics",
+    "--test",
+    "kernel_evidence_product"
+  ],
+  "source_before": {
+    "codex-rs/Cargo.toml": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e",
+    "codex-rs/Cargo.lock": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007",
+    "codex-rs/hepta-agentd/tests/support/fleet.rs": "d9a543e355e4d5e214e501439924f19e3efcf1a622ff5638a6edaa7ed83b8c64",
+    "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "47cb4bba6cee6ee1c1b2ee855b5bb2bd28d3caf1209fb859a85c80ffca77951d",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c"
+  },
+  "cwd": "/Users/qianqi/work/hia-readiness-head-tail-20261127-codex-cont/src/codex-rs",
+  "tmpdir": "/tmp/hrh-ctkxh429",
+  "whole": false,
+  "returncode": 0,
+  "timed_out": false,
+  "seconds": 16.224861833000002,
+  "log_bytes": 28641,
+  "log_sha256": "86e1d590e3618a07dcc28baadd9d66c57eee3f3240670abea8c3d8d98da45caa",
+  "source_after": {
+    "codex-rs/Cargo.toml": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e",
+    "codex-rs/Cargo.lock": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007",
+    "codex-rs/hepta-agentd/tests/support/fleet.rs": "d9a543e355e4d5e214e501439924f19e3efcf1a622ff5638a6edaa7ed83b8c64",
+    "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "47cb4bba6cee6ee1c1b2ee855b5bb2bd28d3caf1209fb859a85c80ffca77951d",
+    "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c"
+  },
+  "source_unchanged": true
+}
