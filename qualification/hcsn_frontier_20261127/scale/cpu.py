@@ -1,10 +1,12 @@
-"""One-core FP32 size comparison with atomic resumable rungs and all-model cold seal."""
+"""FP32 size comparison on one CPU core or a local MPS device with resumable rungs."""
 import argparse
 import datetime
 import hashlib
 import importlib.util
 import json
 import os
+import platform
+import subprocess
 from pathlib import Path
 import resource
 import time
@@ -20,6 +22,8 @@ def save(path,data):
     torch.save(data,pending)
     pending.replace(path)
 def cpu_info():
+    if platform.system()=='Darwin':
+        return subprocess.check_output(['/usr/sbin/sysctl','-n','machdep.cpu.brand_string'],text=True).strip()
     for line in Path('/proc/cpuinfo').read_text().splitlines():
         if line.startswith('model name'):return line.split(':',1)[1].strip()
     return 'CPU'
@@ -30,16 +34,25 @@ def run(a):
     if m.sha(a.worker)!=expected:raise ValueError('incorrect training source')
     work=a.out;work.mkdir(exist_ok=True,parents=True)
     torch.set_num_threads(1);torch.set_num_interop_threads(1);torch.backends.mha.set_fastpath_enabled(False)
-    device=torch.device('cpu');tic=time.monotonic();pack=m.base64.b85decode(m.PACK);x,c,splits,vocab=m.decode(pack,device);table=m.law_tables()
-    train=c[splits[0],:,1:].numpy().ravel();ct=np.bincount(train[train!=0],minlength=vocab)+1;ct[0]=0
-    f=ct/ct.sum();v=c[splits[1],:,1:].numpy().ravel();base=float(-np.log(f[v[v!=0]]).mean())
+    device=torch.device(a.device)
+    if a.device=='mps' and not torch.backends.mps.is_available():raise RuntimeError('MPS unavailable')
+    def synchronize():
+        if a.device=='mps':torch.mps.synchronize()
+    tic=time.monotonic()
+    torch.manual_seed(4421);proof=torch.randn(128,128,device=device)
+    gram=float((proof@proof.T).diagonal().mean().cpu());synchronize()
+    pack=m.base64.b85decode(m.PACK);x,c,splits,vocab=m.decode(pack,device);table=m.law_tables()
+    train=c[splits[0],:,1:].cpu().numpy().ravel();ct=np.bincount(train[train!=0],minlength=vocab)+1;ct[0]=0
+    f=ct/ct.sum();v=c[splits[1],:,1:].cpu().numpy().ravel();base=float(-np.log(f[v[v!=0]]).mean())
     init=work/'setup.json'
     if not init.exists():
         write_json(init,dict(started=datetime.datetime.now(datetime.timezone.utc).isoformat(),cpu=cpu_info(),
-            affinity=sorted(os.sched_getaffinity(0)),precision='float32',torch=str(torch.__version__),
+            device=a.device,device_proof_gram=gram,affinity=sorted(os.sched_getaffinity(0)) if hasattr(os,'sched_getaffinity') else None,
+            precision='float32',torch=str(torch.__version__),
             source_sha256=expected,pack_sha256=hashlib.sha256(pack).hexdigest(),caps=[15,60,180,360],
             setup_wall_s=time.monotonic()-tic,unigram_dev_nll=base,targets=[base-d for d in (.25,.75,1.25,1.75)]))
     config=json.loads(init.read_text())
+    if config.get('device','cpu')!=a.device:raise ValueError('device differs from frozen setup')
     for d,depth in m.SIZES:
         for j,seed in enumerate(m.SEEDS):
             for off in range(len(m.ARMS)):
@@ -48,7 +61,7 @@ def run(a):
                     if m.sha(weights)!=json.loads(end.read_text())['selected_sha256']:raise ValueError('checkpoint integrity')
                     continue
                 start=time.monotonic();torch.manual_seed(seed)
-                net=m.Captioner(d,depth,vocab,arm,table);opt=torch.optim.AdamW(net.parameters(),lr=.0003,weight_decay=.01)
+                net=m.Captioner(d,depth,vocab,arm,table).to(device);opt=torch.optim.AdamW(net.parameters(),lr=.0003,weight_decay=.01)
                 rng=np.random.default_rng(seed+228);cpu=wall=prev_wall=0.;steps=0;best=float('inf');best_rung=0;hist=[]
                 resume=work/(key+'.resume.pt')
                 if resume.exists():
@@ -58,14 +71,14 @@ def run(a):
                 print('start',key,'params',sum(p.numel() for p in net.parameters()),'from',steps,flush=True)
                 for rung in config['caps']:
                     if len(hist) and rung<=hist[-1]['requested_s']:continue
-                    while cpu<rung:
+                    while (wall if a.device=='mps' else cpu)<rung:
                         t=time.monotonic();u=time.process_time()
                         ab=rng.choice(splits[0],24);ca=rng.integers(0,c.shape[1],24);label=c[ab,ca]
                         net.train();opt.zero_grad(set_to_none=True);scores=net(x[ab],label[:,:-1])
                         loss=m.F.cross_entropy(scores.flatten(0,1),label[:,1:].flatten(),ignore_index=0)
                         if not torch.isfinite(loss):raise ArithmeticError('nonfinite training loss')
                         loss.backward();torch.nn.utils.clip_grad_norm_(net.parameters(),1.);opt.step()
-                        cpu+=time.process_time()-u;wall+=time.monotonic()-t;steps+=1
+                        synchronize();cpu+=time.process_time()-u;wall+=time.monotonic()-t;steps+=1
                     t=time.monotonic();losses,counts=m.evalset(net,x,c,splits[1],device);v=float(losses.sum()/counts.sum())
                     validation=time.monotonic()-t;save_t=time.monotonic()
                     if v<best:
@@ -79,7 +92,8 @@ def run(a):
                     print(key,rung,steps,v,round(wall,3),flush=True)
                 write_json(end,dict(history=hist,params=sum(p.numel() for p in net.parameters()),selected_rung=best_rung,
                     selected_sha256=m.sha(weights),fit_wall_s=prev_wall+time.monotonic()-start,
-                    process_high_water_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
+                    process_high_water_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/(1024 if platform.system()=='Darwin' else 1),
+                    mps_driver_bytes_end=torch.mps.driver_allocated_memory() if a.device=='mps' else None))
                 resume.unlink(missing_ok=True);del net,opt
     models={f'{d}-{s}-{a}':json.loads((work/f'{d}-{s}-{a}.json').read_text()) for d,_ in m.SIZES for s in m.SEEDS for a in m.ARMS}
     seal=work/'seal.json'
@@ -91,7 +105,7 @@ def run(a):
             for arm in m.ARMS:
                 key=f'{d}-{seed}-{arm}';ck=work/(key+'.pt');after=time.monotonic()
                 assert m.sha(ck)==models[key]['selected_sha256']
-                net=m.Captioner(d,depth,vocab,arm,table)
+                net=m.Captioner(d,depth,vocab,arm,table).to(device)
                 net.load_state_dict(torch.load(ck,map_location='cpu',weights_only=True))
                 st=time.monotonic()
                 q,n=m.evalset(net,x,c,splits[2],device);ts=time.monotonic()
@@ -106,4 +120,5 @@ def run(a):
 if __name__=='__main__':
     p=argparse.ArgumentParser()
     for name in ('worker','out'):p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--device',choices=['cpu','mps'],default='cpu')
     run(p.parse_args())
