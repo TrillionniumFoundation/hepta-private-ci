@@ -6,7 +6,9 @@ import json
 import os
 from pathlib import Path
 import re
+import runpy
 import stat
+import tempfile
 import zlib
 
 
@@ -111,6 +113,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/n256-paired-source-seals/raw-evidence-storage.json": (
+        "5ac0602fc4c063a2bb20e5dfb16948ec1cb2467743803434ceb83577c50d5f43"
+    ),
     "qa/repository-consolidation/20261126/n256-fp64-input-source-seal/raw-evidence-storage.json": (
         "588de247b9efa3914427b00f4ce8f222fce7bcdf21894dcdad2a4e50ec0865a0"
     ),
@@ -220,6 +225,48 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_currentstate_n256_fp64_input_conversion/fp64_exact.py": (
+        "54a68deb5edfa4772d2091db4fe671369e3c88dd5071eb6f352651384d994df7"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_input_conversion/test_fp64_exact.py": (
+        "4ee7faf03bbc69d4e02ef02da2e5116746edbde97d8f8d253e4e19a5a857831b"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/README.md": (
+        "324173f2dae2fefbd5ec9cba9a3d78af7d83a1bee2e9413d431c232809938f9b"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/REQUEST.json": (
+        "a61b09d8ce79fabad08e62335f195d22ae095e66160985b0269a86ba7e889cb1"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/__init__.py": (
+        "6cc949c5c91ab2019d66c3e4e29ddab4e746d4ebfdf28f0993e034f2b390d174"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/bridge.py": (
+        "c1d2c81e6873cff873005b7f611b1df92453059c7709d608bc229f6fa2441671"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/test_bridge.py": (
+        "ee4e12114ef8f414b08a64bb56166866c4469abd6dd8b7077d81aa00be0676c0"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_fp64_input_bridge/verify_source.py": (
+        "506a8b42d468d0129dee9841a69a98812826df31b0ff6349187f07376453829a"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/README.md": (
+        "dbd292c88ce16f74d3b694ee2d55c6e372f17dbdc905a53ea2539c84639a9d04"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/REQUEST.json": (
+        "da33990511a09f9b555c40e69d7e157683c0242ec185ecd9a44aa80cdeeeadb9"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/__init__.py": (
+        "8ae7fae3035f0917bf42baff1d87008d43bb70cdf03c7c7914a3abed3cd31fdb"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/output_interval.py": (
+        "818c6dc8b486b9203ee3ed659bb84faf51419b167f5238bb8ed942fc9405f4f8"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/test_output_interval.py": (
+        "ea51445b1c4a649328078d5dcfb346956558039dcba1a1fa9db3e8e70b7babf3"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/verify_source.py": (
+        "6ea15e97a2e0cba07052c745a739fb22f9dfef9e07f54d30526b6ec39533c3b1"
+    ),
     "qualification/hcsn_currentstate_n256_fp64_input_conversion/README.md": (
         "6d850edcc440119fc7e3d374dc4bbdd7085e1a443cabd1c9ac411b6a3255dc93"
     ),
@@ -230,7 +277,7 @@ ARCHIVE_NOTICE_SHA256 = {
         "55e7b04683f9cc750b6579ac554fd130269c9abfa2e2ad892c17705a04a68d4b"
     ),
     "qualification/hcsn_currentstate_n256_fp64_input_conversion/verify_source.py": (
-        "d7b2ee95d053453813119a9ec3c7e3cf250a2e157eb06cc6eccb0359e6a4ac4e"
+        "98e60fd19a6e154eed429354ca8f4820451c27ee676df4a2e91db316d4272195"
     ),
     "qualification/neuroscience-20261110/study.py": (
         "f1619da3595976f13cdad1ae02c6265f5e72c356de6d78f711d6b9b6ab5f92e1"
@@ -397,6 +444,36 @@ def read_verified(repo, relative, expected_bytes, expected_sha256):
     ):
         raise ValueError("original evidence length or checksum mismatch")
     return data
+
+
+def replay_source_freeze(repo, freeze_path, freeze_sha256):
+    """Run an unchanged source-only verifier using its exact frozen tree."""
+    freeze_path = relative_path(freeze_path)
+    freeze_bytes = read_regular(repo, freeze_path.as_posix(), 65536)
+    if hashlib.sha256(freeze_bytes).hexdigest() != freeze_sha256:
+        raise ValueError(f"historical source freeze changed: {freeze_path}")
+    frozen = json.loads(freeze_bytes)["files"]
+    index = entries(repo)
+    with tempfile.TemporaryDirectory(prefix="hepta-frozen-source-") as scratch:
+        original = Path(scratch)
+        original_freeze = original / freeze_path
+        original_freeze.parent.mkdir(parents=True)
+        original_freeze.write_bytes(freeze_bytes)
+        for path, expected in frozen.items():
+            relative = relative_path(path)
+            raw = read_regular(repo, path, 65536)
+            active_digest = hashlib.sha256(raw).hexdigest()
+            if active_digest != expected:
+                if ARCHIVE_NOTICE_SHA256.get(path) != active_digest or path not in index:
+                    raise ValueError(f"active source differs from its frozen view: {path}")
+                raw = read_verified(repo, path, index[path]["original_bytes"], expected)
+            destination = original / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(raw)
+        verifier = freeze_path.with_name("verify_source.py")
+        if verifier.as_posix() not in frozen:
+            raise ValueError("source freeze does not pin its original verifier")
+        runpy.run_path(str(original / verifier), run_name="__main__")
 
 
 def restore(repo, destination):

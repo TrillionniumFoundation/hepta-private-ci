@@ -99,4 +99,3 @@ def fp64_hex_to_exact_decimal(input_hex):
         exact_decimal=exact_decimal,
     )
     return exact_decimal, certificate
-

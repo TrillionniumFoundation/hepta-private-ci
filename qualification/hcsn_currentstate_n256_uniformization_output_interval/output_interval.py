@@ -279,4 +279,3 @@ def uniformization_outputs_from_fp64_intervals(
     raise UniformizationOutputIntervalError(
         "max_terms reached before every output had unique binary64 rounding"
     )
-

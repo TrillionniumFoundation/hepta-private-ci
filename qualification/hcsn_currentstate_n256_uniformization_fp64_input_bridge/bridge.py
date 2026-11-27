@@ -104,4 +104,3 @@ def uniformization_action_from_fp64(
         truncation_certificate=truncation,
     )
     return output, certificate
-
