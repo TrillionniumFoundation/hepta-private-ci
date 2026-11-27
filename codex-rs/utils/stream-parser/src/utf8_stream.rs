@@ -4,10 +4,7 @@ use std::fmt;
 use crate::StreamTextChunk;
 use crate::StreamTextParser;
 
-#[cfg(feature = "hia-native")]
-use crate::hia_native_utf8_stream::validate as decode_utf8;
-#[cfg(not(feature = "hia-native"))]
-use std::str::from_utf8 as decode_utf8;
+use crate::validate_utf8 as decode_utf8;
 
 /// Error returned by [`Utf8StreamParser`] when streamed bytes are not valid UTF-8.
 #[derive(Debug, Clone, PartialEq, Eq)]

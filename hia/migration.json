@@ -1897,13 +1897,13 @@
       "source_path": "codex-rs/utils/stream-parser/src/utf8_stream.rs",
       "source_revision": "bbb534d8be9098c041d5f3dd1ca1214fbcc2fd8a",
       "source_git_blob": "f9cd31eec62351b30f619d832424a9edc4b8b021",
-      "source_function": "Utf8StreamParser<P>::push_bytes/finish/into_inner",
-      "implementation_status": "source_integrated_opt_in_public_library_pending_current_tree",
+      "source_function": "validate_utf8; Utf8StreamParser<P>::push_bytes/finish/into_inner; codex-exec stdin decode_prompt_bytes",
+      "implementation_status": "source_integrated_opt_in_cli_stdin_pending_native_consumer_qualification",
       "qualification_status": "source_only_inline_followup_current_tree_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "current_role": "current_opt_in_production",
-      "library_only": true,
+      "library_only": false,
       "interface": {
         "entry": "codex_hia_utf8_stream",
         "entry_profile": "borrowed-buffers-u32-v1",
@@ -1913,17 +1913,23 @@
       },
       "behavior": {
         "hia_owns": "UTF-8 scalar validity, overlong/surrogate/range rejection, first-invalid valid_up_to/error_len and incomplete tail classification.",
-        "rust_retains": "Original pending Vec, whole-chunk rollback, inner parser call and EOF/into_inner ordering, checked result decoding and borrowed str construction.",
+        "rust_retains": "Original streaming buffers and commit/rollback/EOF ordering; stdin BOM detection, UTF-16 conversion, error presentation and OS reads; checked native result decoding and borrowed str construction.",
         "rust_utf8_validation_fallback": false,
         "no_new_semantic_total_limit": true,
         "all_six_original_utf8_tests_retained": true,
-        "installed_cli_reachability_claimed": false
+        "installed_cli_reachability_claimed": false,
+        "installed_cli_source_route": "codex-cli/hia-native -> codex-exec/hia-native -> codex-utils-stream-parser/hia-native -> codex_hia_utf8_stream"
       },
       "tests": [
         "hia/tests/test_utf8_stream_abi.py",
         "codex-rs/utils/stream-parser/src/utf8_stream.rs",
         "codex-rs/utils/stream-parser/src/utf8_stream_additional_tests.rs",
-        "codex-rs/utils/stream-parser/src/hia_native_utf8_stream_tests.rs"
+        "codex-rs/utils/stream-parser/src/hia_native_utf8_stream_tests.rs",
+        "codex-rs/utils/stream-parser/src/utf8_validation_tests.rs",
+        "codex-rs/exec/src/prompt_decode_tests.rs",
+        "codex-rs/exec/tests/suite/prompt_stdin.rs",
+        "hia/tests/test_native_prompt_decode_caller.py",
+        "hia/tests/test_installed_codex.py"
       ],
       "validation": {
         "source_only": true,
@@ -1934,7 +1940,8 @@
         "default_owner_tests_passed": null,
         "skipped": null,
         "previous_validation_source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
-        "previous_validation_transferred": false
+        "previous_validation_transferred": false,
+        "current_consumer_evidence": "hia/verification.json#stdin_utf8_consumer"
       }
     },
     {
@@ -2223,7 +2230,8 @@
         "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order",
         "Unicode17 haystack scalar lowercase and needle Final_Sigma lowercase, greedy matching, original-scalar indices with deduplication, prefix preference and original i32 score/panic-policy behavior",
         "Streaming UTF-8 complete/invalid/incomplete classification with original whole-call rollback, pending bytes and EOF behavior",
-        "Generic inline hidden tags with arbitrary nonempty Unicode delimiters, earliest/longest/first-spec ties, non-nesting, proper-prefix buffering and exact generic effects"
+        "Generic inline hidden tags with arbitrary nonempty Unicode delimiters, earliest/longest/first-spec ties, non-nesting, proper-prefix buffering and exact generic effects",
+        "Strict stdin prompt UTF-8 validation through the existing HIA kernel, preserving BOM handling, UTF-16 behavior and exact invalid/incomplete byte offsets"
       ],
       "next_implementation": "Complete remaining assistant-text composition and other Rust-owned string/UUID/JSON/truncation boundaries while preserving public calls. Complete retained owner/Core/UI/installed and performance gates on native37; the two local public library passes do not qualify the whole capability.",
       "candidate_modules": [

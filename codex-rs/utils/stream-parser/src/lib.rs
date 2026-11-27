@@ -11,6 +11,7 @@ mod proposed_plan;
 mod stream_text;
 mod tagged_line_parser;
 mod utf8_stream;
+mod utf8_validation;
 
 #[cfg(test)]
 #[path = "citation_additional_tests.rs"]
@@ -31,3 +32,5 @@ pub use stream_text::StreamTextChunk;
 pub use stream_text::StreamTextParser;
 pub use utf8_stream::Utf8StreamParser;
 pub use utf8_stream::Utf8StreamParserError;
+pub use utf8_validation::Utf8ValidationError;
+pub use utf8_validation::validate_utf8;

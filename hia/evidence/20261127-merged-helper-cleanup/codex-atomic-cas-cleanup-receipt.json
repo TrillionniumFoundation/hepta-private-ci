@@ -1,0 +1,78 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "plan_path": "/Users/qianqi/work/hia-codex-macos-20261127-589c/merged-helper-cleanup-20261127-589c.json",
+  "plan_sha256": "32df5d6aa8ceb385bffcd90d9234d1feeaad5fce701abf7aea836b3f1e5555a2",
+  "candidate_ancestry_proof": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+  "transport": "GitHub GraphQL updateRefs through existing gh authentication",
+  "semantics_document": "https://docs.github.com/en/graphql/reference/git#updaterefs",
+  "server_beforeOid_CAS": true,
+  "atomic_each_batch": true,
+  "force": false,
+  "requested": 3,
+  "batches": [
+    {
+      "number": 1,
+      "requested": 3,
+      "eligible": 3,
+      "preexisting_absent": [],
+      "moved_and_retained": [],
+      "before_readback": {
+        "returncode": 0,
+        "request": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-batch-1-before-request.json",
+        "request_sha256": "fc959690e5b2e1a47c17afda516202c8308ce86cdfe1f21afaacdf5a2ac0fa84",
+        "response": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-batch-1-before-response.json",
+        "response_sha256": "ad67ebeb4cc396bc66a643bf528b1796d06fbd85f9c47aa6b70026be2120d8b5",
+        "errors": []
+      },
+      "mutation": {
+        "returncode": 0,
+        "request": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-batch-1-mutation-request.json",
+        "request_sha256": "0d7451164bb316fa0d7252803461606dbdcf3b2d09e656e5e9af0475ce8a5c60",
+        "response": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-batch-1-mutation-response.json",
+        "response_sha256": "b0075cc6c77f7436314c0b39409e4e173c02d6cd787a75337ca70fc8c285156f",
+        "errors": []
+      },
+      "mutation_accepted": true,
+      "after_readback": {
+        "returncode": 0,
+        "request": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-batch-1-after-request.json",
+        "request_sha256": "fc959690e5b2e1a47c17afda516202c8308ce86cdfe1f21afaacdf5a2ac0fa84",
+        "response": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-batch-1-after-response.json",
+        "response_sha256": "9648f7eed705539201cbba3b442982b1d9e37ed19e65be12fa2a375a3d63927e",
+        "errors": []
+      },
+      "absent_after": [
+        "refs/heads/codex/hia-seatbelt-path-sets-20261127-589c",
+        "refs/heads/codex/hia-rmcp-no-chrono-20261127-589c",
+        "refs/heads/codex/hia-macos-authorized-read-aliases-20261127-589c"
+      ],
+      "retained_after": {}
+    }
+  ],
+  "complete": true,
+  "before_heads_count": 8247,
+  "keep_before": {
+    "refs/heads/codex/hia-union29-20261116-a90d": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+    "refs/heads/main": "732e934ba496d90fbe042b8d41d479ef901643e5"
+  },
+  "keep_readback_before": {
+    "returncode": 0,
+    "request": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-keep-before-request.json",
+    "request_sha256": "dfe81e6f318d5e0397ed8cdea41d32f1ebd604323e741e0ad10edb8e422bc988",
+    "response": "/Users/qianqi/work/hia-codex-macos-20261127-589c/codex-cas-keep-before-response.json",
+    "response_sha256": "93592a28c57c3f5188a3d2de9bb1eabd54c814c6ae1f708508f3a208b12c0e78",
+    "errors": []
+  },
+  "after_heads_count": 8244,
+  "final_absent": [
+    "refs/heads/codex/hia-seatbelt-path-sets-20261127-589c",
+    "refs/heads/codex/hia-rmcp-no-chrono-20261127-589c",
+    "refs/heads/codex/hia-macos-authorized-read-aliases-20261127-589c"
+  ],
+  "final_retained": {},
+  "keep_after": {
+    "refs/heads/codex/hia-union29-20261116-a90d": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+    "refs/heads/main": "732e934ba496d90fbe042b8d41d479ef901643e5"
+  },
+  "existing_keep_refs_preserved": true
+}

@@ -1,0 +1,51 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "candidate": "codex/hia-union29-20261116-a90d",
+  "candidate_expected": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+  "phases": [],
+  "refs": [
+    {
+      "pr": 7171,
+      "branch": "codex/hia-seatbelt-path-sets-20261127-589c",
+      "ref": "refs/heads/codex/hia-seatbelt-path-sets-20261127-589c",
+      "expected_sha": "84feb7759b008162f42a5913f36e458b05bc331d",
+      "pr_merged": true,
+      "remote_tip_verified": true,
+      "merged_ancestor_verified": true
+    },
+    {
+      "pr": 7172,
+      "branch": "codex/hia-rmcp-no-chrono-20261127-589c",
+      "ref": "refs/heads/codex/hia-rmcp-no-chrono-20261127-589c",
+      "expected_sha": "3091320ca3088863c3f6e7bdafbb2a54aae10ff9",
+      "pr_merged": true,
+      "remote_tip_verified": true,
+      "merged_ancestor_verified": true
+    },
+    {
+      "pr": 7173,
+      "branch": "codex/hia-macos-authorized-read-aliases-20261127-589c",
+      "ref": "refs/heads/codex/hia-macos-authorized-read-aliases-20261127-589c",
+      "expected_sha": "49e10e432fe215dde2602141e2ec8281df375b22",
+      "pr_merged": true,
+      "remote_tip_verified": true,
+      "merged_ancestor_verified": true
+    }
+  ],
+  "complete": false,
+  "candidate_observed": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+  "error": "Command '['git', '-c', 'credential.helper=', '-c', 'credential.helper=!/opt/homebrew/bin/gh auth git-credential', 'push', '--atomic', '--force-with-lease=refs/heads/codex/hia-seatbelt-path-sets-20261127-589c:84feb7759b008162f42a5913f36e458b05bc331d', '--force-with-lease=refs/heads/codex/hia-rmcp-no-chrono-20261127-589c:3091320ca3088863c3f6e7bdafbb2a54aae10ff9', '--force-with-lease=refs/heads/codex/hia-macos-authorized-read-aliases-20261127-589c:49e10e432fe215dde2602141e2ec8281df375b22', '--delete', 'https://github.com/TrillionniumFoundation/hepta-private-ci.git', 'codex/hia-seatbelt-path-sets-20261127-589c', 'codex/hia-rmcp-no-chrono-20261127-589c', 'codex/hia-macos-authorized-read-aliases-20261127-589c']' timed out after 90 seconds",
+  "original_git_processes_matching_exact_leases": [],
+  "all_original_tips_reconciled_before_retry": true,
+  "retry": {
+    "pid": 69630,
+    "started_unix": 1795760851.761044,
+    "log": "/Users/qianqi/work/hia-codex-macos-20261127-589c/merged-helper-cleanup-retry.log",
+    "same_original_leases": true,
+    "atomic": true,
+    "state": "exited",
+    "returncode": 128,
+    "elapsed_seconds": 300.10706996917725,
+    "output": "fatal: unable to access 'https://github.com/TrillionniumFoundation/hepta-private-ci.git/': Failed to connect to github.com port 443 after 300049 ms: Timeout was reached\n"
+  }
+}

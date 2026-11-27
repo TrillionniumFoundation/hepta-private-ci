@@ -21,6 +21,9 @@ path = "tests/all.rs"
 [lints]
 workspace = true
 
+[features]
+hia-native = ["codex-utils-stream-parser/hia-native"]
+
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true, features = ["derive"] }
@@ -41,6 +44,7 @@ codex-utils-absolute-path = { workspace = true }
 codex-utils-cli = { workspace = true }
 codex-utils-oss = { workspace = true }
 codex-utils-sandbox-summary = { workspace = true }
+codex-utils-stream-parser = { workspace = true }
 owo-colors = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

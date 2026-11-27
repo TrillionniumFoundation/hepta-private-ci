@@ -169,3 +169,58 @@ fn exec_dash_prompt_rejects_empty_piped_stdin() {
         .code(1)
         .stderr(contains("No prompt provided via stdin."));
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn exec_decodes_unicode_stdin_after_a_utf8_bom() -> anyhow::Result<()> {
+    let test = test_codex_exec();
+    let server = responses::start_mock_server().await;
+    let body = responses::sse(vec![
+        responses::ev_response_created("resp1"),
+        responses::ev_assistant_message("m1", "fixture hello"),
+        responses::ev_completed("resp1"),
+    ]);
+    let response_mock = responses::mount_sse_once(&server, body).await;
+
+    test.cmd_with_server(&server)
+        .arg("--skip-git-repo-check")
+        .arg("-C")
+        .arg(test.cwd_path())
+        .arg("-m")
+        .arg("gpt-5.1")
+        .arg("-")
+        .write_stdin("\u{feff}é汉🦀\n")
+        .assert()
+        .success();
+
+    let request = response_mock.single_request();
+    assert!(request.has_message_with_input_texts("user", |texts| {
+        texts == ["é汉🦀\n".to_string()]
+    }));
+    Ok(())
+}
+
+#[test]
+fn exec_rejects_invalid_and_incomplete_utf8_in_all_stdin_modes() {
+    for prompt in [None, Some("-"), Some("Summarize this")] {
+        for (input, offset) in [
+            (b"\xff".as_slice(), 0),
+            (b"ok\xe2\x82x", 2),
+            (b"\xef\xbb\xbfprompt\xf0\x90\x80", 6),
+        ] {
+            let test = test_codex_exec();
+            let mut command = test.cmd();
+            command.arg("--skip-git-repo-check");
+            if let Some(prompt) = prompt {
+                command.arg(prompt);
+            }
+            command
+                .write_stdin(input)
+                .assert()
+                .code(1)
+                .stdout(predicates::str::is_empty())
+                .stderr(contains(format!(
+                    "input is not valid UTF-8 (invalid byte at offset {offset})"
+                )));
+        }
+    }
+}

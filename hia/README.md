@@ -1,6 +1,31 @@
 # HIA components: revision-bound joint qualification
 
-## Current source follow-up: guarded inline head/tail equality
+## Current consumer: stdin prompt UTF-8 validation
+
+The existing `utf8_stream` HIA kernel now has an actual exec stdin caller.
+`codex-exec::decode_prompt_bytes` uses the public borrowed-byte validator in
+`codex-utils-stream-parser`; the CLI and standalone exec `hia-native` features
+select its native implementation. The default selection retains Rust validation.
+UTF-8 BOM removal, UTF-16 decoding, UTF-32 rejection, error offsets and stdin
+handling keep their existing behavior. Six original decoder tests move with
+the production function, and new cases cover incomplete scalars, Unicode,
+surrogate pairs, large input and the real exec stdin request path.
+
+The full installed CLI gate now requires 32 native symbols, including
+`codex_hia_utf8_stream`. `uuid_find` and `inline_hidden_tag` remain library-only.
+The focused native consumer gate compiles the actual production modules in
+both selections and requires the complete pinned native37 artifact inventory.
+The existing workflow runs that gate, both exec package selections and the
+installed stdin checks.
+
+Current evidence is recorded in
+[verification.json](verification.json#stdin_utf8_consumer): fresh native37 with
+identical B1/B2/B3 images, 25 raw UTF-8 cases and 200 calls, plus 67 default
+stream-parser and 158 default exec tests on macOS. Linux native Rust consumer
+and installed qualification remain pending. Whole-capability, default-release,
+platform, performance and retirement gates remain open.
+
+## Prior source follow-up: guarded inline head/tail equality
 
 Source commit `99e46153d4db235c00a14056d5e50735c3c69f47`, a direct child of
 `4468d5e58afd8cb2837896afbd2d3fae32c0b97b`, changes only the inline HIA kernel, its

@@ -553,12 +553,12 @@
       "production_link_sites": [
         "codex-rs/utils/stream-parser/build.rs"
       ],
-      "production_entry": "Public Utf8StreamParser<P> byte validation through hia-native; original generic inner parser and container effects remain in Rust.",
-      "library_only": true,
+      "production_entry": "validate_utf8 and Utf8StreamParser<P> byte validation; codex-exec stdin decoder selects the same HIA validator under hia-native.",
+      "library_only": false,
       "installed_cli_reachability_claimed": false,
       "runtime_qualified_on_joint_tree": false,
-      "qualification_status": "source_only_inline_followup_current_tree_pending",
-      "qualification_report": "hia/verification.json#current_qualification"
+      "qualification_status": "cli_stdin_source_connected_native_consumer_pending",
+      "qualification_report": "hia/verification.json#stdin_utf8_consumer"
     },
     {
       "module": "inline_hidden_tag",
