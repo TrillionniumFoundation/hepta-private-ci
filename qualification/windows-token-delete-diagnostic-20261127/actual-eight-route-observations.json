@@ -1,0 +1,382 @@
+{
+  "schema": "hia.windows-restricted-token-delete-diagnostic.v1",
+  "diagnostic_only": true,
+  "production_qualification": false,
+  "original_refusal_tests_unchanged": true,
+  "observations": [
+    {
+      "mode": "actual-production-write-restricted",
+      "case": "file-delete-only",
+      "parent_everyone_mask": 1179817,
+      "child_everyone_mask": 1245353,
+      "capability_granted": false,
+      "read": {
+        "allowed": true,
+        "error": null
+      },
+      "write": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_delete_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "parent_delete_child_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_directory": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_exists_after": true,
+      "directory_exists_after": true
+    },
+    {
+      "mode": "actual-production-write-restricted",
+      "case": "parent-delete-child-only",
+      "parent_everyone_mask": 1179881,
+      "child_everyone_mask": 1179817,
+      "capability_granted": false,
+      "read": {
+        "allowed": true,
+        "error": null
+      },
+      "write": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_delete_handle": {
+        "allowed": true,
+        "error": null
+      },
+      "parent_delete_child_handle": {
+        "allowed": true,
+        "error": null
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": true,
+        "error": null
+      },
+      "remove_directory": {
+        "allowed": true,
+        "error": null
+      },
+      "file_exists_after": false,
+      "directory_exists_after": false
+    },
+    {
+      "mode": "actual-production-write-restricted",
+      "case": "neither-delete-grant",
+      "parent_everyone_mask": 1179817,
+      "child_everyone_mask": 1179817,
+      "capability_granted": false,
+      "read": {
+        "allowed": true,
+        "error": null
+      },
+      "write": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_delete_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "parent_delete_child_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_directory": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_exists_after": true,
+      "directory_exists_after": true
+    },
+    {
+      "mode": "actual-production-write-restricted",
+      "case": "explicit-workspace-capability",
+      "parent_everyone_mask": 2032127,
+      "child_everyone_mask": 2032127,
+      "capability_granted": true,
+      "read": {
+        "allowed": true,
+        "error": null
+      },
+      "write": {
+        "allowed": true,
+        "error": null
+      },
+      "file_delete_handle": {
+        "allowed": true,
+        "error": null
+      },
+      "parent_delete_child_handle": {
+        "allowed": true,
+        "error": null
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": true,
+        "error": null
+      },
+      "remove_directory": {
+        "allowed": true,
+        "error": null
+      },
+      "file_exists_after": false,
+      "directory_exists_after": false
+    },
+    {
+      "mode": "independent-control-all-access-restricted",
+      "case": "file-delete-only",
+      "parent_everyone_mask": 1179817,
+      "child_everyone_mask": 1245353,
+      "capability_granted": false,
+      "read": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_delete_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "parent_delete_child_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_directory": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_exists_after": true,
+      "directory_exists_after": true
+    },
+    {
+      "mode": "independent-control-all-access-restricted",
+      "case": "parent-delete-child-only",
+      "parent_everyone_mask": 1179881,
+      "child_everyone_mask": 1179817,
+      "capability_granted": false,
+      "read": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_delete_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "parent_delete_child_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_directory": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_exists_after": true,
+      "directory_exists_after": true
+    },
+    {
+      "mode": "independent-control-all-access-restricted",
+      "case": "neither-delete-grant",
+      "parent_everyone_mask": 1179817,
+      "child_everyone_mask": 1179817,
+      "capability_granted": false,
+      "read": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_delete_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "parent_delete_child_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_directory": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "file_exists_after": true,
+      "directory_exists_after": true
+    },
+    {
+      "mode": "independent-control-all-access-restricted",
+      "case": "explicit-workspace-capability",
+      "parent_everyone_mask": 2032127,
+      "child_everyone_mask": 2032127,
+      "capability_granted": true,
+      "read": {
+        "allowed": true,
+        "error": null
+      },
+      "write": {
+        "allowed": true,
+        "error": null
+      },
+      "file_delete_handle": {
+        "allowed": true,
+        "error": null
+      },
+      "parent_delete_child_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_dac_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "write_owner_handle": {
+        "allowed": false,
+        "error": 5,
+        "kind": "PermissionDenied"
+      },
+      "remove_file": {
+        "allowed": true,
+        "error": null
+      },
+      "remove_directory": {
+        "allowed": true,
+        "error": null
+      },
+      "file_exists_after": false,
+      "directory_exists_after": false
+    }
+  ]
+}
