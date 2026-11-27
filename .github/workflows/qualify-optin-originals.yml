@@ -2,7 +2,11 @@ name: Reopen and preserve the original MCP-to-Circuit archive
 on:
   push:
     branches: [research/optin-cell-integrated-readout-20261123]
-    paths: ['qualification/optin-circuit-integration-20261123/read_originals.py','.github/workflows/qualify-optin-originals.yml']
+    paths:
+      [
+        "qualification/optin-circuit-integration-20261123/read_originals.py",
+        ".github/workflows/qualify-optin-originals.yml",
+      ]
 permissions:
   contents: read
   actions: read

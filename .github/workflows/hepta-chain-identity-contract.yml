@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      HF_HUB_OFFLINE: '1'
-      TRANSFORMERS_OFFLINE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -37,7 +37,7 @@ jobs:
           sparse-checkout: scripts
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
-          python-version: '3.12'
+          python-version: "3.12"
       - name: Verify actual producer and independent consumer
         run: |
           python hepta/qualification/p0-p1-acceptance-20261125/verify_cross_repo.py --hepta-root hepta --chain-root chain

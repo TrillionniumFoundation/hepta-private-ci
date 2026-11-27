@@ -1,28 +1,32 @@
 name: Paired consent statement and refusal checks
 on:
   push:
-    branches: [research/paired-consumer-outcome-20261123, research/optin-cell-integrated-readout-20261123]
+    branches:
+      [
+        research/paired-consumer-outcome-20261123,
+        research/optin-cell-integrated-readout-20261123,
+      ]
     paths:
-      - 'codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs'
-      - 'codex-rs/hepta-agentd/src/human_learning_consent.rs'
-      - 'codex-rs/hepta-agentd/src/paired_learning_consent_tests.rs'
-      - 'codex-rs/hepta-agentd/src/root_issuer_client_tests.rs'
-      - 'codex-rs/hepta-agentd/examples/paired_consent_process.rs'
-      - 'qualification/paired-consent-process-20261123/test_statement.py'
-      - 'qualification/paired-consent-process-20261123/run-isolated.sh'
-      - 'qualification/paired-consent-process-20261123/run-on-ubuntu.sh'
-      - '.github/workflows/hepta-consumer-owner-20261123.yml'
+      - "codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs"
+      - "codex-rs/hepta-agentd/src/human_learning_consent.rs"
+      - "codex-rs/hepta-agentd/src/paired_learning_consent_tests.rs"
+      - "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs"
+      - "codex-rs/hepta-agentd/examples/paired_consent_process.rs"
+      - "qualification/paired-consent-process-20261123/test_statement.py"
+      - "qualification/paired-consent-process-20261123/run-isolated.sh"
+      - "qualification/paired-consent-process-20261123/run-on-ubuntu.sh"
+      - ".github/workflows/hepta-consumer-owner-20261123.yml"
   pull_request:
     paths:
-      - 'codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs'
-      - 'codex-rs/hepta-agentd/src/human_learning_consent.rs'
-      - 'codex-rs/hepta-agentd/src/paired_learning_consent_tests.rs'
-      - 'codex-rs/hepta-agentd/src/root_issuer_client_tests.rs'
-      - 'codex-rs/hepta-agentd/examples/paired_consent_process.rs'
-      - 'qualification/paired-consent-process-20261123/test_statement.py'
-      - 'qualification/paired-consent-process-20261123/run-isolated.sh'
-      - 'qualification/paired-consent-process-20261123/run-on-ubuntu.sh'
-      - '.github/workflows/hepta-consumer-owner-20261123.yml'
+      - "codex-rs/hepta-agentd/src/bin/hepta-paired-consent.rs"
+      - "codex-rs/hepta-agentd/src/human_learning_consent.rs"
+      - "codex-rs/hepta-agentd/src/paired_learning_consent_tests.rs"
+      - "codex-rs/hepta-agentd/src/root_issuer_client_tests.rs"
+      - "codex-rs/hepta-agentd/examples/paired_consent_process.rs"
+      - "qualification/paired-consent-process-20261123/test_statement.py"
+      - "qualification/paired-consent-process-20261123/run-isolated.sh"
+      - "qualification/paired-consent-process-20261123/run-on-ubuntu.sh"
+      - ".github/workflows/hepta-consumer-owner-20261123.yml"
   workflow_dispatch:
 permissions:
   contents: read
