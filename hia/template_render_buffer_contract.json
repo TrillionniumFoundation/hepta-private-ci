@@ -20,7 +20,13 @@
       "build_variable_map",
       "render"
     ],
-    "parse_dto_unchanged": "Template { placeholders: BTreeSet<String>, segments: Vec<Segment> }, with Segment::Literal(String) and Segment::Placeholder(String). No new public fields, variants or signatures."
+    "parse_dto": "Template { placeholders: BTreeSet<String>, segments: Vec<Segment> }, with Segment::Literal(String) and Segment::Placeholder(String). No new public fields, variants or signatures."
+  },
+  "host_placeholder_storage": {
+    "native": "The Index Builder compares original parse ranges and selects unique names and byte order. finish() moves owned strings by native ID into Placeholders(Vec<String>) and drops the temporary Index.",
+    "render_frame": "Serialize Template::placeholders() through its ExactSizeIterator, retaining its count and order without Rust sorting or normalization.",
+    "default": "The original nonnative BTreeSet and Rust parser/render stack remain unchanged.",
+    "private_frames": "Raw DTO qualification bypasses the Builder. Empty, unsorted, duplicate and inconsistent declared/segment inputs retain their original validation and priority semantics."
   },
   "calling_convention_and_frame": {
     "profile": "borrowed-buffers-u32-v1",

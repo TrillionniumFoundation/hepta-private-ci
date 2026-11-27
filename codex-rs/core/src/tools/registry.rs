@@ -76,6 +76,14 @@ pub(crate) trait CoreToolRuntime: ToolExecutor<ToolInvocation> {
         None
     }
 
+    /// Whether direct streamed calls defer dispatch until their queued future is polled.
+    ///
+    /// The response loop drains these futures after recording completed-response usage.
+    /// Other stream exits retain the existing drain and error handling.
+    fn defer_streamed_execution_until_response_end(&self) -> bool {
+        false
+    }
+
     /// Returns a readiness wait for this exact tool before taking the execution gate.
     fn wait_until_ready<'a>(&'a self, _session: &'a Arc<Session>) -> Option<BoxFuture<'a, ()>> {
         None

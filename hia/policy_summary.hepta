@@ -1,0 +1,71 @@
+hia-asm.v1 hepta.hia.program.v9 codex_policy_summary
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  output_size:usize = buffer.len(output)
+  output_need:usize = const() {"value":24}
+  enough_output:bool = compare.ge(output_size,output_need)
+  branch enough_output header(source,output) short_output()
+block header(h_source:readbuf,h_output:mutbuf)
+  source_size:usize = buffer.len(h_source)
+  header_size:usize = const() {"value":8}
+  enough_header:bool = compare.ge(source_size,header_size)
+  branch enough_header length(h_source,h_output,source_size) invalid()
+block length(l_source:readbuf,l_output:mutbuf,l_size:usize)
+  first_word:usize = const() {"value":0}
+  header_end:usize = const() {"value":8}
+  record_size:usize = const() {"value":16}
+  count:u64 = buffer.load.u64.le(l_source,first_word)
+  available:usize = int.sub.checked(l_size,header_end)
+  maximum:usize = int.div.checked(available,record_size)
+  complete_size:usize = int.mul.checked(maximum,record_size)
+  maximum_count:u64 = int.cast(maximum) {"mode":"wrap"}
+  count_exact:bool = compare.eq(count,maximum_count)
+  length_exact:bool = compare.eq(available,complete_size)
+  valid_length:bool = bool.and(count_exact,length_exact)
+  zero:u64 = const() {"value":0}
+  one:u64 = const() {"value":1}
+  nonempty:bool = compare.gt(count,zero)
+  has_decision:u64 = select(nonempty,one,zero)
+  branch valid_length records(l_source,l_output,header_end,count,has_decision,zero,zero) invalid()
+block records(r_source:readbuf,r_output:mutbuf,r_at:usize,r_remaining:u64,r_present:u64,r_best:u64,r_explicit:u64)
+  no_records:u64 = const() {"value":0}
+  more:bool = compare.gt(r_remaining,no_records)
+  branch more record(r_source,r_output,r_at,r_remaining,r_present,r_best,r_explicit) emit(r_output,r_present,r_best,r_explicit)
+block record(t_source:readbuf,t_output:mutbuf,t_at:usize,t_remaining:u64,t_present:u64,t_best:u64,t_explicit:u64)
+  word_size:usize = const() {"value":8}
+  decision_at:usize = int.add.checked(t_at,word_size)
+  kind:u64 = buffer.load.u64.le(t_source,t_at)
+  decision:u64 = buffer.load.u64.le(t_source,decision_at)
+  maximum_kind:u64 = const() {"value":1}
+  maximum_decision:u64 = const() {"value":2}
+  valid_kind:bool = compare.le(kind,maximum_kind)
+  valid_decision:bool = compare.le(decision,maximum_decision)
+  valid_record:bool = bool.and(valid_kind,valid_decision)
+  branch valid_record accumulate(t_source,t_output,t_at,t_remaining,t_present,t_best,t_explicit,kind,decision) invalid()
+block accumulate(a_source:readbuf,a_output:mutbuf,a_at:usize,a_remaining:u64,a_present:u64,a_best:u64,a_explicit:u64,a_kind:u64,a_decision:u64)
+  stricter:bool = compare.gt(a_decision,a_best)
+  next_best:u64 = select(stricter,a_decision,a_best)
+  prefix_kind:u64 = const() {"value":0}
+  a_one:u64 = const() {"value":1}
+  is_prefix:bool = compare.eq(a_kind,prefix_kind)
+  next_explicit:u64 = select(is_prefix,a_one,a_explicit)
+  a_record_size:usize = const() {"value":16}
+  next_at:usize = int.add.checked(a_at,a_record_size)
+  remaining:u64 = int.sub.checked(a_remaining,a_one)
+  jump records(a_source,a_output,next_at,remaining,a_present,next_best,next_explicit)
+block emit(e_output:mutbuf,e_present:u64,e_best:u64,e_explicit:u64)
+  present_at:usize = const() {"value":0}
+  e_decision_at:usize = const() {"value":8}
+  explicit_at:usize = const() {"value":16}
+  _ = buffer.store.u64.le(e_output,present_at,e_present)
+  _ = buffer.store.u64.le(e_output,e_decision_at,e_best)
+  _ = buffer.store.u64.le(e_output,explicit_at,e_explicit)
+  success:u32 = const() {"value":24}
+  ret(success)
+block invalid()
+  invalid_status:u32 = const() {"value":4294967295}
+  ret(invalid_status)
+block short_output()
+  short_status:u32 = const() {"value":4294967294}
+  ret(short_status)
+end

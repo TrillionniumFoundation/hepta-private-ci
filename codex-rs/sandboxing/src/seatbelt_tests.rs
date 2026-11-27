@@ -36,6 +36,8 @@ use codex_protocol::permissions::PROTECTED_METADATA_PATH_NAMES;
 use codex_protocol::protocol::SandboxPolicy;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::ffi::CStr;
 use std::ffi::OsStr;
 use std::fs;
@@ -73,6 +75,59 @@ fn seatbelt_policy_arg(args: &[String]) -> &str {
         .expect("seatbelt args should include -p");
     args.get(policy_index + 1)
         .expect("seatbelt args should include policy text")
+}
+
+fn writable_root_exclusions(args: &[String]) -> BTreeMap<PathBuf, BTreeSet<PathBuf>> {
+    let policy = seatbelt_policy_arg(args);
+    let mut definitions = BTreeMap::new();
+    for definition in args
+        .iter()
+        .filter_map(|arg| arg.strip_prefix("-DWRITABLE_ROOT_"))
+    {
+        let (name, path) = definition
+            .split_once('=')
+            .expect("writable-root definition");
+        assert!(
+            definitions.insert(name, path).is_none(),
+            "duplicate parameter {name}"
+        );
+    }
+    let mut roots = BTreeMap::new();
+    for (index, root) in definitions
+        .iter()
+        .filter(|(name, _)| !name.contains("_EXCLUDED_"))
+    {
+        let prefix = format!("{index}_EXCLUDED_");
+        let mut exclusions = BTreeSet::new();
+        for (name, path) in definitions
+            .iter()
+            .filter(|(name, _)| name.starts_with(&prefix))
+        {
+            let parameter = format!("WRITABLE_ROOT_{name}");
+            for matcher in ["literal", "subpath"] {
+                let requirement = format!(r#"(require-not ({matcher} (param "{parameter}")))"#);
+                assert!(
+                    policy.contains(&requirement),
+                    "missing {requirement}: {policy}"
+                );
+            }
+            assert!(
+                exclusions.insert(PathBuf::from(path)),
+                "duplicate exclusion {path}"
+            );
+        }
+        assert!(
+            roots.insert(PathBuf::from(root), exclusions).is_none(),
+            "duplicate root {root}"
+        );
+    }
+    let assigned_parameters = roots.len() + roots.values().map(BTreeSet::len).sum::<usize>();
+    assert_eq!(
+        assigned_parameters,
+        definitions.len(),
+        "orphan writable-root exclusion"
+    );
+    roots
 }
 
 #[cfg(unix)]
@@ -1551,59 +1606,26 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
         "expected empty root metadata protection regex requirements in policy:\n{policy_text}",
     );
 
-    let expected_definitions = [
-        format!(
-            "-DWRITABLE_ROOT_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .to_string_lossy()
+    let cwd_canonical = cwd.canonicalize().expect("canonicalize cwd");
+    let expected_exclusions = BTreeMap::from([
+        (
+            cwd_canonical.clone(),
+            BTreeSet::from([
+                cwd_canonical.join(".git"),
+                cwd_canonical.join(".agents"),
+                cwd_canonical.join(".codex"),
+            ]),
         ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".git")
-                .display()
+        (
+            vulnerable_root_canonical.clone(),
+            BTreeSet::from([dot_git_canonical.clone(), dot_codex_canonical.clone()]),
         ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".agents")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-            cwd.canonicalize()
-                .expect("canonicalize cwd")
-                .join(".codex")
-                .display()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1={}",
-            vulnerable_root_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_0={}",
-            dot_git_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_1_EXCLUDED_1={}",
-            dot_codex_canonical.to_string_lossy()
-        ),
-        format!(
-            "-DWRITABLE_ROOT_2={}",
-            empty_root_canonical.to_string_lossy()
-        ),
-    ];
-    let writable_definitions: Vec<String> = args
-        .iter()
-        .filter(|arg| arg.starts_with("-DWRITABLE_ROOT_"))
-        .cloned()
-        .collect();
+        (empty_root_canonical.clone(), BTreeSet::new()),
+    ]);
     assert_eq!(
-        writable_definitions, expected_definitions,
-        "unexpected writable-root parameter definitions in {args:#?}"
+        writable_root_exclusions(&args),
+        expected_exclusions,
+        "unexpected writable-root exclusion paths in {args:#?}"
     );
     let command_index = args
         .iter()
@@ -1615,6 +1637,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     // Seatbelt policy.
     let config_toml = dot_codex_canonical.join("config.toml");
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&args)
         .current_dir(&cwd)
         .output()
@@ -1653,6 +1676,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     )
     .unwrap();
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&write_hooks_file_args)
         .current_dir(&cwd)
         .output()
@@ -1690,6 +1714,7 @@ fn create_seatbelt_args_with_read_only_git_and_codex_subpaths() {
     )
     .unwrap();
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&write_allowed_file_args)
         .current_dir(&cwd)
         .output()
@@ -2286,6 +2311,7 @@ fn create_seatbelt_args_with_read_only_git_pointer_file() {
     .unwrap();
 
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&args)
         .current_dir(&cwd)
         .output()
@@ -2322,6 +2348,7 @@ fn create_seatbelt_args_with_read_only_git_pointer_file() {
     )
     .unwrap();
     let output = Command::new(MACOS_PATH_TO_SEATBELT_EXECUTABLE)
+        .env("LC_ALL", "C")
         .args(&gitdir_args)
         .current_dir(&cwd)
         .output()
@@ -2495,29 +2522,14 @@ fn create_seatbelt_args_for_cwd_as_git_repo() {
         args.contains(&expected_root),
         "missing {expected_root}: {args:#?}"
     );
-    let expected_dot_git = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_0={}",
-        dot_git_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_git),
-        "missing {expected_dot_git}: {args:#?}"
-    );
-    let expected_dot_codex = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_2={}",
-        dot_codex_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_codex),
-        "missing {expected_dot_codex}: {args:#?}"
-    );
-    let expected_dot_agents = format!(
-        "-DWRITABLE_ROOT_0_EXCLUDED_1={}",
-        dot_agents_canonical.to_string_lossy()
-    );
-    assert!(
-        args.contains(&expected_dot_agents),
-        "missing {expected_dot_agents}: {args:#?}"
+    assert_eq!(
+        writable_root_exclusions(&args).get(&vulnerable_root_canonical),
+        Some(&BTreeSet::from([
+            dot_git_canonical,
+            dot_agents_canonical,
+            dot_codex_canonical,
+        ])),
+        "unexpected cwd metadata exclusions in {args:#?}"
     );
     let expected_slash_tmp = format!("-DWRITABLE_ROOT_1={}", slash_tmp.to_string_lossy());
     assert!(

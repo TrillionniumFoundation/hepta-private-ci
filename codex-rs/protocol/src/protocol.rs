@@ -3066,6 +3066,15 @@ pub struct TurnContextNetworkItem {
     pub denied_domains: Vec<String>,
 }
 
+/// Native absolute path text for one thread-owned environment.
+/// Current configuration remains authoritative for permissions on resume.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, JsonSchema, TS)]
+pub struct TurnContextEnvironmentItem {
+    pub environment_id: String,
+    pub cwd: String,
+    pub workspace_roots: Vec<String>,
+}
+
 /// Persist once per real user turn after computing that turn's model-visible
 /// context updates, and again after mid-turn compaction when replacement
 /// history re-establishes full context, so resume/fork replay can recover the
@@ -3079,6 +3088,11 @@ pub struct TurnContextItem {
     /// `:workspace_roots` filesystem permissions in `permission_profile`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workspace_roots: Option<Vec<AbsolutePathBuf>>,
+    /// Complete ordered thread-owned selections, including an explicitly empty set.
+    /// Older records or ineligible selections omit this field.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub environments: Option<Vec<TurnContextEnvironmentItem>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub current_date: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5809,6 +5823,34 @@ mod tests {
         assert_eq!(item.network, None);
         assert_eq!(item.file_system_sandbox_policy, None);
         assert_eq!(item.comp_hash, None);
+        assert_eq!(item.environments, None);
+        assert!(serde_json::to_value(&item)?.get("environments").is_none());
+        Ok(())
+    }
+
+    #[test]
+    fn turn_context_item_preserves_native_environment_paths() -> Result<()> {
+        let value = json!({
+            "cwd": test_path_buf("/tmp"),
+            "approval_policy": "never",
+            "sandbox_policy": { "type": "danger-full-access" },
+            "model": "gpt-5",
+            "summary": "auto",
+            "environments": [{
+                "environment_id": "remote",
+                "cwd": r"C:\work",
+                "workspace_roots": [r"C:\work", r"D:\extra"]
+            }]
+        });
+        let item: TurnContextItem = serde_json::from_value(value.clone())?;
+        assert_eq!(
+            serde_json::to_value(&item)?["environments"],
+            value["environments"]
+        );
+        assert_eq!(
+            serde_json::from_value::<TurnContextItem>(serde_json::to_value(&item)?)?,
+            item
+        );
         Ok(())
     }
 
@@ -5832,6 +5874,7 @@ mod tests {
             turn_id: None,
             cwd: test_path_buf("/tmp").abs(),
             workspace_roots: None,
+            environments: None,
             current_date: None,
             timezone: None,
             approval_policy: AskForApproval::Never,

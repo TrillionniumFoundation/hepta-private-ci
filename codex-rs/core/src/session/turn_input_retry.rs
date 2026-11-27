@@ -3,8 +3,10 @@
 
 use super::SessionIo;
 use super::session::Session;
+use super::turn_input;
 use crate::agent::control::TurnStartCapacity;
 use crate::codex_thread::CodexThread;
+use crate::realtime_conversation::RealtimeHandoffRequest;
 use crate::state::ActiveTurn;
 use crate::state::StartTransitionCompletion;
 use crate::state::TaskTerminalizationKind;
@@ -17,6 +19,8 @@ use codex_protocol::turn_input::TurnInputSubmission;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::Mutex;
+use tokio::sync::oneshot;
+use tokio_util::sync::CancellationToken;
 
 pub(crate) type FinishFences = Vec<Arc<StartTransitionCompletion>>;
 
@@ -88,6 +92,54 @@ impl Drop for PendingTurnInputRetry<'_> {
 }
 
 impl Session {
+    /// Reuse the public path's exact Finish witnesses without entering the
+    /// session loop. A transport stop only cancels this unadmitted wait; each
+    /// parsed request still reaches the original normal admission once.
+    pub(super) async fn route_realtime_after_finish(
+        self: &Arc<Self>,
+        request: TurnInputRequest,
+        submission_id: String,
+        handoff: Option<&RealtimeHandoffRequest>,
+        stop: &CancellationToken,
+        first_decision: &mut Option<oneshot::Sender<()>>,
+    ) -> CodexResult<TurnInputSubmission> {
+        let retry = self
+            .pending_turn_input_retries
+            .register(submission_id.clone());
+        loop {
+            let result = Box::pin(turn_input::start_or_steer(
+                self,
+                request.clone(),
+                submission_id.clone(),
+                handoff,
+            ))
+            .await?;
+            if !matches!(
+                result,
+                TurnInputSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle
+                }
+            ) {
+                return Ok(result);
+            }
+            let Some(fences) = retry.take() else {
+                return Ok(result);
+            };
+            // Forwarding can continue once normal admission has identified
+            // the exact wait. No later handoff is allowed to steal its owner.
+            if let Some(first_decision) = first_decision.take() {
+                let _ = first_decision.send(());
+            }
+            for completion in fences {
+                tokio::select! {
+                    biased;
+                    () = stop.cancelled() => return Ok(result),
+                    () = completion.wait() => {},
+                }
+            }
+        }
+    }
+
     /// Called with `active_turn` locked at the ordered routing decision.
     /// Capture only finish owners, never an abort, suspension, live task, or
     /// start reservation. The returned witnesses retain their identity even

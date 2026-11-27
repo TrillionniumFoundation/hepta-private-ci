@@ -1,5 +1,6 @@
 use super::AGENT_FINAL_MESSAGE_PREFIX;
 use super::HANDOFF_STREAM_TRUNCATION_MARKER;
+use super::RealtimeHandoffOutputGate;
 use super::RealtimeHandoffState;
 use super::RealtimeInputTaskExit;
 use super::RealtimeOutbound;
@@ -208,6 +209,8 @@ fn classifies_outbound_api_failures_as_transport_loss() {
 async fn clears_active_handoff_explicitly() {
     let (tx, _rx) = bounded(1);
     let state = RealtimeHandoffState {
+        identity: Arc::new(()),
+        output_gate: Arc::new(RealtimeHandoffOutputGate::default()),
         output_tx: tx,
         last_output: Arc::new(Mutex::new(None)),
         stream: Arc::new(Mutex::new(Default::default())),

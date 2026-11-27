@@ -33,7 +33,10 @@ async fn main() -> Result<()> {
     }
 
     WineExecServer
-        .scope(|exec_server_url, _wine_prefix| async move {
+        .scope(|exec_server_url, wine_prefix| async move {
+            // Match the test server's fixed CODEX_HOME inside its owned Wine prefix.
+            std::fs::create_dir_all(wine_prefix.join("drive_c").join("codex-home"))
+                .context("create Wine exec-server CODEX_HOME")?;
             let mut command = Command::new(test_binary);
             command
                 .env(TEST_ENVIRONMENT_ENV_VAR, "wine-exec")

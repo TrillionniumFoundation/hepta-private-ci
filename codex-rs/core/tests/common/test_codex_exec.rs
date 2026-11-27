@@ -1,4 +1,5 @@
 use codex_login::CODEX_API_KEY_ENV_VAR;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use std::path::Path;
 use tempfile::TempDir;
 use wiremock::MockServer;
@@ -14,9 +15,15 @@ impl TestCodexExecBuilder {
             codex_utils_cargo_bin::cargo_bin("codex-exec")
                 .expect("should find binary for codex-exec"),
         );
+        let canonical_home = self
+            .home
+            .path()
+            .canonicalize()
+            .expect("canonical temp home");
+        let sqlite_home = AbsolutePathBuf::try_from(canonical_home).expect("absolute SQLite home");
         cmd.current_dir(self.cwd.path())
             .env("CODEX_HOME", self.home.path())
-            .env("CODEX_SQLITE_HOME", self.home.path())
+            .env("CODEX_SQLITE_HOME", sqlite_home.as_path())
             .env(CODEX_API_KEY_ENV_VAR, "dummy");
         cmd
     }

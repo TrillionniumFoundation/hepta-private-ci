@@ -1,4 +1,5 @@
 use self::resume_runtime_environment::PersistedResumeRuntime;
+use self::resume_runtime_environment::RuntimeEnvironment;
 use super::persisted_resume_settings::PersistedResumeSettings;
 use super::persisted_resume_settings::latest_persisted_resume_settings;
 use super::thread_enrichment::enrich_loaded_threads;
@@ -22,6 +23,8 @@ use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::mcp::ClientMcpExtensions;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_thread_store::PersistContext;
+use codex_utils_path_uri::LegacyAppPathString;
+use codex_utils_path_uri::PathUri;
 
 #[path = "resume_runtime_environment.rs"]
 mod resume_runtime_environment;
@@ -4089,10 +4092,70 @@ impl ThreadRequestProcessor {
         }
 
         let response_history = thread_history.clone();
-        let resume_environments = persisted_runtime_environment.map(|(cwd, workspace_roots)| {
-            self.thread_manager
-                .default_environment_selections(&cwd, &workspace_roots)
-        });
+        let resume_environments = match persisted_runtime_environment {
+            Some(RuntimeEnvironment::Legacy(cwd, roots)) => Some(
+                self.thread_manager
+                    .default_environment_selections(&cwd, &roots),
+            ),
+            Some(RuntimeEnvironment::Native {
+                environments,
+                rebuild_roots,
+            }) => {
+                let environments = environments
+                    .into_iter()
+                    .map(|environment| {
+                        Some(TurnEnvironmentSelection {
+                            environment_id: environment.environment_id,
+                            cwd: LegacyAppPathString::from_string(environment.cwd)
+                                .to_inferred_path_uri()?,
+                            workspace_roots: environment
+                                .workspace_roots
+                                .into_iter()
+                                .map(|root| {
+                                    LegacyAppPathString::from_string(root).to_inferred_path_uri()
+                                })
+                                .collect::<Option<Vec<_>>>()?,
+                            config: EnvironmentConfigState::FromThread,
+                        })
+                    })
+                    .collect::<Option<Vec<_>>>();
+                let Some(mut environments) = environments else {
+                    self.outgoing
+                        .send_error(
+                            request_id,
+                            invalid_params(
+                                "persisted environment paths must be native absolute paths",
+                            ),
+                        )
+                        .await;
+                    return Ok(());
+                };
+                if rebuild_roots {
+                    for environment in &mut environments {
+                        environment.workspace_roots = if config.workspace_roots_explicit {
+                            config
+                                .workspace_roots
+                                .iter()
+                                .map(PathUri::from_abs_path)
+                                .collect()
+                        } else {
+                            vec![environment.cwd.clone()]
+                        };
+                    }
+                }
+                if let Err(err) = self
+                    .thread_manager
+                    .validate_environment_selections(&environments)
+                {
+                    self.outgoing
+                        .send_error(request_id, environment_selection_error(err))
+                        .await;
+                    return Ok(());
+                }
+                Some(environments)
+            }
+            None => None,
+        };
 
         match self
             .thread_manager
@@ -5136,6 +5199,7 @@ impl ThreadRequestProcessor {
                     active_permission_profile: snapshot.active_permission_profile,
                     runtime_cwd: Some(snapshot.environments.legacy_fallback_cwd),
                     runtime_workspace_roots: Some(snapshot.workspace_roots),
+                    runtime_environments: None,
                 })
             } else {
                 None

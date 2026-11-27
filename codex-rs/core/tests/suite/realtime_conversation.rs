@@ -2972,6 +2972,14 @@ async fn conversation_start_injects_startup_context_from_thread_history() -> Res
     let mut builder = test_codex().with_config({
         let realtime_base_url = realtime_server.uri().to_string();
         move |config| {
+            let sqlite_home = config
+                .sqlite
+                .home()
+                .canonicalize()
+                .expect("canonical SQLite home");
+            config.sqlite = codex_state::SqliteConfig::new_for_testing(
+                sqlite_home.try_into().expect("absolute SQLite home"),
+            );
             config.experimental_realtime_ws_base_url = Some(realtime_base_url);
             config.realtime.version = RealtimeWsVersion::V1;
         }

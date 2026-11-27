@@ -1279,6 +1279,31 @@ impl ThreadManager {
         .await
     }
 
+    /// Resumes a stored rollout with its explicitly preserved environment selection.
+    ///
+    /// The normal store reader reconstructs history. Callers must not use this to
+    /// override the recorded execution context; Core's recovery checks remain strict.
+    pub async fn resume_thread_from_rollout_with_environments(
+        &self,
+        config: Config,
+        rollout_path: PathBuf,
+        auth_manager: Arc<AuthManager>,
+        parent_trace: Option<W3cTraceContext>,
+        client_mcp_extensions: ClientMcpExtensions,
+        environments: Vec<TurnEnvironmentSelection>,
+    ) -> CodexResult<NewThread> {
+        let initial_history = self.initial_history_from_rollout_path(rollout_path).await?;
+        Box::pin(self.resume_thread_with_history_and_environments(
+            config,
+            initial_history,
+            auth_manager,
+            parent_trace,
+            client_mcp_extensions,
+            Some(environments),
+        ))
+        .await
+    }
+
     /// Reloads a recorded Multi-Agent V2 child through its currently loaded immediate parent.
     ///
     /// The child keeps the existing parent-controlled reload semantics. Callers cannot supply

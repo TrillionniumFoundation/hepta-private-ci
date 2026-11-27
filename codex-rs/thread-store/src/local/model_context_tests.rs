@@ -597,6 +597,7 @@ fn turn_context(root: &Path, turn_id: &str) -> RolloutItem {
         turn_id: Some(turn_id.to_string()),
         cwd: serde_json::from_value(serde_json::json!(root)).expect("absolute cwd"),
         workspace_roots: None,
+        environments: None,
         current_date: None,
         timezone: None,
         approval_policy: AskForApproval::Never,

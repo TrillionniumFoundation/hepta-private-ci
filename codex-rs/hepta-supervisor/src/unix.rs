@@ -240,8 +240,9 @@ impl ProcessDriver for UnixProcessDriver {
             .map_err(|_| ProcessDriverError::new("stored child PID does not fit u32"))?;
         let agent_control = AgentHealthProbeIdentity::from_adopt(spec, process_id);
         let health_identity = HealthProbeIdentity::Agentd(agent_control.clone());
-        if prove_adoption_identity(&health_identity) {
-            let health_probe = HealthProbe::spawn(health_identity)?;
+        if let Some(observation) = prove_adoption_identity(&health_identity) {
+            let health_probe =
+                HealthProbe::spawn_with_observation(health_identity, Some(observation))?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
             return Ok(Adoption::Adopted(UnixManagedProcess {
                 handle: UnixProcessHandle::Adopted { process_id },
@@ -345,8 +346,9 @@ impl ProcessDriver for UnixProcessDriver {
             .map_err(|_| ProcessDriverError::new("stored matrixd PID does not fit u32"))?;
         let health_identity =
             HealthProbeIdentity::Matrixd(MatrixHealthProbeIdentity::from_adopt(spec, process_id));
-        if prove_adoption_identity(&health_identity) {
-            let health_probe = HealthProbe::spawn(health_identity)?;
+        if let Some(observation) = prove_adoption_identity(&health_identity) {
+            let health_probe =
+                HealthProbe::spawn_with_observation(health_identity, Some(observation))?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
             return Ok(Adoption::Adopted(UnixManagedProcess {
                 handle: UnixProcessHandle::Adopted { process_id },
@@ -370,16 +372,31 @@ struct HealthProbe {
 }
 
 impl HealthProbe {
+    fn new(initial_observation: Option<HealthProbeObservation>) -> Self {
+        let initially_ready = initial_observation
+            .is_some_and(|observation| observation.exact_identity && observation.ready);
+        Self {
+            ready: Arc::new(AtomicBool::new(initially_ready)),
+            shutdown: Arc::new(AtomicBool::new(/*v*/ false)),
+        }
+    }
+
     fn spawn(identity: HealthProbeIdentity) -> Result<Self, ProcessDriverError> {
-        let ready = Arc::new(AtomicBool::new(false));
-        let shutdown = Arc::new(AtomicBool::new(false));
-        let worker_ready = Arc::clone(&ready);
-        let worker_shutdown = Arc::clone(&shutdown);
+        Self::spawn_with_observation(identity, /*initial_observation*/ None)
+    }
+
+    fn spawn_with_observation(
+        identity: HealthProbeIdentity,
+        initial_observation: Option<HealthProbeObservation>,
+    ) -> Result<Self, ProcessDriverError> {
+        let probe = Self::new(initial_observation);
+        let worker_ready = Arc::clone(&probe.ready);
+        let worker_shutdown = Arc::clone(&probe.shutdown);
         std::thread::Builder::new()
             .name(format!("hepta-health-{}", identity.agent_id()))
             .spawn(move || run_health_probe(identity, worker_ready, worker_shutdown))
             .map_err(ProcessDriverError::from)?;
-        Ok(Self { ready, shutdown })
+        Ok(probe)
     }
 
     fn ready(&self) -> bool {
@@ -521,18 +538,17 @@ struct HealthProbeObservation {
     ready: bool,
 }
 
-fn prove_adoption_identity(identity: &HealthProbeIdentity) -> bool {
+fn prove_adoption_identity(identity: &HealthProbeIdentity) -> Option<HealthProbeObservation> {
     for request_id in 1..=ADOPTION_PROBE_ATTEMPTS {
-        if query_health_once(identity, request_id)
-            .is_ok_and(|observation| observation.exact_identity)
-        {
-            return true;
+        match query_health_once(identity, request_id) {
+            Ok(observation) if observation.exact_identity => return Some(observation),
+            _ => {}
         }
         if request_id != ADOPTION_PROBE_ATTEMPTS {
             std::thread::sleep(HEALTH_PROBE_INTERVAL);
         }
     }
-    false
+    None
 }
 
 fn query_health_once(

@@ -775,6 +775,7 @@ async fn record_initial_history_resumed_bare_turn_context_does_not_hydrate_previ
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),
@@ -824,6 +825,7 @@ async fn record_initial_history_resumed_hydrates_previous_turn_settings_from_lif
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),
@@ -1900,6 +1902,7 @@ async fn record_initial_history_resumed_turn_context_after_compaction_reestablis
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),
@@ -1992,6 +1995,7 @@ async fn record_initial_history_resumed_turn_context_after_compaction_reestablis
             #[allow(deprecated)]
             cwd: turn_context.cwd.clone(),
             workspace_roots: None,
+            environments: None,
             current_date: turn_context.current_date.clone(),
             timezone: turn_context.timezone.clone(),
             approval_policy: turn_context.approval_policy(),
@@ -2025,6 +2029,7 @@ async fn record_initial_history_resumed_aborted_turn_without_id_clears_active_tu
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),
@@ -2158,6 +2163,7 @@ async fn record_initial_history_resumed_unmatched_abort_preserves_active_turn_fo
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),
@@ -2287,6 +2293,7 @@ async fn record_initial_history_resumed_trailing_incomplete_turn_compaction_clea
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),
@@ -2461,6 +2468,7 @@ async fn record_initial_history_resumed_replaced_incomplete_compacted_turn_clear
         #[allow(deprecated)]
         cwd: turn_context.cwd.clone(),
         workspace_roots: None,
+        environments: None,
         current_date: turn_context.current_date.clone(),
         timezone: turn_context.timezone.clone(),
         approval_policy: turn_context.approval_policy(),

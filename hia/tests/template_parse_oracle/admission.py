@@ -45,7 +45,7 @@ def admit(producer, library_dir):
                 "a locked native program differs from the actual complete build")
         module_sources.append(path)
     contract = json.loads(contract_path.read_text())
-    require(sha(contract_path) == "824c63b3769d9c209011c1479150f85f981c3c2e607b5abf5c6f20072cfadea6"
+    require(sha(contract_path) == "694469d618325b30ec5f81093d573f39cad3d76ef8bcb87514a1be7db47393aa"
             and contract.get("schema") == "codex.hia.template-parse-buffer-contract.v1"
             and contract.get("revision") == 1 and contract.get("module") == MODULE
             and contract.get("symbol") == SYMBOL,
@@ -100,4 +100,7 @@ def admit(producer, library_dir):
                  producer / "codex-rs/utils/template/src/lib.rs",
                  *sorted(Path(__file__).parent.glob("*.py"))]:
         inputs[str(path)] = {"bytes": path.stat().st_size, "sha256": sha(path)}
+    from . import index_admission
+
+    inputs.update(index_admission.admit(producer, library_dir, build))
     return build, artifacts["library"], inputs

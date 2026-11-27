@@ -20,6 +20,8 @@ use codex_hepta_matrix_protocol::MAX_MATRIXD_CONTROL_FRAME_BYTES;
 use pretty_assertions::assert_eq;
 
 use super::AgentHealthProbeIdentity;
+use super::HealthProbe;
+use super::HealthProbeObservation;
 use super::MatrixHealthProbeIdentity;
 use super::UnixProcessDriver;
 use super::query_agent_health_once;
@@ -37,6 +39,49 @@ use crate::SpawnSpec;
 
 const SQLITE_HOME_POLLUTION_CHILD_ENV: &str = "HEPTA_SUPERVISOR_SQLITE_HOME_POLLUTION_CHILD";
 const POLLUTED_SQLITE_HOME: &str = "/tmp/hepta-polluted-shared-sqlite-home";
+
+#[test]
+fn adopted_probe_preserves_exact_ready_observation_before_worker_runs() {
+    let observation = HealthProbeObservation {
+        exact_identity: true,
+        ready: true,
+    };
+    let probe = HealthProbe::new(Some(observation));
+    assert!(probe.ready());
+
+    let fresh_probe = HealthProbe::new(/*initial_observation*/ None);
+    assert!(!fresh_probe.ready());
+
+    probe.shutdown();
+    assert!(!probe.ready());
+
+    let later_probe = HealthProbe::new(Some(observation));
+    assert!(later_probe.ready());
+    assert!(!probe.ready());
+    assert!(!fresh_probe.ready());
+    assert!(!std::sync::Arc::ptr_eq(&probe.ready, &later_probe.ready));
+}
+
+#[test]
+fn adopted_probe_does_not_promote_identity_only_or_unproven_readiness() {
+    for observation in [
+        HealthProbeObservation {
+            exact_identity: true,
+            ready: false,
+        },
+        HealthProbeObservation {
+            exact_identity: false,
+            ready: true,
+        },
+        HealthProbeObservation {
+            exact_identity: false,
+            ready: false,
+        },
+    ] {
+        let probe = HealthProbe::new(Some(observation));
+        assert!(!probe.ready());
+    }
+}
 
 #[test]
 fn unix_wrapper_captures_bounded_stdout_and_stderr() {

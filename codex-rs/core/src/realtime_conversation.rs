@@ -6,6 +6,7 @@ use crate::realtime_context::build_realtime_startup_context;
 use crate::realtime_context::truncate_realtime_text_to_token_budget;
 use crate::realtime_prompt::prepare_realtime_backend_prompt;
 use crate::session::session::Session;
+use crate::session::turn_context::TurnContext;
 use anyhow::Context;
 use async_channel::Receiver;
 use async_channel::RecvError;
@@ -82,10 +83,19 @@ use tracing::warn;
 
 mod bem;
 mod existing_call;
+mod handoff_owner;
+mod input_forwarding;
+mod routing;
 mod sideband;
 
 use self::bem::ChannelParser as BemChannelParser;
 use self::bem::message_phase as bem_message_phase;
+use self::handoff_owner::RealtimeHandoffOutputGate;
+pub(crate) use self::handoff_owner::RealtimeHandoffRequest;
+use self::handoff_owner::RealtimeTurnHandoff;
+use self::handoff_owner::send_owned_handoff_output;
+use self::input_forwarding::PendingRealtimeEvent;
+use self::input_forwarding::flush_pending_realtime_event;
 use self::sideband::spawn_webrtc_sideband_input_task;
 
 const AUDIO_IN_QUEUE_CAPACITY: usize = 256;
@@ -144,6 +154,8 @@ enum RealtimeSessionKind {
 
 #[derive(Clone, Debug)]
 struct RealtimeHandoffState {
+    identity: Arc<()>,
+    output_gate: Arc<RealtimeHandoffOutputGate>,
     output_tx: Sender<RealtimeOutbound>,
     last_output: Arc<Mutex<Option<RealtimeHandoffOutput>>>,
     stream: Arc<Mutex<RealtimeHandoffStreamState>>,
@@ -165,6 +177,7 @@ struct RealtimeHandoffOutput {
 #[derive(Debug, Default)]
 struct RealtimeHandoffStreamState {
     active_handoff: Option<String>,
+    pending_steer_ack: Option<String>,
     items: HashMap<String, RealtimeStreamedItem>,
 }
 
@@ -352,6 +365,9 @@ enum RealtimeOutbound {
     HandoffCompleteAck {
         handoff_id: String,
     },
+    HandoffSteerAck {
+        handoff_id: String,
+    },
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -485,6 +501,8 @@ struct RealtimeStart {
 
 struct RealtimeStartOutput {
     realtime_active: Arc<AtomicBool>,
+    handoff: RealtimeHandoffState,
+    stop_token: CancellationToken,
     events_rx: Receiver<RealtimeEvent>,
     transcript_tail_rx: Receiver<String>,
     sdp: Option<String>,
@@ -579,6 +597,8 @@ impl RealtimeConversationManager {
         let realtime_active = Arc::new(AtomicBool::new(true));
         let stop_token = CancellationToken::new();
         let handoff = RealtimeHandoffState {
+            identity: Arc::new(()),
+            output_gate: Arc::new(RealtimeHandoffOutputGate::default()),
             output_tx: handoff_output_tx,
             last_output: Arc::new(Mutex::new(None)),
             stream: Arc::new(Mutex::new(RealtimeHandoffStreamState::default())),
@@ -682,14 +702,16 @@ impl RealtimeConversationManager {
             audio_tx,
             text_tx,
             session_kind,
-            handoff,
+            handoff: handoff.clone(),
             input_task: task,
             fanout_task: None,
             realtime_active: Arc::clone(&realtime_active),
-            stop_token,
+            stop_token: stop_token.clone(),
         });
         Ok(RealtimeStartOutput {
             realtime_active,
+            handoff,
+            stop_token,
             events_rx,
             transcript_tail_rx,
             sdp,
@@ -780,19 +802,27 @@ impl RealtimeConversationManager {
         Ok(())
     }
 
+    async fn handoff_for_turn(&self, turn: &TurnContext) -> Option<RealtimeHandoffState> {
+        if let Some(owner) = turn.extension_data.get::<RealtimeTurnHandoff>() {
+            return Some(owner.handoff.clone());
+        }
+        self.state
+            .lock()
+            .await
+            .as_ref()
+            .map(|state| state.handoff.clone())
+    }
+
     pub(crate) async fn handoff_out(
         &self,
+        turn: &TurnContext,
         output_text: String,
         phase: Option<MessagePhase>,
     ) -> CodexResult<()> {
-        let handoff = {
-            let guard = self.state.lock().await;
-            let Some(state) = guard.as_ref() else {
-                return Err(CodexErr::InvalidRequest(
-                    "conversation is not running".to_string(),
-                ));
-            };
-            state.handoff.clone()
+        let Some(handoff) = self.handoff_for_turn(turn).await else {
+            return Err(CodexErr::InvalidRequest(
+                "conversation is not running".to_string(),
+            ));
         };
 
         if handoff.client_managed_handoffs {
@@ -866,24 +896,17 @@ impl RealtimeConversationManager {
                 }
             }
         };
-        handoff
-            .output_tx
-            .send(output)
-            .await
-            .map_err(|_| CodexErr::InvalidRequest("conversation is not running".to_string()))?;
-        Ok(())
+        send_owned_handoff_output(&handoff, Some(output), /*complete*/ false).await
     }
 
     pub(crate) async fn register_handoff_stream_item(
         &self,
+        turn: &TurnContext,
         item_id: String,
         phase: Option<MessagePhase>,
         initial_text: String,
     ) {
-        let handoff = {
-            let guard = self.state.lock().await;
-            guard.as_ref().map(|state| state.handoff.clone())
-        };
+        let handoff = self.handoff_for_turn(turn).await;
         let Some(handoff) = handoff else {
             return;
         };
@@ -932,20 +955,17 @@ impl RealtimeConversationManager {
 
     pub(crate) async fn stream_handoff_delta(
         &self,
+        turn: &TurnContext,
         item_id: &str,
         delta: String,
     ) -> CodexResult<()> {
         if delta.is_empty() {
             return Ok(());
         }
-        let handoff = {
-            let guard = self.state.lock().await;
-            let Some(state) = guard.as_ref() else {
-                return Err(CodexErr::InvalidRequest(
-                    "conversation is not running".to_string(),
-                ));
-            };
-            state.handoff.clone()
+        let Some(handoff) = self.handoff_for_turn(turn).await else {
+            return Err(CodexErr::InvalidRequest(
+                "conversation is not running".to_string(),
+            ));
         };
         if !handoff.streams_handoff_append() {
             return Ok(());
@@ -969,11 +989,12 @@ impl RealtimeConversationManager {
         Ok(())
     }
 
-    pub(crate) async fn finish_handoff_stream_item(&self, item_id: &str) -> bool {
-        let handoff = {
-            let guard = self.state.lock().await;
-            guard.as_ref().map(|state| state.handoff.clone())
-        };
+    pub(crate) async fn finish_handoff_stream_item(
+        &self,
+        turn: &TurnContext,
+        item_id: &str,
+    ) -> bool {
+        let handoff = self.handoff_for_turn(turn).await;
         let Some(handoff) = handoff else {
             return false;
         };
@@ -987,14 +1008,16 @@ impl RealtimeConversationManager {
         let chunk = streamed_item.drain_final_chunk();
         let sent_output = streamed_item.sent_bytes > 0;
         if let Some(text) = chunk {
-            let _ = handoff
-                .output_tx
-                .send(RealtimeOutbound::HandoffAppend {
+            let _ = send_owned_handoff_output(
+                &handoff,
+                Some(RealtimeOutbound::HandoffAppend {
                     handoff_id: streamed_item.handoff_id,
                     text,
                     phase: streamed_item.phase,
-                })
-                .await;
+                }),
+                /*complete*/ false,
+            )
+            .await;
         }
         sent_output
     }
@@ -1024,51 +1047,54 @@ impl RealtimeConversationManager {
         Ok(())
     }
 
-    pub(crate) async fn handoff_complete(&self) -> CodexResult<()> {
-        let handoff = {
-            let guard = self.state.lock().await;
-            guard.as_ref().map(|state| state.handoff.clone())
-        };
-        let Some(handoff) = handoff else {
+    pub(crate) async fn handoff_complete(&self, turn: &TurnContext) -> CodexResult<()> {
+        let Some(owner) = turn.extension_data.get::<RealtimeTurnHandoff>() else {
             return Ok(());
         };
+        let handoff = &owner.handoff;
         if handoff.client_managed_handoffs {
             return Ok(());
         }
-        match handoff.session_kind {
-            RealtimeSessionKind::V1 => return Ok(()),
-            RealtimeSessionKind::V2 => {}
-        }
-
-        let Some(handoff_id) = handoff.stream.lock().await.active_handoff.clone() else {
-            return Ok(());
-        };
-        let Some(last_output) = handoff.last_output.lock().await.clone() else {
-            return Ok(());
-        };
-
-        let output = if handoff.codex_responses_as_items {
-            RealtimeOutbound::HandoffCompleteAck { handoff_id }
-        } else {
-            RealtimeOutbound::CompletedHandoff {
-                handoff_id,
-                text: last_output.text,
-                phase: last_output.phase,
+        let output = match handoff.session_kind {
+            RealtimeSessionKind::V1 => None,
+            RealtimeSessionKind::V2 => {
+                let handoff_id = handoff.stream.lock().await.active_handoff.clone();
+                let last_output = handoff.last_output.lock().await.clone();
+                handoff_id
+                    .zip(last_output)
+                    .map(|(handoff_id, last_output)| {
+                        if handoff.codex_responses_as_items {
+                            RealtimeOutbound::HandoffCompleteAck { handoff_id }
+                        } else {
+                            RealtimeOutbound::CompletedHandoff {
+                                handoff_id,
+                                text: last_output.text,
+                                phase: last_output.phase,
+                            }
+                        }
+                    })
             }
         };
-
-        handoff
-            .output_tx
-            .send(output)
-            .await
-            .map_err(|_| CodexErr::InvalidRequest("conversation is not running".to_string()))
+        send_owned_handoff_output(handoff, output, /*complete*/ true).await
     }
 
-    pub(crate) async fn clear_active_handoff(&self) {
-        let handoff = {
-            let guard = self.state.lock().await;
-            guard.as_ref().map(|state| state.handoff.clone())
+    /// Retire only the owner attached to this aborted turn. Accepted steering
+    /// acknowledgements retain their order, but an abort sends no completion.
+    pub(crate) async fn handoff_aborted(&self, turn: &TurnContext) -> CodexResult<()> {
+        let Some(owner) = turn.extension_data.get::<RealtimeTurnHandoff>() else {
+            return Ok(());
         };
+        if owner.handoff.client_managed_handoffs {
+            return Ok(());
+        }
+        let result =
+            send_owned_handoff_output(&owner.handoff, /*output*/ None, /*complete*/ true).await;
+        self.clear_active_handoff(turn).await;
+        result
+    }
+
+    pub(crate) async fn clear_active_handoff(&self, turn: &TurnContext) {
+        let handoff = self.handoff_for_turn(turn).await;
         if let Some(handoff) = handoff {
             {
                 let mut stream = handoff.stream.lock().await;
@@ -1535,7 +1561,7 @@ async fn handle_start_inner(
         sdp,
         existing_call_id,
     };
-    let start_output = sess.conversation.start(start, mode_instructions).await?;
+    let mut start_output = sess.conversation.start(start, mode_instructions).await?;
 
     info!("realtime conversation started");
 
@@ -1548,13 +1574,8 @@ async fn handle_start_inner(
     })
     .await;
 
-    let RealtimeStartOutput {
-        realtime_active,
-        events_rx,
-        transcript_tail_rx,
-        sdp,
-    } = start_output;
-    if let Some(sdp) = sdp {
+    let realtime_active = Arc::clone(&start_output.realtime_active);
+    if let Some(sdp) = start_output.sdp.take() {
         sess.send_event_raw(Event {
             id: sub_id.to_string(),
             msg: EventMsg::RealtimeConversationSdp(RealtimeConversationSdpEvent { sdp }),
@@ -1562,65 +1583,11 @@ async fn handle_start_inner(
         .await;
     }
 
-    let sess_clone = Arc::clone(sess);
-    let sub_id = sub_id.to_string();
-    let fanout_realtime_active = Arc::clone(&realtime_active);
-    let fanout_task = tokio::spawn(async move {
-        let ev = |msg| Event {
-            id: sub_id.clone(),
-            msg,
-        };
-        let mut end = RealtimeConversationEnd::TransportClosed;
-        // Drain already-parsed events so a queued handoff is routed before the final tail.
-        while let Ok(event) = events_rx.recv().await {
-            match &event {
-                RealtimeEvent::AudioOut(_) => {}
-                _ => {
-                    info!(
-                        event = ?event,
-                        "received realtime conversation event"
-                    );
-                }
-            }
-            if let RealtimeEvent::Error(_) = &event {
-                end = RealtimeConversationEnd::Error;
-            }
-            let maybe_routed_text = match &event {
-                RealtimeEvent::HandoffRequested(handoff) => {
-                    realtime_delegation_from_handoff(handoff)
-                }
-                _ => None,
-            };
-            if let Some(text) = maybe_routed_text {
-                debug!(text = %text, "[realtime-text] realtime conversation text output");
-                let sess_for_routed_text = Arc::clone(&sess_clone);
-                sess_for_routed_text.route_realtime_text_input(text).await;
-            }
-            sess_clone
-                .send_event_raw(ev(EventMsg::RealtimeConversationRealtime(
-                    RealtimeConversationRealtimeEvent {
-                        payload: event.clone(),
-                    },
-                )))
-                .await;
-        }
-        if let Ok(text) = transcript_tail_rx.recv().await {
-            sess_clone.route_realtime_text_input(text).await;
-        }
-        if fanout_realtime_active.swap(false, Ordering::Relaxed) {
-            match end {
-                RealtimeConversationEnd::TransportClosed => {
-                    info!("realtime conversation transport closed");
-                }
-                RealtimeConversationEnd::Requested | RealtimeConversationEnd::Error => {}
-            }
-            sess_clone
-                .conversation
-                .finish_if_active(&fanout_realtime_active)
-                .await;
-            send_realtime_conversation_closed(&sess_clone, sub_id, end).await;
-        }
-    });
+    let fanout_task = tokio::spawn(routing::run(
+        Arc::clone(sess),
+        sub_id.to_string(),
+        start_output,
+    ));
     sess.conversation
         .register_fanout_task(&realtime_active, fanout_task)
         .await;
@@ -1787,7 +1754,12 @@ fn spawn_realtime_input_task(
     tokio::spawn(async move {
         let events_tx = input.events_tx.clone();
         let transcript_state = input.events.transcript_state();
-        let exit = run_realtime_input_task(input, /*pending_outbound*/ None).await;
+        let mut pending_event = None;
+        let exit =
+            run_realtime_input_task(input, /*pending_outbound*/ None, &mut pending_event).await;
+        // The input receivers have been dropped. A final pending event can
+        // now drain without retaining capacity needed by a finishing turn.
+        let _ = flush_pending_realtime_event(&events_tx, &mut pending_event).await;
         if let RealtimeInputTaskExit::TransportLost { err, .. } = exit {
             report_realtime_transport_loss(&events_tx, err).await;
         }
@@ -1836,6 +1808,7 @@ enum RealtimeSidebandSessionInitialization {
 async fn run_realtime_input_task(
     input: RealtimeInputTask,
     pending_outbound: Option<Box<RealtimePendingOutbound>>,
+    pending_event: &mut Option<PendingRealtimeEvent>,
 ) -> RealtimeInputTaskExit {
     let RealtimeInputTask {
         writer,
@@ -1867,21 +1840,25 @@ async fn run_realtime_input_task(
     }
 
     loop {
+        let has_pending_event = pending_event.is_some();
         let result = tokio::select! {
             _ = stop_token.cancelled() => Err(RealtimeInputTaskExit::Terminal),
-            realtime_event = events.next_event() => {
+            delivery = flush_pending_realtime_event(&events_tx, pending_event), if has_pending_event => {
+                delivery.map_err(classify_realtime_input_error)
+            }
+            realtime_event = events.next_event(), if !has_pending_event => {
                 match realtime_event {
                     Ok(Some(event)) => {
                         handle_realtime_server_event(
                             event,
                             &writer,
-                            &events_tx,
                             &handoff_state,
                             session_kind,
                             &mut output_audio_state,
                             &mut response_create_queue,
                         )
                         .await
+                        .map(|event| *pending_event = Some(event))
                         .map_err(classify_realtime_input_error)
                     }
                     Ok(None) => Err(RealtimeInputTaskExit::Terminal),
@@ -2041,14 +2018,16 @@ async fn flush_streamed_handoff_item(handoff: &RealtimeHandoffState, item_id: &s
             streamed_item.phase.clone(),
         )
     };
-    let _ = handoff
-        .output_tx
-        .send(RealtimeOutbound::HandoffAppend {
+    let _ = send_owned_handoff_output(
+        handoff,
+        Some(RealtimeOutbound::HandoffAppend {
             handoff_id,
             text,
             phase,
-        })
-        .await;
+        }),
+        /*complete*/ false,
+    )
+    .await;
 }
 
 fn schedule_streamed_handoff_flush(
@@ -2131,7 +2110,8 @@ async fn handle_handoff_output(
                     .send_conversation_item_create(text, ConversationTextRole::Developer)
                     .await
             }
-            RealtimeOutbound::HandoffCompleteAck { .. } => Ok(()),
+            RealtimeOutbound::HandoffCompleteAck { .. }
+            | RealtimeOutbound::HandoffSteerAck { .. } => Ok(()),
         },
         RealtimeEventParser::FramelessBidi => match handoff_output {
             RealtimeOutbound::StandaloneHandoff { text, phase } => {
@@ -2198,7 +2178,8 @@ async fn handle_handoff_output(
                 .send_conversation_item_create(text, ConversationTextRole::Developer)
                 .await
             }
-            RealtimeOutbound::HandoffCompleteAck { .. } => Ok(()),
+            RealtimeOutbound::HandoffCompleteAck { .. }
+            | RealtimeOutbound::HandoffSteerAck { .. } => Ok(()),
         },
         RealtimeEventParser::RealtimeV2 => match handoff_output {
             RealtimeOutbound::StandaloneHandoff { text, phase: _ } => {
@@ -2235,12 +2216,14 @@ async fn handle_handoff_output(
                 text,
                 phase: _,
             } => {
-                let active_handoff = handoff_state.stream.lock().await.active_handoff.clone();
-                match active_handoff {
-                    Some(active_handoff) if active_handoff == handoff_id => {}
-                    Some(_) | None => {
-                        debug!("dropping stale realtime handoff progress update");
-                        return Ok(());
+                if handoff_state.client_managed_handoffs {
+                    let active_handoff = handoff_state.stream.lock().await.active_handoff.clone();
+                    match active_handoff {
+                        Some(active_handoff) if active_handoff == handoff_id => {}
+                        Some(_) | None => {
+                            debug!("dropping stale realtime handoff progress update");
+                            return Ok(());
+                        }
                     }
                 }
                 writer
@@ -2276,6 +2259,21 @@ async fn handle_handoff_output(
                     .send_conversation_function_call_output(handoff_id, String::new())
                     .await
             }
+            RealtimeOutbound::HandoffSteerAck { handoff_id } => {
+                if let Err(err) = writer
+                    .send_conversation_function_call_output(
+                        handoff_id,
+                        REALTIME_V2_STEER_ACKNOWLEDGEMENT.to_string(),
+                    )
+                    .await
+                {
+                    warn!("failed to send handoff steering acknowledgement: {err}");
+                    return Err(err.into());
+                }
+                return response_create_queue
+                    .request_create(writer, "handoff steering")
+                    .await;
+            }
         },
     };
     if let Err(err) = result {
@@ -2288,12 +2286,11 @@ async fn handle_handoff_output(
 async fn handle_realtime_server_event(
     event: RealtimeEvent,
     writer: &RealtimeWebsocketWriter,
-    events_tx: &Sender<RealtimeEvent>,
     handoff_state: &RealtimeHandoffState,
     session_kind: RealtimeSessionKind,
     output_audio_state: &mut Option<OutputAudioState>,
     response_create_queue: &mut RealtimeResponseCreateQueue,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<PendingRealtimeEvent> {
     let should_stop = match &event {
         RealtimeEvent::AudioOut(frame) => {
             match session_kind {
@@ -2365,33 +2362,36 @@ async fn handle_realtime_server_event(
         RealtimeEvent::HandoffRequested(handoff) => {
             *output_audio_state = None;
 
-            match session_kind {
-                RealtimeSessionKind::V1 => {
-                    let mut stream = handoff_state.stream.lock().await;
-                    stream.items.clear();
-                    stream.active_handoff = Some(handoff.handoff_id.clone());
-                }
-                RealtimeSessionKind::V2 => {
-                    let active_handoff = handoff_state.stream.lock().await.active_handoff.clone();
-                    match active_handoff {
-                        Some(_) => {
-                            if let Err(err) = writer
-                                .send_conversation_function_call_output(
-                                    handoff.handoff_id.clone(),
-                                    REALTIME_V2_STEER_ACKNOWLEDGEMENT.to_string(),
-                                )
-                                .await
-                            {
-                                warn!("failed to send handoff steering acknowledgement: {err}");
-                                return Err(err.into());
+            if handoff_state.client_managed_handoffs {
+                match session_kind {
+                    RealtimeSessionKind::V1 => {
+                        let mut stream = handoff_state.stream.lock().await;
+                        stream.items.clear();
+                        stream.active_handoff = Some(handoff.handoff_id.clone());
+                    }
+                    RealtimeSessionKind::V2 => {
+                        let active_handoff =
+                            handoff_state.stream.lock().await.active_handoff.clone();
+                        match active_handoff {
+                            Some(_) => {
+                                if let Err(err) = writer
+                                    .send_conversation_function_call_output(
+                                        handoff.handoff_id.clone(),
+                                        REALTIME_V2_STEER_ACKNOWLEDGEMENT.to_string(),
+                                    )
+                                    .await
+                                {
+                                    warn!("failed to send handoff steering acknowledgement: {err}");
+                                    return Err(err.into());
+                                }
+                                response_create_queue
+                                    .request_create(writer, "handoff steering")
+                                    .await?;
                             }
-                            response_create_queue
-                                .request_create(writer, "handoff steering")
-                                .await?;
-                        }
-                        None => {
-                            handoff_state.stream.lock().await.active_handoff =
-                                Some(handoff.handoff_id.clone());
+                            None => {
+                                handoff_state.stream.lock().await.active_handoff =
+                                    Some(handoff.handoff_id.clone());
+                            }
                         }
                     }
                 }
@@ -2431,14 +2431,7 @@ async fn handle_realtime_server_event(
         | RealtimeEvent::ConversationItemDone { .. } => false,
     };
 
-    if events_tx.send(event).await.is_err() {
-        anyhow::bail!("realtime output event channel closed");
-    }
-    if should_stop {
-        error!("realtime stream error event received");
-        anyhow::bail!("realtime stream error event received");
-    }
-    Ok(())
+    Ok(PendingRealtimeEvent { event, should_stop })
 }
 
 async fn handle_user_audio_input(

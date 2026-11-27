@@ -1,6 +1,7 @@
 #![cfg(unix)]
 
 use std::collections::BTreeSet;
+use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -558,8 +559,16 @@ fn release(
     program: &Path,
 ) -> Result<AgentRelease> {
     let release_id = ReleaseId::parse(identity)?;
-    let installed = registry.install_release(release_id.clone(), program, Vec::new())?;
-    registry.allow_release(agent_id, &release_id)?;
+    let installed = registry
+        .install_release(release_id.clone(), program, Vec::new())
+        .inspect_err(|_| {
+            let _ = writeln!(std::io::stderr(), "FLEET_STAGE release_install_failed");
+        })?;
+    registry
+        .allow_release(agent_id, &release_id)
+        .inspect_err(|_| {
+            let _ = writeln!(std::io::stderr(), "FLEET_STAGE release_allow_failed");
+        })?;
     Ok(AgentRelease::try_from(installed)?)
 }
 

@@ -629,11 +629,9 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
-    let expires_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_secs()
-        + 1;
+    let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
+    // Round the one-second setup deadline up to a whole Unix second.
+    let expires_at = now.as_secs() + 1 + u64::from(now.subsec_nanos() != 0);
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",

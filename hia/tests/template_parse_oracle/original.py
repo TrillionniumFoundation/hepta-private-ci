@@ -8,10 +8,10 @@ from .common import binding, clean_identity, git, require, sha
 BASE = "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095"
 CRATE = "codex-rs/utils/template"
 CRATE_TREE = "239023ac5b71e7cd40b23bff31cbf3e36c59a8c5"
-CATALOG_SHA = "71de8e00598196ca040566cae6db1672235b35913c80f433496195f8e05f1fac"
+CATALOG_SHA = "c5fd2255ec086eee74b9af10763360d836a893e1b7eac308600a6864141a8e17"
 LIB_SHA = "f930640a38e4ed882274397f6f2ac2105c3aac7891269b7b1edf39393b5d80cf"
 FEATURE_BLOCK = '[features]\nhia-native = []\n\n'
-BUILD_SOURCE = 'include!("../../../hia/cargo_build.rs");\n\nfn main() {\n    link_native("template_parse");\n    link_native("template_render");\n}\n'
+BUILD_SOURCE = 'include!("../../../hia/cargo_build.rs");\n\nfn main() {\n    link_native("template_parse");\n    link_native("template_render");\n    link_native("template_index");\n}\n'
 
 
 def catalog():
@@ -20,7 +20,7 @@ def catalog():
     result = json.loads(path.read_bytes())
     require(result["commit"] == BASE and result["crate_tree"] == CRATE_TREE
             and len(result["original_files"]) == 4 and len(result["original_tests"]) == 14
-            and len(result["routing_blocks"]) == 10 and len(result["registry_packages"]) == 3
+            and len(result["routing_blocks"]) == 15 and len(result["registry_packages"]) == 3
             and sum(len(item["files"]) for item in result["registry_packages"].values()) == 54,
             "the whole-source scope differs")
     return result
@@ -84,5 +84,5 @@ def producing_source(producer, original):
             "routing inverse did not recover the entire original library")
     return {"source": binding(path), "manifest": binding(manifest), "build_entry": binding(build),
             "restored_original_sha256": LIB_SHA, "restored_bytes": len(raw),
-            "exact_library_blocks_removed": 10, "exact_manifest_blocks_removed": 1,
+            "exact_library_blocks_removed": 15, "exact_manifest_blocks_removed": 1,
             "complete_original_render_and_tests_restored": True}

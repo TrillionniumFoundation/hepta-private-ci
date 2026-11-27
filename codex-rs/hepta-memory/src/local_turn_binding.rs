@@ -321,7 +321,8 @@ mod tests {
     use super::*;
 
     async fn prepared(temp: &TempDir, bound: bool) -> (LocalLeaseOutbox, LocalCompactExecutor) {
-        let fleet_root = temp.path().join("fleet");
+        let temp_root = temp.path().canonicalize().expect("canonical temp root");
+        let fleet_root = temp_root.join("fleet");
         fs::create_dir_all(&fleet_root).expect("fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet root");
         let owner = AgentId::parse("00000000-0000-4000-8000-000000000931").expect("owner");

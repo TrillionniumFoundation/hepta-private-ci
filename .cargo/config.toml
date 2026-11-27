@@ -1,0 +1,4 @@
+[env]
+# Keep bundled SQLite's default Unix file creation private.
+# Explicit LIBSQLITE3_FLAGS values remain authoritative.
+LIBSQLITE3_FLAGS = { value = "SQLITE_DEFAULT_FILE_PERMISSIONS=0600", force = false }

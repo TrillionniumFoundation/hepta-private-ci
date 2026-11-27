@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[cfg(not(feature = "hia-native"))]
 pub fn format_env_display<S: AsRef<str>>(
     env: Option<&HashMap<String, String>>,
     env_vars: &[S],
@@ -21,6 +22,14 @@ pub fn format_env_display<S: AsRef<str>>(
     } else {
         parts.join(", ")
     }
+}
+
+#[cfg(feature = "hia-native")]
+pub fn format_env_display<S: AsRef<str>>(
+    env: Option<&HashMap<String, String>>,
+    env_vars: &[S],
+) -> String {
+    crate::hia_native_format_env_display::format_env_display(env, env_vars)
 }
 
 #[cfg(test)]

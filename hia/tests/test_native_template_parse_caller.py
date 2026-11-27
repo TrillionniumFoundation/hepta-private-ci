@@ -12,7 +12,7 @@ from template_parse_oracle import artifacts, cargo, compiling, corpus, fingerpri
 from template_parse_oracle.common import Commands, Resources, binding, clean_identity, outside, producer_files, require, save, verify
 
 
-NATIVE_MODULES = ('template_parse', 'template_render')
+NATIVE_MODULES = ('template_parse', 'template_render', 'template_index')
 
 
 def run(args, report, work):

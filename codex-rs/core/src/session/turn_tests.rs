@@ -47,6 +47,7 @@ async fn turn_recovery_checkpoint_accepts_only_nonempty_from_thread_environments
     second.selection.environment_id = "thread-environment-a".to_string();
     second.selection.workspace_roots = Vec::new();
     let from_thread = TurnEnvironmentSnapshot {
+        ordinary_selections_complete: false,
         environments: vec![
             TurnEnvironmentState::Ready(first.clone()),
             TurnEnvironmentState::Ready(second.clone()),
@@ -76,6 +77,7 @@ async fn turn_recovery_checkpoint_accepts_only_nonempty_from_thread_environments
     owner_ready.config_origin = EnvironmentConfigOrigin::Owner;
     assert_eq!(
         turn_recovery_environment_selections(&TurnEnvironmentSnapshot {
+            ordinary_selections_complete: false,
             environments: vec![TurnEnvironmentState::Ready(owner_ready)],
         }),
         None

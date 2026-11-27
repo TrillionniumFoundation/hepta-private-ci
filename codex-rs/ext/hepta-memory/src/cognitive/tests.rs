@@ -163,7 +163,8 @@ fn text_input(text: &str) -> Vec<UserInput> {
 
 async fn cognitive_fixture() -> CognitiveFixture {
     let temp = tempfile::tempdir().expect("tempdir");
-    let fleet_root = temp.path().join("fleet");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let fleet_root = temp_root.join("fleet");
     std::fs::create_dir_all(&fleet_root).expect("fleet root");
     let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000311").expect("agent id");
     let layout = HeptaFleetRoot::parse(fleet_root)

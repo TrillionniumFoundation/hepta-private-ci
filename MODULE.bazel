@@ -357,6 +357,13 @@ crate.from_cargo(
 bazel_dep(name = "zstd", version = "1.5.7")
 
 crate.annotation(
+    # rules_rust appends CFLAGS without replacing the toolchain flags.
+    build_script_env = {
+        "CFLAGS": "-DSQLITE_DEFAULT_FILE_PERMISSIONS=0600",
+    },
+    crate = "libsqlite3-sys",
+)
+crate.annotation(
     # The Windows lint toolchain cannot reliably materialize blake3's native x86 assembly archives.
     crate = "blake3",
     crate_features_select = {
@@ -525,18 +532,43 @@ inject_repo(crate, "v8_targets")
 llvm = use_extension("@llvm//extensions:llvm.bzl", "llvm")
 use_repo(llvm, "llvm-project")
 
+# Only GNU Linux targets use Rama's generated libresolv bindings.
+_RAMA_LIBRESOLV_TARGETS = [
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-gnu",
+]
+
 crate.annotation(
-    # Rama generates Linux libresolv bindings with libclang and its matching headers.
-    build_script_env = {
-        "BINDGEN_EXTRA_CLANG_ARGS": "-Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include",
-        "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)",
+    # Keep libclang in the exec configuration, with the target C toolchain headers.
+    build_script_deps = ["@crates//:shlex-1.3.0"],
+    build_script_env_select = {
+        target: """{
+            "BINDGEN_EXTRA_CLANG_ARGS": "-Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include",
+            "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)"
+        }"""
+        for target in _RAMA_LIBRESOLV_TARGETS
     },
-    build_script_tools = [
-        "@llvm-project//clang:libclang_interface_output",
-        "@llvm//:builtin_resource_dir",
-    ],
+    build_script_tools_select = {
+        target: [
+            "@llvm-project//clang:libclang_interface_output",
+            "@llvm//:builtin_resource_dir",
+        ] if target in _RAMA_LIBRESOLV_TARGETS else []
+        # Explicit empty branches prevent rules_rs from hoisting GNU-only tools.
+        for target in _RAMA_LIBRESOLV_TARGETS + [
+            "aarch64-apple-darwin",
+            "aarch64-pc-windows-gnullvm",
+            "aarch64-pc-windows-msvc",
+            "aarch64-unknown-linux-musl",
+            "x86_64-apple-darwin",
+            "x86_64-pc-windows-gnullvm",
+            "x86_64-pc-windows-msvc",
+            "x86_64-unknown-linux-musl",
+        ]
+    },
     crate = "rama-dns",
     gen_build_script = "on",
+    patch_args = ["-p1"],
+    patches = ["//patches:rama-dns_hermetic_toolchain.patch"],
 )
 crate.annotation(
     # Provide the hermetic SDK path so the build script doesn't try to invoke an unhermetic `xcrun --show-sdk-path`.

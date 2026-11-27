@@ -99,6 +99,14 @@ async fn legacy_setup() -> TestResult<LegacySetup> {
 
 #[tokio::test]
 async fn legacy_encrypted_storage_migrates_and_reopens_with_the_same_identity() -> TestResult {
+    #[derive(Debug, thiserror::Error)]
+    enum OpenStageError {
+        #[error("legacy storage fixture: initial_restore")]
+        InitialRestore(#[source] codex_hepta_matrix_sdk::MatrixSdkError),
+        #[error("legacy storage fixture: reopen_after_drop")]
+        ReopenAfterDrop(#[source] codex_hepta_matrix_sdk::MatrixSdkError),
+    }
+
     let setup = legacy_setup().await?;
     let restored = MatrixSdkClient::restore(
         &setup.layout,
@@ -106,7 +114,8 @@ async fn legacy_encrypted_storage_migrates_and_reopens_with_the_same_identity() 
         setup.fixture.session.clone(),
         Some(&setup.fixture.passphrase),
     )
-    .await?;
+    .await
+    .map_err(OpenStageError::InitialRestore)?;
     assert_eq!(restored.paths(), &setup.paths);
     let filter = restored
         .client()
@@ -138,7 +147,8 @@ async fn legacy_encrypted_storage_migrates_and_reopens_with_the_same_identity() 
         Some(&setup.fixture.passphrase),
         /*device_display_name*/ None,
     )
-    .await?;
+    .await
+    .map_err(OpenStageError::ReopenAfterDrop)?;
     assert_eq!(session, setup.fixture.session);
     assert_eq!(persistent_identity(&reopened).await, expected_identity);
     #[cfg(unix)]

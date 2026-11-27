@@ -46,6 +46,7 @@ use crate::{
     OpenStoreError, RuntimeConfig, Secret, SqliteStoreConfig,
     connection::{self, Connection as SqliteAsyncConn, Pool as SqlitePool, SqliteConnections},
     error::{Error, Result},
+    open_diagnostics::{OpenPhase, StoreRole, observe_store_open, record_open_phase},
     utils::{
         EncryptableStore, SqliteAsyncConnExt, SqliteKeyValueStoreAsyncConnExt,
         SqliteKeyValueStoreConnExt, SqliteTransactionExt, time_to_timestamp,
@@ -119,26 +120,37 @@ impl SqliteMediaStore {
     /// Open the SQLite-based media store with the config open config.
     #[instrument(skip(config), fields(path = ?config.path))]
     pub async fn open_with_config(config: &SqliteStoreConfig) -> Result<Self, OpenStoreError> {
-        debug!(?config);
+        observe_store_open(config.open_diagnostics.as_ref(), StoreRole::Media, async {
+            debug!(?config);
 
-        let _timer = timer!("open_with_config");
+            let _timer = timer!("open_with_config");
 
-        fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
+            record_open_phase(OpenPhase::PathPrepare);
+            fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
 
-        let db_path = config.path.join(DATABASE_NAME);
-        let pool_config = config.pool_config();
-        let runtime_config = config.runtime_config();
+            let db_path = config.path.join(DATABASE_NAME);
+            let pool_config = config.pool_config();
+            let runtime_config = config.runtime_config();
 
-        let pool = config.build_pool_of_connections(DATABASE_NAME)?;
+            let pool = config.build_pool_of_connections(DATABASE_NAME)?;
 
-        let this =
-            Self::open_with_pool(pool, db_path, pool_config, runtime_config, config.secret.clone())
-                .await?;
+            let this = Self::open_with_pool(
+                pool,
+                db_path,
+                pool_config,
+                runtime_config,
+                config.secret.clone(),
+            )
+            .await?;
 
-        // Apply runtime config on the write connection.
-        this.write().await?.apply_runtime_config(runtime_config).await?;
+            // Apply runtime config on the write connection.
+            record_open_phase(OpenPhase::RuntimeConfig);
+            this.write().await?.apply_runtime_config(runtime_config).await?;
 
-        Ok(this)
+            record_open_phase(OpenPhase::Complete);
+            Ok(this)
+        })
+        .await
     }
 
     /// Open an SQLite-based media store using the given SQLite database
@@ -150,11 +162,15 @@ impl SqliteMediaStore {
         runtime_config: RuntimeConfig,
         secret: Option<Secret>,
     ) -> Result<Self, OpenStoreError> {
+        record_open_phase(OpenPhase::PoolAcquire);
         let conn = pool.get().await?;
 
+        record_open_phase(OpenPhase::SchemaVersion);
         let version = conn.db_version().await?;
+        record_open_phase(OpenPhase::Migrations);
         run_migrations(&conn, version).await?;
 
+        record_open_phase(OpenPhase::Checkpoint);
         conn.wal_checkpoint().await;
 
         let store_cipher = match &secret {
@@ -163,6 +179,7 @@ impl SqliteMediaStore {
         };
 
         let media_service = MediaService::new();
+        record_open_phase(OpenPhase::MetadataRead);
         let media_retention_policy = conn.get_serialized_kv(keys::MEDIA_RETENTION_POLICY).await?;
         let last_media_cleanup_time = conn.get_serialized_kv(keys::LAST_MEDIA_CLEANUP_TIME).await?;
         media_service.restore(media_retention_policy, last_media_cleanup_time);

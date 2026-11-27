@@ -1,0 +1,177 @@
+hia-asm.v1 hepta.hia.program.v8 codex_utf8_stream
+fn f0(b1_source:readbuf,b1_output:mutbuf,b1_workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(b1_source:readbuf,b1_output:mutbuf,b1_workspace:mutbuf)
+  b1_capacity:usize = buffer.len(b1_output)
+  b1_required:usize = const() {"value":32}
+  b1_fits:bool = compare.ge(b1_capacity,b1_required)
+  branch b1_fits validate(b1_source,b1_output) short_output()
+block validate(b2_v_source:readbuf,b2_v_output:mutbuf)
+  b2_kind:u64,b2_valid_up_to:usize,b2_error_len:u64 = call(b2_v_source) {"function":"validate_utf8"}
+  b2_zero:usize = const() {"value":0}
+  b2_eight:usize = const() {"value":8}
+  b2_sixteen:usize = const() {"value":16}
+  b2_twenty_four:usize = const() {"value":24}
+  b2_version:u64 = const() {"value":1}
+  b2_valid_word:u64 = int.cast(b2_valid_up_to) {"mode":"checked"}
+  _ = call(b2_v_output,b2_zero,b2_version) {"function":"write_word"}
+  _ = call(b2_v_output,b2_eight,b2_kind) {"function":"write_word"}
+  _ = call(b2_v_output,b2_sixteen,b2_valid_word) {"function":"write_word"}
+  _ = call(b2_v_output,b2_twenty_four,b2_error_len) {"function":"write_word"}
+  b2_written:u32 = const() {"value":32}
+  ret(b2_written)
+block short_output()
+  b3_short_code:u32 = const() {"value":4294967294}
+  ret(b3_short_code)
+end
+fn validate_utf8(b1_source:readbuf) -> (u64,usize,u64) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf)
+  b1_size:usize = buffer.len(b1_source)
+  b1_start:usize = const() {"value":0}
+  jump scan(b1_source,b1_size,b1_start)
+block scan(b2_s_source:readbuf,b2_s_size:usize,b2_s_index:usize)
+  b2_more:bool = compare.lt(b2_s_index,b2_s_size)
+  branch b2_more lead(b2_s_source,b2_s_size,b2_s_index) complete(b2_s_size)
+block lead(b3_l_source:readbuf,b3_l_size:usize,b3_l_index:usize)
+  b3_value:u8 = buffer.load(b3_l_source,b3_l_index)
+  b3_ascii_limit:u8 = const() {"value":128}
+  b3_is_ascii:bool = compare.lt(b3_value,b3_ascii_limit)
+  branch b3_is_ascii ascii(b3_l_source,b3_l_size,b3_l_index) multibyte(b3_l_source,b3_l_size,b3_l_index,b3_value)
+block ascii(b4_a_source:readbuf,b4_a_size:usize,b4_a_index:usize)
+  b4_one:usize = const() {"value":1}
+  b4_next:usize = int.add.checked(b4_a_index,b4_one)
+  jump scan(b4_a_source,b4_a_size,b4_next)
+block multibyte(b5_m_source:readbuf,b5_m_size:usize,b5_m_index:usize,b5_m_value:u8)
+  b5_minimum:u8 = const() {"value":194}
+  b5_maximum:u8 = const() {"value":244}
+  b5_above:bool = compare.ge(b5_m_value,b5_minimum)
+  b5_below:bool = compare.le(b5_m_value,b5_maximum)
+  b5_lead_ok:bool = bool.and(b5_above,b5_below)
+  branch b5_lead_ok width(b5_m_source,b5_m_size,b5_m_index,b5_m_value) invalid_lead(b5_m_index)
+block width(b6_w_source:readbuf,b6_w_size:usize,b6_w_index:usize,b6_w_value:u8)
+  b6_last_two:u8 = const() {"value":223}
+  b6_is_two:bool = compare.le(b6_w_value,b6_last_two)
+  branch b6_is_two two(b6_w_source,b6_w_size,b6_w_index) wider(b6_w_source,b6_w_size,b6_w_index,b6_w_value)
+block two(b7_t_source:readbuf,b7_t_size:usize,b7_t_index:usize)
+  b7_t_width:usize = const() {"value":2}
+  b7_t_min:u8 = const() {"value":128}
+  b7_t_max:u8 = const() {"value":191}
+  jump second(b7_t_source,b7_t_size,b7_t_index,b7_t_width,b7_t_min,b7_t_max)
+block wider(b8_w_source:readbuf,b8_w_size:usize,b8_w_index:usize,b8_w_value:u8)
+  b8_last_three:u8 = const() {"value":239}
+  b8_is_three:bool = compare.le(b8_w_value,b8_last_three)
+  branch b8_is_three three(b8_w_source,b8_w_size,b8_w_index,b8_w_value) four(b8_w_source,b8_w_size,b8_w_index,b8_w_value)
+block three(b9_t_source:readbuf,b9_t_size:usize,b9_t_index:usize,b9_t_value:u8)
+  b9_t_width:usize = const() {"value":3}
+  b9_e0:u8 = const() {"value":224}
+  b9_ed:u8 = const() {"value":237}
+  b9_low:u8 = const() {"value":128}
+  b9_normal_high:u8 = const() {"value":191}
+  b9_e0_low:u8 = const() {"value":160}
+  b9_ed_high:u8 = const() {"value":159}
+  b9_is_e0:bool = compare.eq(b9_t_value,b9_e0)
+  b9_is_ed:bool = compare.eq(b9_t_value,b9_ed)
+  b9_t_min:u8 = select(b9_is_e0,b9_e0_low,b9_low)
+  b9_t_max:u8 = select(b9_is_ed,b9_ed_high,b9_normal_high)
+  jump second(b9_t_source,b9_t_size,b9_t_index,b9_t_width,b9_t_min,b9_t_max)
+block four(b10_f_source:readbuf,b10_f_size:usize,b10_f_index:usize,b10_f_value:u8)
+  b10_f_width:usize = const() {"value":4}
+  b10_f0:u8 = const() {"value":240}
+  b10_f4:u8 = const() {"value":244}
+  b10_low:u8 = const() {"value":128}
+  b10_normal_high:u8 = const() {"value":191}
+  b10_f0_low:u8 = const() {"value":144}
+  b10_f4_high:u8 = const() {"value":143}
+  b10_is_f0:bool = compare.eq(b10_f_value,b10_f0)
+  b10_is_f4:bool = compare.eq(b10_f_value,b10_f4)
+  b10_f_min:u8 = select(b10_is_f0,b10_f0_low,b10_low)
+  b10_f_max:u8 = select(b10_is_f4,b10_f4_high,b10_normal_high)
+  jump second(b10_f_source,b10_f_size,b10_f_index,b10_f_width,b10_f_min,b10_f_max)
+block second(b11_s_source:readbuf,b11_s_size:usize,b11_s_index:usize,b11_s_width:usize,b11_s_min:u8,b11_s_max:u8)
+  b11_one:usize = const() {"value":1}
+  b11_second_index:usize = int.add.checked(b11_s_index,b11_one)
+  b11_exists:bool = compare.lt(b11_second_index,b11_s_size)
+  branch b11_exists second_byte(b11_s_source,b11_s_size,b11_s_index,b11_s_width,b11_s_min,b11_s_max,b11_second_index) incomplete(b11_s_index)
+block second_byte(b12_b_source:readbuf,b12_b_size:usize,b12_b_index:usize,b12_b_width:usize,b12_b_min:u8,b12_b_max:u8,b12_b_second:usize)
+  b12_value:u8 = buffer.load(b12_b_source,b12_b_second)
+  b12_above:bool = compare.ge(b12_value,b12_b_min)
+  b12_below:bool = compare.le(b12_value,b12_b_max)
+  b12_valid:bool = bool.and(b12_above,b12_below)
+  branch b12_valid after_second(b12_b_source,b12_b_size,b12_b_index,b12_b_width) invalid_lead(b12_b_index)
+block after_second(b13_a_source:readbuf,b13_a_size:usize,b13_a_index:usize,b13_a_width:usize)
+  b13_two:usize = const() {"value":2}
+  b13_finished:bool = compare.eq(b13_a_width,b13_two)
+  branch b13_finished advance(b13_a_source,b13_a_size,b13_a_index,b13_a_width) third(b13_a_source,b13_a_size,b13_a_index,b13_a_width)
+block third(b14_t_source:readbuf,b14_t_size:usize,b14_t_index:usize,b14_t_width:usize)
+  b14_two:usize = const() {"value":2}
+  b14_third_index:usize = int.add.checked(b14_t_index,b14_two)
+  b14_exists:bool = compare.lt(b14_third_index,b14_t_size)
+  branch b14_exists third_byte(b14_t_source,b14_t_size,b14_t_index,b14_t_width,b14_third_index) incomplete(b14_t_index)
+block third_byte(b15_b_source:readbuf,b15_b_size:usize,b15_b_index:usize,b15_b_width:usize,b15_b_third:usize)
+  b15_value:u8 = buffer.load(b15_b_source,b15_b_third)
+  b15_minimum:u8 = const() {"value":128}
+  b15_maximum:u8 = const() {"value":191}
+  b15_above:bool = compare.ge(b15_value,b15_minimum)
+  b15_below:bool = compare.le(b15_value,b15_maximum)
+  b15_valid:bool = bool.and(b15_above,b15_below)
+  branch b15_valid after_third(b15_b_source,b15_b_size,b15_b_index,b15_b_width) invalid_two(b15_b_index)
+block after_third(b16_a_source:readbuf,b16_a_size:usize,b16_a_index:usize,b16_a_width:usize)
+  b16_three:usize = const() {"value":3}
+  b16_finished:bool = compare.eq(b16_a_width,b16_three)
+  branch b16_finished advance(b16_a_source,b16_a_size,b16_a_index,b16_a_width) fourth(b16_a_source,b16_a_size,b16_a_index,b16_a_width)
+block fourth(b17_f_source:readbuf,b17_f_size:usize,b17_f_index:usize,b17_f_width:usize)
+  b17_three:usize = const() {"value":3}
+  b17_fourth_index:usize = int.add.checked(b17_f_index,b17_three)
+  b17_exists:bool = compare.lt(b17_fourth_index,b17_f_size)
+  branch b17_exists fourth_byte(b17_f_source,b17_f_size,b17_f_index,b17_f_width,b17_fourth_index) incomplete(b17_f_index)
+block fourth_byte(b18_b_source:readbuf,b18_b_size:usize,b18_b_index:usize,b18_b_width:usize,b18_b_fourth:usize)
+  b18_value:u8 = buffer.load(b18_b_source,b18_b_fourth)
+  b18_minimum:u8 = const() {"value":128}
+  b18_maximum:u8 = const() {"value":191}
+  b18_above:bool = compare.ge(b18_value,b18_minimum)
+  b18_below:bool = compare.le(b18_value,b18_maximum)
+  b18_valid:bool = bool.and(b18_above,b18_below)
+  branch b18_valid advance(b18_b_source,b18_b_size,b18_b_index,b18_b_width) invalid_three(b18_b_index)
+block advance(b19_a_source:readbuf,b19_a_size:usize,b19_a_index:usize,b19_a_width:usize)
+  b19_next:usize = int.add.checked(b19_a_index,b19_a_width)
+  jump scan(b19_a_source,b19_a_size,b19_next)
+block complete(b20_size:usize)
+  b20_complete_kind:u64 = const() {"value":0}
+  b20_no_error:u64 = const() {"value":0}
+  ret(b20_complete_kind,b20_size,b20_no_error)
+block incomplete(b21_index:usize)
+  b21_incomplete_kind:u64 = const() {"value":2}
+  b21_no_error:u64 = const() {"value":0}
+  ret(b21_incomplete_kind,b21_index,b21_no_error)
+block invalid_lead(b22_index:usize)
+  b22_invalid_kind:u64 = const() {"value":1}
+  b22_one:u64 = const() {"value":1}
+  ret(b22_invalid_kind,b22_index,b22_one)
+block invalid_two(b23_index:usize)
+  b23_invalid_kind:u64 = const() {"value":1}
+  b23_two:u64 = const() {"value":2}
+  ret(b23_invalid_kind,b23_index,b23_two)
+block invalid_three(b24_index:usize)
+  b24_invalid_kind:u64 = const() {"value":1}
+  b24_three:u64 = const() {"value":3}
+  ret(b24_invalid_kind,b24_index,b24_three)
+end
+fn write_word(b1_output:mutbuf,b1_position:usize,b1_value:u64) -> () effects(write,trap) entry(entry)
+block entry(b1_output:mutbuf,b1_position:usize,b1_value:u64)
+  b1_first:usize = const() {"value":0}
+  jump loop(b1_output,b1_position,b1_value,b1_first)
+block loop(b2_l_output:mutbuf,b2_l_position:usize,b2_l_value:u64,b2_l_index:usize)
+  b2_limit:usize = const() {"value":8}
+  b2_more:bool = compare.lt(b2_l_index,b2_limit)
+  branch b2_more byte(b2_l_output,b2_l_position,b2_l_value,b2_l_index) done()
+block byte(b3_b_output:mutbuf,b3_b_position:usize,b3_b_value:u64,b3_b_index:usize)
+  b3_octet:u8 = int.cast(b3_b_value) {"mode":"wrap"}
+  b3_address:usize = int.add.checked(b3_b_position,b3_b_index)
+  _ = buffer.store(b3_b_output,b3_address,b3_octet)
+  b3_eight:u64 = const() {"value":8}
+  b3_next_value:u64 = int.shr.checked(b3_b_value,b3_eight)
+  b3_one:usize = const() {"value":1}
+  b3_next_index:usize = int.add.checked(b3_b_index,b3_one)
+  jump loop(b3_b_output,b3_b_position,b3_next_value,b3_next_index)
+block done()
+  ret()
+end

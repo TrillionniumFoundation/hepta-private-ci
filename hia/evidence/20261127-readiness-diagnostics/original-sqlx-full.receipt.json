@@ -1,0 +1,66 @@
+{
+  "source_before": {
+    "head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+    "tree": "0fe6ecb18f094c95b5d7bf2c99c64cf605a970b4",
+    "status": "M codex-rs/Cargo.lock\n M codex-rs/Cargo.toml",
+    "manifest": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e",
+    "lock": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007"
+  },
+  "prior_ledger_sha256": "de952b9922f87e1cc9a5c2f567490031e7392969e97603f389b0598862cd0b2a",
+  "focused_ledger_sha256": "d0be66eaf4b463b126d09363301ffc79e2100dfb7dc14a3f17d67660909852f6",
+  "argv": [
+    "/opt/homebrew/bin/just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-cli",
+    "-p",
+    "codex-exec",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-authbus",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-evidence",
+    "-p",
+    "codex-hepta-matrix-sdk",
+    "-p",
+    "codex-hepta-matrix-store",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-hepta-operations",
+    "-p",
+    "codex-hepta-runtime",
+    "-p",
+    "codex-hepta-shadow-qualification",
+    "-p",
+    "codex-state",
+    "-p",
+    "codex-thread-store"
+  ],
+  "tmpdir": "/tmp/hsx-full-77j8uhqu",
+  "cwd": "/Users/qianqi/work/hia-chrono-dependency-audit-20261127-0954/sqlx-feature-v1/src/codex-rs",
+  "scope_qualified": false,
+  "whole": false,
+  "steps": [
+    {
+      "name": "all-14-owners-short-tmp-full",
+      "returncode": 100,
+      "seconds": 170.17969316699998,
+      "log_bytes": 348801,
+      "log_sha256": "f54d9787446ef890494b13b12adcaab830bf9088a7b665df2c9da1f1783c86b8"
+    }
+  ],
+  "source_after": {
+    "head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+    "tree": "0fe6ecb18f094c95b5d7bf2c99c64cf605a970b4",
+    "status": "M codex-rs/Cargo.lock\n M codex-rs/Cargo.toml",
+    "manifest": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e",
+    "lock": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007"
+  },
+  "source_unchanged": true
+}

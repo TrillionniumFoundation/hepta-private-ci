@@ -4,6 +4,9 @@ license.workspace = true
 name = "codex-utils-output-truncation"
 version.workspace = true
 
+[features]
+hia-native = ["codex-utils-string/hia-native"]
+
 [lints]
 workspace = true
 

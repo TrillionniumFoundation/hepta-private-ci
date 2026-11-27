@@ -1,0 +1,442 @@
+hia-asm.v1 hepta.hia.program.v9 codex_inline_hidden_tag
+fn f0(b1_source:readbuf,b1_output:mutbuf,b1_needle:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(b1_source:readbuf,b1_output:mutbuf,b1_needle:mutbuf)
+  b1_capacity:usize = buffer.len(b1_output)
+  b1_required:usize = const() {"value":96}
+  b1_fits:bool = compare.ge(b1_capacity,b1_required)
+  branch b1_fits header(b1_source,b1_output,b1_needle) short_output()
+block header(b2_source:readbuf,b2_output:mutbuf,b2_needle:mutbuf)
+  b2_offset_0:usize = const() {"value":0}
+  b2_version:u64 = buffer.load.u64.le(b2_output,b2_offset_0)
+  b2_offset_1:usize = const() {"value":8}
+  b2_mode:u64 = buffer.load.u64.le(b2_output,b2_offset_1)
+  b2_offset_2:usize = const() {"value":16}
+  b2_count:u64 = buffer.load.u64.le(b2_output,b2_offset_2)
+  b2_offset_3:usize = const() {"value":24}
+  b2_position:u64 = buffer.load.u64.le(b2_output,b2_offset_3)
+  b2_offset_4:usize = const() {"value":32}
+  b2_length:u64 = buffer.load.u64.le(b2_output,b2_offset_4)
+  b2_offset_5:usize = const() {"value":40}
+  b2_index:u64 = buffer.load.u64.le(b2_output,b2_offset_5)
+  b2_offset_6:usize = const() {"value":48}
+  b2_keep:u64 = buffer.load.u64.le(b2_output,b2_offset_6)
+  b2_offset_7:usize = const() {"value":56}
+  b2_action:u64 = buffer.load.u64.le(b2_output,b2_offset_7)
+  b2_offset_8:usize = const() {"value":64}
+  b2_take:u64 = buffer.load.u64.le(b2_output,b2_offset_8)
+  b2_offset_9:usize = const() {"value":72}
+  b2_consume:u64 = buffer.load.u64.le(b2_output,b2_offset_9)
+  b2_offset_10:usize = const() {"value":80}
+  b2_tag:u64 = buffer.load.u64.le(b2_output,b2_offset_10)
+  b2_offset_11:usize = const() {"value":88}
+  b2_reserved:u64 = buffer.load.u64.le(b2_output,b2_offset_11)
+  b2_one:u64 = const() {"value":1}
+  b2_zero:u64 = const() {"value":0}
+  b2_four:u64 = const() {"value":4}
+  b2_version_ok:bool = compare.eq(b2_version,b2_one)
+  b2_mode_ok:bool = compare.le(b2_mode,b2_four)
+  b2_action_ok:bool = compare.eq(b2_action,b2_zero)
+  b2_take_ok:bool = compare.eq(b2_take,b2_zero)
+  b2_consume_ok:bool = compare.eq(b2_consume,b2_zero)
+  b2_tag_ok:bool = compare.eq(b2_tag,b2_zero)
+  b2_reserved_ok:bool = compare.eq(b2_reserved,b2_zero)
+  b2_first:bool = bool.and(b2_version_ok,b2_mode_ok)
+  b2_second:bool = bool.and(b2_action_ok,b2_take_ok)
+  b2_third:bool = bool.and(b2_consume_ok,b2_tag_ok)
+  b2_fourth:bool = bool.and(b2_first,b2_second)
+  b2_fifth:bool = bool.and(b2_third,b2_reserved_ok)
+  b2_valid:bool = bool.and(b2_fourth,b2_fifth)
+  branch b2_valid dispatch(b2_source,b2_output,b2_needle,b2_mode,b2_count,b2_position,b2_length,b2_index,b2_keep) invalid()
+block dispatch(b3_source:readbuf,b3_output:mutbuf,b3_needle:mutbuf,b3_mode:u64,b3_count:u64,b3_position:u64,b3_length:u64,b3_index:u64,b3_keep:u64)
+  b3_zero:u64 = const() {"value":0}
+  b3_begins:bool = compare.eq(b3_mode,b3_zero)
+  branch b3_begins begin(b3_output) other(b3_source,b3_output,b3_needle,b3_mode,b3_count,b3_position,b3_length,b3_index,b3_keep)
+block begin(b4_output:mutbuf)
+  b4_zero:u64 = const() {"value":0}
+  b4_none:u64 = const() {"value":18446744073709551615}
+  _ = call(b4_output,b4_zero,b4_zero,b4_none,b4_zero,b4_zero,b4_zero,b4_zero,b4_zero,b4_zero,b4_zero) {"function":"reply"}
+  b4_success:u32 = const() {"value":96}
+  ret(b4_success)
+block other(b5_source:readbuf,b5_output:mutbuf,b5_needle:mutbuf,b5_mode:u64,b5_count:u64,b5_position:u64,b5_length:u64,b5_index:u64,b5_keep:u64)
+  b5_two:u64 = const() {"value":2}
+  b5_folded:bool = compare.le(b5_mode,b5_two)
+  branch b5_folded check_fold(b5_source,b5_output,b5_needle,b5_mode,b5_count,b5_position,b5_length,b5_index,b5_keep) check_fresh(b5_source,b5_output,b5_needle,b5_mode,b5_count,b5_position,b5_length,b5_index,b5_keep)
+block check_fold(b6_source:readbuf,b6_output:mutbuf,b6_needle:mutbuf,b6_mode:u64,b6_count:u64,b6_position:u64,b6_length:u64,b6_index:u64,b6_keep:u64)
+  b6_size:usize = buffer.len(b6_source)
+  b6_size_word:u64 = int.cast(b6_size) {"mode":"checked"}
+  b6_valid:bool = call(b6_source,b6_size,b6_size_word,b6_count,b6_position,b6_length,b6_index,b6_keep) {"function":"valid_fold_state"}
+  branch b6_valid folded_dispatch(b6_source,b6_output,b6_needle,b6_mode,b6_count,b6_position,b6_length,b6_index,b6_keep) invalid()
+block folded_dispatch(b7_source:readbuf,b7_output:mutbuf,b7_needle:mutbuf,b7_mode:u64,b7_count:u64,b7_position:u64,b7_length:u64,b7_index:u64,b7_keep:u64)
+  b7_one:u64 = const() {"value":1}
+  b7_is_fold:bool = compare.eq(b7_mode,b7_one)
+  branch b7_is_fold fold_check(b7_source,b7_output,b7_needle,b7_count,b7_position,b7_length,b7_index,b7_keep) resolve_check(b7_source,b7_output,b7_count,b7_position,b7_length,b7_index,b7_keep)
+block fold_check(b8_source:readbuf,b8_output:mutbuf,b8_needle:mutbuf,b8_count:u64,b8_position:u64,b8_length:u64,b8_index:u64,b8_keep:u64)
+  b8_maximum:u64 = const() {"value":18446744073709551615}
+  b8_counter_ok:bool = compare.lt(b8_count,b8_maximum)
+  b8_needle_size:usize = buffer.len(b8_needle)
+  b8_zero:usize = const() {"value":0}
+  b8_nonempty:bool = compare.gt(b8_needle_size,b8_zero)
+  b8_valid:bool = bool.and(b8_counter_ok,b8_nonempty)
+  branch b8_valid fold(b8_source,b8_output,b8_needle,b8_count,b8_position,b8_length,b8_index,b8_keep,b8_needle_size) invalid()
+block fold(b9_source:readbuf,b9_output:mutbuf,b9_needle:mutbuf,b9_count:u64,b9_position:u64,b9_length:u64,b9_index:u64,b9_keep:u64,b9_needle_size:usize)
+  b9_found:usize,b9_new_keep:usize = call(b9_source,b9_needle) {"function":"find_or_suffix"}
+  b9_found_word:u64 = int.cast(b9_found) {"mode":"checked"}
+  b9_needle_word:u64 = int.cast(b9_needle_size) {"mode":"checked"}
+  b9_keep_word:u64 = int.cast(b9_new_keep) {"mode":"checked"}
+  b9_none:u64 = const() {"value":18446744073709551615}
+  b9_new_found:bool = compare.ne(b9_found_word,b9_none)
+  b9_old_missing:bool = compare.eq(b9_position,b9_none)
+  b9_earlier:bool = compare.lt(b9_found_word,b9_position)
+  b9_same:bool = compare.eq(b9_found_word,b9_position)
+  b9_longer:bool = compare.gt(b9_needle_word,b9_length)
+  b9_tie:bool = bool.and(b9_same,b9_longer)
+  b9_position_wins:bool = bool.or(b9_old_missing,b9_earlier)
+  b9_preferred:bool = bool.or(b9_position_wins,b9_tie)
+  b9_choose:bool = bool.and(b9_new_found,b9_preferred)
+  b9_best_position:u64 = select(b9_choose,b9_found_word,b9_position)
+  b9_best_length:u64 = select(b9_choose,b9_needle_word,b9_length)
+  b9_best_index:u64 = select(b9_choose,b9_count,b9_index)
+  b9_larger_keep:bool = compare.gt(b9_keep_word,b9_keep)
+  b9_best_keep:u64 = select(b9_larger_keep,b9_keep_word,b9_keep)
+  b9_one:u64 = const() {"value":1}
+  b9_next_count:u64 = int.add.checked(b9_count,b9_one)
+  b9_zero:u64 = const() {"value":0}
+  _ = call(b9_output,b9_one,b9_next_count,b9_best_position,b9_best_length,b9_best_index,b9_best_keep,b9_zero,b9_zero,b9_zero,b9_zero) {"function":"reply"}
+  b9_success:u32 = const() {"value":96}
+  ret(b9_success)
+block resolve_check(b10_source:readbuf,b10_output:mutbuf,b10_count:u64,b10_position:u64,b10_length:u64,b10_index:u64,b10_keep:u64)
+  b10_zero:u64 = const() {"value":0}
+  b10_nonempty:bool = compare.gt(b10_count,b10_zero)
+  branch b10_nonempty resolve(b10_source,b10_output,b10_count,b10_position,b10_length,b10_index,b10_keep) invalid()
+block resolve(b11_source:readbuf,b11_output:mutbuf,b11_count:u64,b11_position:u64,b11_length:u64,b11_index:u64,b11_keep:u64)
+  b11_none:u64 = const() {"value":18446744073709551615}
+  b11_missing:bool = compare.eq(b11_position,b11_none)
+  branch b11_missing visible(b11_source,b11_output,b11_count,b11_position,b11_length,b11_index,b11_keep) open(b11_output,b11_count,b11_position,b11_length,b11_index,b11_keep)
+block visible(b12_source:readbuf,b12_output:mutbuf,b12_count:u64,b12_position:u64,b12_length:u64,b12_index:u64,b12_keep:u64)
+  b12_size:usize = buffer.len(b12_source)
+  b12_size_word:u64 = int.cast(b12_size) {"mode":"checked"}
+  b12_amount:u64 = int.sub.checked(b12_size_word,b12_keep)
+  b12_mode:u64 = const() {"value":2}
+  b12_action:u64 = const() {"value":1}
+  b12_zero:u64 = const() {"value":0}
+  _ = call(b12_output,b12_mode,b12_count,b12_position,b12_length,b12_index,b12_keep,b12_action,b12_amount,b12_amount,b12_zero) {"function":"reply"}
+  b12_success:u32 = const() {"value":96}
+  ret(b12_success)
+block open(b13_output:mutbuf,b13_count:u64,b13_position:u64,b13_length:u64,b13_index:u64,b13_keep:u64)
+  b13_amount:u64 = int.add.checked(b13_position,b13_length)
+  b13_mode:u64 = const() {"value":2}
+  b13_action:u64 = const() {"value":2}
+  _ = call(b13_output,b13_mode,b13_count,b13_position,b13_length,b13_index,b13_keep,b13_action,b13_position,b13_amount,b13_index) {"function":"reply"}
+  b13_success:u32 = const() {"value":96}
+  ret(b13_success)
+block check_fresh(b14_source:readbuf,b14_output:mutbuf,b14_needle:mutbuf,b14_mode:u64,b14_count:u64,b14_position:u64,b14_length:u64,b14_index:u64,b14_keep:u64)
+  b14_zero:u64 = const() {"value":0}
+  b14_position_ok:bool = compare.eq(b14_position,b14_zero)
+  b14_length_ok:bool = compare.eq(b14_length,b14_zero)
+  b14_index_ok:bool = compare.eq(b14_index,b14_zero)
+  b14_keep_ok:bool = compare.eq(b14_keep,b14_zero)
+  b14_first:bool = bool.and(b14_position_ok,b14_length_ok)
+  b14_second:bool = bool.and(b14_index_ok,b14_keep_ok)
+  b14_valid:bool = bool.and(b14_first,b14_second)
+  branch b14_valid fresh_dispatch(b14_source,b14_output,b14_needle,b14_mode,b14_count) invalid()
+block fresh_dispatch(b15_source:readbuf,b15_output:mutbuf,b15_needle:mutbuf,b15_mode:u64,b15_count:u64)
+  b15_three:u64 = const() {"value":3}
+  b15_close:bool = compare.eq(b15_mode,b15_three)
+  branch b15_close close_check(b15_source,b15_output,b15_needle,b15_count) finish_check(b15_source,b15_output,b15_count)
+block close_check(b16_source:readbuf,b16_output:mutbuf,b16_needle:mutbuf,b16_count:u64)
+  b16_zero:u64 = const() {"value":0}
+  b16_count_ok:bool = compare.eq(b16_count,b16_zero)
+  b16_needle_size:usize = buffer.len(b16_needle)
+  b16_empty:usize = const() {"value":0}
+  b16_nonempty:bool = compare.gt(b16_needle_size,b16_empty)
+  b16_valid:bool = bool.and(b16_count_ok,b16_nonempty)
+  branch b16_valid close_find(b16_source,b16_output,b16_needle,b16_needle_size) invalid()
+block close_find(b17_source:readbuf,b17_output:mutbuf,b17_needle:mutbuf,b17_needle_size:usize)
+  b17_position:usize,b17_keep:usize = call(b17_source,b17_needle) {"function":"find_or_suffix"}
+  b17_none:usize = const() {"value":18446744073709551615}
+  b17_found:bool = compare.ne(b17_position,b17_none)
+  branch b17_found close_emit(b17_output,b17_position,b17_needle_size) body_stop(b17_source,b17_output,b17_keep)
+block close_emit(b18_output:mutbuf,b18_position:usize,b18_needle_size:usize)
+  b18_end:usize = int.add.checked(b18_position,b18_needle_size)
+  b18_take:u64 = int.cast(b18_position) {"mode":"checked"}
+  b18_consume:u64 = int.cast(b18_end) {"mode":"checked"}
+  b18_zero:u64 = const() {"value":0}
+  b18_mode:u64 = const() {"value":3}
+  b18_action:u64 = const() {"value":4}
+  _ = call(b18_output,b18_mode,b18_zero,b18_zero,b18_zero,b18_zero,b18_zero,b18_action,b18_take,b18_consume,b18_zero) {"function":"reply"}
+  b18_success:u32 = const() {"value":96}
+  ret(b18_success)
+block body_stop(b19_source:readbuf,b19_output:mutbuf,b19_keep:usize)
+  b19_size:usize = buffer.len(b19_source)
+  b19_amount:usize = int.sub.checked(b19_size,b19_keep)
+  b19_take:u64 = int.cast(b19_amount) {"mode":"checked"}
+  b19_keep_word:u64 = int.cast(b19_keep) {"mode":"checked"}
+  b19_zero:u64 = const() {"value":0}
+  b19_mode:u64 = const() {"value":3}
+  b19_action:u64 = const() {"value":3}
+  _ = call(b19_output,b19_mode,b19_zero,b19_zero,b19_zero,b19_zero,b19_keep_word,b19_action,b19_take,b19_take,b19_zero) {"function":"reply"}
+  b19_success:u32 = const() {"value":96}
+  ret(b19_success)
+block finish_check(b20_source:readbuf,b20_output:mutbuf,b20_active:u64)
+  b20_one:u64 = const() {"value":1}
+  b20_valid:bool = compare.le(b20_active,b20_one)
+  branch b20_valid finish_emit(b20_source,b20_output,b20_active) invalid()
+block finish_emit(b21_source:readbuf,b21_output:mutbuf,b21_active:u64)
+  b21_zero:u64 = const() {"value":0}
+  b21_yes:bool = compare.ne(b21_active,b21_zero)
+  b21_visible:u64 = const() {"value":5}
+  b21_extracted:u64 = const() {"value":6}
+  b21_action:u64 = select(b21_yes,b21_extracted,b21_visible)
+  b21_size:usize = buffer.len(b21_source)
+  b21_amount:u64 = int.cast(b21_size) {"mode":"checked"}
+  b21_mode:u64 = const() {"value":4}
+  _ = call(b21_output,b21_mode,b21_active,b21_zero,b21_zero,b21_zero,b21_zero,b21_action,b21_amount,b21_amount,b21_zero) {"function":"reply"}
+  b21_success:u32 = const() {"value":96}
+  ret(b21_success)
+block invalid()
+  b22_code:u32 = const() {"value":4294967295}
+  ret(b22_code)
+block short_output()
+  b23_code:u32 = const() {"value":4294967294}
+  ret(b23_code)
+end
+fn valid_state(b1_size:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64) -> (bool) effects(trap) entry(entry)
+block entry(b1_size:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64)
+  b1_keep_ok:bool = compare.le(b1_keep,b1_size)
+  branch b1_keep_ok classify(b1_size,b1_count,b1_position,b1_length,b1_index,b1_keep) invalid()
+block classify(b2_size:u64,b2_count:u64,b2_position:u64,b2_length:u64,b2_index:u64,b2_keep:u64)
+  b2_none:u64 = const() {"value":18446744073709551615}
+  b2_missing:bool = compare.eq(b2_position,b2_none)
+  branch b2_missing absent(b2_count,b2_length,b2_index,b2_keep) present(b2_size,b2_count,b2_position,b2_length,b2_index)
+block absent(b3_count:u64,b3_length:u64,b3_index:u64,b3_keep:u64)
+  b3_zero:u64 = const() {"value":0}
+  b3_length_ok:bool = compare.eq(b3_length,b3_zero)
+  b3_index_ok:bool = compare.eq(b3_index,b3_zero)
+  b3_has_count:bool = compare.gt(b3_count,b3_zero)
+  b3_no_keep:bool = compare.eq(b3_keep,b3_zero)
+  b3_count_ok:bool = bool.or(b3_has_count,b3_no_keep)
+  b3_pair:bool = bool.and(b3_length_ok,b3_index_ok)
+  b3_valid:bool = bool.and(b3_pair,b3_count_ok)
+  ret(b3_valid)
+block present(b4_size:u64,b4_count:u64,b4_position:u64,b4_length:u64,b4_index:u64)
+  b4_inside:bool = compare.le(b4_position,b4_size)
+  branch b4_inside extent(b4_size,b4_count,b4_position,b4_length,b4_index) invalid()
+block extent(b5_size:u64,b5_count:u64,b5_position:u64,b5_length:u64,b5_index:u64)
+  b5_remaining:u64 = int.sub.checked(b5_size,b5_position)
+  b5_zero:u64 = const() {"value":0}
+  b5_nonempty:bool = compare.gt(b5_length,b5_zero)
+  b5_bounded:bool = compare.le(b5_length,b5_remaining)
+  b5_index_ok:bool = compare.lt(b5_index,b5_count)
+  b5_pair:bool = bool.and(b5_nonempty,b5_bounded)
+  b5_valid:bool = bool.and(b5_pair,b5_index_ok)
+  ret(b5_valid)
+block invalid()
+  b6_value:bool = const() {"value":false}
+  ret(b6_value)
+end
+fn valid_fold_state(b1_source:readbuf,b1_size:usize,b1_size_word:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64) -> (bool) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_size:usize,b1_size_word:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64)
+  b1_valid:bool = call(b1_size_word,b1_count,b1_position,b1_length,b1_index,b1_keep) {"function":"valid_state"}
+  branch b1_valid suffix(b1_source,b1_size,b1_position,b1_length,b1_keep) invalid()
+block suffix(b2_source:readbuf,b2_size:usize,b2_position:u64,b2_length:u64,b2_keep:u64)
+  b2_keep_usize:usize = int.cast(b2_keep) {"mode":"checked"}
+  b2_cut:usize = int.sub.checked(b2_size,b2_keep_usize)
+  b2_valid:bool = call(b2_source,b2_size,b2_cut) {"function":"scalar_boundary"}
+  branch b2_valid classify(b2_source,b2_size,b2_position,b2_length) invalid()
+block classify(b3_source:readbuf,b3_size:usize,b3_position:u64,b3_length:u64)
+  b3_none:u64 = const() {"value":18446744073709551615}
+  b3_absent:bool = compare.eq(b3_position,b3_none)
+  branch b3_absent valid() opener(b3_source,b3_size,b3_position,b3_length)
+block opener(b4_source:readbuf,b4_size:usize,b4_position:u64,b4_length:u64)
+  b4_start:usize = int.cast(b4_position) {"mode":"checked"}
+  b4_end_word:u64 = int.add.checked(b4_position,b4_length)
+  b4_end:usize = int.cast(b4_end_word) {"mode":"checked"}
+  b4_start_ok:bool = call(b4_source,b4_size,b4_start) {"function":"scalar_boundary"}
+  b4_end_ok:bool = call(b4_source,b4_size,b4_end) {"function":"scalar_boundary"}
+  b4_valid:bool = bool.and(b4_start_ok,b4_end_ok)
+  ret(b4_valid)
+block valid()
+  b5_true:bool = const() {"value":true}
+  ret(b5_true)
+block invalid()
+  b6_false:bool = const() {"value":false}
+  ret(b6_false)
+end
+fn scalar_boundary(b1_source:readbuf,b1_size:usize,b1_offset:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_size:usize,b1_offset:usize)
+  b1_end:bool = compare.eq(b1_offset,b1_size)
+  branch b1_end valid() inspect(b1_source,b1_offset)
+block inspect(b2_source:readbuf,b2_offset:usize)
+  b2_byte:u8 = buffer.load(b2_source,b2_offset)
+  b2_low:u8 = const() {"value":128}
+  b2_high:u8 = const() {"value":192}
+  b2_above:bool = compare.ge(b2_byte,b2_low)
+  b2_below:bool = compare.lt(b2_byte,b2_high)
+  b2_continuation:bool = bool.and(b2_above,b2_below)
+  branch b2_continuation invalid() valid()
+block valid()
+  b3_true:bool = const() {"value":true}
+  ret(b3_true)
+block invalid()
+  b4_false:bool = const() {"value":false}
+  ret(b4_false)
+end
+fn find_or_suffix(b1_source:readbuf,b1_needle:mutbuf) -> (usize,usize) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_needle:mutbuf)
+  b1_position:usize = call(b1_source,b1_needle) {"function":"find_first"}
+  b1_none:usize = const() {"value":18446744073709551615}
+  b1_missing:bool = compare.eq(b1_position,b1_none)
+  branch b1_missing suffix(b1_source,b1_needle,b1_position) found(b1_position)
+block suffix(b2_source:readbuf,b2_needle:mutbuf,b2_position:usize)
+  b2_keep:usize = call(b2_source,b2_needle) {"function":"suffix_prefix"}
+  ret(b2_position,b2_keep)
+block found(b3_position:usize)
+  b3_zero:usize = const() {"value":0}
+  ret(b3_position,b3_zero)
+end
+fn find_first(b1_source:readbuf,b1_needle:mutbuf) -> (usize) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_needle:mutbuf)
+  b1_size:usize = buffer.len(b1_source)
+  b1_length:usize = buffer.len(b1_needle)
+  b1_fits:bool = compare.le(b1_length,b1_size)
+  branch b1_fits start(b1_source,b1_needle,b1_size,b1_length) absent()
+block start(b2_source:readbuf,b2_needle:mutbuf,b2_size:usize,b2_length:usize)
+  b2_last:usize = int.sub.checked(b2_size,b2_length)
+  b2_zero:usize = const() {"value":0}
+  jump scan(b2_source,b2_needle,b2_length,b2_last,b2_zero)
+block scan(b3_source:readbuf,b3_needle:mutbuf,b3_length:usize,b3_last:usize,b3_position:usize)
+  b3_allowed:bool = compare.le(b3_position,b3_last)
+  branch b3_allowed compare(b3_source,b3_needle,b3_length,b3_last,b3_position) absent()
+block compare(b4_source:readbuf,b4_needle:mutbuf,b4_length:usize,b4_last:usize,b4_position:usize)
+  b4_matches:bool = call(b4_source,b4_position,b4_needle,b4_length) {"function":"equal_slice"}
+  branch b4_matches found(b4_position) advance(b4_source,b4_needle,b4_length,b4_last,b4_position)
+block advance(b5_source:readbuf,b5_needle:mutbuf,b5_length:usize,b5_last:usize,b5_position:usize)
+  b5_one:usize = const() {"value":1}
+  b5_next:usize = int.add.checked(b5_position,b5_one)
+  jump scan(b5_source,b5_needle,b5_length,b5_last,b5_next)
+block found(b6_position:usize)
+  ret(b6_position)
+block absent()
+  b7_none:usize = const() {"value":18446744073709551615}
+  ret(b7_none)
+end
+fn suffix_prefix(b1_source:readbuf,b1_needle:mutbuf) -> (usize) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_needle:mutbuf)
+  b1_size:usize = buffer.len(b1_source)
+  b1_length:usize = buffer.len(b1_needle)
+  b1_one:usize = const() {"value":1}
+  b1_proper:usize = int.sub.checked(b1_length,b1_one)
+  b1_shorter:bool = compare.lt(b1_size,b1_proper)
+  b1_maximum:usize = select(b1_shorter,b1_size,b1_proper)
+  jump scan(b1_source,b1_needle,b1_size,b1_maximum)
+block scan(b2_source:readbuf,b2_needle:mutbuf,b2_size:usize,b2_length:usize)
+  b2_zero:usize = const() {"value":0}
+  b2_nonempty:bool = compare.gt(b2_length,b2_zero)
+  branch b2_nonempty boundary(b2_source,b2_needle,b2_size,b2_length) absent()
+block boundary(b3_source:readbuf,b3_needle:mutbuf,b3_size:usize,b3_length:usize)
+  b3_value:u8 = buffer.load(b3_needle,b3_length)
+  b3_low:u8 = const() {"value":128}
+  b3_high:u8 = const() {"value":192}
+  b3_above:bool = compare.ge(b3_value,b3_low)
+  b3_below:bool = compare.lt(b3_value,b3_high)
+  b3_continuation:bool = bool.and(b3_above,b3_below)
+  branch b3_continuation advance(b3_source,b3_needle,b3_size,b3_length) compare(b3_source,b3_needle,b3_size,b3_length)
+block compare(b4_source:readbuf,b4_needle:mutbuf,b4_size:usize,b4_length:usize)
+  b4_position:usize = int.sub.checked(b4_size,b4_length)
+  b4_matches:bool = call(b4_source,b4_position,b4_needle,b4_length) {"function":"equal_slice"}
+  branch b4_matches found(b4_length) advance(b4_source,b4_needle,b4_size,b4_length)
+block advance(b5_source:readbuf,b5_needle:mutbuf,b5_size:usize,b5_length:usize)
+  b5_one:usize = const() {"value":1}
+  b5_next:usize = int.sub.checked(b5_length,b5_one)
+  jump scan(b5_source,b5_needle,b5_size,b5_next)
+block found(b6_length:usize)
+  ret(b6_length)
+block absent()
+  b7_zero:usize = const() {"value":0}
+  ret(b7_zero)
+end
+fn equal_slice(b1_source:readbuf,b1_start:usize,b1_needle:mutbuf,b1_length:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(b1_source:readbuf,b1_start:usize,b1_needle:mutbuf,b1_length:usize)
+  b1_zero:usize = const() {"value":0}
+  b1_sixteen:usize = const() {"value":16}
+  b1_two_words:bool = compare.ge(b1_length,b1_sixteen)
+  branch b1_two_words head_probe(b1_source,b1_start,b1_needle,b1_length) word_scan(b1_source,b1_start,b1_needle,b1_length,b1_zero)
+block head_probe(h_source:readbuf,h_start:usize,h_needle:mutbuf,h_length:usize)
+  h_zero:usize = const() {"value":0}
+  h_left:u64 = buffer.load.u64.le(h_source,h_start)
+  h_right:u64 = buffer.load.u64.le(h_needle,h_zero)
+  h_same:bool = compare.eq(h_left,h_right)
+  branch h_same tail_probe(h_source,h_start,h_needle,h_length) different()
+block tail_probe(t_source:readbuf,t_start:usize,t_needle:mutbuf,t_length:usize)
+  t_eight:usize = const() {"value":8}
+  t_tail:usize = int.sub.checked(t_length,t_eight)
+  t_position:usize = int.add.checked(t_start,t_tail)
+  t_left:u64 = buffer.load.u64.le(t_source,t_position)
+  t_right:u64 = buffer.load.u64.le(t_needle,t_tail)
+  t_same:bool = compare.eq(t_left,t_right)
+  branch t_same word_scan(t_source,t_start,t_needle,t_tail,t_eight) different()
+block word_scan(w_source:readbuf,w_start:usize,w_needle:mutbuf,w_length:usize,w_index:usize)
+  w_remaining:usize = int.sub.checked(w_length,w_index)
+  w_eight:usize = const() {"value":8}
+  w_complete:bool = compare.ge(w_remaining,w_eight)
+  branch w_complete word_compare(w_source,w_start,w_needle,w_length,w_index) scan(w_source,w_start,w_needle,w_length,w_index)
+block word_compare(c_source:readbuf,c_start:usize,c_needle:mutbuf,c_length:usize,c_index:usize)
+  c_position:usize = int.add.checked(c_start,c_index)
+  c_left:u64 = buffer.load.u64.le(c_source,c_position)
+  c_right:u64 = buffer.load.u64.le(c_needle,c_index)
+  c_same:bool = compare.eq(c_left,c_right)
+  branch c_same word_advance(c_source,c_start,c_needle,c_length,c_index) different()
+block word_advance(a_source:readbuf,a_start:usize,a_needle:mutbuf,a_length:usize,a_index:usize)
+  a_eight:usize = const() {"value":8}
+  a_next:usize = int.add.checked(a_index,a_eight)
+  jump word_scan(a_source,a_start,a_needle,a_length,a_next)
+block scan(b2_source:readbuf,b2_start:usize,b2_needle:mutbuf,b2_length:usize,b2_index:usize)
+  b2_more:bool = compare.lt(b2_index,b2_length)
+  branch b2_more compare(b2_source,b2_start,b2_needle,b2_length,b2_index) equal()
+block compare(b3_source:readbuf,b3_start:usize,b3_needle:mutbuf,b3_length:usize,b3_index:usize)
+  b3_position:usize = int.add.checked(b3_start,b3_index)
+  b3_left:u8 = buffer.load(b3_source,b3_position)
+  b3_right:u8 = buffer.load(b3_needle,b3_index)
+  b3_same:bool = compare.eq(b3_left,b3_right)
+  branch b3_same advance(b3_source,b3_start,b3_needle,b3_length,b3_index) different()
+block advance(b4_source:readbuf,b4_start:usize,b4_needle:mutbuf,b4_length:usize,b4_index:usize)
+  b4_one:usize = const() {"value":1}
+  b4_next:usize = int.add.checked(b4_index,b4_one)
+  jump scan(b4_source,b4_start,b4_needle,b4_length,b4_next)
+block equal()
+  b5_value:bool = const() {"value":true}
+  ret(b5_value)
+block different()
+  b6_value:bool = const() {"value":false}
+  ret(b6_value)
+end
+fn reply(b1_output:mutbuf,b1_mode:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64,b1_action:u64,b1_take:u64,b1_consume:u64,b1_tag:u64) -> () effects(write,trap) entry(entry)
+block entry(b1_output:mutbuf,b1_mode:u64,b1_count:u64,b1_position:u64,b1_length:u64,b1_index:u64,b1_keep:u64,b1_action:u64,b1_take:u64,b1_consume:u64,b1_tag:u64)
+  b1_version:u64 = const() {"value":1}
+  b1_reserved:u64 = const() {"value":0}
+  b1_offset_0:usize = const() {"value":0}
+  _ = buffer.store.u64.le(b1_output,b1_offset_0,b1_version)
+  b1_offset_1:usize = const() {"value":8}
+  _ = buffer.store.u64.le(b1_output,b1_offset_1,b1_mode)
+  b1_offset_2:usize = const() {"value":16}
+  _ = buffer.store.u64.le(b1_output,b1_offset_2,b1_count)
+  b1_offset_3:usize = const() {"value":24}
+  _ = buffer.store.u64.le(b1_output,b1_offset_3,b1_position)
+  b1_offset_4:usize = const() {"value":32}
+  _ = buffer.store.u64.le(b1_output,b1_offset_4,b1_length)
+  b1_offset_5:usize = const() {"value":40}
+  _ = buffer.store.u64.le(b1_output,b1_offset_5,b1_index)
+  b1_offset_6:usize = const() {"value":48}
+  _ = buffer.store.u64.le(b1_output,b1_offset_6,b1_keep)
+  b1_offset_7:usize = const() {"value":56}
+  _ = buffer.store.u64.le(b1_output,b1_offset_7,b1_action)
+  b1_offset_8:usize = const() {"value":64}
+  _ = buffer.store.u64.le(b1_output,b1_offset_8,b1_take)
+  b1_offset_9:usize = const() {"value":72}
+  _ = buffer.store.u64.le(b1_output,b1_offset_9,b1_consume)
+  b1_offset_10:usize = const() {"value":80}
+  _ = buffer.store.u64.le(b1_output,b1_offset_10,b1_tag)
+  b1_offset_11:usize = const() {"value":88}
+  _ = buffer.store.u64.le(b1_output,b1_offset_11,b1_reserved)
+  ret()
+end

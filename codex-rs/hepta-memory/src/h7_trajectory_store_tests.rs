@@ -64,7 +64,8 @@ async fn prepared() -> (
     LocalTurnLifecycleBinding,
 ) {
     let temp = TempDir::new().expect("temp");
-    let root = temp.path().join("fleet");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let root = temp_root.join("fleet");
     fs::create_dir_all(&root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(root).expect("fleet");
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000971").expect("owner");
@@ -107,7 +108,8 @@ async fn prepared_with_ttl(
     LocalTurnLifecycleBinding,
 ) {
     let temp = TempDir::new().expect("temp");
-    let root = temp.path().join("fleet");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let root = temp_root.join("fleet");
     fs::create_dir_all(&root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(root).expect("fleet");
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000972").expect("owner");
@@ -342,7 +344,8 @@ async fn bound_trajectory_is_append_only_causal_and_reopenable() {
     drop(lease);
     drop(store);
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000971").expect("owner");
-    let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet reopen");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let fleet = HeptaFleetRoot::parse(temp_root.join("fleet")).expect("fleet reopen");
     let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))
         .await
         .expect("reopen store");
@@ -500,7 +503,8 @@ async fn head_scoped_expired_terminal_gate_survives_store_reopen() {
     tokio::time::sleep(Duration::from_secs(6)).await;
 
     let owner = AgentId::parse("00000000-0000-4000-8000-000000000972").expect("owner");
-    let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("reopen fleet");
+    let temp_root = temp.path().canonicalize().expect("canonical temp root");
+    let fleet = HeptaFleetRoot::parse(temp_root.join("fleet")).expect("reopen fleet");
     let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))
         .await
         .expect("reopen store");

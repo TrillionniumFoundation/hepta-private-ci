@@ -18,7 +18,7 @@ if not defined test_bin (
   >&2 echo resolved test binary was lost while exporting runfile environment variables
   exit /b 1
 )
-
+__RUNFILE_ENV_DIRECT_EXEC__
 __WORKSPACE_ROOT_SETUP__
 
 set "TOTAL_SHARDS=%RULES_RUST_TEST_TOTAL_SHARDS%"

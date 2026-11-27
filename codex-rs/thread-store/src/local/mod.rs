@@ -955,6 +955,7 @@ mod tests {
                 turn_id: Some("turn-1".to_string()),
                 cwd: serde_json::from_value(serde_json::json!(cwd)).expect("absolute cwd"),
                 workspace_roots: None,
+                environments: None,
                 current_date: None,
                 timezone: None,
                 approval_policy,

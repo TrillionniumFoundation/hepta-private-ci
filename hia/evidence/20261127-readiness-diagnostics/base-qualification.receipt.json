@@ -1,0 +1,123 @@
+{
+  "base": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+  "cwd": "/Users/qianqi/work/hia-readiness-head-tail-20261127-codex-cont/src/codex-rs",
+  "tmpdir": "/tmp/hrhbase-_dlll6en",
+  "whole": false,
+  "source_before": {
+    "head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+    "status": " M codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs\n M codex-rs/hepta-agentd/tests/support/fleet.rs\n",
+    "files": {
+      "codex-rs/Cargo.toml": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809",
+      "codex-rs/Cargo.lock": "1d5e558cb15fff85a8f7e8cf827d583f88b09c3abe1fbbbd06e58c0e6d2e8ac3",
+      "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "47cb4bba6cee6ee1c1b2ee855b5bb2bd28d3caf1209fb859a85c80ffca77951d",
+      "codex-rs/hepta-agentd/tests/support/fleet.rs": "d9a543e355e4d5e214e501439924f19e3efcf1a622ff5638a6edaa7ed83b8c64",
+      "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c"
+    },
+    "diff_sha256": "e911af8d4db7679d08ba0454e2422df6399ddaa93a07c3e4b9d2d2e781ff74c5"
+  },
+  "steps": [
+    {
+      "name": "complete-agentd-tests",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 225.276033958,
+      "log_bytes": 64495,
+      "log_sha256": "32fa4917d0150ab0f8d0c6ad73275e156172e802ce8cdedc6713427d5bc90f23",
+      "source_after": {
+        "head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+        "status": " M codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs\n M codex-rs/hepta-agentd/tests/support/fleet.rs\n",
+        "files": {
+          "codex-rs/Cargo.toml": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809",
+          "codex-rs/Cargo.lock": "1d5e558cb15fff85a8f7e8cf827d583f88b09c3abe1fbbbd06e58c0e6d2e8ac3",
+          "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "47cb4bba6cee6ee1c1b2ee855b5bb2bd28d3caf1209fb859a85c80ffca77951d",
+          "codex-rs/hepta-agentd/tests/support/fleet.rs": "d9a543e355e4d5e214e501439924f19e3efcf1a622ff5638a6edaa7ed83b8c64",
+          "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c"
+        },
+        "diff_sha256": "e911af8d4db7679d08ba0454e2422df6399ddaa93a07c3e4b9d2d2e781ff74c5"
+      }
+    },
+    {
+      "name": "strict-scoped-fix",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 243.638404208,
+      "log_bytes": 59604,
+      "log_sha256": "083ac603546c64748df2cbb686238ad9a42fc91306e75ca76e7ccd11d02de430",
+      "source_after": {
+        "head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+        "status": " M codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs\n M codex-rs/hepta-agentd/tests/support/fleet.rs\n",
+        "files": {
+          "codex-rs/Cargo.toml": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809",
+          "codex-rs/Cargo.lock": "1d5e558cb15fff85a8f7e8cf827d583f88b09c3abe1fbbbd06e58c0e6d2e8ac3",
+          "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "47cb4bba6cee6ee1c1b2ee855b5bb2bd28d3caf1209fb859a85c80ffca77951d",
+          "codex-rs/hepta-agentd/tests/support/fleet.rs": "d9a543e355e4d5e214e501439924f19e3efcf1a622ff5638a6edaa7ed83b8c64",
+          "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c"
+        },
+        "diff_sha256": "e911af8d4db7679d08ba0454e2422df6399ddaa93a07c3e4b9d2d2e781ff74c5"
+      }
+    },
+    {
+      "name": "repository-format",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.23300599999998894,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_after": {
+        "head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+        "status": " M codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs\n M codex-rs/hepta-agentd/tests/support/fleet.rs\n",
+        "files": {
+          "codex-rs/Cargo.toml": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809",
+          "codex-rs/Cargo.lock": "1d5e558cb15fff85a8f7e8cf827d583f88b09c3abe1fbbbd06e58c0e6d2e8ac3",
+          "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "47cb4bba6cee6ee1c1b2ee855b5bb2bd28d3caf1209fb859a85c80ffca77951d",
+          "codex-rs/hepta-agentd/tests/support/fleet.rs": "d9a543e355e4d5e214e501439924f19e3efcf1a622ff5638a6edaa7ed83b8c64",
+          "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c"
+        },
+        "diff_sha256": "e911af8d4db7679d08ba0454e2422df6399ddaa93a07c3e4b9d2d2e781ff74c5"
+      }
+    }
+  ],
+  "tested_source_unchanged": true,
+  "source_final": {
+    "head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+    "status": " M codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs\n M codex-rs/hepta-agentd/tests/support/fleet.rs\n",
+    "files": {
+      "codex-rs/Cargo.toml": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809",
+      "codex-rs/Cargo.lock": "1d5e558cb15fff85a8f7e8cf827d583f88b09c3abe1fbbbd06e58c0e6d2e8ac3",
+      "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "47cb4bba6cee6ee1c1b2ee855b5bb2bd28d3caf1209fb859a85c80ffca77951d",
+      "codex-rs/hepta-agentd/tests/support/fleet.rs": "d9a543e355e4d5e214e501439924f19e3efcf1a622ff5638a6edaa7ed83b8c64",
+      "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": "fc0eea67cc550f558296996edbcf6de99248f5bbddad9425067f3e6a2751904c"
+    },
+    "diff_sha256": "e911af8d4db7679d08ba0454e2422df6399ddaa93a07c3e4b9d2d2e781ff74c5"
+  },
+  "diff_check_rc": 0,
+  "final_changed_paths": [
+    "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs",
+    "codex-rs/hepta-agentd/tests/support/fleet.rs"
+  ],
+  "qualification": true,
+  "tests_repeated_after_fix_or_format": false
+}

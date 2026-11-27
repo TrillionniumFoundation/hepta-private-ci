@@ -39,6 +39,7 @@ pub async fn run(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
 ) -> Result<(), AgentdError> {
+    let cognitive_owner_requirement = config.cognitive_owner_requirement();
     let production_operations = config.take_production_operations();
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let trust_file = config
@@ -88,11 +89,10 @@ pub async fn run(
         .filter(|record| record.manifest.agent_id != identity.agent_id)
         .map(|record| record.layout)
         .collect::<Vec<_>>();
-    let state = Arc::new(AgentdState::new(
-        identity.clone(),
-        registry,
-        EVENT_CAPACITY,
-    )?);
+    let state = Arc::new(
+        AgentdState::new(identity.clone(), registry, EVENT_CAPACITY)?
+            .with_cognitive_owner_requirement(cognitive_owner_requirement),
+    );
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(host) = intuition_policy_host {
@@ -194,10 +194,8 @@ pub async fn run(
             .await?
         }
     };
-    // The writer-enabled qualification binary must never start in a
-    // degraded CognitiveRuntime state.  The default/production binary keeps
-    // the existing availability-tolerant behavior; only the explicit
-    // compile-time qualification profile takes this fail-closed startup gate.
+    // The production writer profile must reject an unavailable cognitive owner
+    // before App Server startup, independently of qualification witnesses.
     let cognitive_runtime = require_cognitive_runtime_for_profile(cognitive_runtime)?;
     if let Some(store) = cognitive_runtime.available_store() {
         state.attach_cognitive_store(Arc::clone(store))?;

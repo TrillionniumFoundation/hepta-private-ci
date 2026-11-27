@@ -162,12 +162,12 @@ impl CognitiveStore {
         let config = SqliteConfig::from_sqlite_home(sqlite_home);
         let source_guard = config
             .bind_existing_recovery_database(&source_path)
-            .map_err(recovery_error)?;
+            .map_err(|error| recovery_error_at("bind", error))?;
 
         let candidate = canonical_root.join(recovered_database_filename(expected, &writer_fence));
         config
             .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
-            .map_err(recovery_error)?;
+            .map_err(|error| recovery_error_at("materialize", error))?;
 
         let result = async {
             let pool = config
@@ -388,6 +388,19 @@ fn validate_requirement<'a>(
         ));
     }
     Ok(expected)
+}
+
+// Keep the original admission classification and read-only error mapping.
+fn recovery_error_at(stage: &'static str, error: SqliteRecoveryError) -> CognitiveRecoveryError {
+    match recovery_error(error) {
+        CognitiveRecoveryError::Unavailable(message) => {
+            CognitiveRecoveryError::Unavailable(format!("{message} (recovery stage: {stage})"))
+        }
+        CognitiveRecoveryError::Indeterminate(message) => {
+            CognitiveRecoveryError::Indeterminate(format!("{message} (recovery stage: {stage})"))
+        }
+        error => error,
+    }
 }
 
 fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {

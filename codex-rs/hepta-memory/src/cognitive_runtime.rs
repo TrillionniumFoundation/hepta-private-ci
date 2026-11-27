@@ -60,6 +60,9 @@ use crate::MAX_RETRIEVAL_RESULTS;
 use crate::RehydrationPlan;
 use crate::RetrievalRequest;
 
+#[cfg(test)]
+#[path = "cognitive_runtime_deadline_trace.rs"]
+pub(crate) mod deadline_trace;
 #[path = "cognitive_runtime_identity.rs"]
 mod identity;
 
@@ -562,49 +565,68 @@ async fn retrieve_federated_product(
     };
     let mut candidates = Vec::new();
 
-    let attempts = join_all(readers.iter().map(|(owner_layout, reader)| async move {
-        if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
-            return Ok((
-                Err(FederationV2Error::DeadlineExpired),
-                Arc::new(Mutex::new(None)),
-            ));
-        }
-        let (query, lease) = build_product_query_and_lease(
-            reader,
-            access,
-            request,
-            logical_start_ms,
-            global_deadline_ms,
-        )?;
-        let captured = Arc::new(Mutex::new(None));
-        let transport = ProductReaderTransport {
-            reader,
-            access,
-            request,
-            captured: Arc::clone(&captured),
-        };
-        let authority = ProductReaderAuthority {
-            owner_layout,
-            consumer_agent_id,
-            expected_capability: reader.capability(),
-            logical_start_ms,
-            started_at,
-        };
-        let control = ProductAttemptControl {
-            logical_start_ms,
-            started_at,
-        };
-        let result = execute_once(
-            &transport,
-            &authority,
-            &control,
-            logical_start_ms,
-            query,
-            &lease,
-        )
-        .await;
-        Ok::<_, CognitiveStoreError>((result, captured))
-    }))
+    let attempts = join_all(readers.iter().enumerate().map(
+        |(_index, (owner_layout, reader))| async move {
+            if elapsed_logical_ms(logical_start_ms, started_at) >= global_deadline_ms {
+                #[cfg(test)]
+                if let Some(trace) = deadline_trace::attempt(_index) {
+                    trace.record(deadline_trace::Stage::BeforeExecute);
+                }
+                return Ok((
+                    Err(FederationV2Error::DeadlineExpired),
+                    Arc::new(Mutex::new(None)),
+                ));
+            }
+            let (query, lease) = build_product_query_and_lease(
+                reader,
+                access,
+                request,
+                logical_start_ms,
+                global_deadline_ms,
+            )?;
+            let captured = Arc::new(Mutex::new(None));
+            let transport = ProductReaderTransport {
+                reader,
+                access,
+                request,
+                captured: Arc::clone(&captured),
+            };
+            let authority = ProductReaderAuthority {
+                owner_layout,
+                consumer_agent_id,
+                expected_capability: reader.capability(),
+                logical_start_ms,
+                started_at,
+                #[cfg(test)]
+                deadline_trace: deadline_trace::attempt(_index),
+            };
+            let control = ProductAttemptControl {
+                logical_start_ms,
+                started_at,
+                #[cfg(test)]
+                deadline_trace: deadline_trace::attempt(_index),
+                #[cfg(test)]
+                wait_count: AtomicU64::new(/*v*/ 0),
+            };
+            let result = execute_once(
+                &transport,
+                &authority,
+                &control,
+                logical_start_ms,
+                query,
+                &lease,
+            )
+            .await;
+            #[cfg(test)]
+            if let Some(trace) = &control.deadline_trace
+                && control.wait_count.load(Ordering::Relaxed) == 0
+                && matches!(&result, Err(FederationV2Error::DeadlineExpired))
+            {
+                trace.record(deadline_trace::Stage::BeforeControlWait);
+            }
+            Ok::<_, CognitiveStoreError>((result, captured))
+        },
+    ))
     .await;
 
     for attempt in attempts {
@@ -952,6 +974,8 @@ struct ProductReaderAuthority<'a> {
     expected_capability: &'a FederationCapability,
     logical_start_ms: u64,
     started_at: Instant,
+    #[cfg(test)]
+    deadline_trace: Option<deadline_trace::AttemptTrace>,
 }
 
 impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
@@ -964,13 +988,25 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
             let observed_unix_ms = elapsed_logical_ms(self.logical_start_ms, self.started_at);
             let now_unix_seconds = i64::try_from(observed_unix_ms / 1_000)
                 .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
-            let readers = FederatedMemoryReader::discover(
+            let discovery = FederatedMemoryReader::discover(
                 self.owner_layout,
                 self.consumer_agent_id,
                 now_unix_seconds,
-            )
-            .await
-            .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
+            );
+            #[cfg(test)]
+            let discovery = async move {
+                match &self.deadline_trace {
+                    Some(trace) => {
+                        deadline_trace::DISCOVERY
+                            .scope(trace.clone(), discovery)
+                            .await
+                    }
+                    None => discovery.await,
+                }
+            };
+            let readers = discovery
+                .await
+                .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
             let current = readers
                 .iter()
                 .find(|reader| reader.capability().id() == self.expected_capability.id());
@@ -999,6 +1035,10 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
 struct ProductAttemptControl {
     logical_start_ms: u64,
     started_at: Instant,
+    #[cfg(test)]
+    deadline_trace: Option<deadline_trace::AttemptTrace>,
+    #[cfg(test)]
+    wait_count: AtomicU64,
 }
 
 impl FederationAttemptControlV2 for ProductAttemptControl {
@@ -1010,9 +1050,18 @@ impl FederationAttemptControlV2 for ProductAttemptControl {
         let current = elapsed_logical_ms(self.logical_start_ms, self.started_at);
         let authority_deadline = query.deadline_unix_ms.min(lease.expires_unix_ms);
         let remaining = authority_deadline.saturating_sub(current);
+        #[cfg(test)]
+        let wait_number = self.wait_count.fetch_add(/*val*/ 1, Ordering::Relaxed);
         Box::pin(async move {
             if remaining > 0 {
                 tokio::time::sleep(Duration::from_millis(remaining)).await;
+            }
+            #[cfg(test)]
+            match (&self.deadline_trace, wait_number) {
+                (Some(trace), 0) => trace.record(deadline_trace::Stage::PreAuthorityWait),
+                (Some(trace), 1) => trace.record(deadline_trace::Stage::RequestWait),
+                (Some(trace), 2) => trace.record(deadline_trace::Stage::PostAuthorityWait),
+                _ => {}
             }
             FederationStopReasonV2::DeadlineExpired
         })

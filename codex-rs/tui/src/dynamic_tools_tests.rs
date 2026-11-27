@@ -11,10 +11,12 @@ use tempfile::TempDir;
 
 async fn test_server() -> color_eyre::Result<(TempDir, AppServerSession, String, String)> {
     let codex_home = tempfile::tempdir()?;
-    let config = ConfigBuilder::default()
+    let mut config = ConfigBuilder::default()
         .codex_home(codex_home.path().to_path_buf())
         .build()
         .await?;
+    let sqlite_home = config.sqlite.home().canonicalize()?;
+    config.sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.try_into()?);
     let target = create_fake_paginated_rollout(
         codex_home.path(),
         "2026-01-02T00-00-00",

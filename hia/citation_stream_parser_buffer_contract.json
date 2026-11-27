@@ -1,0 +1,362 @@
+{
+  "schema": "codex.hia.citation-stream-parser-buffer-contract.v1",
+  "module": "citation_stream_parser",
+  "symbol": "codex_hia_citation_stream_parser",
+  "source": {
+    "path": "hia/citation_stream_parser.hepta",
+    "bytes": 22659,
+    "sha256": "a73619f953b10636e6201515fb324f5a9dcf0806df5ccd968dd3eda5b028b354",
+    "git_blob": "e0c936e7c646c0f1aa903b47ba96acb27be74601"
+  },
+  "abi_design_sha256": "5b5ecc342f736134d99909bd7f69ee50a5679f0c35194cf4a636576c99345c6f",
+  "compiler_boundary": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "schema": "hepta.hia.program.v8",
+    "entry_profile": "borrowed-buffers-u32-v1",
+    "native_symbol_returns_u64_wrapper_status": true,
+    "core_return_type": "u32",
+    "nonzero_native_return_high32": "Never mask or treat as a Core result.",
+    "seed_capacity_scope": "The1MiB value was established only for build.py compiler-None foreign wrapper branch. This ABI fits that branch but makes no global native-capacity claim.",
+    "fresh_build_required": true
+  },
+  "signature": {
+    "entry": "f0",
+    "parameters": [
+      "readbuf source",
+      "mutbuf output",
+      "mutbuf workspace"
+    ],
+    "returns": [
+      "u32"
+    ],
+    "f0_first": true,
+    "workspace_minimum": 0,
+    "workspace_read_or_write": false
+  },
+  "integer_encoding": "All header and record fields are complete unsigned64-bit little-endian values. Decode/validate before narrowing. Byte payloads have no raw UTF8 requirement. v8 uses byte-wise word assembly, not v9 word-memory opcodes.",
+  "markers": {
+    "open": {
+      "ascii": "<oai-mem-citation>",
+      "bytes": 18
+    },
+    "close": {
+      "ascii": "</oai-mem-citation>",
+      "bytes": 19
+    },
+    "no_second_less_than_byte": true,
+    "matching": "literal case-sensitive, non-nested"
+  },
+  "source_frame": {
+    "header_bytes": 40,
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "value": 1
+      },
+      {
+        "name": "op",
+        "byte_offset": 8
+      },
+      {
+        "name": "active",
+        "byte_offset": 16
+      },
+      {
+        "name": "prefix_len",
+        "byte_offset": 24
+      },
+      {
+        "name": "payload_len",
+        "byte_offset": 32
+      }
+    ],
+    "payload_offset": 40,
+    "exact_source_bytes": "40+payload_len",
+    "payload_range_inclusive": [
+      0,
+      4096
+    ],
+    "maximum_source_bytes": 4136
+  },
+  "state": {
+    "active": {
+      "word_offset": 16,
+      "valid_values": [
+        0,
+        1
+      ]
+    },
+    "prefix_len": {
+      "word_offset": 24,
+      "inactive_range_inclusive": [
+        0,
+        17
+      ],
+      "active_range_inclusive": [
+        0,
+        18
+      ]
+    },
+    "initial": [
+      0,
+      0
+    ],
+    "body_container": "Unbounded Host-owned bytes, never supplied as a whole to HIA. HIA events alone decide body append/commit.",
+    "history_authentication": false
+  },
+  "operations": [
+    {
+      "op": 0,
+      "name": "Push",
+      "payload": "0..4096 arbitrary raw bytes; entire frame consumed exactly once.",
+      "state_effect": "Run the fixed literal matcher; retain only the proper prefix of current active delimiter.",
+      "records": "Visible, Body, Commit only. Adjacent Visible or adjacent Body records must be merged in HIA."
+    },
+    {
+      "op": 1,
+      "name": "Finish",
+      "payload_len": 0,
+      "state_effect": "Flush pending prefix to current channel, Commit exactly once if active, return inactive/prefix0. Repeated Finish returns no events. Later Push remains valid.",
+      "records": "At most one nonempty Visible or Body plus one zero-length Commit."
+    },
+    {
+      "op": 2,
+      "name": "Inspect",
+      "payload_len": 0,
+      "state_effect": "No state change. Return the current logical active/prefix and the exact pending literal prefix reconstructed in HIA. It must not consume, flush, open, close or commit.",
+      "records": "Exactly one Pending record, including when its length is0. No Visible/Body/Commit."
+    }
+  ],
+  "output_frame": {
+    "header_bytes": 48,
+    "fields": [
+      {
+        "name": "version",
+        "byte_offset": 0,
+        "value": 1
+      },
+      {
+        "name": "op",
+        "byte_offset": 8,
+        "meaning": "echo accepted operation"
+      },
+      {
+        "name": "next_active",
+        "byte_offset": 16
+      },
+      {
+        "name": "next_prefix_len",
+        "byte_offset": 24
+      },
+      {
+        "name": "event_count",
+        "byte_offset": 32
+      },
+      {
+        "name": "total_payload_bytes",
+        "byte_offset": 40
+      }
+    ],
+    "records_start": 48,
+    "record_layout": [
+      {
+        "name": "kind",
+        "bytes": 8
+      },
+      {
+        "name": "length",
+        "bytes": 8
+      },
+      {
+        "name": "payload",
+        "bytes": "length"
+      }
+    ],
+    "record_alignment": "Records are packed without padding; read words byte-wise at unaligned positions.",
+    "return_value": "Complete written extent=48+16*event_count+total_payload_bytes; no bytes past it may change."
+  },
+  "event_kinds": [
+    {
+      "kind": 0,
+      "name": "Visible",
+      "minimum_length": 1,
+      "operations": [
+        0,
+        1
+      ],
+      "effect": "Append to the visible accumulator of the current original public call."
+    },
+    {
+      "kind": 1,
+      "name": "Body",
+      "minimum_length": 1,
+      "operations": [
+        0,
+        1
+      ],
+      "effect": "Append to the parser pending citation body, not yet extracted."
+    },
+    {
+      "kind": 2,
+      "name": "Commit",
+      "length": 0,
+      "operations": [
+        0,
+        1
+      ],
+      "effect": "Move pending body into extracted output even if empty, then empty the pending-body container."
+    },
+    {
+      "kind": 3,
+      "name": "Pending",
+      "length": "prefix_len",
+      "operations": [
+        2
+      ],
+      "effect": "Read-only Debug inspection of the logical pending prefix; never parse it in Host."
+    }
+  ],
+  "capacity": {
+    "Push_required": "98+33*payload_len",
+    "Push_maximum": 135266,
+    "Finish_required": 98,
+    "Inspect_required": "64+prefix_len",
+    "Inspect_maximum": 82,
+    "rule": "These are normative conservative capacity thresholds, not merely estimates. A valid frame with smaller output capacity returns SHORT before writes even if its eventual compact result would fit. Extra capacity is permitted and untouched past the returned extent.",
+    "event_bound": "Push<=2*N+2 records; at most two emission fragments per consumed byte plus two reserved final records. HIA merging only decreases that bound.",
+    "payload_bound": "Push<=N+18 payload bytes; initial retained prefix contributes at most18, source bytes are emitted at most once or are removed as delimiter.",
+    "total_input_or_body_or_count_limit": null,
+    "seed_capacity_note": "The1MiB value was established only for build.py compiler-None foreign wrapper branch. This ABI fits that branch but makes no global native-capacity claim."
+  },
+  "statuses": {
+    "invalid": 4294967295,
+    "short_output": 4294967294,
+    "success": "Exact full written byte extent, at least48 and at most135266."
+  },
+  "validation_and_errors": {
+    "precedence": [
+      "INVALID",
+      "SHORT",
+      "success writes"
+    ],
+    "INVALID": 4294967295,
+    "SHORT": 4294967294,
+    "INVALID_conditions": [
+      "source length below40 or above4136",
+      "version other than1",
+      "op outside0..2 including nonzero high bits",
+      "active outside0..1 including high bits",
+      "prefix_len greater than17+active including high bits",
+      "payload_len greater than4096 including high bits",
+      "source length differs from40+payload_len",
+      "Finish or Inspect with nonzero payload_len"
+    ],
+    "SHORT_condition": "All source/state structure valid and output capacity is below the operation-specific normative threshold.",
+    "error_buffers": "Source, output including its entire supplied capacity, and workspace remain byte-for-byte unchanged on INVALID or SHORT.",
+    "workspace": "Never read or written for success or failure.",
+    "bounded_arithmetic": "Only validatedN<=4096 enters capacity/scan arithmetic; prefixes<=18. Header/math intermediates fit completeu64. Host cumulative allocation uses checkedusize and no lower semantic cap. No OVERFLOW status is needed for these bounded raw fields."
+  },
+  "matching_algorithm": {
+    "outside": "Compare incoming byte against opening[prefix_len]. If it extends the prefix, retain it; if it completes opener, set active=1,prefix=0 with no public record.",
+    "inside": "Compare against closing[prefix_len]. Completing closer emits Commit and sets active=0,prefix=0.",
+    "mismatch": "Emit the prior prefix to the current channel; because there is no second less-than byte in either marker, none of those retained bytes can start a later marker. Then retain the current byte as prefix1 if it is less-than, otherwise emit it to the same channel and set prefix0.",
+    "channel": "active0=>Visible,active1=>Body.",
+    "merging": "The kernel combines adjacent same-kind payload records itself by extending their length and bytes. Commit is a nonmergeable barrier. Inspect has one distinct Pending record. Host must not merge parser events to compensate for kernel output.",
+    "complexity": "Linear input traversal with at most18-byte prefix flush and constant marker lookups; no work proportional to the accumulated unbounded body."
+  },
+  "public_host_contract": {
+    "public_api": "Keep new/Default/Debug and StreamTextParser<Extracted=String>; strip_citations remains its original public push-then-finish wrapper.",
+    "framing": "For one publicpush, transport chunks of at most4096 bytes in input order. Decode every result into per-call visible/extracted accumulators and per-parser body. Return one original public result after all internal frames. No repeated-call progress loop or skipped input.",
+    "UTF8": "The public input remains &str; Utf8StreamParser stays unchanged and must validate the whole new byte chunk before invoking inner. Internal frames may bisect codepoints: collect bytes, validate only complete public visible/citation values, and never use lossy conversion.",
+    "decode": "Validate return extent, header echo/version/state bounds, event and payload counts, every record bound, allowed operation/kind, nonempty payload channels, zero Commit length, canonical adjacent-kind rule and exact EOF before accepting state. No untrusted native value may drive unchecked slicing.",
+    "container_invariant": "Keep pending body independent of finite HIA prefix. After a normal result with next_active=0, all decoded commits must have left body empty. No source matching or body completion decision in Host.",
+    "Inspect_decode": "Require state unchanged, event_count1, kindPending, payload length equals prefix_len, totalpayload equals prefix_len, returned64+prefix_len. Inspect content is HIA-owned prefix data, not generated by a Rust matcher.",
+    "errors": "The public parser API remains infallible. An internal ABI inconsistency must use the existing explicit invariant-failure style without a Rust parsing fallback or printing user text. Debug may report fmt::Error rather than mutate state or attempt fallback.",
+    "defaults": "Retain default Rust implementation and all23 existing tests unmodified; no native default, cap increase, skip, deadline, oracle or permission change."
+  },
+  "Debug_contract": {
+    "source_blobs": {
+      "citation.rs": "d7be6dd5f1c8041f434c06c228ac73aced9b2f5e",
+      "inline_hidden_tag.rs": "0b7501cdb958a38c0b93e44ca981c7dbd4d912ff"
+    },
+    "projection": {
+      "CitationStreamParser": [
+        "inner"
+      ],
+      "InlineHiddenTagParser": [
+        "specs",
+        "pending",
+        "active"
+      ],
+      "InlineTagSpec": [
+        "tag",
+        "open",
+        "close"
+      ],
+      "ActiveTag": [
+        "tag",
+        "close",
+        "content"
+      ],
+      "CitationTag_variant": "Citation"
+    },
+    "values": {
+      "specs": "A one-element sequence with original Citation tag and exact open/close literals.",
+      "pending": "Inspect Pending bytes interpreted as ASCII/UTF8.",
+      "active": "None when Inspect active0, otherwise Some ActiveTag with Citation, original closer and current Host pending body. Body excludes the withheld pending prefix, exactly as original active.content.",
+      "content": "Use complete checked current Host body bytes; Inspect never returns or changes them."
+    },
+    "formatting": "Use Rust debug_struct/debug_list/Option/string formatting with exact original names and field order, so the supplied Formatter controls compact versus alternate indentation/escaping. No handwritten escaping or flattened debug string.",
+    "no_shadow_parser": true,
+    "no_state_change_or_extra_log": true,
+    "required_regressions": [
+      "Exact compact and alternate Debug for initial state",
+      "Partial opener Debug then continue same parser to complete citation",
+      "Active body plus partial closer Debug followed by completion",
+      "Repeated Inspect/Debug leaves subsequent push/finish outputs unchanged",
+      "Finish/reuse Debug matches original shape including Some(empty active body) and None after reset"
+    ]
+  },
+  "non_aliasing": "Use separate live source/output/workspace allocations as required by the existing borrowed entry contract; no pointer escapes this call. A zero-length workspace remains unused.",
+  "buffer_observations": [
+    "Source and source guards unchanged for every result.",
+    "Workspace and workspace guards unchanged for every result.",
+    "Output leading/trailing guards unchanged.",
+    "On INVALID/SHORT the entire supplied output remains its initial fill.",
+    "On success only exact returned extent may differ; every remaining output byte is still initial fill."
+  ],
+  "original_oracles": {
+    "source_head": "52efd091d4774e832c69a5d7f4680800b1967067",
+    "citation_blob": "d7be6dd5f1c8041f434c06c228ac73aced9b2f5e",
+    "generic_parser_blob": "0b7501cdb958a38c0b93e44ca981c7dbd4d912ff",
+    "utf8_wrapper_blob": "f9cd31eec62351b30f619d832424a9edc4b8b021",
+    "identified_method_count": 23,
+    "original_assertions_timeouts_skips_changed": false
+  },
+  "raw_gate": {
+    "path": "hia/tests/test_citation_stream_parser_abi.py",
+    "corpus": "hia/tests/citation_stream_parser_oracle_inputs.json",
+    "build_profile": "full-native33",
+    "admission_fields": {
+      "full33_manifest_verified": true,
+      "module_count": 33
+    },
+    "admission_before_CDLL": true,
+    "seed_direct_not_qualified": true,
+    "expectations": "Literal requests, next states and written output prefixes, not an executed parser/model. Repeated literal records may compactly describe the same exact byte input/output.",
+    "large_stream_scope": "Repeated literal full frames may exercise a real >1MiB stream; they do not constitute a >4GiB memory execution or performance result.",
+    "original_Rust_oracle_executed_by_raw_gate": false
+  },
+  "qualification": {
+    "source_only": true,
+    "compiler_executed": false,
+    "native_executed": false,
+    "original_public_oracles_executed": false,
+    "default_dispatch_changed": false,
+    "production_dispatch_migrated": false,
+    "whole_codex_rewritten": false,
+    "performance_qualified": false,
+    "workspace_qualified": false
+  }
+}

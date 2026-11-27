@@ -12,6 +12,12 @@ path = "src/lib.rs"
 name = "codex-write-config-schema"
 path = "src/bin/config_schema.rs"
 
+[features]
+hia-native = [
+    "codex-utils-output-truncation/hia-native",
+    "codex-utils-stream-parser/hia-native",
+]
+
 [lints]
 workspace = true
 

@@ -1,0 +1,356 @@
+hia-asm.v1 hepta.hia.program.v9 codex_network_domains
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  e_output_size:usize = buffer.len(output)
+  e_minimum:usize = const() {"value":8}
+  e_enough:bool = compare.ge(e_output_size,e_minimum)
+  branch e_enough header(source,output,workspace) short_output()
+block header(h_source:readbuf,h_output:mutbuf,h_workspace:mutbuf)
+  h_size:usize = buffer.len(h_source)
+  h_need:usize = const() {"value":8}
+  h_complete:bool = compare.ge(h_size,h_need)
+  branch h_complete operation(h_source,h_output,h_workspace) invalid()
+block operation(o_source:readbuf,o_output:mutbuf,o_workspace:mutbuf)
+  o_zero:usize = const() {"value":0}
+  o_mode:u64 = buffer.load.u64.le(o_source,o_zero)
+  o_select:u64 = const() {"value":0}
+  o_selecting:bool = compare.eq(o_mode,o_select)
+  branch o_selecting select_call(o_source,o_output) reduce_check(o_source,o_output,o_workspace,o_mode)
+block select_call(s_source:readbuf,s_output:mutbuf)
+  s_status:u32 = call(s_source,s_output) {"function":"select_records"}
+  ret(s_status)
+block reduce_check(r_source:readbuf,r_output:mutbuf,r_workspace:mutbuf,r_mode:u64)
+  r_reduce:u64 = const() {"value":1}
+  r_reducing:bool = compare.eq(r_mode,r_reduce)
+  branch r_reducing reduce_call(r_source,r_output,r_workspace) invalid()
+block reduce_call(c_source:readbuf,c_output:mutbuf,c_workspace:mutbuf)
+  c_status:u32 = call(c_source,c_output,c_workspace) {"function":"reduce_records"}
+  ret(c_status)
+block invalid()
+  bad:u32 = const() {"value":4294967295}
+  ret(bad)
+block short_output()
+  short:u32 = const() {"value":4294967294}
+  ret(short)
+end
+fn select_records(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf)
+  e_size:usize = buffer.len(source)
+  e_header:usize = const() {"value":16}
+  e_complete:bool = compare.ge(e_size,e_header)
+  branch e_complete count(source,output,e_size) invalid()
+block count(c_source:readbuf,c_output:mutbuf,c_size:usize)
+  c_at:usize = const() {"value":8}
+  c_header:usize = const() {"value":16}
+  c_maximum:u64 = const() {"value":64}
+  c_count:u64 = buffer.load.u64.le(c_source,c_at)
+  c_available:usize = int.sub.checked(c_size,c_header)
+  c_available_word:u64 = int.cast(c_available) {"mode":"wrap"}
+  c_exact:bool = compare.eq(c_count,c_available_word)
+  c_bounded:bool = compare.le(c_count,c_maximum)
+  c_valid:bool = bool.and(c_exact,c_bounded)
+  branch c_valid capacity(c_source,c_output,c_available) invalid()
+block capacity(p_source:readbuf,p_output:mutbuf,p_count:usize)
+  p_header:usize = const() {"value":8}
+  p_need:usize = int.add.checked(p_header,p_count)
+  p_size:usize = buffer.len(p_output)
+  p_enough:bool = compare.ge(p_size,p_need)
+  p_zero:usize = const() {"value":0}
+  branch p_enough validate(p_source,p_output,p_count,p_zero) short_output()
+block validate(v_source:readbuf,v_output:mutbuf,v_count:usize,v_index:usize)
+  v_more:bool = compare.lt(v_index,v_count)
+  branch v_more tag(v_source,v_output,v_count,v_index) begin(v_source,v_output,v_count)
+block tag(t_source:readbuf,t_output:mutbuf,t_count:usize,t_index:usize)
+  t_header:usize = const() {"value":16}
+  t_at:usize = int.add.checked(t_header,t_index)
+  t_value:u8 = buffer.load(t_source,t_at)
+  t_maximum:u8 = const() {"value":2}
+  t_valid:bool = compare.le(t_value,t_maximum)
+  t_one:usize = const() {"value":1}
+  t_next:usize = int.add.checked(t_index,t_one)
+  branch t_valid validate(t_source,t_output,t_count,t_next) invalid()
+block begin(b_source:readbuf,b_output:mutbuf,b_count:usize)
+  b_zero:usize = const() {"value":0}
+  jump emit(b_source,b_output,b_count,b_zero,b_zero)
+block emit(m_source:readbuf,m_output:mutbuf,m_count:usize,m_index:usize,m_selected:usize)
+  m_more:bool = compare.lt(m_index,m_count)
+  branch m_more choose(m_source,m_output,m_count,m_index,m_selected) done(m_output,m_selected)
+block choose(q_source:readbuf,q_output:mutbuf,q_count:usize,q_index:usize,q_selected:usize)
+  q_header:usize = const() {"value":16}
+  q_at:usize = int.add.checked(q_header,q_index)
+  q_tag:u8 = buffer.load(q_source,q_at)
+  q_prompt:u8 = const() {"value":1}
+  q_skip:bool = compare.eq(q_tag,q_prompt)
+  q_step:usize = const() {"value":1}
+  q_next:usize = int.add.checked(q_index,q_step)
+  branch q_skip emit(q_source,q_output,q_count,q_next,q_selected) record(q_source,q_output,q_count,q_index,q_next,q_selected)
+block record(k_source:readbuf,k_output:mutbuf,k_count:usize,k_index:usize,k_next:usize,k_selected:usize)
+  k_header:usize = const() {"value":8}
+  k_at:usize = int.add.checked(k_header,k_selected)
+  k_byte:u8 = int.cast(k_index) {"mode":"wrap"}
+  _ = buffer.store(k_output,k_at,k_byte)
+  k_step:usize = const() {"value":1}
+  k_new_selected:usize = int.add.checked(k_selected,k_step)
+  jump emit(k_source,k_output,k_count,k_next,k_new_selected)
+block done(d_output:mutbuf,d_selected:usize)
+  d_at:usize = const() {"value":0}
+  d_value:u64 = int.cast(d_selected) {"mode":"wrap"}
+  _ = buffer.store.u64.le(d_output,d_at,d_value)
+  d_success:u32 = const() {"value":0}
+  ret(d_success)
+block invalid()
+  bad:u32 = const() {"value":4294967295}
+  ret(bad)
+block short_output()
+  short:u32 = const() {"value":4294967294}
+  ret(short)
+end
+fn validate_records(source:readbuf) -> (usize) effects(read,trap) entry(entry)
+block entry(source:readbuf)
+  e_size:usize = buffer.len(source)
+  e_header:usize = const() {"value":24}
+  e_complete:bool = compare.ge(e_size,e_header)
+  branch e_complete counts(source,e_size) invalid()
+block counts(c_source:readbuf,c_size:usize)
+  c_original_at:usize = const() {"value":8}
+  c_selected_at:usize = const() {"value":16}
+  c_original:u64 = buffer.load.u64.le(c_source,c_original_at)
+  c_selected:u64 = buffer.load.u64.le(c_source,c_selected_at)
+  c_header:usize = const() {"value":24}
+  c_available:usize = int.sub.checked(c_size,c_header)
+  c_maximum:usize = int.div.checked(c_available,c_header)
+  c_maximum_word:u64 = int.cast(c_maximum) {"mode":"wrap"}
+  c_bounded:bool = compare.le(c_selected,c_maximum_word)
+  c_possible:bool = compare.le(c_selected,c_original)
+  c_valid:bool = bool.and(c_bounded,c_possible)
+  c_count:usize = int.cast(c_selected) {"mode":"wrap"}
+  c_zero:usize = const() {"value":0}
+  c_previous:u64 = const() {"value":0}
+  branch c_valid records(c_source,c_size,c_original,c_count,c_zero,c_header,c_previous) invalid()
+block records(r_source:readbuf,r_size:usize,r_original:u64,r_count:usize,r_index:usize,r_at:usize,r_previous:u64)
+  r_more:bool = compare.lt(r_index,r_count)
+  branch r_more header(r_source,r_size,r_original,r_count,r_index,r_at,r_previous) end_check(r_size,r_count,r_at)
+block header(h_source:readbuf,h_size:usize,h_original:u64,h_count:usize,h_index:usize,h_at:usize,h_previous:u64)
+  h_left:usize = int.sub.checked(h_size,h_at)
+  h_need:usize = const() {"value":24}
+  h_complete:bool = compare.ge(h_left,h_need)
+  branch h_complete fields(h_source,h_size,h_original,h_count,h_index,h_at,h_previous) invalid()
+block fields(f_source:readbuf,f_size:usize,f_original:u64,f_count:usize,f_index:usize,f_at:usize,f_previous:u64)
+  f_eight:usize = const() {"value":8}
+  f_sixteen:usize = const() {"value":16}
+  f_decision_at:usize = int.add.checked(f_at,f_eight)
+  f_length_at:usize = int.add.checked(f_at,f_sixteen)
+  f_original_index:u64 = buffer.load.u64.le(f_source,f_at)
+  f_decision:u64 = buffer.load.u64.le(f_source,f_decision_at)
+  f_length:u64 = buffer.load.u64.le(f_source,f_length_at)
+  f_zero:usize = const() {"value":0}
+  f_first:bool = compare.eq(f_index,f_zero)
+  f_increasing:bool = compare.gt(f_original_index,f_previous)
+  f_ordered:bool = bool.or(f_first,f_increasing)
+  f_bounded:bool = compare.lt(f_original_index,f_original)
+  f_allow:u64 = const() {"value":0}
+  f_forbid:u64 = const() {"value":2}
+  f_allowed:bool = compare.eq(f_decision,f_allow)
+  f_forbidden:bool = compare.eq(f_decision,f_forbid)
+  f_known:bool = bool.or(f_allowed,f_forbidden)
+  f_valid_index:bool = bool.and(f_ordered,f_bounded)
+  f_valid:bool = bool.and(f_valid_index,f_known)
+  branch f_valid body(f_source,f_size,f_original,f_count,f_index,f_at,f_original_index,f_length) invalid()
+block body(b_source:readbuf,b_size:usize,b_original:u64,b_count:usize,b_index:usize,b_at:usize,b_previous:u64,b_length:u64)
+  b_header:usize = const() {"value":24}
+  b_begin:usize = int.add.checked(b_at,b_header)
+  b_left:usize = int.sub.checked(b_size,b_begin)
+  b_available:u64 = int.cast(b_left) {"mode":"wrap"}
+  b_valid:bool = compare.le(b_length,b_available)
+  branch b_valid advance(b_source,b_size,b_original,b_count,b_index,b_begin,b_previous,b_length) invalid()
+block advance(a_source:readbuf,a_size:usize,a_original:u64,a_count:usize,a_index:usize,a_begin:usize,a_previous:u64,a_length:u64)
+  a_size_value:usize = int.cast(a_length) {"mode":"wrap"}
+  a_next_at:usize = int.add.checked(a_begin,a_size_value)
+  a_one:usize = const() {"value":1}
+  a_next_index:usize = int.add.checked(a_index,a_one)
+  jump records(a_source,a_size,a_original,a_count,a_next_index,a_next_at,a_previous)
+block end_check(x_size:usize,x_count:usize,x_at:usize)
+  x_exact:bool = compare.eq(x_size,x_at)
+  x_one:usize = const() {"value":1}
+  x_valid_count:usize = int.add.checked(x_count,x_one)
+  branch x_exact valid(x_valid_count) invalid()
+block valid(result:usize)
+  ret(result)
+block invalid()
+  bad:usize = const() {"value":0}
+  ret(bad)
+end
+fn reduce_records(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  e_count_plus:usize = call(source) {"function":"validate_records"}
+  e_zero:usize = const() {"value":0}
+  e_valid:bool = compare.gt(e_count_plus,e_zero)
+  branch e_valid capacity(source,output,workspace,e_count_plus) invalid()
+block capacity(c_source:readbuf,c_output:mutbuf,c_workspace:mutbuf,c_count_plus:usize)
+  c_one:usize = const() {"value":1}
+  c_count:usize = int.sub.checked(c_count_plus,c_one)
+  c_word:usize = const() {"value":8}
+  c_header:usize = const() {"value":16}
+  c_indices:usize = int.mul.checked(c_count,c_word)
+  c_need:usize = int.add.checked(c_header,c_indices)
+  c_size:usize = buffer.len(c_output)
+  c_enough:bool = compare.ge(c_size,c_need)
+  branch c_enough workspace_capacity(c_source,c_output,c_workspace,c_count) short_output()
+block workspace_capacity(w_source:readbuf,w_output:mutbuf,w_workspace:mutbuf,w_count:usize)
+  w_size:usize = buffer.len(w_workspace)
+  w_enough:bool = compare.ge(w_size,w_count)
+  w_zero:usize = const() {"value":0}
+  w_start:usize = const() {"value":24}
+  branch w_enough mark(w_source,w_output,w_workspace,w_count,w_zero,w_start,w_zero,w_zero) short_workspace()
+block mark(m_source:readbuf,m_output:mutbuf,m_workspace:mutbuf,m_count:usize,m_index:usize,m_at:usize,m_allowed:usize,m_denied:usize)
+  m_more:bool = compare.lt(m_index,m_count)
+  branch m_more record(m_source,m_output,m_workspace,m_count,m_index,m_at,m_allowed,m_denied) counts(m_source,m_output,m_workspace,m_count,m_allowed,m_denied)
+block record(r_source:readbuf,r_output:mutbuf,r_workspace:mutbuf,r_count:usize,r_index:usize,r_at:usize,r_allowed:usize,r_denied:usize)
+  r_length_offset:usize = const() {"value":16}
+  r_length_at:usize = int.add.checked(r_at,r_length_offset)
+  r_length_word:u64 = buffer.load.u64.le(r_source,r_length_at)
+  r_length:usize = int.cast(r_length_word) {"mode":"wrap"}
+  r_header:usize = const() {"value":24}
+  r_body:usize = int.add.checked(r_at,r_header)
+  r_next_at:usize = int.add.checked(r_body,r_length)
+  r_one:usize = const() {"value":1}
+  r_next_index:usize = int.add.checked(r_index,r_one)
+  r_left:usize = int.sub.checked(r_count,r_next_index)
+  r_duplicate:bool = call(r_source,r_next_at,r_left,r_body,r_length) {"function":"has_later"}
+  r_decision_offset:usize = const() {"value":8}
+  r_decision_at:usize = int.add.checked(r_at,r_decision_offset)
+  r_decision:u64 = buffer.load.u64.le(r_source,r_decision_at)
+  r_allow:u64 = const() {"value":0}
+  r_is_allow:bool = compare.eq(r_decision,r_allow)
+  r_allow_flag:u8 = const() {"value":1}
+  r_deny_flag:u8 = const() {"value":2}
+  r_none:u8 = const() {"value":0}
+  r_winner:u8 = select(r_is_allow,r_allow_flag,r_deny_flag)
+  r_flag:u8 = select(r_duplicate,r_none,r_winner)
+  _ = buffer.store(r_workspace,r_index,r_flag)
+  r_add_allow:bool = compare.eq(r_flag,r_allow_flag)
+  r_add_deny:bool = compare.eq(r_flag,r_deny_flag)
+  r_zero:usize = const() {"value":0}
+  r_allow_step:usize = select(r_add_allow,r_one,r_zero)
+  r_deny_step:usize = select(r_add_deny,r_one,r_zero)
+  r_new_allowed:usize = int.add.checked(r_allowed,r_allow_step)
+  r_new_denied:usize = int.add.checked(r_denied,r_deny_step)
+  jump mark(r_source,r_output,r_workspace,r_count,r_next_index,r_next_at,r_new_allowed,r_new_denied)
+block counts(t_source:readbuf,t_output:mutbuf,t_workspace:mutbuf,t_count:usize,t_allowed:usize,t_denied:usize)
+  t_zero:usize = const() {"value":0}
+  t_word:usize = const() {"value":8}
+  t_allow_word:u64 = int.cast(t_allowed) {"mode":"wrap"}
+  t_deny_word:u64 = int.cast(t_denied) {"mode":"wrap"}
+  _ = buffer.store.u64.le(t_output,t_zero,t_allow_word)
+  _ = buffer.store.u64.le(t_output,t_word,t_deny_word)
+  t_start:usize = const() {"value":24}
+  t_output_start:usize = const() {"value":16}
+  t_allowed_bytes:usize = int.mul.checked(t_allowed,t_word)
+  t_denied_at:usize = int.add.checked(t_output_start,t_allowed_bytes)
+  jump emit(t_source,t_output,t_workspace,t_count,t_zero,t_start,t_output_start,t_denied_at)
+block emit(p_source:readbuf,p_output:mutbuf,p_workspace:mutbuf,p_count:usize,p_index:usize,p_at:usize,p_allowed_at:usize,p_denied_at:usize)
+  p_more:bool = compare.lt(p_index,p_count)
+  branch p_more emit_record(p_source,p_output,p_workspace,p_count,p_index,p_at,p_allowed_at,p_denied_at) done()
+block emit_record(k_source:readbuf,k_output:mutbuf,k_workspace:mutbuf,k_count:usize,k_index:usize,k_at:usize,k_allowed_at:usize,k_denied_at:usize)
+  k_flag:u8 = buffer.load(k_workspace,k_index)
+  k_zero:u8 = const() {"value":0}
+  k_live:bool = compare.ne(k_flag,k_zero)
+  k_length_offset:usize = const() {"value":16}
+  k_length_at:usize = int.add.checked(k_at,k_length_offset)
+  k_length_word:u64 = buffer.load.u64.le(k_source,k_length_at)
+  k_length:usize = int.cast(k_length_word) {"mode":"wrap"}
+  k_header:usize = const() {"value":24}
+  k_body:usize = int.add.checked(k_at,k_header)
+  k_next_at:usize = int.add.checked(k_body,k_length)
+  k_one:usize = const() {"value":1}
+  k_next_index:usize = int.add.checked(k_index,k_one)
+  branch k_live emit_index(k_source,k_output,k_workspace,k_count,k_next_index,k_at,k_next_at,k_flag,k_allowed_at,k_denied_at) emit(k_source,k_output,k_workspace,k_count,k_next_index,k_next_at,k_allowed_at,k_denied_at)
+block emit_index(i_source:readbuf,i_output:mutbuf,i_workspace:mutbuf,i_count:usize,i_next_index:usize,i_at:usize,i_next_at:usize,i_flag:u8,i_allowed_at:usize,i_denied_at:usize)
+  i_original:u64 = buffer.load.u64.le(i_source,i_at)
+  i_one:u8 = const() {"value":1}
+  i_allowed:bool = compare.eq(i_flag,i_one)
+  i_position:usize = select(i_allowed,i_allowed_at,i_denied_at)
+  _ = buffer.store.u64.le(i_output,i_position,i_original)
+  i_word:usize = const() {"value":8}
+  i_after:usize = int.add.checked(i_position,i_word)
+  i_new_allow:usize = select(i_allowed,i_after,i_allowed_at)
+  i_new_deny:usize = select(i_allowed,i_denied_at,i_after)
+  jump emit(i_source,i_output,i_workspace,i_count,i_next_index,i_next_at,i_new_allow,i_new_deny)
+block done()
+  success:u32 = const() {"value":0}
+  ret(success)
+block invalid()
+  bad:u32 = const() {"value":4294967295}
+  ret(bad)
+block short_output()
+  short:u32 = const() {"value":4294967294}
+  ret(short)
+block short_workspace()
+  missing:u32 = const() {"value":4294967293}
+  ret(missing)
+end
+fn has_later(source:readbuf,at:usize,count:usize,body:usize,length:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,at:usize,count:usize,body:usize,length:usize)
+  jump loop(source,at,count,body,length)
+block loop(l_source:readbuf,l_at:usize,l_count:usize,l_body:usize,l_length:usize)
+  e_zero:usize = const() {"value":0}
+  e_more:bool = compare.gt(l_count,e_zero)
+  branch e_more record(l_source,l_at,l_count,l_body,l_length) absent()
+block record(r_source:readbuf,r_at:usize,r_count:usize,r_body:usize,r_length:usize)
+  r_length_offset:usize = const() {"value":16}
+  r_length_at:usize = int.add.checked(r_at,r_length_offset)
+  r_other_word:u64 = buffer.load.u64.le(r_source,r_length_at)
+  r_other_length:usize = int.cast(r_other_word) {"mode":"wrap"}
+  r_header:usize = const() {"value":24}
+  r_other_body:usize = int.add.checked(r_at,r_header)
+  r_next:usize = int.add.checked(r_other_body,r_other_length)
+  r_one:usize = const() {"value":1}
+  r_remaining:usize = int.sub.checked(r_count,r_one)
+  r_same_length:bool = compare.eq(r_length,r_other_length)
+  branch r_same_length compare(r_source,r_next,r_remaining,r_body,r_length,r_other_body) loop(r_source,r_next,r_remaining,r_body,r_length)
+block compare(c_source:readbuf,c_next:usize,c_remaining:usize,c_body:usize,c_length:usize,c_other_body:usize)
+  c_equal:bool = call(c_source,c_body,c_other_body,c_length) {"function":"equal_bytes"}
+  branch c_equal present() loop(c_source,c_next,c_remaining,c_body,c_length)
+block present()
+  yes:bool = const() {"value":true}
+  ret(yes)
+block absent()
+  no:bool = const() {"value":false}
+  ret(no)
+end
+fn equal_bytes(source:readbuf,left:usize,right:usize,remaining:usize) -> (bool) effects(read,trap) entry(entry)
+block entry(source:readbuf,left:usize,right:usize,remaining:usize)
+  jump chunks(source,left,right,remaining)
+block chunks(c_source:readbuf,c_left:usize,c_right:usize,c_remaining:usize)
+  e_width:usize = const() {"value":8}
+  e_wide:bool = compare.ge(c_remaining,e_width)
+  branch e_wide word(c_source,c_left,c_right,c_remaining) tail(c_source,c_left,c_right,c_remaining)
+block word(w_source:readbuf,w_left:usize,w_right:usize,w_remaining:usize)
+  w_a:u64 = buffer.load.u64.le(w_source,w_left)
+  w_b:u64 = buffer.load.u64.le(w_source,w_right)
+  w_same:bool = compare.eq(w_a,w_b)
+  w_width:usize = const() {"value":8}
+  w_next_left:usize = int.add.checked(w_left,w_width)
+  w_next_right:usize = int.add.checked(w_right,w_width)
+  w_next_remaining:usize = int.sub.checked(w_remaining,w_width)
+  branch w_same chunks(w_source,w_next_left,w_next_right,w_next_remaining) different()
+block tail(t_source:readbuf,t_left:usize,t_right:usize,t_remaining:usize)
+  t_zero:usize = const() {"value":0}
+  t_more:bool = compare.gt(t_remaining,t_zero)
+  branch t_more byte(t_source,t_left,t_right,t_remaining) equal()
+block byte(b_source:readbuf,b_left:usize,b_right:usize,b_remaining:usize)
+  b_a:u8 = buffer.load(b_source,b_left)
+  b_b:u8 = buffer.load(b_source,b_right)
+  b_same:bool = compare.eq(b_a,b_b)
+  b_one:usize = const() {"value":1}
+  b_next_left:usize = int.add.checked(b_left,b_one)
+  b_next_right:usize = int.add.checked(b_right,b_one)
+  b_next_remaining:usize = int.sub.checked(b_remaining,b_one)
+  branch b_same tail(b_source,b_next_left,b_next_right,b_next_remaining) different()
+block equal()
+  yes:bool = const() {"value":true}
+  ret(yes)
+block different()
+  no:bool = const() {"value":false}
+  ret(no)
+end

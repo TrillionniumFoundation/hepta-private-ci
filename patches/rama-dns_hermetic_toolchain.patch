@@ -1,0 +1,130 @@
+# Forward Bazel target C toolchain headers into Rama bindgen, derive the
+# resolver symbol from those headers, and use the canonical lowercase
+# Windows import-library name for Linux cross-linking.
+diff --git a/build.rs b/build.rs
+--- a/build.rs
++++ b/build.rs
+@@ -5,8 +5,23 @@
+-
++
+ use std::{env, path::PathBuf};
+-
++
++#[derive(Debug)]
++struct ResolvCallbacks;
++
++impl bindgen::callbacks::ParseCallbacks for ResolvCallbacks {
++    fn item_name(&self, item: bindgen::callbacks::ItemInfo<'_>) -> Option<String> {
++        // Older glibc headers map this function to its legacy C symbol.
++        // Rename only the Rust item; bindgen retains the original link name.
++        match item.name {
++            "__res_nsearch" => Some("res_nsearch".to_owned()),
++            _ => None,
++        }
++    }
++}
++
+ fn main() {
+     println!("cargo::rerun-if-changed=build.rs");
++    println!("cargo::rerun-if-env-changed=CFLAGS");
+     println!("cargo::rerun-if-changed=src/client/linux/resolv_wrapper.h");
+-
++
+     let target_os = env::var("CARGO_CFG_TARGET_OS").ok();
+@@ -22,9 +37,16 @@
+-
++
+     let out_path = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR")).join("resolv_bindings.rs");
+-
++
++    // Bazel supplies target sysroots and system headers through its C toolchain.
++    // Parse shell quoting so paths containing spaces remain single arguments.
++    let cflags = env::var("CFLAGS").unwrap_or_default();
++    let clang_args = shlex::split(&cflags).expect("parse target toolchain CFLAGS");
+     let bindings = bindgen::Builder::default()
++        .clang_args(clang_args)
+         .header("src/client/linux/resolv_wrapper.h")
+         .allowlist_type("__res_state")
++        .allowlist_function("(__)?res_nsearch")
++        .parse_callbacks(Box::new(ResolvCallbacks))
+         .generate_comments(true)
+         .derive_default(true)
+         .layout_tests(false)
+diff --git a/src/client/linux/res_nsearch.rs b/src/client/linux/res_nsearch.rs
+--- a/src/client/linux/res_nsearch.rs
++++ b/src/client/linux/res_nsearch.rs
+@@ -445,7 +445,7 @@
+ }
+-
++
+ mod ffi {
+-    use libc::{c_char, c_int};
++    use libc::c_int;
+-
++
+     #[allow(
+         clippy::all,
+@@ -462,6 +462,9 @@
+         include!(concat!(env!("OUT_DIR"), "/resolv_bindings.rs"));
+     }
+-
++
++    // Follow the target header ABI, including glibc's legacy symbol name.
++    pub(super) use bindings::res_nsearch;
++
+     // DNS class/type constants mirrored from glibc's resolver headers.
+     //
+     // Sources:
+@@ -504,7 +507,6 @@
+     // GNU/Linux symbol mapping:
+     // - `res_ninit` is exported as `__res_ninit`
+     // - `res_nclose` is exported as `__res_nclose`
+-    // - `res_nsearch` is exported as `res_nsearch`
+     //
+     // Sources:
+     // - https://codebrowser.dev/glibc/glibc/resolv/res_init.c.html
+@@ -518,14 +520,6 @@
+         pub(super) fn res_ninit(state: *mut ResState) -> c_int;
+         #[link_name = "__res_nclose"]
+         pub(super) fn res_nclose(state: *mut ResState);
+-        pub(super) fn res_nsearch(
+-            state: *mut ResState,
+-            dname: *const c_char,
+-            class: c_int,
+-            typ: c_int,
+-            answer: *mut u8,
+-            anslen: c_int,
+-        ) -> c_int;
+     }
+-
++
+     // BSDs expose the re-entrant libresolv APIs under their public `res_n*`
+@@ -540,14 +534,6 @@
+     unsafe extern "C" {
+         pub(super) fn res_ninit(state: *mut ResState) -> c_int;
+         pub(super) fn res_nclose(state: *mut ResState);
+-        pub(super) fn res_nsearch(
+-            state: *mut ResState,
+-            dname: *const c_char,
+-            class: c_int,
+-            typ: c_int,
+-            answer: *mut u8,
+-            anslen: c_int,
+-        ) -> c_int;
+     }
+ }
+-
++
+diff --git a/src/client/windows.rs b/src/client/windows.rs
+--- a/src/client/windows.rs
++++ b/src/client/windows.rs
+@@ -775,7 +775,7 @@
+         pub(super) strings: [*const u16; 1],
+     }
+-
++
+-    #[link(name = "Dnsapi")]
++    #[link(name = "dnsapi")]
+     unsafe extern "system" {
+         /// DnsQueryEx:
+         /// Official docs:

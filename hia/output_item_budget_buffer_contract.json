@@ -1,0 +1,289 @@
+{
+  "schema": "codex.hia.output-item-budget-buffer-contract.v1",
+  "module": "output_item_budget",
+  "symbol": "codex_hia_output_item_budget",
+  "status": "SOURCE_ONLY_UNEXECUTED",
+  "source": {
+    "path": "hia/output_item_budget.hepta",
+    "bytes": 20462,
+    "sha256": "4700c1fd61778ef0eaf479f7be8ada24d9a65daff5e65324a504fb51f867c814",
+    "git_blob": "ae957a5f1826bf4352662ddef54697b19b23cf5f"
+  },
+  "baseline": {
+    "codex_head": "00a7d0f06fe62fa513ce6e4c4f80212e488e9e0b",
+    "codex_tree": "908dc5cdd4c154247545862b758ecadfeb839949",
+    "rust_owner": "codex-rs/utils/output-truncation/src/lib.rs::truncate_function_output_items_with_policy",
+    "rust_owner_sha256": "77fb2559a373219e453fd03f6a72b42340543c49c161e2bbca63befa71461e97"
+  },
+  "compiler_boundary": {
+    "unchanged_pinned_compiler": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "assembly_schema": "hia-asm.v1",
+    "core_schema": "hepta.hia.program.v8",
+    "entry_profile": "borrowed-buffers-u32-v1",
+    "target": "Linux x86_64 GNU; little-endian; 64-bit usize",
+    "memory_operations": "v8 buffer.load/store u8 only; exact output_lines read_word/write_word helper bytes",
+    "new_compiler_or_word_memory_instruction": false
+  },
+  "entry": {
+    "function": "f0",
+    "source": "readbuf",
+    "output": "mutbuf",
+    "workspace": "mutbuf",
+    "return": "u32; namespaced B3 bridge must preserve it as the complete u64 result",
+    "effects": [
+      "read",
+      "write",
+      "trap"
+    ]
+  },
+  "caller_preconditions": [
+    "Separate live non-overlapping source, output and workspace extents for the whole synchronous call.",
+    "Caller serializes the returned state exactly; the numeric frame is not authenticated history or an authority token.",
+    "The u64 lengths/costs are exact 64-bit usize values of the original host algorithm. No strings, credentials, media values or pointers are serialized.",
+    "Output capacity may exceed 88; only its first 88 bytes are written on success. Workspace is neither read nor written.",
+    "Callbacks and actual truncate_text remain host-owned and happen in original per-item order. No upfront metadata pass, retry, batched callback or fallback decision engine."
+  ],
+  "source_frame": {
+    "byte_order": "little-endian",
+    "word_bytes": 8,
+    "admissible_lengths": [
+      40,
+      80,
+      88,
+      96
+    ],
+    "maximum_source_bytes": 96,
+    "state_words": 9,
+    "state_bytes": 72,
+    "state_word_order": [
+      "version",
+      "phase",
+      "policy_mode",
+      "original_budget",
+      "remaining_budget",
+      "total_items",
+      "processed_items",
+      "omitted_text_items",
+      "omitted_audio_items"
+    ],
+    "events": [
+      {
+        "op": 0,
+        "name": "Init",
+        "bytes": 40,
+        "words": [
+          "op",
+          "version",
+          "policy_mode",
+          "original_budget",
+          "total_items"
+        ]
+      },
+      {
+        "op": 1,
+        "name": "Item",
+        "bytes": 96,
+        "words": [
+          "op",
+          "version",
+          "phase",
+          "policy_mode",
+          "original_budget",
+          "remaining_budget",
+          "total_items",
+          "processed_items",
+          "omitted_text_items",
+          "omitted_audio_items",
+          "item_kind",
+          "item_value"
+        ]
+      },
+      {
+        "op": 2,
+        "name": "Snippet",
+        "bytes": 88,
+        "words": [
+          "op",
+          "version",
+          "phase",
+          "policy_mode",
+          "original_budget",
+          "remaining_budget",
+          "total_items",
+          "processed_items",
+          "omitted_text_items",
+          "omitted_audio_items",
+          "snippet_byte_length"
+        ]
+      },
+      {
+        "op": 3,
+        "name": "Finish",
+        "bytes": 80,
+        "words": [
+          "op",
+          "version",
+          "phase",
+          "policy_mode",
+          "original_budget",
+          "remaining_budget",
+          "total_items",
+          "processed_items",
+          "omitted_text_items",
+          "omitted_audio_items"
+        ]
+      }
+    ],
+    "version": 1,
+    "policy_modes": {
+      "0": "Bytes",
+      "1": "Tokens"
+    },
+    "phases": {
+      "0": "Ready",
+      "1": "AwaitSnippet",
+      "2": "Finished"
+    },
+    "item_kinds": {
+      "0": "Text: value is original UTF-8 byte length",
+      "1": "Audio: value is the immediately preceding original callback token estimate",
+      "2": "Image: value must be canonical zero",
+      "3": "Encrypted: value must be canonical zero"
+    }
+  },
+  "state_invariants": [
+    "version == 1; policy_mode in {0,1}.",
+    "Item and Finish require Ready; Snippet requires AwaitSnippet. Finished and unknown phases reject every non-Init operation.",
+    "remaining_budget <= original_budget.",
+    "processed_items <= total_items.",
+    "omitted_text_items <= processed_items.",
+    "omitted_audio_items <= processed_items - omitted_text_items; subtraction is evaluated only after the preceding bound.",
+    "processed_items == 0 implies remaining_budget == original_budget.",
+    "Item and Snippet require processed_items < total_items.",
+    "Snippet requires remaining_budget > 0.",
+    "Finish requires processed_items == total_items."
+  ],
+  "output": {
+    "written_bytes": 88,
+    "word_order": [
+      "version",
+      "phase",
+      "policy_mode",
+      "original_budget",
+      "remaining_budget",
+      "total_items",
+      "processed_items",
+      "omitted_text_items",
+      "omitted_audio_items",
+      "action",
+      "operand"
+    ],
+    "actions": {
+      "0": "Init",
+      "1": "Keep",
+      "2": "Omit",
+      "3": "Truncate",
+      "4": "Finish"
+    },
+    "operand": "Truncate returns the unchanged positive remaining_budget; all other actions return zero.",
+    "unchanged_identity": [
+      "version",
+      "policy_mode",
+      "original_budget",
+      "total_items"
+    ],
+    "tail_unchanged": true
+  },
+  "transitions": {
+    "Init": "Return [1,Ready,mode,budget,budget,total,0,0,0,Init,0]. No allocation or text-size limit. Budget and total may be any u64.",
+    "Item.Text.zero_budget": "Omit even empty text, increment text omission and processed once; do not calculate cost or request a snippet.",
+    "Item.Text.cost": "Bytes cost=value. Tokens cost=floor(saturating_u64_add(value,3)/4), exactly the original 64-bit approx_token_count rule, not a mathematical unbounded ceil.",
+    "Item.Text.fits": "If cost <= remaining, subtract cost; Keep and increment processed once. Empty text is kept when remaining is positive.",
+    "Item.Text.too_large": "Set AwaitSnippet, return Truncate and the unchanged remaining operand. Do not increment processed or omission counters yet.",
+    "Snippet": "Actual snippet length zero gives Omit plus one text omission; any positive u64 length gives Keep. Set remaining=0, Ready, and increment processed once. Do not charge, clip, inspect or retruncate the snippet; the original marker may exceed the original budget.",
+    "Item.Audio.cost": "Rust invokes the original callback once at this item, including zero budget. Tokens cost=value; Bytes cost=saturating_u64_mul(value,4).",
+    "Item.Audio.fits": "cost <= remaining gives Keep and subtracts cost; zero cost can Keep at zero remaining. Increment processed once.",
+    "Item.Audio.too_large": "Omit and increment audio omission plus processed once; remaining is unchanged.",
+    "Item.Image_or_Encrypted": "Require value==0, Keep, increment processed once, leave remaining and omission counters unchanged.",
+    "Finish": "At Ready with every item processed, set Finished, action Finish, operand zero. Preserve the two omission counts; Rust appends the original text summary before the original audio summary."
+  },
+  "statuses": [
+    {
+      "value": 88,
+      "name": "OK",
+      "written_bytes": 88
+    },
+    {
+      "value": 4294967295,
+      "name": "INVALID",
+      "written_bytes": 0
+    },
+    {
+      "value": 4294967294,
+      "name": "SHORT_OUTPUT",
+      "written_bytes": 0
+    }
+  ],
+  "rejection_precedence": [
+    "Source length outside {40,80,88,96}: INVALID before any source read or output-capacity decision.",
+    "Admissible source length but capacity <88: SHORT_OUTPUT, even when later opcode/header fields are malformed.",
+    "Opcode outside {0,1,2,3} or exact opcode/frame-size mismatch: INVALID.",
+    "Version, mode and event-specific phase: INVALID.",
+    "Remaining/processed/text bounds, then the subtraction-based audio bound, then initial-state remaining bound: INVALID.",
+    "Finish count equality or Item/Snippet processed<total; Snippet positive remaining; Item kind and opaque canonical value: INVALID."
+  ],
+  "overflow_proof": [
+    "All costs preserve the original saturating arithmetic. Cost saturation is valid input, not an overflow error.",
+    "After processed<total<=MAX, processed+1 is representable. Since each omission counter<=processed, its at-most-one increment is also representable.",
+    "text<=processed is established before processed-text. cost<=remaining is established before remaining-cost.",
+    "Forged counts that could overflow are rejected by these bounds before arithmetic or stores; INVALID is the only malformed/forged-overflow result.",
+    "read_word/write_word indexes advance only 0..7 within prechecked fixed frames/result. No source size is used as a numeric text or collection bound."
+  ],
+  "memory_and_interruption": {
+    "heap": false,
+    "persistent_globals": false,
+    "retained_pointers": false,
+    "host_callbacks_in_kernel": false,
+    "source_unchanged": true,
+    "workspace_unchanged": true,
+    "store_order": "Commit writes the 11 result words in offset order 0,8,...,80; each exact helper writes its eight bytes low to high.",
+    "returned_error_atomicity": "Every normal INVALID or SHORT_OUTPUT return precedes every output store.",
+    "not_claimed": "Fuel exhaustion, trap, process cancellation or external interruption during commit may expose a partially written prefix. No transactional cancellation or fuel/trace equivalence is claimed."
+  },
+  "native_abi_layer": {
+    "library": "libcodex_hia_output_item_budget.so",
+    "symbol": "codex_hia_output_item_budget",
+    "parameters": [
+      "source_ptr",
+      "source_len_u64",
+      "output_ptr",
+      "output_capacity_u64",
+      "workspace_ptr",
+      "workspace_len_u64"
+    ],
+    "return_u64": "Must exactly equal a stated Core u32 result. Nonzero upper 32 bits are wrapper rejection, never masked into a successful/invalid Core observation.",
+    "admission": "Only separately admitted full-native31 B3 namespaced builds; full31_manifest_verified true and module_count 31. Old full-native30/seed-direct receipts cannot admit the new kernel."
+  },
+  "host_boundary": [
+    "Original Vec::with_capacity(items.len()) remains before Init.",
+    "Original item enum/order/content cloning and image/encrypted fields remain unchanged.",
+    "Per-audio callback interleaving, count and possible side effects remain host-owned.",
+    "The original truncate_text executes once only after Truncate, with exact remaining policy; Snippet records its byte length without changing its bytes.",
+    "Original summary text and text-before-audio summary order remain unchanged.",
+    "The all-text formatted helper and original truncate_text are not migrated by this kernel."
+  ],
+  "qualification": {
+    "source_only": true,
+    "generated_or_compiled": false,
+    "vm_executed": false,
+    "native_executed": false,
+    "raw_harness_executed": false,
+    "original_rust_oracle_executed": false,
+    "performance_qualified": false,
+    "whole_codex_rewritten": false,
+    "production_dispatch_migrated": false,
+    "default_release_migrated": false,
+    "workspace_qualified": false,
+    "legacy_source_retired": false
+  }
+}

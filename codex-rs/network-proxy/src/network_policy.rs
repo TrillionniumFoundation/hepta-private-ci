@@ -4,11 +4,11 @@ use crate::runtime::HostBlockDecision;
 use crate::runtime::HostBlockReason;
 use crate::state::NetworkProxyState;
 use anyhow::Result;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
+use time::OffsetDateTime;
+use time::UtcOffset;
 
 const AUDIT_TARGET: &str = "codex_otel.network_proxy";
 const POLICY_DECISION_EVENT_NAME: &str = "codex.network_proxy.policy_decision";
@@ -261,7 +261,7 @@ struct PolicyAuditEventArgs<'a> {
 
 fn emit_policy_audit_event(state: &NetworkProxyState, args: PolicyAuditEventArgs<'_>) {
     let metadata = state.audit_metadata();
-    let timestamp = audit_timestamp();
+    let timestamp = audit_timestamp(OffsetDateTime::now_utc());
     tracing::event!(
         target: AUDIT_TARGET,
         tracing::Level::INFO,
@@ -305,9 +305,21 @@ fn emit_policy_audit_event(state: &NetworkProxyState, args: PolicyAuditEventArgs
     }
 }
 
-fn audit_timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+fn audit_timestamp(timestamp: OffsetDateTime) -> String {
+    let timestamp = timestamp.to_offset(UtcOffset::UTC);
+    format!(
+        "{}T{:02}:{:02}:{:02}.{:03}Z",
+        timestamp.date(),
+        timestamp.hour(),
+        timestamp.minute(),
+        timestamp.second(),
+        timestamp.millisecond(),
+    )
 }
+
+#[cfg(test)]
+#[path = "network_policy_timestamp_tests.rs"]
+mod timestamp_tests;
 
 /// Decide whether a network request should be allowed.
 ///

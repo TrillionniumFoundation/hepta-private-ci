@@ -157,6 +157,91 @@ def recover_owner(producer):
             "restored_git_blob": blob, "restored_sha256": digest}
 
 
+# One reviewed Bazel-only fixture delta; the Linux Cargo library inputs are unchanged.
+# Keep the original a201 tree and every other path dependency strictly pinned.
+_EXEC_SERVER_TEST_PROJECTION = {
+    "dependency": "codex-rs/exec-server",
+    "original_tree": "6e7fb23cad63c4d9cd0c7ae24faae16c16def394",
+    "actual_tree": "040d2b09f7f1ed6dcf930c0c6032868e32b52764",
+    "path": "testing/wine_remote_test_runner.rs",
+    "mode": "100644",
+    "original_blob": "6e73e68e9b6c7237181beca458741045b3dfe972",
+    "actual_blob": "41cd6bfc1531c414b135936480ae6c37985de772",
+    "leaf_count": 143,
+}
+
+
+def _dependency_tree_digest(entries):
+    root = {}
+    for path, entry in entries.items():
+        parts = path.split("/")
+        node = root
+        for part in parts[:-1]:
+            child = node.setdefault(part, {})
+            if not isinstance(child, dict):
+                raise RuntimeError("path dependency has a file/directory collision")
+            node = child
+        if parts[-1] in node:
+            raise RuntimeError("path dependency has a file/directory collision")
+        node[parts[-1]] = entry
+
+    def digest(node):
+        chunks = []
+        ordered = sorted(node.items(), key=lambda item: item[0].encode("utf-8") +
+                         (b"/" if isinstance(item[1], dict) else b""))
+        for name, entry in ordered:
+            mode, blob = ("40000", digest(entry)) if isinstance(entry, dict) else entry
+            chunks.append(mode.encode("ascii") + b" " + name.encode("utf-8") +
+                          b"\0" + bytes.fromhex(blob))
+        payload = b"".join(chunks)
+        return hashlib.sha1(f"tree {len(payload)}\0".encode() + payload).hexdigest()
+
+    return digest(root)
+
+
+def _exec_server_test_projection(relative, expected, actual, listing):
+    pin = _EXEC_SERVER_TEST_PROJECTION
+    if (relative, expected, actual) != (
+            pin["dependency"], pin["original_tree"], pin["actual_tree"]):
+        raise RuntimeError("unreviewed path dependency projection")
+    if not listing.endswith(b"\0"):
+        raise RuntimeError("path dependency leaf listing is incomplete")
+    entries = {}
+    for record in listing[:-1].split(b"\0"):
+        try:
+            header, raw_path = record.split(b"\t", 1)
+            mode, kind, blob = header.decode("ascii").split(" ")
+            path = raw_path.decode("utf-8")
+        except (UnicodeError, ValueError) as error:
+            raise RuntimeError("invalid path dependency leaf record") from error
+        if (kind != "blob" or mode not in {"100644", "100755"} or len(blob) != 40
+                or any(char not in "0123456789abcdef" for char in blob)
+                or any(part in {"", ".", ".."} for part in path.split("/"))
+                or any(char in path for char in "\t\r\n\\") or path in entries):
+            raise RuntimeError("invalid or duplicate path dependency leaf")
+        entries[path] = (mode, blob)
+    if len(entries) != pin["leaf_count"]:
+        raise RuntimeError("the complete path dependency leaf count changed")
+    if entries.get(pin["path"]) != (pin["mode"], pin["actual_blob"]):
+        raise RuntimeError("the exact reviewed test-only leaf changed")
+    if _dependency_tree_digest(entries) != actual:
+        raise RuntimeError("the complete actual path dependency tree changed")
+    projected = dict(entries)
+    projected[pin["path"]] = (pin["mode"], pin["original_blob"])
+    inverse = _dependency_tree_digest(projected)
+    if inverse != expected:
+        raise RuntimeError("test-only inverse did not recover the complete original tree")
+    return {
+        "schema": "codex.hia.path-dependency-test-projection.v1",
+        "dependency": relative, "actual_tree": actual, "original_tree": expected,
+        "leaf_count": len(entries), "projected_original_tree": inverse,
+        "projection": {
+            "path": pin["path"], "mode": pin["mode"],
+            "actual_blob": pin["actual_blob"], "original_blob": pin["original_blob"],
+        },
+    }
+
+
 def producer_inputs(producer, original_root, original_manifest):
     current = clean_identity(producer)
     # Equality to immutable originals rejects manifest/default-feature changes even
@@ -169,14 +254,23 @@ def producer_inputs(producer, original_root, original_manifest):
     # The producing Actions checkout may be shallow. Baseline trees came from
     # the separate immutable original checkout, never from assumed local history.
     path_trees = {}
+    projections = {}
     for relative, expected in original_manifest["path_dependency_trees"].items():
         actual = git(producer, "rev-parse", f"HEAD:{relative}").decode().strip()
         if actual != expected:
-            raise RuntimeError(f"real path dependency differs from its pinned original: {relative}")
+            pin = _EXEC_SERVER_TEST_PROJECTION
+            if (relative, expected, actual) != (
+                    pin["dependency"], pin["original_tree"], pin["actual_tree"]):
+                raise RuntimeError(f"real path dependency differs from its pinned original: {relative}")
+            projections[relative] = _exec_server_test_projection(
+                relative, expected, actual, git(producer, "ls-tree", "-r", "-z", actual))
         path_trees[relative] = actual
-    return {**current, "matched_original_files": matched, "path_dependency_trees": path_trees,
-            "original_source_manifest": original_manifest["crate_tree"],
-            "exact_routing_inverse": recover_owner(producer)}
+    result = {**current, "matched_original_files": matched, "path_dependency_trees": path_trees,
+              "original_source_manifest": original_manifest["crate_tree"],
+              "exact_routing_inverse": recover_owner(producer)}
+    if projections:
+        result["path_dependency_projections"] = projections
+    return result
 
 
 def native_inputs(producer, library_dir):

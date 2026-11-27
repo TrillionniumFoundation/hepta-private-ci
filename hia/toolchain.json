@@ -24,9 +24,28 @@
     "patch_standalone",
     "uuid_find",
     "template_parse",
-    "template_render"
+    "template_render",
+    "template_index",
+    "uuid_matches",
+    "template_parser",
+    "prefix_match",
+    "prefix_admission",
+    "policy_summary",
+    "network_domains",
+    "allowed_prefixes",
+    "command_dispatch",
+    "network_host",
+    "output_lines",
+    "output_item_budget",
+    "format_env_display",
+    "citation_stream_parser",
+    "proposed_plan_parser",
+    "fuzzy_match",
+    "utf8_stream",
+    "inline_hidden_tag"
   ],
   "entry_profiles": {
-    "token_budget": "u64-pair-to-u64-v1"
+    "token_budget": "u64-pair-to-u64-v1",
+    "prefix_admission": "u64-pair-to-u64-v1"
   }
 }

@@ -474,3 +474,189 @@ async fn finish_marker_captures_a_retry_before_the_active_slot_is_cleared() {
         .await;
     assert!(completion.is_complete());
 }
+
+#[tokio::test]
+async fn realtime_finish_wait_reuses_the_exact_submission_and_admission() {
+    let (session, _turn, _events) = make_session_and_context_with_rx().await;
+    let fence = install_fence(&session, TaskTerminalizationKind::Finish);
+    let id = "realtime-exact-finish".to_string();
+    let (_admission_guard, admission) = session.pending_user_message_admissions.register(
+        id.clone(),
+        Some("finish-retry-client-message".to_string()),
+        PendingUserMessageAdmissionState::Immediate,
+    );
+    let stop = CancellationToken::new();
+    let (decision_tx, decision_rx) = oneshot::channel();
+    let mut decision = Some(decision_tx);
+    let routed = session.route_realtime_after_finish(
+        request(),
+        id.clone(),
+        /*handoff*/ None,
+        &stop,
+        &mut decision,
+    );
+    let finish = async {
+        decision_rx
+            .await
+            .expect("the exact Finish wait was identified");
+        assert!(!fence.is_complete());
+        assert!(session.active_turn.lock().await.is_none());
+        assert!(
+            session
+                .pending_turn_input_retries
+                .pending
+                .lock()
+                .expect("retry registry")
+                .contains_key(&id)
+        );
+        finish_fence(&session, &fence);
+    };
+    let (result, ()) = tokio::join!(routed, finish);
+    assert_eq!(
+        result.expect("normal admission after the same Finish"),
+        TurnInputSubmission::Started {
+            turn_id: id.clone(),
+        }
+    );
+    assert_eq!(
+        admission
+            .await
+            .expect("same submission admission sender")
+            .expect("same submission admission")
+            .into_admission(),
+        UserMessageAdmission::Started { turn_id: id }
+    );
+    assert!(decision.is_none());
+    assert!(
+        session
+            .pending_turn_input_retries
+            .pending
+            .lock()
+            .expect("retry registry")
+            .is_empty()
+    );
+    session.abort_all_tasks(TurnAbortReason::Interrupted).await;
+}
+
+#[test_case(false; "stop_during_finish_wait")]
+#[test_case(true; "already_stopped_still_attempts_original_admission_once")]
+#[tokio::test]
+async fn realtime_stop_does_not_release_finish_or_admit_input(stop_before_attempt: bool) {
+    let (session, _turn, _events) = make_session_and_context_with_rx().await;
+    let fence = install_fence(&session, TaskTerminalizationKind::Finish);
+    let stop = CancellationToken::new();
+    if stop_before_attempt {
+        stop.cancel();
+    }
+    let (decision_tx, decision_rx) = oneshot::channel();
+    let mut decision = Some(decision_tx);
+    let routed = session.route_realtime_after_finish(
+        request(),
+        "realtime-stopped-finish".to_string(),
+        /*handoff*/ None,
+        &stop,
+        &mut decision,
+    );
+    let cancel = async {
+        decision_rx
+            .await
+            .expect("original admission identified Finish");
+        stop.cancel();
+    };
+    let (result, ()) = tokio::join!(routed, cancel);
+    assert_eq!(
+        result.expect("original rejection"),
+        TurnInputSubmission::NotSubmitted {
+            reason: NotSubmittedReason::NotIdle,
+        }
+    );
+    assert!(decision.is_none());
+    assert!(!fence.is_complete());
+    assert!(session.has_pending_task_terminalization());
+    assert!(session.active_turn.lock().await.is_none());
+    assert!(
+        session
+            .pending_turn_input_retries
+            .pending
+            .lock()
+            .expect("retry registry")
+            .is_empty()
+    );
+    finish_fence(&session, &fence);
+}
+
+#[test_case(TaskTerminalizationKind::Abort, false; "abort")]
+#[test_case(TaskTerminalizationKind::Suspend, false; "suspend")]
+#[test_case(TaskTerminalizationKind::Finish, true; "shutdown")]
+#[tokio::test]
+async fn realtime_does_not_retry_other_admission_fences(
+    kind: TaskTerminalizationKind,
+    shutting_down: bool,
+) {
+    let (session, _turn, _events) = make_session_and_context_with_rx().await;
+    let fence = install_fence(&session, kind);
+    if shutting_down {
+        session.begin_shutdown();
+    }
+    let stop = CancellationToken::new();
+    let mut decision = None;
+    let result = session
+        .route_realtime_after_finish(
+            request(),
+            "realtime-not-retryable".to_string(),
+            /*handoff*/ None,
+            &stop,
+            &mut decision,
+        )
+        .await
+        .expect("ordinary refusal");
+    assert_eq!(
+        result,
+        TurnInputSubmission::NotSubmitted {
+            reason: NotSubmittedReason::NotIdle,
+        }
+    );
+    assert!(!fence.is_complete());
+    assert!(session.active_turn.lock().await.is_none());
+    assert!(
+        session
+            .pending_turn_input_retries
+            .pending
+            .lock()
+            .expect("retry registry")
+            .is_empty()
+    );
+    finish_fence(&session, &fence);
+}
+
+#[tokio::test]
+async fn dropping_realtime_finish_wait_removes_only_its_registration() {
+    let (session, _turn, _events) = make_session_and_context_with_rx().await;
+    let fence = install_fence(&session, TaskTerminalizationKind::Finish);
+    let stop = CancellationToken::new();
+    let (decision_tx, decision_rx) = oneshot::channel();
+    let mut decision = Some(decision_tx);
+    let routed = session.route_realtime_after_finish(
+        request(),
+        "realtime-dropped-finish".to_string(),
+        /*handoff*/ None,
+        &stop,
+        &mut decision,
+    );
+    tokio::select! {
+        result = routed => panic!("the incomplete Finish must wait: {result:?}"),
+        result = decision_rx => result.expect("the exact wait was registered"),
+    }
+    assert!(!fence.is_complete());
+    assert!(session.has_pending_task_terminalization());
+    assert!(session.active_turn.lock().await.is_none());
+    assert!(
+        session
+            .pending_turn_input_retries
+            .pending
+            .lock()
+            .expect("retry registry")
+            .is_empty()
+    );
+    finish_fence(&session, &fence);
+}

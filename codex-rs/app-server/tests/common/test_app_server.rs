@@ -1847,6 +1847,7 @@ pub struct TestAppServerBuilder {
 
 enum TestAppServerEnvironment {
     Auto,
+    Provided(Box<TestEnv>),
     None,
 }
 
@@ -1854,6 +1855,13 @@ impl TestAppServerBuilder {
     /// Uses this existing CODEX_HOME instead of a temporary one.
     pub fn with_codex_home(mut self, codex_home: &Path) -> Self {
         self.codex_home = Some(codex_home.to_path_buf());
+        self
+    }
+
+    /// Uses this test-owned environment while retaining its filesystem lifetime.
+    /// The standard automatic environment remains the default.
+    pub fn with_test_env(mut self, environment: TestEnv) -> Self {
+        self.environment = TestAppServerEnvironment::Provided(Box::new(environment));
         self
     }
 
@@ -1986,7 +1994,7 @@ impl TestAppServerBuilder {
             None
         };
         let (auto_env, delayed_exec_server) = match environment {
-            TestAppServerEnvironment::Auto => {
+            TestAppServerEnvironment::Auto | TestAppServerEnvironment::Provided(_) => {
                 let environments_toml = codex_home.join("environments.toml");
                 ensure!(
                     !environments_toml.try_exists().with_context(|| format!(
@@ -1996,8 +2004,15 @@ impl TestAppServerBuilder {
                     "automatic environment cannot be used when {} exists",
                     environments_toml.display()
                 );
-                let (auto_env, delayed_exec_server) = match exec_server_delay {
-                    Some(added_delay) => {
+                let (auto_env, delayed_exec_server) = match (environment, exec_server_delay) {
+                    (TestAppServerEnvironment::Provided(environment), delay) => {
+                        ensure!(
+                            delay.is_none(),
+                            "provided environment does not support exec-server delay"
+                        );
+                        (*environment, None)
+                    }
+                    (_, Some(added_delay)) => {
                         ensure!(
                             !is_remote_test_environment(),
                             "TestAppServer exec-server delay only supports the local test environment"
@@ -2022,7 +2037,7 @@ impl TestAppServerBuilder {
                         .await?;
                         (auto_env, Some((local_websocket_exec_server, interposer)))
                     }
-                    None => (test_env().await?, None),
+                    (_, None) => (test_env().await?, None),
                 };
                 // Noise registry configuration takes precedence over the URL-based
                 // provider, so clear inherited values to keep the selection hermetic.

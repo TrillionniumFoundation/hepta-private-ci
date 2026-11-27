@@ -7,6 +7,8 @@ mod hia_native_markdown;
 #[cfg(feature = "hia-native")]
 mod hia_native_metric;
 #[cfg(feature = "hia-native")]
+mod hia_native_output_lines;
+#[cfg(feature = "hia-native")]
 mod hia_native_truncate;
 // BEGIN HIA UUID FIND MODULE
 #[cfg(feature = "hia-native")]
@@ -14,6 +16,11 @@ mod hia_native_uuid;
 #[cfg(feature = "hia-native")]
 pub use hia_native_uuid::find_uuids;
 // END HIA UUID FIND MODULE
+// BEGIN HIA UUID COMPATIBILITY TESTS
+#[cfg(test)]
+#[path = "uuid_tests.rs"]
+mod uuid_tests;
+// END HIA UUID COMPATIBILITY TESTS
 mod json;
 mod truncate;
 
@@ -23,6 +30,18 @@ pub use truncate::approx_token_count;
 pub use truncate::approx_tokens_from_byte_count;
 pub use truncate::truncate_middle_chars;
 pub use truncate::truncate_middle_with_token_budget;
+
+/// Count lines with the same semantics as [`str::lines`].
+pub fn count_lines(s: &str) -> usize {
+    #[cfg(feature = "hia-native")]
+    {
+        hia_native_output_lines::count_lines(s)
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        s.lines().count()
+    }
+}
 
 // Truncate a &str to a byte budget at a char boundary (prefix)
 #[inline]
@@ -63,6 +82,10 @@ mod markdown_location_tests;
 #[cfg(test)]
 #[path = "ascii_json_tests.rs"]
 mod ascii_json_tests;
+
+#[cfg(test)]
+#[path = "output_lines_tests.rs"]
+mod output_lines_tests;
 
 /// Sanitize a tag value to comply with metric tag validation rules:
 /// only ASCII alphanumeric, '.', '_', '-', and '/' are allowed.

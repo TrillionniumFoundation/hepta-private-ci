@@ -219,6 +219,15 @@ fn run_fence(state: &AgentdState, current_generation: u64) -> String {
 #[tokio::test]
 async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let cognitive = CognitiveStore::open(&state.identity.layout)
+        .await
+        .expect("real cognitive owner");
+    state
+        .attach_cognitive_store(Arc::new(cognitive))
+        .expect("attach cognitive owner");
+    state
+        .mark_runtime_prerequisites_ready()
+        .expect("owner prerequisites");
 
     let capabilities = state
         .response(
@@ -359,6 +368,9 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
             .is_err()
     );
 
+    state
+        .mark_cognitive_unavailable()
+        .expect("owner lost after drain");
     let status = state
         .response(
             15,
@@ -477,7 +489,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
     };
     write_trust(false);
-    let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
+    let checkpoint_file = temp
+        .path()
+        .canonicalize()
+        .expect("canonical checkpoint root")
+        .join("run-start-replay-checkpoint.json");
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
@@ -652,6 +668,113 @@ async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_acce
         )
         .await;
     assert!(matches!(result, Err(AgentdError::GenerationFenced(_))));
+}
+
+#[tokio::test]
+async fn owner_requiredness_never_grants_owner_backed_admission() {
+    for requirement in [
+        CognitiveOwnerRequirement::Required,
+        CognitiveOwnerRequirement::OptionalOrdinary,
+    ] {
+        for attach_owner in [false, true] {
+            let (_temp, registry, previous) = fixture().expect("runtime fixture");
+            assert_eq!(
+                previous.cognitive_owner_requirement,
+                CognitiveOwnerRequirement::Required
+            );
+            let identity = previous.identity.clone();
+            drop(previous);
+            let state = AgentdState::new(identity, registry, 16)
+                .expect("independent state owner")
+                .with_cognitive_owner_requirement(requirement);
+            state.refresh_generation().expect("current generation");
+            if attach_owner {
+                let cognitive = CognitiveStore::open(&state.identity.layout)
+                    .await
+                    .expect("real cognitive owner");
+                state
+                    .attach_cognitive_store(Arc::new(cognitive))
+                    .expect("attach cognitive owner");
+            }
+            state
+                .mark_runtime_prerequisites_ready()
+                .expect("prerequisites");
+            state.mark_app_server_ready().expect("App Server ready");
+            let optional = requirement == CognitiveOwnerRequirement::OptionalOrdinary;
+            let AgentdPayload::Health(before) = state
+                .response(1, 1, crate::AgentdMethod::Health)
+                .await
+                .expect("health before owner loss")
+                .payload
+            else {
+                panic!("health payload");
+            };
+            assert_eq!(before.ready, attach_owner || optional);
+            state
+                .mark_cognitive_unavailable()
+                .expect("owner unavailable");
+            assert!(!state.cognitive_is_available().expect("current owner"));
+            assert!(!state.automation_admission_ready().expect("automation"));
+            assert!(!state.plasticity_admission_ready().expect("plasticity"));
+            #[cfg(feature = "qualification-cognitive-write")]
+            assert!(state.qualification_turn_authority().is_err());
+            let AgentdPayload::Health(after) = state
+                .response(2, 1, crate::AgentdMethod::Health)
+                .await
+                .expect("health after owner loss")
+                .payload
+            else {
+                panic!("health payload");
+            };
+            assert_eq!(after.ready, optional);
+            let ingress = state
+                .response(5, 1, crate::AgentdMethod::SessionIngress)
+                .await
+                .expect("session ingress response");
+            assert_eq!(
+                matches!(ingress.payload, AgentdPayload::SessionIngress(_)),
+                optional
+            );
+            {
+                let runtime = state.runtime.lock().expect("readiness");
+                assert_eq!(runtime.critical_stores_ready, optional);
+                assert_eq!(runtime.admission_open, optional);
+            }
+            let snapshot = crate::AgentRunSnapshot {
+                run_id: "run.owner-required".to_string(),
+                request_digest: digest('1'),
+                objective_digest: digest('2'),
+                body_digest: digest('3'),
+                artifact_set_digest: digest('4'),
+                authority_epoch: 7,
+                generation: 2,
+                fence_digest: run_fence(&state, 2),
+                deadline_ms: u64::MAX - 1,
+            };
+            let method = crate::AgentdMethod::RunStart { snapshot };
+            assert!(matches!(
+                state.response(3, 1, method).await,
+                Err(AgentdError::Protocol(message))
+                    if message.contains("run admission is unavailable")
+            ));
+            assert_eq!(state.active_run_count().expect("unchanged runs"), 0);
+            for method in [
+                crate::AgentdMethod::AutomationList { limit: 1 },
+                crate::AgentdMethod::MemoryFederationList { limit: 1 },
+            ] {
+                assert!(matches!(
+                    state.response(4, 1, method).await,
+                    Err(AgentdError::Protocol(_))
+                ));
+            }
+            state.mark_draining().expect("close admission");
+            state
+                .mark_cognitive_unavailable()
+                .expect("still unavailable");
+            let runtime = state.runtime.lock().expect("closed readiness");
+            assert!(!runtime.admission_open);
+        }
+    }
 }
 
 #[cfg(not(any(unix, windows)))]

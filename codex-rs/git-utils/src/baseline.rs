@@ -163,10 +163,7 @@ fn codex_signature() -> gix::actor::Signature {
     gix::actor::Signature {
         name: "Codex".into(),
         email: "noreply@openai.com".into(),
-        time: gix::date::Time {
-            seconds: chrono::Utc::now().timestamp(),
-            offset: 0,
-        },
+        time: gix::date::Time::now_utc(),
     }
 }
 

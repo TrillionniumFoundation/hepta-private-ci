@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 
+from test_installed_execpolicy import run_cases as run_execpolicy_cases
 from test_installed_patch import inspect_binary
 from test_installed_patch import run_case
 from test_installed_patch import run_parser_cases
@@ -31,6 +32,11 @@ NATIVE_SYMBOLS = (
     "codex_hia_ascii_json_fragment",
     "codex_hia_truncate",
     "codex_hia_token_budget",
+    "codex_hia_output_lines",
+    "codex_hia_output_item_budget",
+    "codex_hia_format_env_display",
+    "codex_hia_citation_stream_parser",
+    "codex_hia_proposed_plan_parser",
     "codex_hia_source_file",
     "codex_hia_file_update",
     "codex_hia_parser",
@@ -41,18 +47,31 @@ NATIVE_SYMBOLS = (
     "codex_hia_template_parse",
     "codex_hia_template_render",
     "codex_hia_unified_diff",
+    "codex_hia_template_index",
+    "codex_hia_prefix_match",
+    "codex_hia_prefix_admission",
+    "codex_hia_policy_summary",
+    "codex_hia_network_domains",
+    "codex_hia_allowed_prefixes",
+    "codex_hia_command_dispatch",
+    "codex_hia_network_host",
+    "codex_hia_fuzzy_match",
 )
 
 
-LIBRARY_ONLY_NATIVE_SYMBOLS = ("codex_hia_uuid_find",)
+LIBRARY_ONLY_NATIVE_SYMBOLS = ("codex_hia_uuid_find", "codex_hia_utf8_stream", "codex_hia_inline_hidden_tag")
+RETAINED_ORACLE_ONLY_SYMBOLS = ("codex_hia_utf8_boundaries", "codex_hia_uuid_matches", "codex_hia_template_parser")
 
 
 def verify(args: argparse.Namespace, report: dict) -> None:
     report["symbol_scope"] = {
         "required_native_cli_symbols": list(NATIVE_SYMBOLS),
         "library_only_native_symbols": list(LIBRARY_ONLY_NATIVE_SYMBOLS),
-        "required_absent_from_reference": list(NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS),
+        "retained_oracle_only_symbols": list(RETAINED_ORACLE_ONLY_SYMBOLS),
+        "required_absent_from_reference": list(NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS + RETAINED_ORACLE_ONLY_SYMBOLS),
         "library_positive_gate": "hia/tests/test_native_uuid_find_caller.py",
+        "utf8_library_positive_gate": "codex-utils-stream-parser native public and ABI tests",
+        "inline_hidden_tag_library_positive_gate": "codex-utils-stream-parser generic inline native public and ABI tests",
     }
     binary = args.binary.resolve(strict=True)
     reference = args.reference_binary.resolve(strict=True)
@@ -65,7 +84,7 @@ def verify(args: argparse.Namespace, report: dict) -> None:
     report["reference_binary"] = {"path": str(reference), "sha256": sha256(reference)}
     inspect_binary(
         reference, report["reference_binary"], native=False,
-        required_symbols=NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS,
+        required_symbols=NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS + RETAINED_ORACLE_ONLY_SYMBOLS,
     )
 
     environment = os.environ.copy()
@@ -109,6 +128,11 @@ def verify(args: argparse.Namespace, report: dict) -> None:
                 raise RuntimeError(f"relocated Codex startup differs from the original: {option}")
             print(f"PASS full Codex {option}: original Rust parity")
 
+        run_execpolicy_cases(
+            paths["native", "codex"], paths["reference", "codex"],
+            root / "execpolicy", environment, report, dispatch="codex",
+        )
+
         for dispatch, name in (("stdin", "apply_patch"), ("codex_arg1", "codex")):
             for preserve in (False, True):
                 work = root / f"{dispatch}-{'crlf' if preserve else 'lf'}"
@@ -140,7 +164,7 @@ def main() -> int:
     }
     try:
         verify(args, report)
-    except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
+    except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired) as error:
         report["error"] = str(error)
         print(str(error), file=sys.stderr)
     report["cases_passed"] = sum(case["passed"] for case in report["cases"])

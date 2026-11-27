@@ -3,6 +3,18 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-supervisor",
     crate_name = "codex_hepta_supervisor",
+    linux_host_tool_tests = ["hepta-supervisor-paired_process_product-test"],
+    test_data_extra = glob(["fixtures/robrix-control-v2/*"]),
+    test_runfile_env = {
+        "hepta-supervisor-robrix_control_projection-test": {
+            ":robrix-control-manifest": "CODEX_TEST_ROBRIX_MANIFEST",
+        },
+    },
+)
+
+filegroup(
+    name = "robrix-control-manifest",
+    srcs = ["fixtures/robrix-control-v2/manifest.json"],
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

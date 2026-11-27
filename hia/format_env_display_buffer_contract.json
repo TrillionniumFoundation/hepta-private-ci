@@ -1,0 +1,306 @@
+{
+  "schema": "codex.hia.format-env-display-buffer-contract.v1",
+  "module": "format_env_display",
+  "symbol": "codex_hia_format_env_display",
+  "status": "SOURCE_ONLY_UNEXECUTED",
+  "source": {
+    "path": "hia/format_env_display.hepta",
+    "bytes": 58467,
+    "sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+    "git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc"
+  },
+  "agreed_abi": {
+    "schema": "codex.hia.format-env-display-design.v2",
+    "bytes": 17798,
+    "sha256": "37c9a2c7a19b9dcbfa227a75589f83931f83b03046fe8b503c89c09adb64fbf6",
+    "scope": "Frozen design V2; all five operations and state orders below match it."
+  },
+  "baseline": {
+    "published_codex_head": "00a7d0f06fe62fa513ce6e4c4f80212e488e9e0b",
+    "prepared_parent": "9a310390e84372c2d3fa33e1614a531e1d50a7e7",
+    "prepared_tree": "6e7885efaf4c4b74862dc2b22df3d31200ff89cc",
+    "rust_owner": "codex-rs/utils/cli/src/format_env_display.rs::format_env_display",
+    "rust_owner_bytes": 1864,
+    "rust_owner_sha256": "fd229980eae2db42c919636efdc1f3299e46595726006b24ca063809a5523205",
+    "rust_owner_blob": "714b44c312a6a9de6b6c3ec0c20be6e3b4a7cf37"
+  },
+  "compiler_boundary": {
+    "unchanged_pinned_compiler": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "assembly_schema": "hia-asm.v1",
+    "core_schema": "hepta.hia.program.v8",
+    "entry_profile": "borrowed-buffers-u32-v1",
+    "target": "Linux x86_64 GNU; little-endian; 64-bit usize",
+    "memory_operations": "v8 byte buffer.load/store only; read_word/write_word are exact prior output_item_budget helper text.",
+    "new_compiler_or_word_memory_instruction": false,
+    "existing_seed_foreign_buffer_capacity": 1048576,
+    "capacity_evidence_limit": "hia/build.py compiler=None branch uses the lock capacity. Native-selfhost B3 uses another branch; this source review does not claim all B3 wrapper internals were executed or newly verified.",
+    "per_call_max_source_bytes": 8400,
+    "per_call_max_output_bytes": 4162,
+    "no_total_input_or_output_cap": true
+  },
+  "entry": {
+    "function": "f0",
+    "source": "readbuf",
+    "output": "mutbuf",
+    "workspace": "mutbuf",
+    "return": "u32; B3 bridge must preserve the entire result as u64",
+    "effects": [
+      "read",
+      "write",
+      "trap"
+    ]
+  },
+  "caller_preconditions": [
+    "Separate live non-overlapping source, output and workspace extents throughout each synchronous call. Buffers may be arbitrarily filled before the call.",
+    "The source frame is little-endian u64 metadata and opaque bytes. Workspace has no required bytes and is never read or written, regardless of supplied length.",
+    "The host owns stable borrowed key strings and a Vec of distinct original indices. It must feed exactly the previous returned state and answer from those same containers, applying each requested swap exactly once.",
+    "Private numeric states are not authenticated history, capabilities or authority. Shape checks do not prove that arbitrary forged valid states were previously issued.",
+    "No env value is read, serialized, copied, hashed or sent to HIA. Only map keys and the current AsRef result are borrowed.",
+    "Host allocation sizes and pointer extents use checked usize arithmetic. No Rust sorting/comparator/minimum scan or result-formatting fallback is permitted.",
+    "Raw chunks are bytes and may split UTF-8. Checked UTF-8 conversion belongs after a complete masked part and after the final joined result."
+  ],
+  "source_frame": {
+    "common_words": [
+      "version=1",
+      "operation"
+    ],
+    "word_bytes": 8,
+    "byte_order": "little-endian",
+    "chunk_bytes": 4096,
+    "operations": [
+      {
+        "id": 0,
+        "name": "SORT_INIT",
+        "input": "24 bytes: version, operation=0, item_count",
+        "output": "152 bytes: action u64 + 18-word sort state",
+        "action_values": {
+          "0": "Compare",
+          "1": "Swap",
+          "2": "Done"
+        },
+        "behavior": "n <= 1 immediately Done; otherwise build_remaining=n/2, heap_end=n, start next build root after decrement. No key or value is in this frame."
+      },
+      {
+        "id": 1,
+        "name": "SORT_RESUME",
+        "input": "16-byte common header + 144-byte last issued sort state + 48-byte reply header + left_chunk + right_chunk",
+        "reply_header": [
+          "reply_kind (0 compare, 1 swap acknowledgment)",
+          "left_original_index",
+          "right_original_index",
+          "left_total_length",
+          "right_total_length",
+          "chunk_length"
+        ],
+        "compare_fragments": "equal-sized C-byte fragments from both keys at state.compared_bytes; C=min(4096,min(left_length,right_length)-offset), including C=0 only when the common prefix is exhausted",
+        "maximum_input_bytes": 8400,
+        "output_bytes": 152,
+        "behavior": "Compare is performed in HIA using unsigned bytes, then length, then original-index tie. An equal unfinished fragment returns Compare for the same positions and new offset. A completed comparison resumes the exact pending heap operation. Swap acknowledgment advances only after Host has performed that one requested swap."
+      },
+      {
+        "id": 2,
+        "name": "MASK_FRAGMENT",
+        "input": "16-byte common header + 24-byte mask state + fragment_length u64 + fragment bytes",
+        "mask_state": [
+          "total_key_bytes",
+          "consumed_key_bytes",
+          "finished (0 or 1)"
+        ],
+        "initial_state": "(full key length,0,0), created separately for each map key or env_var",
+        "fragment_rule": "exactly min(4096,total-consumed); empty key makes one zero-byte fragment; incoming finished=1 rejected",
+        "output": "payload_length u64 + 24-byte next mask state + copied fragment, with literal =***** appended only on the final fragment",
+        "maximum_input_bytes": 4144,
+        "maximum_output_bytes": 4134,
+        "behavior": "The host appends only returned bytes to that one part; it does not add the mask itself. A complete part is converted to String after the final fragment."
+      },
+      {
+        "id": 3,
+        "name": "JOIN_INIT",
+        "input": "24 bytes: version, operation=3, part_count",
+        "output": "payload_length u64 + 56-byte join state + payload",
+        "behavior": "part_count=0 emits exactly one dash and finishes with total_output_bytes=1; otherwise emits zero bytes and requests part index 0",
+        "maximum_output_bytes": 65
+      },
+      {
+        "id": 4,
+        "name": "JOIN_FRAGMENT",
+        "input": "16-byte common header + 56-byte last issued join state + declared_part_length u64 + fragment_length u64 + fragment bytes",
+        "join_state": [
+          "part_count",
+          "part_index",
+          "current_part_length",
+          "part_offset",
+          "total_output_bytes",
+          "part_started (0 or 1)",
+          "finished (0 or 1)"
+        ],
+        "fragment_rule": "bind the current part length on its first fragment; later fragments must repeat it; C=min(4096,part_length-offset); input finished=1 rejected",
+        "output": "payload_length u64 + 56-byte next join state + native-produced separator/fragment bytes",
+        "behavior": "Prefix comma+space only on the first fragment of each part with index>0, including an empty part. Complete that part before requesting the next. Finish exactly after part_count parts. Arbitrary raw parts may be empty; the public path produces masked parts of at least six bytes.",
+        "maximum_input_bytes": 4184,
+        "maximum_output_bytes": 4162
+      }
+    ],
+    "sort_state_word_order": [
+      "schema_version",
+      "item_count",
+      "heap_phase",
+      "build_remaining",
+      "heap_end",
+      "root",
+      "left_child",
+      "selected",
+      "pending_kind",
+      "left_position",
+      "right_position",
+      "compared_bytes",
+      "left_original_index",
+      "right_original_index",
+      "left_total_length",
+      "right_total_length",
+      "comparison_started",
+      "reserved"
+    ],
+    "mask_state_word_order": [
+      "total_key_bytes",
+      "consumed_key_bytes",
+      "finished"
+    ],
+    "join_state_word_order": [
+      "part_count",
+      "part_index",
+      "current_part_length",
+      "part_offset",
+      "total_output_bytes",
+      "part_started",
+      "finished"
+    ]
+  },
+  "sort_enums": {
+    "heap_phase": {
+      "0": "build",
+      "1": "extract",
+      "2": "done"
+    },
+    "pending_kind": {
+      "0": "compare children",
+      "1": "compare root and selected child",
+      "2": "sift swap",
+      "3": "extraction swap",
+      "4": "done"
+    },
+    "action": {
+      "0": "Compare",
+      "1": "Swap",
+      "2": "Done"
+    },
+    "reply_kind": {
+      "0": "comparison fragment",
+      "1": "swap acknowledgment"
+    }
+  },
+  "state_invariants": {
+    "general": "Use the explicit validation_priority: full common/exact-frame/state INVALID checks, then mathematical OVERFLOW checks, then complete output-capacity SHORT check, then stores. Reject unknown enums, nonzero reserved words, non-exact lengths, finished reentry, incoherent state or mismatched comparison bindings. Source/workspace never change.",
+    "sort_build": "n>=2; heap_end=n; build_remaining<n/2; current root is within heap and no smaller than the current build root. For sift actions root<heap_end/2, left_child=2*root+1; every requested position is <heap_end. CompareChildren positions are left_child and left_child+1, with both present. CompareRoot and SiftSwap use root and a selected child in {left_child,left_child+1} that is present.",
+    "sort_extract": "build_remaining=0; 2<=heap_end<=n for pending actions. ExtractionSwap alone uses positions 0 and heap_end-1 and zeroes unused sift fields. Other actions obey the same sift geometry as build.",
+    "sort_done": "heap_phase=2,pending_kind=4,build_remaining=0; heap_end=n for n<=1 and 1 otherwise. All request/sift/compare fields are canonical zero except schema,n,phase,end,pending. No further resume is accepted.",
+    "sort_comparison": "On a new comparison, started=0,offset=0,all cached ids/lengths=0. First reply binds two distinct original indices <n and both key lengths. On a continuation started=1,0<offset<min(lengths),offset%4096=0, and all four id/length fields must match. Require exact paired fragment length, scan bytes left-to-right, stop at first mismatch. On final equality use length and then original-index ordering. Clear comparison metadata when changing action. Positions remain unchanged throughout a comparison.",
+    "sort_swap": "Swap reply has reply_kind=1 and all other reply-header words zero, no payload; comparison cache is zero. Acknowledgment means exactly the requested pair has been swapped once, not a successful comparison or a new capture. No retry/replay loop is part of the host protocol.",
+    "mask": "Initial and unfinished offsets are multiples of 4096. While finished=0 require consumed<total, except the unique empty start (0,0,0); require exact expected fragment length. total and consumed never change identity or decrease. checked consumed+C <= total. On final fragment finished becomes 1 and suffix is emitted once. After these structural/state checks, EVERY otherwise-valid unfinished MASK frame with total_key_bytes > u64::MAX-6 returns OVERFLOW, regardless of consumed offset or this fragment size; this guards the length of the complete masked part before emitting any prefix.",
+    "join": "Require count>0,index<count,finished=0 for continuation. A new part has started=0,current length=0,offset=0; bind supplied length then. A continuation has started=1 and 0<offset<length,offset%4096=0, exact repeated length. Empty parts still advance index and produce the appropriate separator. Complete-part reset clears length/offset/started; final index==count sets finished=1. Additionally: for part_index==0 require total_output_bytes==part_offset (new-part offset=0 therefore total=0). For part_index>0 and started=0 require part_index-1 <= total_output_bytes/2. For started=1 first require total_output_bytes>=part_offset, then require part_index <= (total_output_bytes-part_offset)/2; this accounts for separators of all completed parts plus the current part without overflowing multiplication or addition. Raw earlier parts may have zero payload. These are consistency lower bounds, not authentication of earlier emitted bytes. After a part completes, clear length/offset/started. The current separator+fragment cumulative addition is subsequently checked as OVERFLOW.",
+    "provenance_limit": "These are private checked operation states, not authenticated authority. The host must pass the exact previous native state and responses from its own stable key/index containers. Shape validation does not prove arbitrary adversarial histories were issued by a previous native invocation."
+  },
+  "transitions": {
+    "heap": [
+      "Build phase starts with k=floor(n/2); before each sift decrement k and set root=k. The active heap end is n.",
+      "For a non-leaf root choose the larger child by an HIA comparison if both exist, then compare root with that child. If root is smaller request Swap(root,child), await the single acknowledgment, and continue sifting at child. Otherwise the sift is complete.",
+      "When all build roots are complete, enter extraction. Request Swap(0,end-1), then on acknowledgment decrement end. If end<=1 finish; otherwise sift root 0 in the reduced heap.",
+      "When an extraction sift completes, request the next extraction swap. HIA alone selects every child, comparison, swap and termination. Host does not sort, compare, perform a sortedness shortcut or scan minima."
+    ],
+    "comparison": "Unsigned-byte lexicographic ordering; shorter total length after equal common prefix; original-index tie after identical bytes and lengths. The tie preserves stable duplicate order in raw input; real HashMap keys are unique. An equal unfinished 4096-byte prefix keeps the same positions and binds both original ids and lengths until comparison completes.",
+    "mask": "Copy the exact current fragment; append exactly six ASCII bytes =***** only once on its last fragment, including the empty key. A legal unfinished total greater than u64::MAX-6 is OVERFLOW even before a nonfinal fragment.",
+    "join": "Keep supplied part order. Prefix exactly comma+space on the first fragment of each part after index zero, even an empty part. Empty parts advance index. No parts produces exactly a single dash. Returned state clears current part length/offset/started after each completed part.",
+    "recursion": "No recursive begin/finish helper cycle is required: after a completed build sift, k>0 directly starts the next known nonleaf build root; only a swap acknowledgment continues at a child that may be a leaf. All control is iterative; implementation must preserve this without recursion-depth limits."
+  },
+  "statuses": {
+    "success": "Exact complete output bytes for the current operation, 32..4162; sort always 152. This is not total stream output length.",
+    "invalid": 4294967295,
+    "short_output": 4294967294,
+    "arithmetic_overflow": 4294967293
+  },
+  "rejection_precedence": [
+    "INVALID: common version/op, exact operation-specific frame shape, enum/reserved fields, private state invariants, expected fragment length and repeated identities/lengths. No store.",
+    "OVERFLOW: after the entire frame and incoming state are valid, reject mathematically unrepresentable full masked length or current join cumulative addition. No store.",
+    "SHORT_OUTPUT: after structural and arithmetic checks, require capacity for the full operation result. Sort byte comparison may begin only after the fixed 152-byte output capacity is accepted. No store.",
+    "COMMIT: then write the complete declared output prefix; leave source, workspace and output tail unchanged. All ordinary failures have already been resolved."
+  ],
+  "overflow_proof": [
+    "Check fragment length <=4096 before additions/multiplication; all frame-size arithmetic is therefore <=8400 and success length fits u32.",
+    "Check offsets <= total before subtraction and require C <= remaining before adding. C positive whenever a nonempty unfinished payload needs progress.",
+    "For every structurally valid unfinished MASK frame, check total_key_bytes <= u64::MAX-6 before output capacity or stores, even on a nonfinal fragment.",
+    "Only compute left_child=2*root+1 after root<heap_end/2, so left_child<heap_end<=u64::MAX without overflow. Only evaluate right child when left_child<heap_end-1.",
+    "Only decrement positive build_remaining/heap_end and only increment a join index below count. Empty strings or parts advance state rather than spinning.",
+    "Before join emission check total_output_bytes <= u64::MAX-(separator_bytes+C). The host independently uses checked usize capacity arithmetic. On supported 64-bit targets no new 32-bit total-length limit is introduced.",
+    "Host keeps arbitrary-length index/borrow/string containers. Each native frame is bounded, but neither item count, individual valid String length, nor total output receives a new 1 MiB ceiling. Allocation exhaustion and panic timing are not claimed identical to the original implementation."
+  ],
+  "complexity": {
+    "sort": "Iterative in-place index heapsort: O(n log n) comparisons/swaps in worst case, with per-comparison O(1 + common-prefix byte count) unsigned-byte work and bounded 4096-byte calls. No recursive stack or O(n^2) minimum scan.",
+    "mask_and_join": "Linear in bytes emitted/copied plus per-item metadata work. Each native call handles at most one fixed chunk; empty inputs still make bounded progress.",
+    "host_storage": "O(n) key references and index Vec plus original-style String parts/final output. Native work space is zero. Allocation failure, exact allocation order, fuel, instruction trace and timing equivalence are not claimed."
+  },
+  "host_order": [
+    "Capture map key references in the map iteration order, assigning stable original indices; do not read/serialize/hash/copy values. No env_var AsRef call yet.",
+    "Create indices 0..n mechanically; drive SortInit/SortResume using only requested reads, paired fragments and swaps until Done.",
+    "In the resulting index order, fully mask each map key with MASK_FRAGMENT and append the completed String to parts.",
+    "For each original env_var in slice order call AsRef<str>::as_ref exactly once, fully mask that borrowed string before invoking the next AsRef, and append its String to parts.",
+    "Only after all parts exist call JoinInit/JoinFragment in original parts order; return the exact final String. This preserves the original sort -> map format -> per-variable AsRef/format -> final join ordering."
+  ],
+  "public_semantics": [
+    "None or Some(empty map) and an empty env_vars slice yield exactly \"-\". A single empty key or var yields \"=*****\".",
+    "Map key comparison is Rust String Ord: unsigned UTF-8 bytes, without normalization, locale or case folding. Stable original-index ties apply only where raw duplicate keys exist.",
+    "Variables remain in original slice order, including repeats and a name also present as a map key. Keys/vars containing NUL, newline, comma, equals or mask characters are copied without escaping.",
+    "Map sorting and all map-key masking complete before the first variable AsRef. Each variable AsRef is called exactly once, followed by its complete masking before the next callback. Final joining starts only when all parts exist.",
+    "The original four Rust tests and all three CLI/TUI caller sites remain independent public oracles; this raw ABI does not execute or replace them."
+  ],
+  "memory_and_interruption": {
+    "heap_in_kernel": false,
+    "persistent_globals": false,
+    "retained_pointers": false,
+    "host_callbacks_in_kernel": false,
+    "source_unchanged": true,
+    "workspace_unchanged": true,
+    "output_tail_unchanged": true,
+    "returned_error_atomicity": "Every ordinary INVALID, OVERFLOW or SHORT return occurs before the first store. Commit writes all declared output bytes.",
+    "store_order": "Sort fresh requests/done clear all 152 bytes then fill canonical words; continuation copies all state bytes then updates fixed comparison fields. MASK/JOIN write their complete header then exact fragment/separator/suffix. All integer words use low-to-high eight-byte helpers.",
+    "not_claimed": "Fuel exhaustion, trap, process cancellation or external interruption during commit may leave a partial prefix. Native call count, fuel/trace, cancellation points, timing and allocation behavior differ from the former Rust body; no transactional interruption or performance equivalence is asserted."
+  },
+  "native_abi_layer": {
+    "library": "libcodex_hia_format_env_display.so",
+    "symbol": "codex_hia_format_env_display",
+    "parameters": [
+      "source_ptr",
+      "source_len_u64",
+      "output_ptr",
+      "output_capacity_u64",
+      "workspace_ptr",
+      "workspace_len_u64"
+    ],
+    "return_u64": "Must exactly equal the literal Core u32 result. A nonzero high 32-bit word is wrapper rejection, never masked into a Core observation.",
+    "admission": "Only the separately admitted complete full-native32 B3 namespaced build, full32_manifest_verified=true and module_count=32. Existing 29/30/31, scalar or seed-direct receipts do not admit this module."
+  },
+  "qualification": {
+    "source_only": true,
+    "generated_or_compiled": false,
+    "vm_executed": false,
+    "native_executed": false,
+    "raw_harness_executed": false,
+    "algorithm_model_executed": false,
+    "original_rust_oracle_executed": false,
+    "performance_qualified": false,
+    "whole_codex_rewritten": false,
+    "production_dispatch_migrated": false,
+    "default_release_migrated": false,
+    "workspace_qualified": false,
+    "legacy_source_retired": false
+  }
+}

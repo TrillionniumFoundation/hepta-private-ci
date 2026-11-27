@@ -21,6 +21,7 @@ use codex_utils_image::ImageProcessingError;
 use codex_utils_image::PromptImageMode;
 use codex_utils_image::PromptImageResizeLimits;
 use codex_utils_image::load_data_url_for_prompt;
+use tracing::debug;
 use tracing::warn;
 
 pub(crate) const IMAGE_PROCESSING_ERROR_PLACEHOLDER: &str =
@@ -102,6 +103,10 @@ pub(crate) fn prepare_response_items(
     mode: ImagePreparationMode,
     resize_notice_mode: ImageResizeNoticeMode,
 ) -> Vec<ImagePreparationMetadata> {
+    debug!(
+        item_count = items.len(),
+        "response image preparation entered"
+    );
     let mut metadata = Vec::new();
     let mut prepared_items = Vec::with_capacity(items.len());
     let prepare_tool_output =
@@ -177,6 +182,10 @@ pub(crate) fn prepare_response_items(
         }
     }
     *items = prepared_items;
+    debug!(
+        prepared_images = metadata.len(),
+        "response image preparation returned"
+    );
     metadata
 }
 

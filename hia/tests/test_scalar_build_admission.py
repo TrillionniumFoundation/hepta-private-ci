@@ -10,10 +10,12 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import re
 import struct
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULE = "token_budget"
+DEFAULT_MODULE = "token_budget"
 PROFILE = "u64-pair-to-u64-v1"
 
 
@@ -53,28 +55,38 @@ def check_object_source(builder, observed):
             raise AssertionError(f"object source accepted {label}")
 
 
-def check_profile(builder, lock, observed):
+def check_profile(builder, lock, module, observed, borrowed_module=None):
+    if borrowed_module is None:
+        borrowed_module = next((name for name in lock["modules"]
+                                if lock.get("entry_profiles", {}).get(name, "borrowed-buffers-u32-v1")
+                                == "borrowed-buffers-u32-v1"), None)
+    elif (borrowed_module not in lock["modules"]
+          or lock.get("entry_profiles", {}).get(borrowed_module, "borrowed-buffers-u32-v1")
+          != "borrowed-buffers-u32-v1"):
+        raise AssertionError("explicit borrowed fixture must be a locked borrowed module")
+    if borrowed_module is None:
+        raise AssertionError("a locked borrowed module is required to check the default profile")
     scalar = {"exports": ["f0"], "functions": [{"name": "f0", "params": [
         {"name": "value", "type": "u64"}, {"name": "operation", "type": "u64"}],
         "returns": ["u64"]}]}
     borrowed = {"functions": [{"name": "f0", "params": [
         {"name": "source", "type": "readbuf"}, {"name": "output", "type": "mutbuf"},
         {"name": "workspace", "type": "mutbuf"}], "returns": ["u32"]}]}
-    if builder.entry_profile(lock, MODULE, scalar) != PROFILE:
+    if builder.entry_profile(lock, module, scalar) != PROFILE:
         raise AssertionError("scalar entry profile was not selected")
     observed.append("accept-scalar-entry")
-    if builder.entry_profile(lock, "truncate", borrowed) != "borrowed-buffers-u32-v1":
+    if builder.entry_profile(lock, borrowed_module, borrowed) != "borrowed-buffers-u32-v1":
         raise AssertionError("borrowed entry default changed")
     observed.append("accept-borrowed-entry")
     reordered = copy.deepcopy(scalar)
     helper = copy.deepcopy(scalar["functions"][0])
     helper["name"] = "private_helper"
     reordered["functions"].insert(0, helper)
-    if builder.entry_profile(lock, MODULE, reordered) != PROFILE:
+    if builder.entry_profile(lock, module, reordered) != PROFILE:
         raise AssertionError("explicit scalar export must bind by name")
     observed.append("accept-scalar-entry-after-private-helper")
 
-    def reject(label, candidate_lock, program, name=MODULE):
+    def reject(label, candidate_lock, program, name=module):
         try:
             builder.entry_profile(candidate_lock, name, program)
         except ValueError:
@@ -85,7 +97,7 @@ def check_profile(builder, lock, observed):
     for label, value in [("unknown-profile", "unknown-v1"), ("empty-profile", ""),
                          ("list-profile", []), ("integer-profile", 1)]:
         changed = copy.deepcopy(lock)
-        changed["entry_profiles"][MODULE] = value
+        changed["entry_profiles"][module] = value
         reject(label, changed, scalar)
     changed = copy.deepcopy(lock)
     changed["entry_profiles"]["unlocked_module"] = PROFILE
@@ -94,7 +106,7 @@ def check_profile(builder, lock, observed):
     changed["entry_profiles"] = []
     reject("profiles-not-an-object", changed, scalar)
     changed = copy.deepcopy(lock)
-    del changed["entry_profiles"][MODULE]
+    del changed["entry_profiles"][module]
     reject("scalar-without-locked-profile", changed, scalar)
     for label, params in [("missing-parameter", scalar["functions"][0]["params"][:1]),
                           ("extra-parameter", scalar["functions"][0]["params"] + [{"name": "extra", "type": "u64"}]),
@@ -124,12 +136,12 @@ def check_profile(builder, lock, observed):
     reject("duplicate-f0", lock, changed)
     changed = copy.deepcopy(borrowed)
     changed["exports"] = ["f0"]
-    reject("borrowed-explicit-resource-export", lock, changed, "truncate")
+    reject("borrowed-explicit-resource-export", lock, changed, borrowed_module)
     changed = copy.deepcopy(borrowed)
     first = copy.deepcopy(changed["functions"][0])
     first["name"] = "different_byte_entry"
     changed["functions"].insert(0, first)
-    reject("borrowed-entry-not-first", lock, changed, "truncate")
+    reject("borrowed-entry-not-first", lock, changed, borrowed_module)
 
 
 def check_elf(builder, raw, observed):
@@ -215,12 +227,7 @@ def check_elf(builder, raw, observed):
     return inventory
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--artifacts", type=Path, required=True)
-    parser.add_argument("--report", type=Path)
-    args = parser.parse_args()
-    artifacts = args.artifacts.resolve()
+def verify(artifacts, module, borrowed_module=None):
     inputs = {}
 
     def read(path):
@@ -231,16 +238,20 @@ def main():
 
     lock_bytes = read(ROOT / "toolchain.json")
     lock = json.loads(lock_bytes)
+    if module not in lock["modules"]:
+        raise AssertionError(f"module is not locked: {module}")
+    if lock.get("entry_profiles", {}).get(module) != PROFILE:
+        raise AssertionError(f"module does not have the supported scalar profile: {module}")
     driver = read(ROOT / "build.py")
     helper = read(ROOT / "cargo_build.rs")
     test_source = read(Path(__file__))
     report_bytes = read(artifacts / "build.json")
     report = json.loads(report_bytes)
-    raw = read(artifacts / f"{MODULE}.o")
-    named = read(artifacts / f"{MODULE}.namespaced.o")
-    archive = read(artifacts / f"libcodex_hia_{MODULE}.a")
-    library = read(artifacts / f"{MODULE}.so")
-    named_library = read(artifacts / f"libcodex_hia_{MODULE}.so")
+    raw = read(artifacts / f"{module}.o")
+    named = read(artifacts / f"{module}.namespaced.o")
+    archive = read(artifacts / f"libcodex_hia_{module}.a")
+    library = read(artifacts / f"{module}.so")
+    named_library = read(artifacts / f"libcodex_hia_{module}.so")
     specification = importlib.util.spec_from_file_location("codex_hia_builder", ROOT / "build.py")
     builder = importlib.util.module_from_spec(specification)
     specification.loader.exec_module(builder)
@@ -260,9 +271,9 @@ def main():
     equal("current-build-driver", report["build_driver_sha256"], digest(driver))
     equal("current-cargo-helper", report["cargo_helper_sha256"], digest(helper))
     equal("complete-module-inventory", set(report["modules"]), set(lock["modules"]))
-    for module in lock["modules"]:
-        source = read(ROOT / f"{module}.hepta")
-        equal(f"current-source-{module}", report["modules"][module]["source_sha256"], digest(source))
+    for locked_module in lock["modules"]:
+        source = read(ROOT / f"{locked_module}.hepta")
+        equal(f"current-source-{locked_module}", report["modules"][locked_module]["source_sha256"], digest(source))
     generations = report["bootstrap_generations"]
     equal("three-bootstrap-generations", [row["case"] for row in generations], ["B1", "B2", "B3"])
     compiler_hash = report["compiler_sha256"]
@@ -271,22 +282,27 @@ def main():
         equal(f"{row['case']}-recorded-fixed-point", row["produced_sha256"], compiler_hash)
         equal(f"{row['case']}-actual-fixed-point", digest(image), compiler_hash)
 
-    row = report["modules"][MODULE]
+    row = report["modules"][module]
     equal("recorded-scalar-profile", row["entry_profile"], PROFILE)
-    source = inputs[(ROOT / f"{MODULE}.hepta").resolve()]
-    # This is the scalar module's declared header projection. The build's
-    # checked Core and native compilation remain bound by the report above.
+    source = inputs[(ROOT / f"{module}.hepta").resolve()]
+    # Derive only the declared header projection from the actual locked source.
+    # The complete source and native compilation remain bound by their hashes.
+    header = source.split(b"\n", 1)[0].decode("ascii").split(" ")
+    if len(header) != 3:
+        raise AssertionError("scalar source requires an exact three-field assembly header")
+    tag, schema, source_module = header
+    equal("source-assembly-tag", tag, "hia-asm.v1")
     compiled_source = builder.selfhost_object_source(source, {
-        "schema": "hepta.hia.program.v8", "module": "codex_token_budget",
+        "schema": schema, "module": source_module,
     })
     equal("compiled-source-assembly-version", compiled_source.split(b"\n", 1)[0],
-          b"hia-asm.v1 hepta.hia.program.v8 selfhost_elf")
+          f"hia-asm.v1 {schema} selfhost_elf".encode("ascii"))
     compilation = row["compilation"]
     equal("scalar-native-compilation", (
         compilation["case"], compilation["status"], compilation["abi_status"],
         compilation["source_unchanged"] is True, compilation["forbidden_compiler_modules_loaded"],
         compilation["format"], compilation["image_sha256"], compilation["artifact_sha256"],
-    ), (MODULE, "returned", 0, True, [], "flat-x86-64", compiler_hash, compiler_hash))
+    ), (module, "returned", 0, True, [], "flat-x86-64", compiler_hash, compiler_hash))
     equal("compiled-source-input", compilation["input_sha256"], digest(compiled_source))
     equal("compiled-source-observed", compilation["source_sha256"], digest(compiled_source))
     equal("compiled-source-length", compilation["input_bytes"], len(compiled_source))
@@ -294,7 +310,7 @@ def main():
     equal("produced-raw-object-length", compilation["produced_bytes"], len(raw))
 
     check_object_source(builder, observed)
-    check_profile(builder, lock, observed)
+    check_profile(builder, lock, module, observed, borrowed_module)
     inventory = check_elf(builder, raw, observed)
     equal("recorded-raw-object-inventory", row["object_inventory"], inventory)
     equal("normalized-section-count", struct.unpack_from("<H", named, 60)[0], 6)
@@ -309,8 +325,8 @@ def main():
     equal("namespaced-archive-contract", (
         abi["symbol"], abi["object"], abi["archive"], abi["archive_member"],
         abi["defined_symbols"], abi["undefined_symbols"],
-    ), (f"codex_hia_{MODULE}", f"{MODULE}.namespaced.o", f"libcodex_hia_{MODULE}.a",
-        "hia.o", [f"codex_hia_{MODULE}"], []))
+    ), (f"codex_hia_{module}", f"{module}.namespaced.o", f"libcodex_hia_{module}.a",
+        "hia.o", [f"codex_hia_{module}"], []))
     equal("namespaced-object-hash", abi["object_sha256"], digest(named))
     equal("namespaced-text-hash", abi["text_sha256"], digest(named_text))
     equal("archive-hash", abi["archive_sha256"], digest(archive))
@@ -324,6 +340,8 @@ def main():
     observed.append("inputs-unchanged")
     result = {
         "schema": "codex.hia.scalar-build-admission.v1", "status": "passed",
+        "passed": True, "module": module, "source_schema": schema,
+        "source_module": source_module, "skipped": 0,
         "checks": len(observed), "cases": observed, "entry_profile": PROFILE,
         "test_sha256": digest(test_source), "build_driver_sha256": digest(driver),
         "source_sha256": digest(source), "build_report_sha256": digest(report_bytes),
@@ -332,12 +350,43 @@ def main():
         "object_inventory": inventory, "whole_codex_rewritten": False,
         "qualification_scope": "entry-profile and scalar ELF admission; behavioral gates separate",
     }
-    if args.report:
-        if args.report.resolve() in inputs:
-            parser.error("report must not overwrite a checked input")
-        args.report.write_text(json.dumps(result, indent=2) + "\n")
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--artifacts", type=Path, required=True)
+    parser.add_argument("--module", default=DEFAULT_MODULE)
+    parser.add_argument("--borrowed-module", help="Explicit locked borrowed fixture; default is the first borrowed module")
+    parser.add_argument("--report", type=Path)
+    args = parser.parse_args()
+    if re.fullmatch(r"[a-z0-9_]+", args.module) is None:
+        parser.error("module must contain only lowercase letters, digits and underscores")
+    artifacts = args.artifacts.resolve()
+    destination = args.report.resolve() if args.report else None
+    if destination is not None:
+        source_tree = ROOT.parent
+        if destination == source_tree or source_tree in destination.parents:
+            parser.error("report must be outside the source tree")
+        if destination == artifacts or artifacts in destination.parents:
+            parser.error("report must be outside the native artifact directory")
+    result = {
+        "schema": "codex.hia.scalar-build-admission.v1", "status": "failed",
+        "passed": False, "module": args.module, "skipped": 0,
+        "qualification_scope": "entry-profile and scalar ELF admission; behavioral gates separate",
+    }
+    try:
+        result = verify(artifacts, args.module, args.borrowed_module)
+    except (AssertionError, AttributeError, ImportError, IndexError, KeyError,
+            OSError, RuntimeError, TypeError, ValueError, struct.error) as error:
+        result["error"] = f"{type(error).__name__}: {error}"
+        print(result["error"], file=sys.stderr)
+    if destination is not None:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result))
+    return 0 if result["passed"] else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

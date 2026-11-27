@@ -1,0 +1,62 @@
+diff --git a/codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs b/codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs
+index 95a936a..93014e9 100644
+--- a/codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs
++++ b/codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs
+@@ -30,6 +30,7 @@ async fn readiness_reports_exited_child_with_bounded_decoded_output() -> Result<
+             "-c".into(),
+             r#"printf '%05000d' 0
+ printf '\377stdout diagnostic marker\n'
++printf '\377stderr initial recovery_required marker\n' >&2
+ printf '%05000d' 0 >&2
+ printf '\377stderr startup failure marker\n' >&2
+ while [ ! -f "$1" ]; do sleep 0.01; done
+@@ -90,6 +91,21 @@ exit 17"#
+     );
+     ensure!(diagnostic.contains("code: Some(17)"), "{diagnostic}");
+     ensure!(diagnostic.contains("last_health="), "{diagnostic}");
++    ensure!(
++        diagnostic.contains("stderr initial recovery_required marker"),
++        "startup cause was hidden by later output: {diagnostic}"
++    );
++    let (_, stderr_head) = diagnostic
++        .split_once("stderr (head, max 4096 bytes):\n")
++        .context("stderr head diagnostic missing")?;
++    let (stderr_head, _) = stderr_head
++        .split_once("\nstdout (tail, max 4096 bytes):\n")
++        .context("stdout tail diagnostic missing after stderr head")?;
++    ensure!(stderr_head.len() <= 4096, "{diagnostic}");
++    ensure!(
++        stderr_head.starts_with("\u{fffd}stderr initial recovery_required marker\n"),
++        "{diagnostic}"
++    );
+     let (_, output) = diagnostic
+         .split_once("stdout (tail, max 4096 bytes):\n")
+         .context("stdout diagnostic missing")?;
+diff --git a/codex-rs/hepta-agentd/tests/support/fleet.rs b/codex-rs/hepta-agentd/tests/support/fleet.rs
+index 933de7c..a9b9456 100644
+--- a/codex-rs/hepta-agentd/tests/support/fleet.rs
++++ b/codex-rs/hepta-agentd/tests/support/fleet.rs
+@@ -393,9 +393,23 @@ fn readiness_diagnostics(snapshot: Option<&AgentSupervisorSnapshot>, last_health
+         }
+         decoded[start..].to_string()
+     });
++    let stderr_head_bytes = snapshot
++        .logs
++        .iter()
++        .filter(|log| log.stream == ProcessStream::Stderr)
++        .flat_map(|log| log.bytes.iter().copied())
++        .take(MAX_DIAGNOSTIC_STREAM_BYTES)
++        .collect::<Vec<_>>();
++    let stderr_head = String::from_utf8_lossy(&stderr_head_bytes);
++    let mut head_end = stderr_head.len().min(MAX_DIAGNOSTIC_STREAM_BYTES);
++    while !stderr_head.is_char_boundary(head_end) {
++        head_end -= 1;
++    }
++    let stderr_head = &stderr_head[..head_end];
+     format!(
+         "active={}; healthy={}; runtime_generation={:?}; release_change_pending={}; \
+          last_exit={last_exit:?}; last_health={last_health}; \
++         stderr (head, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stderr_head}\n\
+          stdout (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stdout}\n\
+          stderr (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stderr}",
+         snapshot.active,

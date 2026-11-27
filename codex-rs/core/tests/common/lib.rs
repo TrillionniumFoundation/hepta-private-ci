@@ -345,14 +345,25 @@ pub async fn wait_for_event_with_timeout<F>(
 where
     F: FnMut(&codex_protocol::protocol::EventMsg) -> bool,
 {
+    use codex_protocol::protocol::EventMsg;
     use tokio::time::Duration;
     use tokio::time::timeout;
+    let mut last_event_kind = "none";
     loop {
         // Allow a bit more time to accommodate async startup work (e.g. config IO, tool discovery)
         let ev = timeout(wait_time.max(Duration::from_secs(10)), codex.next_event())
             .await
-            .expect("timeout waiting for event")
+            .unwrap_or_else(|error| {
+                panic!("timeout waiting for event: {error:?}; last_event={last_event_kind}")
+            })
             .expect("stream ended unexpectedly");
+        last_event_kind = match &ev.msg {
+            EventMsg::TurnStarted(_) => "TurnStarted",
+            EventMsg::TurnComplete(_) => "TurnComplete",
+            EventMsg::TurnAborted(_) => "TurnAborted",
+            EventMsg::Error(_) => "Error",
+            _ => "other",
+        };
         if predicate(&ev.msg) {
             return ev.msg;
         }

@@ -1,0 +1,1112 @@
+{
+  "schema": "codex.hia.fuzzy-match-buffer-contract.v1",
+  "module": "fuzzy_match",
+  "symbol": "codex_hia_fuzzy_match",
+  "status": "SOURCE_ONLY_UNEXECUTED",
+  "source": {
+    "path": "hia/fuzzy_match.hepta",
+    "bytes": 202030,
+    "sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+    "git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e"
+  },
+  "compiler_boundary": {
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "schema": "hepta.hia.program.v8",
+    "entry_profile": "borrowed-buffers-u32-v1",
+    "entry_function": "f0",
+    "core_signature": "(readbuf,mutbuf,mutbuf)->(u32)",
+    "core_return_type": "u32",
+    "maximum_function_results": 3,
+    "maximum_function_or_block_parameters": 16,
+    "native_return": "The six-argument foreign entry returns u64. Reject nonzero high32 wrapper status before interpreting low32 Core status; never truncate first. Core status is not a written extent or score.",
+    "seed_capacity_scope": "The one-MiB capacity is established only for the compiler-None foreign-wrapper build branch. These finite frames fit that branch; this is not a global B3 native-capacity claim.",
+    "fresh_build_required": true,
+    "source_origin_commit": null,
+    "origin_note": "An actual complete-source Git origin is assigned by the owning publication workflow. No commit identity is fabricated here."
+  },
+  "protocol_provenance": {
+    "wire": {
+      "name": "inventory-fuzzy-numeric-wire-candidate-v2/wire.json",
+      "bytes": 54012,
+      "sha256": "c7376442722babc50868e28e2a20e7d295e5c6c0a42ce88708a92028d48103ef",
+      "git_blob": "19f45d09f7d1fe11cba21fad5c9cd2072c102d75"
+    },
+    "root_freeze": {
+      "name": "fuzzy-wire-root-freeze-v2.json",
+      "bytes": 2812,
+      "sha256": "fde5c2c6da425176c8d5814655ffe1a5d0bac50d8bc30c6f940433a87bbf87e8",
+      "git_blob": "8db4a163424c629c0f7da5fce1a1e208441a672d"
+    },
+    "consistency_addendum": {
+      "name": "fuzzy-wire-consistency-clarification-v1.json",
+      "bytes": 2809,
+      "sha256": "3ed239ab8f803b54cc1a956a4ae30af2d66f34a57137c5a411332f46e8c9ee23",
+      "git_blob": "0504415f8eaadbe1af4edbc655d399ffb5126c5c",
+      "rule": "needle_previous_cased (word9) equals1 only if needle_original_scalars (word7) ispositive. Apply to every accepted state; reject forged zero-history context with INVALID before overflow, SHORT or any store.",
+      "compatibility": "No field, offset, reservation, result or valid fresh Host transition changes. Frozen wire V2 itself remains unchanged."
+    }
+  },
+  "unicode_provenance": {
+    "rust_release": "1.96.1",
+    "rust_repository": "rust-lang/rust",
+    "rust_commit": "31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd",
+    "unicode_version": "17.0.0",
+    "sources": [
+      {
+        "path": "library/core/src/unicode/unicode_data.rs",
+        "bytes": 76896,
+        "sha256": "e8b85cd9385ba25e8b40ab9d910eae4e7edd7af7472c61453de7f271fdd123fd",
+        "git_blob": "f602cd5c5b6b3c829f9897abb98dbbd7deca83b3"
+      },
+      {
+        "path": "library/core/src/char/methods.rs",
+        "bytes": 74654,
+        "sha256": "dc5b1d705ff74a22454153977763b2ff019917b96c094fbfd15db9baa8ad64f9",
+        "git_blob": "ce33fd1d8f9dfbc2955800899032e7087b49a79e"
+      },
+      {
+        "path": "library/core/src/char/mod.rs",
+        "bytes": 20654,
+        "sha256": "a8e5cd44429bdbf46ab270d9b8064d770c0249763e0852429be6cade57c94614",
+        "git_blob": "3231c4193064c4879a358e6fe77f5397b3654c96"
+      },
+      {
+        "path": "library/alloc/src/str.rs",
+        "bytes": 25485,
+        "sha256": "599f837e2f40d77eb9c3dd0da1ef19b968a7d8259b6c5fcde405f98634ac6e99",
+        "git_blob": "8a3326c7d76a72d1a2c5e4ac9b83e8445f06d6fd"
+      }
+    ],
+    "literal_bank": {
+      "packed_u64_words": 369,
+      "packed_bytes": 2952,
+      "bank_leaf_counts": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        49
+      ],
+      "bmp_single_ranges": 172,
+      "bmp_multi_mappings": 1,
+      "plane1_single_ranges": 12,
+      "case_ignorable_headers": 36,
+      "case_ignorable_offset_bytes": 919,
+      "cased_headers": 22,
+      "cased_offset_bytes": 313,
+      "field_map_sha256": "9f31ed3a5deb5c803aa0a660fc27836becdc5006d29e76595148e2c0ac934aae",
+      "source_forward_inverse_map_sha256": "216b442e8e5e9f0bb4d2fe7c50fcf836f31d92f1dfe8f745ace83e409ec0f616",
+      "proof_scope": "Mechanical transcription of every original literal and bit field, with an exact inverse. No Unicode lookup table was expanded by executing a reference classifier or model."
+    }
+  },
+  "wire_layout": {
+    "constants": {
+      "version": 1,
+      "word_bytes": 8,
+      "input_header_bytes": 64,
+      "state_words": 32,
+      "state_bytes": 256,
+      "input_state_offset": 64,
+      "input_payload_offset": 320,
+      "output_header_bytes": 128,
+      "output_state_offset": 128,
+      "output_records_offset": 384,
+      "utf8_frame_max_bytes": 4096,
+      "match_hay_max_records": 128,
+      "match_needle_max_scalars": 128,
+      "hay_record_bytes": 24,
+      "needle_command_bytes": 24,
+      "index_record_bytes": 8,
+      "scalar_max": 1114111,
+      "surrogate_first": 55296,
+      "surrogate_last": 57343,
+      "normal_sigma": 963,
+      "final_sigma": 962,
+      "i32_mask": 4294967295,
+      "i32_sign": 2147483648,
+      "i32_max": 2147483647
+    },
+    "scalar_encoding": "Every numeric field is one unsigned little-endian 64-bit word. An i32 word is its low32 bit pattern zero-extended to u64. Do not sign-extend it on the wire. All Unicode scalar words must be <=0x10ffff and outside 0xd800..0xdfff; zero is valid.",
+    "input": {
+      "header": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "version",
+          "meaning": "Exactly 1."
+        },
+        {
+          "word": 1,
+          "byte_offset": 8,
+          "bytes": 8,
+          "name": "operation",
+          "meaning": "One of the four operations."
+        },
+        {
+          "word": 2,
+          "byte_offset": 16,
+          "bytes": 8,
+          "name": "flags",
+          "meaning": "Zero except the exact END bit on normalization frames."
+        },
+        {
+          "word": 3,
+          "byte_offset": 24,
+          "bytes": 8,
+          "name": "payload_bytes",
+          "meaning": "Exact count of bytes following the 256-byte state; no trailing bytes are allowed."
+        },
+        {
+          "word": 4,
+          "byte_offset": 32,
+          "bytes": 8,
+          "name": "argument_a",
+          "meaning": "Begin: complete haystack byte length. Match: hay-record count. Normalization: zero."
+        },
+        {
+          "word": 5,
+          "byte_offset": 40,
+          "bytes": 8,
+          "name": "argument_b",
+          "meaning": "Begin: complete needle byte length. Match: needle-scalar count. Normalization: zero."
+        },
+        {
+          "word": 6,
+          "byte_offset": 48,
+          "bytes": 8,
+          "name": "reserved_6",
+          "meaning": "Zero."
+        },
+        {
+          "word": 7,
+          "byte_offset": 56,
+          "bytes": 8,
+          "name": "reserved_7",
+          "meaning": "Zero."
+        }
+      ],
+      "state": "The exact 32-word state table begins at source offset64.",
+      "payload": {
+        "Begin": "Empty; source length exactly320. All state words are zero.",
+        "LowerHaystack": "The original next whole-scalar UTF-8 substring, N=payload_bytes, immediately at offset320.",
+        "LowerNeedle": "The original next whole-scalar UTF-8 substring, N=payload_bytes, immediately at offset320.",
+        "Match": "argument_a H hay records at offset320, each24 bytes; argument_b K needle scalar words immediately at offset320+24H. payload_bytes=24H+8K. There is no padding."
+      },
+      "complete_size": "source_len must equal320+payload_bytes, checked without overflowing u64/host usize. No unknown flags, extra words or source tails are accepted."
+    },
+    "state": {
+      "word_count": 32,
+      "fields": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "phase",
+          "meaning": "Phase enum; zero only for the fresh Begin input."
+        },
+        {
+          "word": 1,
+          "byte_offset": 8,
+          "bytes": 8,
+          "name": "hay_bytes_total",
+          "meaning": "Original complete haystack byte length supplied at Begin."
+        },
+        {
+          "word": 2,
+          "byte_offset": 16,
+          "bytes": 8,
+          "name": "needle_bytes_total",
+          "meaning": "Original complete needle byte length supplied at Begin."
+        },
+        {
+          "word": 3,
+          "byte_offset": 24,
+          "bytes": 8,
+          "name": "hay_bytes_seen",
+          "meaning": "Number of original haystack bytes normalized."
+        },
+        {
+          "word": 4,
+          "byte_offset": 32,
+          "bytes": 8,
+          "name": "needle_bytes_seen",
+          "meaning": "Number of original needle bytes normalized."
+        },
+        {
+          "word": 5,
+          "byte_offset": 40,
+          "bytes": 8,
+          "name": "hay_original_scalars",
+          "meaning": "Number of original haystack Unicode scalars normalized."
+        },
+        {
+          "word": 6,
+          "byte_offset": 48,
+          "bytes": 8,
+          "name": "hay_lower_scalars",
+          "meaning": "Number of emitted normalized haystack scalar records."
+        },
+        {
+          "word": 7,
+          "byte_offset": 56,
+          "bytes": 8,
+          "name": "needle_original_scalars",
+          "meaning": "Number of original needle Unicode scalars normalized."
+        },
+        {
+          "word": 8,
+          "byte_offset": 64,
+          "bytes": 8,
+          "name": "needle_lower_scalars",
+          "meaning": "Number of emitted normalized needle scalar slots; replacements do not change it."
+        },
+        {
+          "word": 9,
+          "byte_offset": 72,
+          "bytes": 8,
+          "name": "needle_previous_cased",
+          "meaning": "Boolean Cased property of the nearest previous original non-Case_Ignorable scalar, or zero."
+        },
+        {
+          "word": 10,
+          "byte_offset": 80,
+          "bytes": 8,
+          "name": "sigma_pending",
+          "meaning": "Boolean: a preceding-cased-qualified Sigma slot is waiting for right context."
+        },
+        {
+          "word": 11,
+          "byte_offset": 88,
+          "bytes": 8,
+          "name": "sigma_slot",
+          "meaning": "Index in the normalized needle vector of the unresolved provisional normal sigma; zero when not pending."
+        },
+        {
+          "word": 12,
+          "byte_offset": 96,
+          "bytes": 8,
+          "name": "hay_cursor",
+          "meaning": "Next normalized haystack record to inspect while matching."
+        },
+        {
+          "word": 13,
+          "byte_offset": 104,
+          "bytes": 8,
+          "name": "needle_cursor",
+          "meaning": "Next normalized needle scalar to match."
+        },
+        {
+          "word": 14,
+          "byte_offset": 112,
+          "bytes": 8,
+          "name": "last_matched_original_lower_start",
+          "meaning": "First lowered slot of the original scalar containing the last actual matched lower slot; zero before any match."
+        },
+        {
+          "word": 15,
+          "byte_offset": 120,
+          "bytes": 8,
+          "name": "first_original_index",
+          "meaning": "Original scalar index of the first match; zero if has_match is zero."
+        },
+        {
+          "word": 16,
+          "byte_offset": 128,
+          "bytes": 8,
+          "name": "first_original_lower_start",
+          "meaning": "First normalized haystack slot of that first matched original scalar, not the first actual matched slot."
+        },
+        {
+          "word": 17,
+          "byte_offset": 136,
+          "bytes": 8,
+          "name": "last_lower_hit",
+          "meaning": "Position of the last actual normalized haystack match."
+        },
+        {
+          "word": 18,
+          "byte_offset": 144,
+          "bytes": 8,
+          "name": "last_matched_original_index",
+          "meaning": "Original scalar index of the last match; also the last unique index when any exists."
+        },
+        {
+          "word": 19,
+          "byte_offset": 152,
+          "bytes": 8,
+          "name": "unique_matches",
+          "meaning": "Count of unique original indices selected so far, including internal prefixes later discarded on None."
+        },
+        {
+          "word": 20,
+          "byte_offset": 160,
+          "bytes": 8,
+          "name": "outcome",
+          "meaning": "Outcome enum; Continue during all nonterminal phases."
+        },
+        {
+          "word": 21,
+          "byte_offset": 168,
+          "bytes": 8,
+          "name": "score_bits",
+          "meaning": "Zero-extended low32 representation of the final i32 score; zero except terminal Some."
+        },
+        {
+          "word": 22,
+          "byte_offset": 176,
+          "bytes": 8,
+          "name": "first_overflow_op",
+          "meaning": "Arithmetic-stage enum for the first original i32 overflow; zero if absent."
+        },
+        {
+          "word": 23,
+          "byte_offset": 184,
+          "bytes": 8,
+          "name": "overflow_lhs_bits",
+          "meaning": "Zero-extended low32 original operand for first_overflow_op; zero if absent."
+        },
+        {
+          "word": 24,
+          "byte_offset": 192,
+          "bytes": 8,
+          "name": "overflow_rhs_bits",
+          "meaning": "Zero-extended low32 original operand for first_overflow_op; zero if absent."
+        },
+        {
+          "word": 25,
+          "byte_offset": 200,
+          "bytes": 8,
+          "name": "r1_bits",
+          "meaning": "Zero-extended low32 wrapped result of last_i32 - first_i32; zero before terminal nonempty Some."
+        },
+        {
+          "word": 26,
+          "byte_offset": 208,
+          "bytes": 8,
+          "name": "r2_bits",
+          "meaning": "Zero-extended low32 wrapped result of r1 + 1; zero before terminal nonempty Some."
+        },
+        {
+          "word": 27,
+          "byte_offset": 216,
+          "bytes": 8,
+          "name": "r3_bits",
+          "meaning": "Zero-extended low32 wrapped result of r2 - needle_len_i32; zero before terminal nonempty Some."
+        },
+        {
+          "word": 28,
+          "byte_offset": 224,
+          "bytes": 8,
+          "name": "last_scanned_original_index",
+          "meaning": "Original index of the last consumed haystack record, including nonmatches."
+        },
+        {
+          "word": 29,
+          "byte_offset": 232,
+          "bytes": 8,
+          "name": "last_scanned_original_lower_start",
+          "meaning": "Original-character lower start carried by that last consumed haystack record."
+        },
+        {
+          "word": 30,
+          "byte_offset": 240,
+          "bytes": 8,
+          "name": "first_lower_hit",
+          "meaning": "The first actual matched lower slot; distinct from first_original_lower_start when the match begins inside an expansion."
+        },
+        {
+          "word": 31,
+          "byte_offset": 248,
+          "bytes": 8,
+          "name": "overflow_mask",
+          "meaning": "Bits 0,1,2 record overflow at arithmetic stages 1,2,3 after wrapped evaluation; zero elsewhere."
+        }
+      ],
+      "input_absolute_offset_rule": "Add64 to each relative state byte_offset.",
+      "output_absolute_offset_rule": "Add128 to each relative state byte_offset.",
+      "reserved_words": [],
+      "private_history_boundary": "Canonical shape and cross-binding are necessary checks, not authentication that a caller actually followed every prior frame. The public host creates fresh state and copies only validated HIA transitions.",
+      "derived_presence": {
+        "has_match": "needle_cursor != 0",
+        "has_scanned_hay": "hay_cursor != 0",
+        "wire_boolean_fields": [
+          "needle_previous_cased",
+          "sigma_pending"
+        ],
+        "note": "There are no has_match or has_scanned_hay wire words in V2. Their old words14/30 are repurposed without changing the32-word/256-byte layout."
+      }
+    },
+    "output": {
+      "header": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "version",
+          "meaning": "Exactly1."
+        },
+        {
+          "word": 1,
+          "byte_offset": 8,
+          "bytes": 8,
+          "name": "operation",
+          "meaning": "Echo of the input operation."
+        },
+        {
+          "word": 2,
+          "byte_offset": 16,
+          "bytes": 8,
+          "name": "outcome",
+          "meaning": "Exactly equals next_state.outcome."
+        },
+        {
+          "word": 3,
+          "byte_offset": 24,
+          "bytes": 8,
+          "name": "record_kind",
+          "meaning": "Fixed by operation: Begin0, LowerHaystack1, LowerNeedle2, Match3."
+        },
+        {
+          "word": 4,
+          "byte_offset": 32,
+          "bytes": 8,
+          "name": "advance_a",
+          "meaning": "Begin0; normalization consumed input bytesN; Match consumed hay-record count."
+        },
+        {
+          "word": 5,
+          "byte_offset": 40,
+          "bytes": 8,
+          "name": "advance_b",
+          "meaning": "Match consumed needle-scalar count; otherwise0."
+        },
+        {
+          "word": 6,
+          "byte_offset": 48,
+          "bytes": 8,
+          "name": "record_count",
+          "meaning": "Number of complete records following the state."
+        },
+        {
+          "word": 7,
+          "byte_offset": 56,
+          "bytes": 8,
+          "name": "record_bytes",
+          "meaning": "record_count times the fixed record width for record_kind; checked."
+        },
+        {
+          "word": 8,
+          "byte_offset": 64,
+          "bytes": 8,
+          "name": "defined_output_bytes",
+          "meaning": "Exactly384+record_bytes."
+        },
+        {
+          "word": 9,
+          "byte_offset": 72,
+          "bytes": 8,
+          "name": "reserved_9",
+          "meaning": "Zero."
+        },
+        {
+          "word": 10,
+          "byte_offset": 80,
+          "bytes": 8,
+          "name": "reserved_10",
+          "meaning": "Zero."
+        },
+        {
+          "word": 11,
+          "byte_offset": 88,
+          "bytes": 8,
+          "name": "reserved_11",
+          "meaning": "Zero."
+        },
+        {
+          "word": 12,
+          "byte_offset": 96,
+          "bytes": 8,
+          "name": "reserved_12",
+          "meaning": "Zero."
+        },
+        {
+          "word": 13,
+          "byte_offset": 104,
+          "bytes": 8,
+          "name": "reserved_13",
+          "meaning": "Zero."
+        },
+        {
+          "word": 14,
+          "byte_offset": 112,
+          "bytes": 8,
+          "name": "reserved_14",
+          "meaning": "Zero."
+        },
+        {
+          "word": 15,
+          "byte_offset": 120,
+          "bytes": 8,
+          "name": "reserved_15",
+          "meaning": "Zero."
+        }
+      ],
+      "next_state_offset": 128,
+      "records_offset": 384,
+      "tail": "On OK, only [0,defined_output_bytes) is written. Every byte after defined_output_bytes, including the unused reserved capacity and external guards, remains unchanged. On any nonzero core status the complete output remains unchanged.",
+      "statuses": "The core returns only the numeric status0..3, never a count or final score. At the existing borrowed native boundary the wrapper ABI status in the upper32 bits must be zero and the complete lower32 core status must be recognized; checking only a truncated return is forbidden.",
+      "result_use": "Only Done/Some returns public Some. Done/None returns public None and discards all accumulated private match indices. Continue cannot be returned to a public caller."
+    },
+    "records": {
+      "Hay": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "scalar",
+          "meaning": "A Unicode scalar word; NUL is retained."
+        },
+        {
+          "word": 1,
+          "byte_offset": 8,
+          "bytes": 8,
+          "name": "original_scalar_index",
+          "meaning": "Index in the original haystack's chars() order."
+        },
+        {
+          "word": 2,
+          "byte_offset": 16,
+          "bytes": 8,
+          "name": "original_lower_start",
+          "meaning": "First lowered slot belonging to this original scalar. All slots of an expansion share this word."
+        }
+      ],
+      "NeedleCommand": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "kind",
+          "meaning": "Append0 or ReplaceFinalSigma1."
+        },
+        {
+          "word": 1,
+          "byte_offset": 8,
+          "bytes": 8,
+          "name": "index",
+          "meaning": "Append requires the exact next normalized-needle slot; replace requires an earlier existing/appended slot."
+        },
+        {
+          "word": 2,
+          "byte_offset": 16,
+          "bytes": 8,
+          "name": "scalar",
+          "meaning": "Append: actual lowercase scalar. ReplaceFinalSigma: exactlyU+03C2."
+        }
+      ],
+      "OriginalIndex": [
+        {
+          "word": 0,
+          "byte_offset": 0,
+          "bytes": 8,
+          "name": "original_scalar_index",
+          "meaning": "A new strictly increasing original haystack index selected by HIA."
+        }
+      ]
+    }
+  },
+  "enums": {
+    "operation": {
+      "Begin": 0,
+      "LowerHaystack": 1,
+      "LowerNeedle": 2,
+      "Match": 3
+    },
+    "phase": {
+      "Fresh": 0,
+      "Haystack": 1,
+      "Needle": 2,
+      "Matching": 3,
+      "Done": 4
+    },
+    "outcome": {
+      "Continue": 0,
+      "Some": 1,
+      "None": 2
+    },
+    "output_record_kind": {
+      "None": 0,
+      "Hay": 1,
+      "NeedleCommand": 2,
+      "OriginalIndex": 3
+    },
+    "needle_command": {
+      "Append": 0,
+      "ReplaceFinalSigma": 1
+    },
+    "input_flags": {
+      "END": 1,
+      "other_bits": "invalid"
+    },
+    "first_overflow_op": {
+      "None": 0,
+      "SubtractLastFirst": 1,
+      "AddOne": 2,
+      "SubtractNeedleLength": 3
+    },
+    "core_status": {
+      "OK": 0,
+      "INVALID": 1,
+      "SHORT": 2,
+      "COUNTER_OVERFLOW": 3
+    }
+  },
+  "capacities": {
+    "Begin": {
+      "required_output_bytes": 384
+    },
+    "LowerHaystack": {
+      "formula": "384 + 72*N",
+      "N": "payload_bytes (0..4096 with phase-specific zero rule)",
+      "maximum_required_output_bytes": 295296
+    },
+    "LowerNeedle": {
+      "formula": "384 + 24*(4*N + 1)",
+      "N": "payload_bytes (1..4096)",
+      "maximum_required_output_bytes": 393624
+    },
+    "Match": {
+      "required_output_bytes": 2048,
+      "maximum_defined_output_bytes": 1408
+    },
+    "interpretation": "Capacity is normative for the complete frame and is checked even if actual output would be shorter. No input/output aggregate string or vector must fit in one frame. The maximum source frame is4416 bytes. The Match reservation2048 safely covers384 fixed bytes plus at most128 unique u64 indices.",
+    "workspace": "No workspace bytes are required or used. Any valid workspace slice length including zero is accepted and remains byte-exact on success and failure.",
+    "no_alias": "Source, output and workspace must satisfy the existing borrowed-buffer nonalias contract. Raw harness guards must check full source, full workspace, output prefix/suffix and unused output tail.",
+    "relation_to_runtime": "These finite reservations fit the known seed branch's one-MiB frame cap. They do not assert that every production B3 wrapper has that same cap or that any CPU/compiler budget passed."
+  },
+  "statuses": {
+    "OK": 0,
+    "INVALID": 1,
+    "SHORT": 2,
+    "COUNTER_OVERFLOW": 3
+  },
+  "validation_precedence": [
+    {
+      "rank": 1,
+      "status": "INVALID",
+      "scope": "All structural rules: source framing/version/op/flags/reserved fields/state shape, exact phase/op pairing, whole-frame strict UTF-8 or scalar validity, exact window sizes, record order/ranges, impossible fields and reserved bits. Validate the entire bounded input, not only a prefix that the algorithm will later consume."
+    },
+    {
+      "rank": 2,
+      "status": "COUNTER_OVERFLOW",
+      "scope": "An actual cumulative u64 byte/scalar/normalized/output-count increment cannot be represented. Check actual increments, not total_input*worst_expansion as a total-length admission limit. Original i32 score overflow is not this status."
+    },
+    {
+      "rank": 3,
+      "status": "SHORT",
+      "scope": "The complete normative output reservation for the valid frame is not available."
+    },
+    {
+      "rank": 4,
+      "status": "OK only",
+      "scope": "After all checks and capacity succeed, perform the deterministic transition and stores. No source/workspace stores ever occur. No error may be discovered after output stores begin."
+    }
+  ],
+  "common_state_rules": [
+    "Only needle_previous_cased and sigma_pending are boolean state words, exactly0 or1. Matching/scanning presence is derived from needle_cursor/hay_cursor, not an additional stored flag. Enums are in range.",
+    "hay_bytes_seen<=hay_bytes_total and needle_bytes_seen<=needle_bytes_total. For either normalized original prefix, original_scalar_count<=bytes_seen and original_scalar_count>=ceil(bytes_seen/4). Original and lower counts are both zero exactly when bytes_seen iszero.",
+    "For each normalized vector, lower_scalar_count>=original_scalar_count and original_scalar_count>=ceil(lower_scalar_count/3). Use division/remainder or safe differences, not an overflowing multiplication by3 or4. These are necessary shape bounds, not a preallocation or total-input cap.",
+    "sigma_pending=0 requires sigma_slot=0. sigma_pending=1 requires needle_previous_cased=1, needle_original_scalars>=2, 0<sigma_slot<needle_lower_scalars. A qualified capital Sigma has at least one preceding original cased non-ignorable scalar, and each emitted at least one lower slot. The host also verifies that the claimed pending slot contains normal sigma.",
+    "Matching cursors obey0<=hay_cursor<=hay_lower_scalars,0<=needle_cursor<=needle_lower_scalars and needle_cursor<=hay_cursor.",
+    "If needle_cursor=0, all hit words14,15,16,17,18,19,30 arezero: last matched start, first original index/start, last hit/index, unique count and first actual hit.",
+    "If needle_cursor>0: 1<=unique_matches<=needle_cursor; first_original_index<=last_matched_original_index<hay_original_scalars; first_original_lower_start<=first_lower_hit<=last_lower_hit<hay_cursor; needle_cursor<=last_lower_hit-first_lower_hit+1.",
+    "For the first anchor: first_original_lower_start>=first_original_index and first_original_index>=ceil(first_original_lower_start/3); first_lower_hit-first_original_lower_start<=2. Thus first_original_index==0 iff first_original_lower_start==0.",
+    "For the last anchor: last_matched_original_lower_start>=last_matched_original_index and last_matched_original_index>=ceil(last_matched_original_lower_start/3); last_matched_original_lower_start<=last_lower_hit and last_lower_hit-last_matched_original_lower_start<=2.",
+    "When matching exists, first_original_lower_start<=last_matched_original_lower_start. Unique_matches<=last_matched_original_index-first_original_index+1. If first and last original indices areequal, their original lower starts areequal and unique_matches=1; if they differ, unique_matches>=2.",
+    "When needle_cursor=1, first_lower_hit==last_lower_hit, first/last original indices and original lower starts agree, and unique_matches=1.",
+    "If hay_cursor=0, last_scanned_original_index and last_scanned_original_lower_start arezero. Otherwise last_scanned_original_index<hay_original_scalars, last_scanned_original_index<=last_scanned_original_lower_start<=hay_cursor-1, last_scanned_original_index>=ceil(last_scanned_original_lower_start/3), and hay_cursor-1-last_scanned_original_lower_start<=2.",
+    "If hay_cursor==hay_lower_scalars>0, the last scanned original index is hay_original_scalars-1.",
+    "When a match exists, last_matched_original_index<=last_scanned_original_index and last_matched_original_lower_start<=last_scanned_original_lower_start. Equal original indices imply equal original lower starts.",
+    "All positions/counts remain full u64. Score_bits,overflow_lhs_bits,overflow_rhs_bits,r1_bits,r2_bits,r3_bits fit low32; overflow_mask is0..7. Score/arithmetic words arezero except terminal Some, with the explicit Empty score exception.",
+    "For a nonzero descriptor, first_overflow_op is the first set bit of overflow_mask in stage order1,2,3. Descriptor0 requires mask0 and both descriptor operands0. Exact operands are defined in arithmetic below.",
+    "Consistency addendum: needle_previous_cased==1 implies needle_original_scalars>0. The existing count bounds then imply needle_lower_scalars>0. This necessary history-shape condition is an INVALID preflight rule, not an extra total-input cap or a claim to authenticate arbitrary raw history."
+  ],
+  "phase_rules": {
+    "Fresh": "All32 state words are zero; accepted only by Begin. Header argument_a/b supply the total byte lengths.",
+    "Haystack": "needle_bytes_total>0. Either hay_bytes_seen<hay_bytes_total, or both arezero for the one empty-hay transition. Needle counts/context, all matching fields and all result/arithmetic fields arezero. OutcomeContinue.",
+    "Needle": "needle_bytes_total>0; hay_bytes_seen==hay_bytes_total; needle_bytes_seen<needle_bytes_total. Matching and arithmetic/result fields arezero. Context fields obey the pending rules. OutcomeContinue.",
+    "Matching": "Both original streams are completely normalized; needle_bytes_total>0 and needle_lower_scalars>0; needle_cursor<needle_lower_scalars. Needle context(previous_cased,pending,slot) iszero. Matching/scanning presence derives from cursor values. All outcome/arithmetic result words arezero; OutcomeContinue.",
+    "DoneEmpty": "needle_bytes_total=0, outcomeSome, score_bits=i32::MAX. Only phase,hay_bytes_total,outcome,score_bits may be nonzero. No normalization or matching occurred.",
+    "DoneSome": "Nonempty needle; both byte streams complete; needle_cursor==needle_lower_scalars>0 and hay_cursor>0. hay_cursor==last_lower_hit+1; last_scanned_original_index==last_matched_original_index and last_scanned_original_lower_start==last_matched_original_lower_start. Final arithmetic trace/score arepresent. Needle context iscleared.",
+    "DoneNone": "Nonempty needle; both byte streams complete; hay_cursor==hay_lower_scalars and needle_cursor<needle_lower_scalars. Partial matching state may exist internally; score and every arithmetic descriptor/result/mask word arezero. Context cleared.",
+    "reentry": "No operation accepts Done state. A new public call starts a new all-zero state; there is no reset/continuation across public fuzzy_match calls."
+  },
+  "operation_rules": {
+    "Begin": [
+      "Require operation0,flags0,payload_bytes0,reserved0,all-zero state and source_len320.",
+      "After capacity384 succeeds, copy header argument_a/b into total lengths.",
+      "If needle byte length iszero, emit DoneEmpty/Some with no records and no haystack access.",
+      "Otherwise emit Haystack/Continue with no records, including when the haystack length iszero. This makes the original nonempty-needle haystack-before-needle order explicit."
+    ],
+    "LowerHaystack": [
+      "Require phaseHaystack,operation1,argument_a=argument_b=0. N<=4096 and N<=hay_bytes_total-hay_bytes_seen.",
+      "N=0 is allowed only for hay_bytes_total=hay_bytes_seen=0. Otherwise N>=1.",
+      "END is set exactly when N equals the remaining byte count. No other flag is permitted. Compare using subtraction before computing the next byte frontier.",
+      "Validate every source byte as one complete UTF-8 scalar sequence. Lower each original scalar independently with the exact pinned char conversion, retaining a first-slot NUL and only omitting trailing mapping sentinels.",
+      "Emit each lower scalar as one Hay record. A new original scalar gets original_scalar_index=old hay_original_scalars+its local scalar ordinal and original_lower_start equal to the lowered output position before its first emission.",
+      "Advance seen bytes byN, original count by the actual decoded count and lower count by the actual emitted count. The whole original haystack is normalized before any needle normalization.",
+      "If END, transition to Needle even for an empty haystack; otherwise remain Haystack. No score or match decision is made here."
+    ],
+    "LowerNeedle": [
+      "Require phaseNeedle,operation2,argument_a=argument_b=0,N=1..4096 and N<=needle_bytes_total-needle_bytes_seen.",
+      "END is set exactly when N is the remaining byte count; no other flags. Validate the complete UTF-8 frame before any output store.",
+      "For each original scalar, evaluate Case_Ignorable on that scalar before Cased for context. Do not feed generated lowercase output into context.",
+      "If the scalar is non-Case_Ignorable, resolve an old pending Sigma first: emit ReplaceFinalSigma only if this successor is not Cased; otherwise leave its provisional normal sigma unchanged. In either case clear the old pending flag/index.",
+      "For the current original capital Sigma, append normal sigma. Record that slot as pending only when the preceding context bit (before updating for this current scalar) istrue. For any other scalar append every exact char-lowercase slot.",
+      "Only after processing current output, a non-Case_Ignorable current scalar updates previous_cased to its Cased property. A scalar with both properties true is still skipped for context.",
+      "Append commands use the exact contiguous normalized-needle frontier. A ReplaceFinalSigma command addresses a slot containing normal sigma and writes exactly final sigma; it may address an existing vector slot or an earlier Append from this frame.",
+      "When END, after all input scalars, emit a final replacement for any still-pending qualified Sigma. Then clear all three context words and transition to Matching; otherwise remain Needle.",
+      "This operation never decides None, including when the normalized haystack isempty. Matching starts only after whole needle normalization/EOF."
+    ],
+    "Match": [
+      "Require phaseMatching,operation3,flags0. H=argument_a=min(128,hay_lower_scalars-hay_cursor); K=argument_b=min(128,needle_lower_scalars-needle_cursor). K isalwayspositive. H may bezero only at hay exhaustion.",
+      "Require payload_bytes=24H+8K and validate every scalar/record, including any tail not consumed before a terminal result.",
+      "The payload windows begin exactly at the stored hay/needle cursors. There is no external starting-index override.",
+      "Greedy matching uses the first equal hay scalar for the current needle scalar, consuming each inspected hay record once. A hit increments both cursors; a nonmatch only increments hay_cursor. No cursor rewinds.",
+      "On the first hit store first_lower_hit as the actual global lower position and preserve that Hay record's original index and original_lower_start separately. Each hit updates last_lower_hit, last_matched_original_index and last_matched_original_lower_start. Emit a unique index only for the first hit or when its original index differs from the preceding hit.",
+      "Stop a bounded call when all needle scalars are matched, all hay scalars are exhausted, or either supplied window is exhausted. TerminalSome has priority when the last hit simultaneously exhausts both complete inputs.",
+      "For a nonterminal result, advance at least one cursor and exhaust at least one supplied window; remain Matching. This is the no-stall/no-quadratic-rescan guarantee.",
+      "Some computes the complete arithmetic trace and score, transitionsDone, and emits all new unique indices from this call.",
+      "None transitionsDone and emits zero index records, including when this call selected a partial prefix. The HIA implementation must establish this outcome before output index stores; it may use a bounded no-store pass and then emit only for Continue/Some. No workspace mutation is required.",
+      "DoneNone may retain actual partial-match counters solely in state for structural accounting. The host discards both its prior private index vector and this terminal state rather than exposing any prefix."
+    ]
+  },
+  "hay_record_shape": [
+    "Use input-state counts when validating a Match input window, and validated next-state counts when decoding a LowerHaystack output. Global positions begin at the input hay_cursor for matching and the old hay_lower_scalars for normalization.",
+    "Each record scalar is valid. original_scalar_index<hay_original_scalars and original_lower_start<=its global lowered position g.",
+    "At global g=0 require original_scalar_index=0 and original_lower_start=0.",
+    "For matching input after g=0, use the preceding record, or state last_scanned fields for the first supplied record. The next original index is either the same with exactly the same lower start, or previous+1 with lower start exactlyg. No jumps or decreases are accepted.",
+    "A record is at most two slots after its original lower start, preserving the three-slot mapping-interface bound. A new original start cannot retroactively change an earlier record.",
+    "If a supplied record is the last complete normalized haystack slot, its original index must equal hay_original_scalars-1.",
+    "When the HIA matching loop consumes only a prefix of the validated window, last_scanned state comes from the last actually consumed record, not the end of the supplied window.",
+    "On a normalization output frame, the first new original index is the previous hay_original_scalars and its first lower start is the previous hay_lower_scalars. Every later new original index advances byone with its current global lower position."
+  ],
+  "output_conservation": [
+    "Output version/op/kind/outcome/reserved words and defined length must match exactly; no successful output may claim bytes outside the normative buffer reservation.",
+    "For normalization, advance_a=N and advance_b=0; byte counters advance exactly byN and other operation's byte/count fields remain unchanged.",
+    "For Hay, record_count equals new hay_lower_scalars-old hay_lower_scalars. Complete record shape and original-count continuity must be checked before extending the host vector.",
+    "For Needle, Append count equals the normalized-needle length delta; Replace commands do not change length. All append indices are contiguous. Complete command prevalidation must precede any append or replacement.",
+    "For Needle, any old-vector replacement target must be the input sigma_pending slot. Every in-frame target must refer to an earlier Append of normal sigma; replacements are strictly increasing. If the next state still has a pending slot, its virtual scalar is normal sigma and it is either the unchanged input pending slot or a normal-sigma Append from this frame that was not replaced. Only HIA establishes the original-character/context qualification.",
+    "For Match, advance_a and advance_b equal the exact cursor deltas and are within H and K. Both normalized vectors/counts and total byte fields remain unchanged.",
+    "For Match Continue/Some, record_count equals new unique_matches-old unique_matches and is<=advance_b. New index records are strictly increasing, greater than the old last matched original index when one exists, and in the original-haystack range.",
+    "For Match Continue/Some with emitted indices, the final index equals new last_matched_original_index. If the input needle_cursor waszero and a first match occurs, the first emitted index equals new first_original_index. If no new unique index is emitted, the prior last original index/start stay the matched original index/start; last_lower_hit may advance within that expansion only when advance_b>0.",
+    "For Match None, record_count=record_bytes=0; require old unique_matches<=new unique_matches<=old unique_matches+advance_b with overflow-safe differences. These internal counters are not public output. Discard all private indices on returnNone.",
+    "Before terminal Some, actual host normalized-vector lengths must equal state hay_lower_scalars and needle_lower_scalars; actual accumulated unique-index length after this frame must equal unique_matches. This binding is required before the overflow bridge.",
+    "At terminal Some, full first/last position ranges and the low32 input operands are bound to state and actual normalized lengths. The public result score comes only from the HIA score_bits.",
+    "All fixed direct-anchor bindings and per-word mutation masks apply before effects, including None's internal prefix state. A range-valid but changed established first anchor or altered original total is invalid."
+  ],
+  "arithmetic": {
+    "cast_rule": "A=last_lower_hit &0xffffffff; B=first_original_lower_start &0xffffffff; C=needle_lower_scalars &0xffffffff. Interpret these low32 words as i32 for overflow semantics, while retaining full-u64 positions for all indexing and the prefix test.",
+    "steps": [
+      {
+        "stage": 1,
+        "operation": "subtract",
+        "lhs": "A",
+        "rhs": "B",
+        "result": "r1=(A+0x100000000-B)&0xffffffff",
+        "overflow_mask_bit": 1,
+        "signed_overflow_rule": "((A xor B) and (A xor r1) and0x80000000)!=0"
+      },
+      {
+        "stage": 2,
+        "operation": "add",
+        "lhs": "r1",
+        "rhs": "1",
+        "result": "r2=(r1+1)&0xffffffff",
+        "overflow_mask_bit": 2,
+        "signed_overflow_rule": "r1==0x7fffffff"
+      },
+      {
+        "stage": 3,
+        "operation": "subtract",
+        "lhs": "r2",
+        "rhs": "C",
+        "result": "r3=(r2+0x100000000-C)&0xffffffff",
+        "overflow_mask_bit": 4,
+        "signed_overflow_rule": "((r2 xor C) and (r2 xor r3) and0x80000000)!=0"
+      }
+    ],
+    "score": "HIA sets clamped to0 if r3's sign bit is1, otherwise r3. If full first_original_lower_start==0, score_bits=(clamped+0x100000000-100)&0xffffffff; otherwise score_bits=clamped. The last subtraction is always within the original i32 range.",
+    "descriptor": "overflow_mask contains all three flags after the wrapped sequence. first_overflow_op is the earliest set stage, else0. Stage1 operands are A/B; stage2 operands are r1/1; stage3 operands are r2/C. Store zero operands for descriptor0.",
+    "host_bridge": [
+      "The host checks all score/intermediate/descriptor words fit low32 and mask is0..7; checks descriptor is the earliest mask bit; and binds the descriptor's operands exactly to the defined trace words, state positions and actual normalized needle length.",
+      "The host does not recompute r1/r2/r3, overflow flags, clamp, bonus or score. Native source admission and independent literal/public-oracle review provide algorithmic assurance; shape/cross-binding is not a second score implementation.",
+      "After the entire return frame is validated and before returning public Some, if the descriptor is nonzero, convert its two checked low32 words to i32 and execute exactly one ordinary Rust primitive of the corresponding kind in the same fuzzy crate: subtraction for1/3, addition for2. Discard the value.",
+      "No cfg(debug_assertions), checked/wrapping replacement, saturation, retries or fallback controls this step. The actual crate's overflow-check setting determines whether the original first arithmetic overflow panics.",
+      "The bridge is never called for Empty, Continue or None. If the native descriptor iszero, no host score arithmetic is performed. Return the HIA-produced i32 score only after any required bridge returns."
+    ],
+    "trust_boundary": "The host cannot independently prove the native intermediate arithmetic truth without taking score ownership back into Rust. Canonical descriptor and operand binding are mandatory, but are not represented as proof of historical or mathematical authenticity.",
+    "hand_derived_trace_witnesses": [
+      {
+        "id": "first_subtraction_overflow",
+        "first_original_lower_start": "2147483647",
+        "last_lower_hit": "2147483648",
+        "needle_lower_scalars": "2",
+        "r1_bits": "0x00000001",
+        "r2_bits": "0x00000002",
+        "r3_bits": "0x00000000",
+        "overflow_mask": 1,
+        "first_overflow_op": 1,
+        "lhs_bits": "0x80000000",
+        "rhs_bits": "0x7fffffff",
+        "score_bits": "0x00000000"
+      },
+      {
+        "id": "add_one_first_then_subtraction_overflow",
+        "first_original_lower_start": "0",
+        "last_lower_hit": "2147483647",
+        "needle_lower_scalars": "2",
+        "r1_bits": "0x7fffffff",
+        "r2_bits": "0x80000000",
+        "r3_bits": "0x7ffffffe",
+        "overflow_mask": 6,
+        "first_overflow_op": 2,
+        "lhs_bits": "0x7fffffff",
+        "rhs_bits": "0x00000001",
+        "score_bits": "0x7fffff9a"
+      },
+      {
+        "id": "final_subtraction_only_overflow",
+        "first_original_lower_start": "0",
+        "last_lower_hit": "4294967295",
+        "needle_lower_scalars": "2147483648",
+        "r1_bits": "0xffffffff",
+        "r2_bits": "0x00000000",
+        "r3_bits": "0x80000000",
+        "overflow_mask": 4,
+        "first_overflow_op": 3,
+        "lhs_bits": "0x00000000",
+        "rhs_bits": "0x80000000",
+        "score_bits": "0xffffff9c"
+      },
+      {
+        "id": "full_u64_nonprefix_low32_zero",
+        "first_original_lower_start": "4294967296",
+        "last_lower_hit": "4294967297",
+        "needle_lower_scalars": "2",
+        "r1_bits": "0x00000001",
+        "r2_bits": "0x00000002",
+        "r3_bits": "0x00000000",
+        "overflow_mask": 0,
+        "first_overflow_op": 0,
+        "lhs_bits": "0x00000000",
+        "rhs_bits": "0x00000000",
+        "score_bits": "0x00000000"
+      }
+    ],
+    "witness_level": "Explicit manual arithmetic literals for later review/raw state fixtures. No matcher, table lookup, HIA, Rust arithmetic reference or model was executed to create or validate them."
+  },
+  "transition_rules": {
+    "rule": "For every returned state, every word outside the applicable allowed-change list must be byte-for-byte equal to the input word. Being in the list permits only the separately specified transition, not arbitrary replacement. All per-op delta, phase, conservation and anchor checks apply in addition to shape.",
+    "allowed_changed_words": {
+      "Begin": [
+        0,
+        1,
+        2,
+        20,
+        21
+      ],
+      "LowerHaystack": [
+        0,
+        3,
+        5,
+        6
+      ],
+      "LowerNeedle": [
+        0,
+        4,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "Match": [
+        0,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ]
+    },
+    "immutable_totals": "Only Begin writes total byte words1/2, and their values must equal its argument_a/b. Every subsequent output preserves them exactly; the host also binds them to the original public &str lengths.",
+    "Begin": "All input state words arezero. Nonempty emits phaseHaystack with totals and all other wordszero. Empty emits phaseDone,outcomeSome,scoreMAX,hay total and all other wordszero.",
+    "LowerHaystack": "Only phase0 and hay seen/original/lower words3/5/6 can change; they advance by exactly N, decoded original scalars and emitted records. The phase remainsHaystack unless END makes itNeedle. All needle, context, match and arithmetic words remain exact.",
+    "LowerNeedle": "Only phase0 and needle seen/original/lower/context words4/7/8/9/10/11 can change. Total words and all completed hay data remain exact. Matching/arithmetic words remain zero. END resolves pending and clears9/10/11 before phaseMatching.",
+    "Match": [
+      "Original totals, seen counts, original/normalized lengths and context words1..11 remain byte-exact.",
+      "word12 increases by advance_a and word13 by advance_b, with the exact validated window bounds. Cursors cannot otherwise change.",
+      "If advance_a=0, scanned words28/29 remain exact. If positive, they must bind to the host hay record at new hay_cursor-1.",
+      "If advance_b=0, every hit word14/15/16/17/18/19/30 remains exact, including all first/last anchors and the unique count. No new hit may be claimed while the needle cursor does not advance.",
+      "If input needle_cursor>0, established first words15/16/30 (first original index, its original lower start, and first actual lower hit) remain exact regardless of new hits.",
+      "If input needle_cursor=0 and advance_b>0, first_lower_hit lies in [old hay_cursor,new hay_cursor), and its direct host Hay record binds first_original_index/first_original_lower_start. It is the first match for needle[0].",
+      "If advance_b>0, last_lower_hit lies in [old hay_cursor,new hay_cursor), the last original index/start bind that direct host Hay record, and its scalar binds needle[new needle_cursor-1]. With prior hits, last_lower_hit strictly increases.",
+      "If no new unique index is selected, last_matched_original_index/start stay equal to the previous matched original index/start; later lower slots of the same original scalar may still advance last_lower_hit when advance_b>0.",
+      "Continue keeps phaseMatching/outcomeContinue and all arithmetic wordszero. None changes only phase/outcome in addition to legitimate cursor/hit updates and keeps all arithmetic wordszero. Some moves toDone, finishes all needle scalars and supplies the trace/score.",
+      "All these rules apply to internal prefix state on None even though its record_count iszero and no prefix indices are returned publicly."
+    ]
+  },
+  "anchor_cross_binding": {
+    "scope": "Host native-response structure/cross-binding only; no scan, greedy selection, Unicode recomputation or score computation.",
+    "checks": [
+      "Before any direct index, validate the full-u64 position and its usize conversion against the actual owned normalized Hay/Needle vectors.",
+      "If needle_cursor>0, hay[first_lower_hit].original_scalar_index must equal first_original_index, and its original_lower_start must equal first_original_lower_start.",
+      "The scalar at that one fixed first-hit record must equal needle[0]. This is a check of a claimed anchor, not a search for one.",
+      "If needle_cursor>0, hay[last_lower_hit].original_scalar_index must equal last_matched_original_index, and its original_lower_start must equal last_matched_original_lower_start.",
+      "The scalar at that one fixed last-hit record must equal needle[needle_cursor-1]. No other needle/hay candidates are searched or selected by the host.",
+      "If hay_cursor>0, hay[hay_cursor-1] must bind scanned original index/start words28/29. No host equality search is done for this scanned record.",
+      "The direct original-start record at first_original_lower_start must itself have the claimed first original index/start; the corresponding last start record must have the claimed last original index/start. These are fixed O(1) cross-links into HIA-produced records.",
+      "When there are no matches, all hit anchors arezero and no match-anchor dereference is made. When no hay records were consumed, scanned words arezero and no scanned-record dereference is made."
+    ],
+    "limit": "Even these direct equalities do not prove greedy earliest-match behavior, the entire unseen match history, Unicode conversion truth or arithmetic truth. HIA source admission and original/literal oracles remain required."
+  },
+  "host_decoder": {
+    "before_call": [
+      "Create fresh all-zero state for each public call.",
+      "Send Begin before allocating/traversing lowercased haystack data.",
+      "After HIA's nonempty result, keep complete haystack normalization before needle normalization and matching.",
+      "Slice original &str only at complete scalar boundaries within4096 bytes. This transport validation is not lowercasing or matching.",
+      "Supply exact current windows from the owned vectors and HIA cursors; do not search, compare, sort or choose matches in Rust."
+    ],
+    "after_call": [
+      "Reject wrapper high-word errors, unknown core status, inconsistent version/op, unrecognized phase/outcome and any truncated/full-length mismatch.",
+      "Apply every per-operation unchanged-word mask and conditional first/last/scanned-anchor freeze, then check the bounded direct anchor record links. Never use these checks to search or choose a different match.",
+      "Decode a bounded return to temporary typed records; validate every record and the complete next state before modifying any persistent Vec or state.",
+      "For Sigma replacements into earlier frame appends, maintain a bounded virtual append table indexed by new-slot offset. Existing slots may be read by direct index. Do not clone the full normalized needle or repeatedly scan a growing vector.",
+      "A replacement must target a prior virtual scalar equal to normal sigma and write final sigma. An index below the old vector length is eligible only if it is exactly the input state's one pending Sigma slot. An index appended in this frame is eligible only after its Append command. Replacement indices are strictly increasing within the frame. This is transport eligibility, not a Rust proof that an earlier input scalar was a qualified capital Sigma. Reject duplicate/out-of-range replacements and noncontiguous appends before any effects.",
+      "Bind total byte words1/2 to the original public strings and old private vector lengths to input state. Bind every output delta, record count, immutable word and direct anchor to its defined source. Validate all usize conversions before indexing/appending.",
+      "After complete validation, mechanically execute append/replace commands or extend the index list, then accept the next state. A malformed final record cannot leave an earlier mutation.",
+      "DoneNone discards the private output indices and returnsNone. DoneEmpty returnsSome(empty,MAX) directly. DoneSome invokes the original-overflow primitive bridge when required and returns only the kernel-selected indices and score.",
+      "Native protocol/errors are a fatal native boundary, not a legitimate no-match and not permission to invoke the retained Rust implementation."
+    ],
+    "no_extra_algorithm": [
+      "No str::to_lowercase or char::to_lowercase",
+      "No Unicode Cased/Case_Ignorable classification",
+      "No equality search for matching",
+      "No scoring/clamp/bonus computation",
+      "No sort/dedup fallback",
+      "No total input cap",
+      "No public API or caller ranking change"
+    ],
+    "allocation_boundary": "Containers and an optional combined Hay record representation may change allocation count/peak/OOM timing. This design preserves public value/order and original arithmetic behavior, not allocator trace, exact panic source line, fuel or performance."
+  },
+  "unicode_algorithm": {
+    "haystack": "Decode every original UTF-8 scalar and perform exact char lowercase independently. Preserve every original scalar index and the first lowered slot for that original scalar. Always retain the first mapping slot, including NUL; only subsequent zero sentinels terminate an expansion.",
+    "needle": "Use the same scalar conversion plus str lowercase Final_Sigma context over original characters. Case_Ignorable is considered before Cased, including their overlap. Pending qualified Sigma is emitted as normal sigma, then only HIA may request replacement by final sigma after right context or EOF is known.",
+    "single_ranges": "Binary search the mechanically copied sorted ranges, honor the parity bit, wrap the signed delta as u16 within the same Unicode plane, and fall through to the original multi path on a parity miss.",
+    "compressed_properties": "Preserve the original u32 masked-shift comparison, strict upper bound with equality advancing, preceding prefix sum, strict running-sum-greater-than stop, and global offset-index parity. Read compressed original literal bytes directly from bounded source constant banks.",
+    "no_shadow_implementation": "The Host performs transport, scalar/range/cross-link checks and owned Vec mutations. It performs no Unicode classification/lowercasing, greedy search, deduplication, score/clamp/bonus calculation or retained-Rust fallback.",
+    "no_total_cap": "Original strings, normalized vectors, pending Sigma distance and match-index count need not fit a single native frame. Only the complete current bounded source and output reservation are passed to each call."
+  },
+  "original_public_semantics": {
+    "path": "codex-rs/utils/fuzzy-match/src/lib.rs",
+    "bytes": 5939,
+    "sha256": "7152b6cda59c3ec9bb8522cac11a7f83ce914900450ce0340799e1fb8c06b2b5",
+    "git_blob": "d644b31677745e938611852720add65d0d6f6f8c",
+    "empty": "The HIA Begin decision returns an empty original-index vector and i32::MAX for an empty needle, before accessing the haystack.",
+    "order": "For nonempty needle, normalize the complete haystack before the complete needle, then greedily match all normalized needle scalars. Keep selected original scalar indices in first-hit order and deduplicate expansions without reordering.",
+    "none": "An incomplete greedy match returns None. It exposes no partial original-index vector, even if prior native frames internally accumulated indices.",
+    "score": "The original three i32 operations are evaluated in HIA as a wrapped trace with the first overflow descriptor. The Host executes only that one ordinary primitive under its actual compiler overflow-check setting. Prefix bonus uses the full original lower-start position, not its low32 projection.",
+    "tests": "Keep all8 original fuzzy owner methods and their complete assertions unchanged under default and native paths. Keep caller ranking, scalar/grapheme highlight and snapshots unchanged."
+  },
+  "required_validation": {
+    "scenarios": [
+      "Begin Empty with nonzero declared hay length and no hay payload/access",
+      "Empty hay plus nonempty needle normalizes needle before terminalNone",
+      "NUL emits one scalar, not zero",
+      "İ's second lower slot matches with original lower-start0 and score-99",
+      "Greedy misses after partial hits returnNone with zero final index records and discard prior accumulated indices",
+      "Sigma with preceding ASCII context, following cased/noncased/EOF, and Case_Ignorable overlapping Cased",
+      "Pending Sigma survives arbitrary many4096-byte frames and can patch an old vector slot or an earlier append in the same frame",
+      "UTF-8 multi-byte scalar boundary framing, invalid raw UTF-8 beforeSHORT, no source/workspace/error stores",
+      "All128/128 matching window exhaustion combinations and exact cursor conservation",
+      "Malformed final returned command/record rejected before any host effects",
+      "All three original i32 overflow stages and full-u64 low32-zero nonprefix",
+      "Total input/normalized output above1MiB, without raising per-call capacity or CPU budgets",
+      "Reject a forged Needle state with previous_cased1 and zero original/normalized history, for both short and sufficient output capacity, with no source/output/workspace store.",
+      "Compare every success output byte through defined_output_bytes against independently specified literal expectations; verify every unused output byte and every guard/source/workspace byte remains unchanged.",
+      "Distinguish logical full-u64 history fixtures from real large public input tests. A logical state fixture does not demonstrate allocation or processing of that entire history."
+    ],
+    "expected_source": "Independent manual literals and unchanged original public oracles; never derive expected values by executing this kernel or a copied reference matcher/property model.",
+    "admission": "The future native integration must bind the complete source/contract/corpus/Host identities and every compiler generation before loading this symbol. No prior module-count profile qualifies the new module.",
+    "limits": "Actual later source must remain within pinned0de function/block/SSA/instruction limits, with at most3 results. The369-word Unicode constant bank is source data, not a runtime classification service. No budget is raised or claimed passed."
+  },
+  "static_source_budget": {
+    "kind": "OWN_TEXT_DECLARATION_PREFLIGHT_ONLY",
+    "observed": {
+      "functions": 63,
+      "blocks": 970,
+      "ssa_definitions": 4112,
+      "assignments": 2742,
+      "terminators": 970,
+      "source_lines": 4809,
+      "source_bytes": 202030,
+      "largest_function_blocks": 127,
+      "largest_function_ssa": 317,
+      "largest_formal_parameters": 7,
+      "largest_block_parameters": 12,
+      "largest_results": 3,
+      "call_sites": 322,
+      "assignments_plus_terminators": 3712
+    },
+    "fixed_limits": {
+      "functions": 128,
+      "blocks_per_function": 256,
+      "blocks_total": 1536,
+      "ssa_values_per_function": 2048,
+      "parameters_per_function_or_block": 16,
+      "results_per_function_or_call": 3,
+      "instructions_total": 8192,
+      "nodes": 262144,
+      "relocations": 12000
+    },
+    "unproved": [
+      "Actual parser/type/CFG acceptance",
+      "Actual compiler node and relocation counts",
+      "Native memory and CPU budgets",
+      "Any public/raw test outcome",
+      "Runtime/performance/fuel/trace/cancellation equivalence"
+    ]
+  },
+  "qualification": {
+    "source_only": true,
+    "project_parser_executed": false,
+    "compiler_executed": false,
+    "native_executed": false,
+    "reference_model_executed": false,
+    "raw_abi_passed": false,
+    "public_oracles_passed": false,
+    "performance_qualified": false,
+    "production_dispatch_migrated": false,
+    "default_dispatch_changed": false,
+    "complete_module_admitted": false
+  }
+}

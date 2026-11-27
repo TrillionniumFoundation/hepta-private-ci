@@ -1,6 +1,7 @@
 use crate::decision::Decision;
 use crate::error::Error;
 use crate::error::Result;
+#[cfg(not(feature = "hia-native"))]
 use crate::executable_name::executable_path_lookup_key;
 use crate::rule::NetworkRule;
 use crate::rule::NetworkRuleProtocol;
@@ -101,6 +102,12 @@ impl Policy {
         &self.host_executables_by_name
     }
 
+    #[cfg(feature = "hia-native")]
+    pub fn get_allowed_prefixes(&self) -> Vec<Vec<String>> {
+        crate::hia_native_allowed_prefixes::collect(&self.rules_by_program)
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn get_allowed_prefixes(&self) -> Vec<Vec<String>> {
         let mut prefixes = Vec::new();
 
@@ -201,6 +208,12 @@ impl Policy {
         )
     }
 
+    #[cfg(feature = "hia-native")]
+    pub fn compiled_network_domains(&self) -> (Vec<String>, Vec<String>) {
+        crate::hia_native_network_domains::compile(&self.network_rules)
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn compiled_network_domains(&self) -> (Vec<String>, Vec<String>) {
         let mut allowed = Vec::new();
         let mut denied = Vec::new();
@@ -302,6 +315,22 @@ impl Policy {
         self.matches_for_command_with_options(cmd, heuristics_fallback, &MatchOptions::default())
     }
 
+    #[cfg(feature = "hia-native")]
+    pub fn matches_for_command_with_options(
+        &self,
+        cmd: &[String],
+        heuristics_fallback: HeuristicsFallback<'_>,
+        options: &MatchOptions,
+    ) -> Vec<RuleMatch> {
+        crate::hia_native_command_dispatch::matches_for_command(
+            self,
+            cmd,
+            heuristics_fallback,
+            options,
+        )
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn matches_for_command_with_options(
         &self,
         cmd: &[String],
@@ -331,6 +360,7 @@ impl Policy {
         }
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn match_exact_rules(&self, cmd: &[String]) -> Option<Vec<RuleMatch>> {
         let first = cmd.first()?;
         Some(
@@ -341,6 +371,7 @@ impl Policy {
         )
     }
 
+    #[cfg(not(feature = "hia-native"))]
     fn match_host_executable_rules(&self, cmd: &[String]) -> Vec<RuleMatch> {
         let Some(first) = cmd.first() else {
             return Vec::new();
@@ -371,11 +402,13 @@ impl Policy {
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn upsert_domain(entries: &mut Vec<String>, host: &str) {
     entries.retain(|entry| entry != host);
     entries.push(host.to_string());
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn render_pattern_token(token: &PatternToken) -> String {
     match token {
         PatternToken::Single(value) => value.clone(),
@@ -392,6 +425,12 @@ pub struct Evaluation {
 }
 
 impl Evaluation {
+    #[cfg(feature = "hia-native")]
+    pub fn is_match(&self) -> bool {
+        crate::hia_native_policy_summary::summarize(&self.matched_rules).has_explicit_match
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn is_match(&self) -> bool {
         self.matched_rules
             .iter()
@@ -399,6 +438,19 @@ impl Evaluation {
     }
 
     /// Caller is responsible for ensuring that `matched_rules` is non-empty.
+    #[cfg(feature = "hia-native")]
+    fn from_matches(matched_rules: Vec<RuleMatch>) -> Self {
+        #[expect(clippy::expect_used)]
+        let decision = crate::hia_native_policy_summary::summarize(&matched_rules)
+            .decision
+            .expect("invariant failed: matched_rules must be non-empty");
+        Self {
+            decision,
+            matched_rules,
+        }
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     fn from_matches(matched_rules: Vec<RuleMatch>) -> Self {
         let decision = matched_rules.iter().map(RuleMatch::decision).max();
         #[expect(clippy::expect_used)]

@@ -105,6 +105,36 @@
       "text": "// BEGIN HIA TEMPLATE RENDER VARIABLE HELPER ORIGINAL GUARD\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA TEMPLATE RENDER VARIABLE HELPER ORIGINAL GUARD\n",
       "sha256": "d25f135c168e41ca67cb7e250ab7b99802b27221b3284427c9785cfadca4661c",
       "occurrences": 1
+    },
+    {
+      "name": "template_index_modules",
+      "text": "// BEGIN HIA TEMPLATE INDEX MODULES\n#[cfg(feature = \"hia-native\")]\nmod hia_native_index;\n#[cfg(feature = \"hia-native\")]\nmod hia_native_placeholders;\n// END HIA TEMPLATE INDEX MODULES\n\n",
+      "sha256": "cd695ff17b05da8e9e0d634dcaedd2bc22e65d6408ca680d26b750774c907c89",
+      "occurrences": 1
+    },
+    {
+      "name": "template_placeholder_set_import_guard",
+      "text": "// BEGIN HIA TEMPLATE PLACEHOLDER SET IMPORT GUARD\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA TEMPLATE PLACEHOLDER SET IMPORT GUARD\n",
+      "sha256": "bdcc4e3ead125b1a0464e2f8e35502a8cd9434da5bc50ba12a3925cb3e756881",
+      "occurrences": 1
+    },
+    {
+      "name": "template_native_placeholder_storage",
+      "text": "    // BEGIN HIA TEMPLATE NATIVE PLACEHOLDER STORAGE\n    #[cfg(feature = \"hia-native\")]\n    placeholders: hia_native_placeholders::Placeholders,\n    // END HIA TEMPLATE NATIVE PLACEHOLDER STORAGE\n",
+      "sha256": "2224dd67aaba09524dcbb20a49d521e5e5eabe044f95960208641873f680b290",
+      "occurrences": 1
+    },
+    {
+      "name": "template_original_placeholder_storage_guard",
+      "text": "    // BEGIN HIA TEMPLATE ORIGINAL PLACEHOLDER STORAGE GUARD\n    #[cfg(not(feature = \"hia-native\"))]\n    // END HIA TEMPLATE ORIGINAL PLACEHOLDER STORAGE GUARD\n",
+      "sha256": "e41b26912fa5f0b379127d840c4e3ce04213342994d6dcad81167f178e9c8cd9",
+      "occurrences": 1
+    },
+    {
+      "name": "template_preserved_owner_tests",
+      "text": "\n// BEGIN HIA TEMPLATE PRESERVED OWNER TESTS\n#[cfg(test)]\n#[path = \"parser_native_tests.rs\"]\nmod parser_native_tests;\n\n#[cfg(test)]\n#[path = \"render_native_tests.rs\"]\nmod render_native_tests;\n// END HIA TEMPLATE PRESERVED OWNER TESTS\n",
+      "sha256": "d5b36c20e6ba348d8652aedda26d3da362afbd3024605ae905f9951ffb6554f3",
+      "occurrences": 1
     }
   ],
   "registry_packages": {

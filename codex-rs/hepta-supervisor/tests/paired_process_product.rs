@@ -235,6 +235,8 @@ impl PairFleet {
         );
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
         let fixture_binary = std::env::current_exe()?;
+        #[cfg(target_os = "macos")]
+        let fixture_binary = fixture_binary.canonicalize()?;
         // Linux embeds the full integration harness's DWARF in this file.
         // Catalog installation and each real release resolution still verify
         // every executable byte; debug metadata is irrelevant to the fixture.
@@ -242,13 +244,20 @@ impl PairFleet {
         // with only that metadata removed, as for an ordinary release binary.
         #[cfg(target_os = "linux")]
         let fixture_binary = {
+            use std::os::unix::fs::PermissionsExt;
+
             let copy = temp.path().join("paired-process-fixture");
             let original_bytes = std::fs::copy(&fixture_binary, &copy)?;
+            let original_permissions = std::fs::metadata(&copy)?.permissions();
+            let mut strip_permissions = original_permissions.clone();
+            strip_permissions.set_mode(original_permissions.mode() | 0o200);
+            std::fs::set_permissions(&copy, strip_permissions)?;
             let output = std::process::Command::new("strip")
                 .arg("-S")
                 .arg(&copy)
                 .output()
                 .context("strip Linux fixture debug metadata")?;
+            std::fs::set_permissions(&copy, original_permissions)?;
             anyhow::ensure!(
                 output.status.success(),
                 "fixture strip failed: {}",
@@ -622,8 +631,8 @@ fn run_agent_child() -> Result<()> {
             payload,
         };
         let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        // A closed requester ends only this connection, without a successful handshake.
+        let _ = write_fixture_response(&mut stream, &response)?;
     }
     Ok(())
 }
@@ -693,10 +702,35 @@ fn run_matrix_child() -> Result<()> {
             }),
         };
         let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response)?;
-        stream.write_all(b"\n")?;
+        // A closed requester ends only this connection, without a successful handshake.
+        let _ = write_fixture_response(&mut stream, &response)?;
     }
     Ok(())
+}
+
+#[derive(Debug, Eq, PartialEq)]
+enum FixtureResponseWrite {
+    Complete,
+    PeerClosed,
+}
+
+fn write_fixture_response(
+    writer: &mut impl Write,
+    response: &impl serde::Serialize,
+) -> Result<FixtureResponseWrite> {
+    if let Err(error) = serde_json::to_writer(&mut *writer, response) {
+        if error.io_error_kind() == Some(std::io::ErrorKind::BrokenPipe) {
+            return Ok(FixtureResponseWrite::PeerClosed);
+        }
+        return Err(error.into());
+    }
+    match writer.write_all(b"\n") {
+        Ok(()) => Ok(FixtureResponseWrite::Complete),
+        Err(error) if error.kind() == std::io::ErrorKind::BrokenPipe => {
+            Ok(FixtureResponseWrite::PeerClosed)
+        }
+        Err(error) => Err(error.into()),
+    }
 }
 
 fn prepare_fixture_socket(path: &Path) -> Result<()> {
@@ -710,3 +744,7 @@ fn prepare_fixture_socket(path: &Path) -> Result<()> {
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "paired_process_product/response_write_tests.rs"]
+mod response_write_tests;

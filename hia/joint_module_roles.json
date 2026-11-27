@@ -1,0 +1,673 @@
+{
+  "schema": "codex.hia.joint-module-roles.v1",
+  "base_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+  "donor_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+  "audited_name_union": 29,
+  "current_opt_in_linked_kernels": 34,
+  "retained_oracle_only_kernels": 3,
+  "entry_profiles": {
+    "token_budget": "u64-pair-to-u64-v1",
+    "prefix_admission": "u64-pair-to-u64-v1"
+  },
+  "modules": [
+    {
+      "module": "seek_sequence",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/seek_sequence.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "a67e4089177b94a1b4bb0f066c8f0faff76c666c",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "seek_sequence",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "utf8_boundaries",
+      "role": "retained_oracle_only",
+      "production_protocol_superseded": true,
+      "replacement": "utf8_prefix",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/utf8_boundaries.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "fad44da7e56a70b94b823a1acaf85fc1c74a6b04",
+      "production_link_sites": [],
+      "production_entry": "take_bytes_at_char_boundary",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "utf8_prefix",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/utf8_prefix.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "353dd2d16f0dbd9189e702d93d5b8da21645d727",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "take_bytes_at_char_boundary",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "metric_tag",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/metric_tag.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "c148420d5422a7e81260b44f5d5ec76cbdcc510e",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "sanitize_metric_tag_value",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "markdown_location",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/markdown_location.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "71cd6f3e0bc9e4f27ed6ce1979946fb9e284eb2a",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "normalize_markdown_hash_location_suffix",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "ascii_json_fragment",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/ascii_json_fragment.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "fd48b7ad074fb48496eece4a4c484e7329d2b479",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "AsciiJsonFormatter::write_string_fragment",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "truncate",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/truncate.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "e3e1b632507592422e4d62a110865ccab06d76bf",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "codex-rs/utils/string/src/truncate.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "token_budget",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "u64-pair-to-u64-v1",
+      "hia_source": "hia/token_budget.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "67ebbc7ceaa9acdef2ab25512509649649a8f539",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "codex-rs/utils/string/src/truncate.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "source_file",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/source_file.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "c69934fbfb5acc1d08b2d37f596554d439522e73",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "codex-rs/apply-patch/src/text_file.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "file_update",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/file_update.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "b20d0ba7a397adc7914ef1935d8e2c0d0f7bf956",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "codex-rs/apply-patch/src/file_update.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "parser",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/parser.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "5da0349922c7be57b3914315dd29a805c63a054f",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": null,
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "patch_effects",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/patch_effects.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "3e9b0085d2513345424759ee0864844549ccbfc6",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "codex-rs/apply-patch/src/lib.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "unified_diff",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/unified_diff.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "ec798a500a6164c30783584b4dcd7693851563f4",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "unified_diff_from_chunks_with_context_and_mode",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "patch_summary",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/patch_summary.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "e3b62b1fc21081bfd4f388be9ebdd3b8fc630564",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "print_summary",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "patch_application",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/patch_application.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "bbbd784b703ab74a0aa7a9bcfdca9373c169865b",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "codex-rs/apply-patch/src/lib.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "patch_standalone",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/patch_standalone.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "b63dd7a6dcc6be64da5e52a32e2c48059bd46b94",
+      "production_link_sites": [
+        "codex-rs/apply-patch/build.rs"
+      ],
+      "production_entry": "codex-rs/apply-patch/src/standalone_executable.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "uuid_find",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/uuid_find.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "3065a3c76a4b10589b6b5475eab304f78ed2a0e8",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "codex-rs/utils/string/src/lib.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "template_parse",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/template_parse.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "e557da731fb611ae2a8af7cbcabc0e9b342acdc3",
+      "production_link_sites": [
+        "codex-rs/utils/template/build.rs"
+      ],
+      "production_entry": "codex-rs/utils/template/src/lib.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "template_render",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/template_render.hepta",
+      "source_revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "source_git_blob": "cab8c72fab3e99c3aedd6247252f89e69721cc3a",
+      "production_link_sites": [
+        "codex-rs/utils/template/build.rs"
+      ],
+      "production_entry": "codex-rs/utils/template/src/lib.rs",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "template_index",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/template_index.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "c3a8e70b7427831150bb03aa083e8d85d4dcda1b",
+      "production_link_sites": [
+        "codex-rs/utils/template/build.rs"
+      ],
+      "production_entry": "Template placeholder ordering/deduplication through HIAIndexBuilder",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "uuid_matches",
+      "role": "retained_oracle_only",
+      "production_protocol_superseded": true,
+      "replacement": "uuid_find",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/uuid_matches.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "2a8b83b8554bb10a0ea70f6a46e8188b24289533",
+      "production_link_sites": [],
+      "production_entry": "find_uuids",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "template_parser",
+      "role": "retained_oracle_only",
+      "production_protocol_superseded": true,
+      "replacement": "template_parse",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/template_parser.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "c2c88f635ee5937f3ee258d906e612c89a9c556a",
+      "production_link_sites": [],
+      "production_entry": "Template::parse",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "prefix_match",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/prefix_match.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "0842617d0ed4a9f55eba166765613a5e48eb5634",
+      "production_link_sites": [
+        "codex-rs/execpolicy/build.rs"
+      ],
+      "production_entry": "PrefixPattern::matches_prefix",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "prefix_admission",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "u64-pair-to-u64-v1",
+      "hia_source": "hia/prefix_admission.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "5ed3841a965c449ae533e60d09ddc0002de68317",
+      "production_link_sites": [
+        "codex-rs/execpolicy/build.rs"
+      ],
+      "production_entry": "PrefixPattern::matches_prefix count admission",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "policy_summary",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/policy_summary.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "0a857aecab7c39282d0738d19a7b40835d79f3f6",
+      "production_link_sites": [
+        "codex-rs/execpolicy/build.rs"
+      ],
+      "production_entry": "Evaluation::from_matches / Evaluation::is_match / CLI result reduction",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "network_domains",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/network_domains.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "fbe14a9d681b3dd8e481b8de9b281a76d96d2f2d",
+      "production_link_sites": [
+        "codex-rs/execpolicy/build.rs"
+      ],
+      "production_entry": "Policy::compiled_network_domains / upsert_domain",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "allowed_prefixes",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/allowed_prefixes.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "f9462d04819f238fa758a8f898cae14490ba91c0",
+      "production_link_sites": [
+        "codex-rs/execpolicy/build.rs"
+      ],
+      "production_entry": "Policy::get_allowed_prefixes / render_pattern_token",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "command_dispatch",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/command_dispatch.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "56a5dea620cbe0589aa465e4066145ff94599d6d",
+      "production_link_sites": [
+        "codex-rs/execpolicy/build.rs"
+      ],
+      "production_entry": "Policy::matches_for_command / check_matches / match_with_heuristics",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "network_host",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/network_host.hepta",
+      "source_revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "source_git_blob": "a8ec3308fe5de16a6e83050a9b72a4d0df7d23ac",
+      "production_link_sites": [
+        "codex-rs/execpolicy/build.rs"
+      ],
+      "production_entry": "normalize_network_rule_host",
+      "runtime_qualified_on_joint_tree": false
+    },
+    {
+      "module": "output_lines",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/output_lines.hepta",
+      "source_revision": "8987467886706dfec8bfbd3e05f0f1f8ecbf965e",
+      "source_git_blob": "698cccefdbd04c83dc52c9680a71637d7e41aa77",
+      "production_link_sites": [
+        "codex-rs/utils/string/build.rs"
+      ],
+      "production_entry": "codex_utils_string::count_lines, used by formatted_truncate_text",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "output_item_budget",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/output_item_budget.hepta",
+      "source_revision": "c34d9e12eb87fc2452e855279351e9cfbfefa4fa",
+      "source_git_blob": "ae957a5f1826bf4352662ddef54697b19b23cf5f",
+      "source_sha256": "4700c1fd61778ef0eaf479f7be8ada24d9a65daff5e65324a504fb51f867c814",
+      "production_link_sites": [
+        "codex-rs/utils/output-truncation/build.rs"
+      ],
+      "production_entry": "codex_utils_output_truncation::truncate_function_output_items_with_policy; Core history/code-mode callers through codex-core/hia-native and the CLI feature",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "format_env_display",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/format_env_display.hepta",
+      "source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+      "source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc",
+      "source_sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+      "production_link_sites": [
+        "codex-rs/utils/cli/build.rs"
+      ],
+      "production_entry": "codex_utils_cli::format_env_display; two CLI MCP views and the TUI MCP environment view",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "citation_stream_parser",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/citation_stream_parser.hepta",
+      "source_revision": "20c7ce19ae5775c50e3999ba7fcca424939a8078",
+      "source_git_blob": "e0c936e7c646c0f1aa903b47ba96acb27be74601",
+      "source_sha256": "a73619f953b10636e6201515fb324f5a9dcf0806df5ccd968dd3eda5b028b354",
+      "production_link_sites": [
+        "codex-rs/utils/stream-parser/build.rs"
+      ],
+      "production_entry": "codex_utils_stream_parser::CitationStreamParser push_str/finish and strip_citations; AssistantTextStreamParser and Core streaming/finalization callers through codex-core/hia-native and the existing CLI feature",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "proposed_plan_parser",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/proposed_plan_parser.hepta",
+      "source_revision": "da3817ebea57da1a940c12abc57999ce3d50706a",
+      "source_git_blob": "31e29d47a34f5db006319bf1b60c3285564e94c6",
+      "source_sha256": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755",
+      "production_link_sites": [
+        "codex-rs/utils/stream-parser/build.rs"
+      ],
+      "production_entry": "codex_utils_stream_parser::ProposedPlanParser push_str/finish, strip_proposed_plan_blocks and extract_proposed_plan_text; existing AssistantTextStreamParser and Core streaming/finalization callers through the existing codex-core and CLI hia-native feature route",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "fuzzy_match",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/fuzzy_match.hepta",
+      "source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+      "source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
+      "source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+      "production_link_sites": [
+        "codex-rs/utils/fuzzy-match/build.rs"
+      ],
+      "production_entry": "codex_utils_fuzzy_match::fuzzy_match, selected by codex-utils-fuzzy-match/hia-native and forwarded by the existing TUI/CLI feature route; existing ranking and scalar-index highlight consumers retain their APIs",
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_pending_fresh_build_and_public_oracles"
+    },
+    {
+      "module": "utf8_stream",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/utf8_stream.hepta",
+      "source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+      "source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
+      "source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+      "production_link_sites": [
+        "codex-rs/utils/stream-parser/build.rs"
+      ],
+      "production_entry": "Public Utf8StreamParser<P> byte validation through hia-native; original generic inner parser and container effects remain in Rust.",
+      "library_only": true,
+      "installed_cli_reachability_claimed": false,
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
+      "qualification_report": "hia/verification.json#current_qualification"
+    },
+    {
+      "module": "inline_hidden_tag",
+      "role": "current_opt_in_production",
+      "production_protocol_superseded": false,
+      "replacement": null,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "hia_source": "hia/inline_hidden_tag.hepta",
+      "source_revision": "99e46153d4db235c00a14056d5e50735c3c69f47",
+      "source_git_blob": "b0a2502a5c95dbe1f888b8ef82412a8445d7a257",
+      "source_sha256": "4170045f784ac4c9ffd1f48e0d6ae78b82d49a092863afc28499598c7289d879",
+      "production_link_sites": [
+        "codex-rs/utils/stream-parser/build.rs"
+      ],
+      "production_entry": "Public InlineHiddenTagParser<T> generic delimiter decisions through hia-native; original generic fields, containers and effect order remain in Rust.",
+      "library_only": true,
+      "installed_cli_reachability_claimed": false,
+      "runtime_qualified_on_joint_tree": false,
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
+      "qualification_report": "hia/verification.json#current_qualification"
+    }
+  ],
+  "superseded_shared_symbol_protocols": [
+    {
+      "symbol": "codex_hia_template_render",
+      "legacy_source": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "legacy_protocol": "v8 40-byte command / 64-byte workspace / 32-byte output / success 32",
+      "current_source": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "current_protocol": "v9 >=64-byte frame / 32-byte workspace / 80-byte header / success 0",
+      "role": "superseded_v8_protocol_in_exact17_historical_job_only",
+      "current_raw_gate": "hia/tests/test_template_render_abi.py",
+      "historical_job": "historical-native17",
+      "old_raw_gate_may_use_current_library": false
+    }
+  ],
+  "histories": {
+    "17": {
+      "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "files": {
+        "migration.json": {
+          "path": "hia/history/owner17-74d1c0eb/migration.json",
+          "bytes": 167068,
+          "sha256": "8c977b4b604f75b4c8a71de98bfcfb9da0659f4761803deb5f0a5ecdfe2702d4",
+          "git_blob": "744e300723906d8c50829e8c1d6b27585f8ba5ae"
+        },
+        "verification.json": {
+          "path": "hia/history/owner17-74d1c0eb/verification.json",
+          "bytes": 458169,
+          "sha256": "d78f75b7f9d616e1abbe01585bae9c521d3988a654940d69832d17ae6a3093a1",
+          "git_blob": "d5e6e76a8832c1105111b1aedbf62dc7f412d71b"
+        },
+        "README.md": {
+          "path": "hia/history/owner17-74d1c0eb/README.md",
+          "bytes": 122550,
+          "sha256": "715126779d0fa78cf728c28adeba5d98654514cb953d2a9b7ac9530ee55abd63",
+          "git_blob": "f6c2b401d971500f0ad59d715c53756a9cc5cef5"
+        }
+      }
+    },
+    "19": {
+      "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "files": {
+        "migration.json": {
+          "path": "hia/history/owner19-d2fb9ecd/migration.json",
+          "bytes": 112258,
+          "sha256": "5b9b1108aa1b2c41a7d868d601a260297b6ebf2001ce7147b28b48fda9aed00b",
+          "git_blob": "bafd8b4bf107284112345142ae2f83453faa098f"
+        },
+        "verification.json": {
+          "path": "hia/history/owner19-d2fb9ecd/verification.json",
+          "bytes": 234966,
+          "sha256": "6e3da32de124e015a1943959a410a9c146909ac6bd3c04eaa1448e405149c5f8",
+          "git_blob": "645b5e9deb01ae762c3ee4605601a91965481ee4"
+        },
+        "README.md": {
+          "path": "hia/history/owner19-d2fb9ecd/README.md",
+          "bytes": 49908,
+          "sha256": "833c700d5fdccf35cdc70fd438490fdcd264717612c9c7f8b9e98de6c0997b29",
+          "git_blob": "fe65efde72c34243ecc4aedca7418f77262decb5"
+        }
+      }
+    }
+  },
+  "count_is_not_a_production_coverage_claim": true,
+  "current_build_or_runtime_executed": false,
+  "current_build_module_count": null,
+  "modules_added_after_audited_union": [
+    "output_lines",
+    "output_item_budget",
+    "format_env_display",
+    "citation_stream_parser",
+    "proposed_plan_parser",
+    "fuzzy_match",
+    "utf8_stream",
+    "inline_hidden_tag"
+  ],
+  "current_build_or_runtime_scope": "Source-only follow-up at 99e46153d4db235c00a14056d5e50735c3c69f47. Prior 450f native37 local component results and predecessor 4468d5e CI observations are historical and not transferred. No fresh compiler generation, native build, raw ABI execution, public owner test, installed consumer test, performance measurement or full workflow qualification is claimed for this source. The configured module inventory remains 37.",
+  "previous_inline_450f_source_record": {
+    "source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+    "metadata_git_blobs": {
+      "hia/migration.json": "62e63f30c667a7a293a5bed5c21761fb0438c8ed",
+      "hia/verification.json": "41ac81e9cd957f61ce760736ea90bf68913bd00e",
+      "hia/joint_module_roles.json": "d38c3087e4157688da29e9ed33d97d048bbf5e71",
+      "hia/README.md": "4bc4ccce2dc93d2702553863c0b5acbd08e83fb4"
+    },
+    "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+    "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+    "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+    "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+    "qualification_transferred_to_current": false
+  }
+}

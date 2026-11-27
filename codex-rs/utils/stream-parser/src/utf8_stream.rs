@@ -4,6 +4,11 @@ use std::fmt;
 use crate::StreamTextChunk;
 use crate::StreamTextParser;
 
+#[cfg(feature = "hia-native")]
+use crate::hia_native_utf8_stream::validate as decode_utf8;
+#[cfg(not(feature = "hia-native"))]
+use std::str::from_utf8 as decode_utf8;
+
 /// Error returned by [`Utf8StreamParser`] when streamed bytes are not valid UTF-8.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Utf8StreamParserError {
@@ -70,7 +75,7 @@ where
         let old_len = self.pending_utf8.len();
         self.pending_utf8.extend_from_slice(chunk);
 
-        match std::str::from_utf8(&self.pending_utf8) {
+        match decode_utf8(&self.pending_utf8) {
             Ok(text) => {
                 let out = self.inner.push_str(text);
                 self.pending_utf8.clear();
@@ -90,7 +95,7 @@ where
                     return Ok(StreamTextChunk::default());
                 }
 
-                let text = match std::str::from_utf8(&self.pending_utf8[..valid_up_to]) {
+                let text = match decode_utf8(&self.pending_utf8[..valid_up_to]) {
                     Ok(text) => text,
                     Err(prefix_err) => {
                         self.pending_utf8.truncate(old_len);
@@ -110,7 +115,7 @@ where
 
     pub fn finish(&mut self) -> Result<StreamTextChunk<P::Extracted>, Utf8StreamParserError> {
         if !self.pending_utf8.is_empty() {
-            match std::str::from_utf8(&self.pending_utf8) {
+            match decode_utf8(&self.pending_utf8) {
                 Ok(_) => {}
                 Err(err) => {
                     if let Some(error_len) = err.error_len() {
@@ -127,7 +132,7 @@ where
         let mut out = if self.pending_utf8.is_empty() {
             StreamTextChunk::default()
         } else {
-            let text = match std::str::from_utf8(&self.pending_utf8) {
+            let text = match decode_utf8(&self.pending_utf8) {
                 Ok(text) => text,
                 Err(err) => {
                     let error_len = err.error_len().unwrap_or(0);
@@ -155,7 +160,7 @@ where
         if self.pending_utf8.is_empty() {
             return Ok(self.inner);
         }
-        match std::str::from_utf8(&self.pending_utf8) {
+        match decode_utf8(&self.pending_utf8) {
             Ok(_) => Ok(self.inner),
             Err(err) => {
                 if let Some(error_len) = err.error_len() {
@@ -176,6 +181,10 @@ where
         self.inner
     }
 }
+
+#[cfg(test)]
+#[path = "utf8_stream_additional_tests.rs"]
+mod additional_tests;
 
 #[cfg(test)]
 mod tests {

@@ -18,6 +18,7 @@ use crate::FederationGrantScope;
 use crate::FederationRevalidationDrift;
 use crate::MemoryDraft;
 use crate::RetrievalRequest;
+use crate::cognitive_runtime::deadline_trace;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::memory_revision;
@@ -457,13 +458,20 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
         .with_federation_sources(consumer_id.clone(), owner_layouts);
     let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
-    let (batch, coverage) = runtime
-        .retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150))
+    let deadline_observation = Arc::new(deadline_trace::DeadlineTrace::default());
+    let (batch, coverage) = deadline_trace::CURRENT
+        .scope(
+            Arc::clone(&deadline_observation),
+            runtime.retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150)),
+        )
         .await
         .expect("bounded product retrieval");
     assert!(batch.candidates.is_empty());
     assert_eq!(coverage.requested_peers, 16);
-    assert_eq!(coverage.completed_peers, 16);
+    assert_eq!(
+        coverage.completed_peers, 16,
+        "peer coverage: {coverage:?}; deadline reporting stages: {deadline_observation:?}"
+    );
     assert_eq!(coverage.failed_peers, 0);
     assert_eq!(coverage.truncated_peers, 1);
     assert_eq!(coverage.omitted_peer_candidates, 0);

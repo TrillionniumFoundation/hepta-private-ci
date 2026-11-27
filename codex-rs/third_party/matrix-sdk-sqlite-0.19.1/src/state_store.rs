@@ -49,6 +49,7 @@ use crate::{
     OpenStoreError, RuntimeConfig, Secret, SqliteStoreConfig,
     connection::{self, Connection as SqliteAsyncConn, Pool as SqlitePool, SqliteConnections},
     error::{Error, Result},
+    open_diagnostics::{OpenPhase, StoreRole, observe_store_open, record_open_phase},
     utils::{
         EncryptableStore, Key, SqliteAsyncConnExt, SqliteKeyValueStoreAsyncConnExt,
         SqliteKeyValueStoreConnExt,
@@ -121,17 +122,24 @@ impl SqliteStateStore {
 
     /// Open the SQLite-based state store with the config open config.
     pub async fn open_with_config(config: &SqliteStoreConfig) -> Result<Self, OpenStoreError> {
-        fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
+        observe_store_open(config.open_diagnostics.as_ref(), StoreRole::State, async {
+            record_open_phase(OpenPhase::PathPrepare);
+            fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
 
-        let pool = config.build_pool_of_connections(DATABASE_NAME)?;
-        let pool_config = config.pool_config;
-        let runtime_config = config.runtime_config;
+            let pool = config.build_pool_of_connections(DATABASE_NAME)?;
+            let pool_config = config.pool_config;
+            let runtime_config = config.runtime_config;
 
-        let this =
-            Self::open_with_pool(pool, config.secret.clone(), pool_config, runtime_config).await?;
-        this.read().await?.apply_runtime_config(runtime_config).await?;
+            let this =
+                Self::open_with_pool(pool, config.secret.clone(), pool_config, runtime_config)
+                    .await?;
+            record_open_phase(OpenPhase::RuntimeConfig);
+            this.read().await?.apply_runtime_config(runtime_config).await?;
 
-        Ok(this)
+            record_open_phase(OpenPhase::Complete);
+            Ok(this)
+        })
+        .await
     }
 
     /// Create an SQLite-based state store using the given SQLite database pool.
@@ -143,11 +151,14 @@ impl SqliteStateStore {
         runtime_config: RuntimeConfig,
     ) -> Result<Self, OpenStoreError> {
         let db_path = pool.manager().database_path.clone();
+        record_open_phase(OpenPhase::PoolAcquire);
         let conn = pool.get().await?;
 
+        record_open_phase(OpenPhase::SchemaVersion);
         let mut version = conn.db_version().await?;
 
         if version == 0 {
+            record_open_phase(OpenPhase::InitialSchema);
             init(&conn).await?;
             version = 1;
         }
@@ -166,8 +177,10 @@ impl SqliteStateStore {
             pool_config,
             runtime_config,
         };
+        record_open_phase(OpenPhase::Migrations);
         this.run_migrations(version, None).await?;
 
+        record_open_phase(OpenPhase::Checkpoint);
         this.read().await?.wal_checkpoint().await;
 
         Ok(this)

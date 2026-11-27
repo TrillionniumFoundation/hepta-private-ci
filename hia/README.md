@@ -1,805 +1,613 @@
-# Codex HIA native components
-
-This directory contains the current HIA implementation and its native build,
-contracts, Rust call boundaries and original-behavior tests. The combined patch
-candidate contains **19 compiled modules covering seventeen algorithm groups**.
-Production selection remains the opt-in `hia-native` feature on Linux x86-64 GNU.
-The complete Codex rewrite, default release migration, required-platform
-qualification, whole-product performance and legacy retirement remain open.
-
-[`migration.json`](migration.json) records all 15 complete capabilities and the
-198-crate baseline inventory. [`verification.json`](verification.json) binds the
-current sources and observed results. Component results do not qualify the
-complete workspace or a different source tree.
-
-## Current implementation
-
-| HIA module | Responsibility | Production boundary |
-| --- | --- | --- |
-| `seek_sequence` | Four ordered context-matching passes, EOF selection and first-match behavior. | The existing checked patch-search dispatcher selects native matching. |
-| `utf8_boundaries` | Full-buffer UTF-8 validation and prefix-boundary reference entry. | Standalone qualification module; the production string API uses `utf8_prefix`. |
-| `utf8_prefix` | Select a UTF-8 prefix boundary from the byte budget and a bounded window. | Rust borrows a valid `str` and returns the selected slice. |
-| `metric_tag` | Streaming metric-tag sanitizing, trimming, fallback and truncation. | Rust transports chunks and owns the final string. |
-| `markdown_location` | Streaming Markdown hash-location suffix normalization. | Rust owns the accumulated output. |
-| `ascii_json_fragment` | Strict UTF-8 admission and ASCII JSON fragment encoding. | Serde retains surrounding JSON structure, control-character escaping and writer effects. |
-| `truncate` | Middle truncation, scalar counting and marker plan selection. | Rust materializes the native-selected spans and marker. |
-| `token_budget` | Saturating approximate token/byte conversion. | Three existing arithmetic APIs call a typed scalar native entry. |
-| `source_file` | Parse logical lines, choose endings, apply replacements and select output spans. | Rust owns backing strings and checks returned indices. |
-| `file_update` | LF splitting, chunk/resume planning, search decisions, stable replacement order and reverse overlapping edits. | Rust transports HIA-selected searches and owns storage; preserving updates compose HIA SourceFile. |
-| `parser` | Batch normalization, patch grammar, streaming state, errors, events and affected/source path selection. | Rust materializes AST values; actual PathUri joins remain a host operation. |
-| `patch_effects` | Filesystem operation order, missing-parent retry, committed delta transitions, exactness and removal-error comparison. | Rust performs selected real filesystem calls with the original path, context and options. |
-| `unified_diff` | Line splitting, Myers/Compact/Replace transitions, grouping, context arithmetic and unified-diff bytes. | Rust transports valid strings and materializes HIA-selected output; actual compiler receipts select the supported arithmetic mode. |
-| `patch_summary` | Success header, A/M/D group order, path index and continuation selection. | Rust executes each original `writeln!` separately with the actual `Path::display` and `Write` implementation. |
-| `patch_application` | Parser/effects/summary order, diagnostic choice, writer-error priority and committed-delta result selection. | Rust retains original typed errors, individual writer calls and the existing asynchronous effects future. |
-| `patch_standalone` | Standalone argument/stdin, diagnostic/exit, runtime/environment and application sequencing. | Rust performs the original OS, I/O, Tokio and process-exit callbacks; HIA selects their order and results. |
-| `uuid_find` | Complete fixed UUID byte-pattern scanning, match selection, count and span plan. | Rust validates the plan and copies native-selected substrings into owned strings. |
-| `template_parse` | Complete delimiter parsing, Unicode trim, ordered parse errors and literal/placeholder spans. | Rust validates the plan and owns the original template values; the opt-in renderer uses the separate HIA render entry. |
-| `template_render` | Duplicate, missing and extra variable selection, segment lookup, checked output length and exact rendered bytes. | Rust preserves generic iteration, AsRef, original owned errors and destructor order while decoding the HIA result. |
-
-The patch path composes the native parser, file-update planner, matcher,
-SourceFile owner, effect state machine, unified formatter, summary selector and
-application result routing, followed by standalone entry orchestration.
-The feature-selected adapters use HIA for these decisions. PathUri, real
-filesystem execution, symlink/sandbox enforcement, string allocation and the
-public writer's formatting/I/O remain host boundaries. The original Rust owners
-remain available to the default platform path and immutable parity tests.
-
-Seventeen CLI-reachable native symbols are required in installed full Codex
-checks, including eight in apply_patch and both template entries. The full
-Codex path also reaches the unified formatter. `utf8_boundaries` remains a
-separate qualification entry. UUID matching has library-positive coverage;
-it is not a required CLI symbol. The default reference must contain none
-of all eighteen native symbols, including UUID. These are configured
-requirements; current nineteen-module installed execution remains pending.
-
-## Native interfaces
-
-The eleven complete buffer contracts are normative:
-
-- [SourceFile](source_file_buffer_contract.json): strict operations 0–7 and
-  trusted-string counterparts 8–15; 64-byte request header, 40-byte result header
-  and 32-byte span records.
-- [File update](file_update_buffer_contract.json): LF split, planner/resume,
-  stable permutation and reverse-edit/render query/emit pairs.
-- [Parser](parser_buffer_contract.json): 128-byte request, 160-byte result header,
-  64-byte event records and explicit streaming state.
-- [Patch effects](patch_effects_buffer_contract.json): 176-byte request, 128-byte
-  result, no workspace and explicit callback continuations.
-- [Unified diff](unified_diff_buffer_contract.json): strict and trusted query/emit
-  operations, checked line/span storage, explicit arithmetic policy and semantic
-  panic results.
-- [Patch summary](patch_summary_buffer_contract.json): 64-byte request and result,
-  no workspace, explicit group/index continuation and one selected write effect.
-- [Patch application](patch_application_buffer_contract.json): 64-byte request and
-  result, no workspace, two entries and 25 explicit result-routing transitions.
-- [Patch standalone](patch_standalone_buffer_contract.json): 64-byte read-only
-  continuation workspace and 64-byte result, with 17 selected host actions.
-
-- [UUID matching](uuid_find_buffer_contract.json): 32-byte read-only request,
-  64-byte result header and 16-byte byte-span rows; operation 0 queries capacity
-  and operation 1 emits the complete table.
-
-- [Template parsing](template_parse_buffer_contract.json): 32-byte read-only
-  query/emit request, 64-byte result header and 24-byte span records.
-
-- [Template rendering](template_render_buffer_contract.json): 32-byte read-only
-  candidate-check/query/emit request and 80-byte result header.
-
-All integer fields in these buffer interfaces are little-endian u64. Their
-capacity, frame, range, UTF-8, error-priority and no-write rules are specified in
-the contracts and exercised directly against machine code. Unaligned live,
-disjoint buffers are supported. Native calls retain no host pointers.
-
-### Patch semantics
-
-The application continuation selects parse/effects/summary sequencing and the
-result after each original writer call. A failed diagnostic takes precedence over
-the parse or effects error; a failed summary preserves the already committed
-delta. Effects diagnostics execute before an error downcast. The adapter awaits
-the original effects future once and preserves its typed error ownership. The
-raw continuation gate does not qualify controlled Pending/cancellation behavior;
-that scope remains explicit in the verification record.
-
-SourceFile retains LF, CRLF and bare CR, the first preferred ending, and the
-absence of a terminal empty sentinel. Inserted strings containing internal
-line-ending bytes remain one logical line across subsequent replacements.
-Preferred style survives complete deletion and later insertion. Even an empty
-replacement list repairs missing endings on surviving lines. Trusted entries
-skip only redundant validation of text already guaranteed valid by Rust;
-structural, span, capacity and arithmetic checks remain.
-
-The file-update planner selects each context search, old-pattern search and
-trailing-empty retry. The Rust adapter sends that request through the existing
-checked dispatcher to the actual HIA matcher, then resumes the native state
-machine. Stable ordering uses discovery order for equal starts. NormalizeToLf
-applies edits in reverse, retaining the original overlapping-EOF behavior and
-the distinction between an empty old pattern and a pattern containing one empty
-line. Preserve mode uses the actual HIA SourceFile implementation.
-
-A file-update continuation is explicit caller-owned state, not a proof of text
-equality. Its structural checks do not authenticate an arbitrary caller's claimed
-match. Production requests bind lengths and search results to actual strings
-and the native matcher. Public-output parity does not expose every private
-planner trace; raw continuation tests are a separate contract gate.
-
-Parser semantic errors and transport errors have different effects. A streaming
-semantic error commits the accepted prefix, consumes the failing line, advances
-its line number, discards the remaining failed delta and permits later calls to
-resume. A nonzero transport status writes nothing. The adapters preserve the
-original AST/error variants and path behavior without repeatedly copying a long
-pending line prefix.
-
-The effect state machine selects real host operations one at a time. Add and
-move writes retry exactly once after an initial NotFound, with optional recursive
-parent creation. In-place writes do not retry. A move commits a destination Add
-before attempting source removal, then replaces that same delta entry on success.
-Removal errors with known old text trigger an actual reread and native byte
-comparison, even when exactness is already false. A failed later operation never
-rolls back an earlier committed effect.
-
-The adapter forwards the same sandbox reference and symlink options. Its private
-transport/framing errors conservatively mark the known delta prefix inexact;
-ordinary host errors retain the state machine's original exactness decision.
-Continuation validation checks structure and does not authenticate a caller's
-claimed filesystem observations.
-
-The unified formatter preserves Similar 2.7.0's complete line, edit and grouping
-behavior, including LF/CRLF/bare CR, missing final newlines, duplicate lines,
-nonmonotonic coordinates and arithmetic panics at extreme context radii. It does
-not clamp those coordinates or replace the original edit sequence with a
-different but visually similar diff. The source catalog, Apache-2.0 license and
-attribution accompany the native implementation.
-
-The pinned HIA assembly grammar has no comment form. The adjacent
-[adaptation notice](ATTRIBUTION.unified_diff.md), referenced by the contract and
-the repository NOTICE, identifies the translated module and its exact source.
-
-Arithmetic mode is derived from the real pinned compiler/codegen invocation and
-the admitted Similar artifact. Both owners checked and both owners wrapping are
-qualified modes. Mixed policies, unknown compiler chains and LTO are rejected.
-The workspace's default thin-LTO release path therefore remains open. Raw ABI
-coverage of a mode does not qualify that mode for production selection.
-
-The summary selector always requests the header, including for empty path lists,
-then visits added, modified and deleted paths in their original vector order.
-Each selected effect executes the same individual `writeln!` as the original.
-Custom `Write::write_fmt`, partial writes, Interrupted, WriteZero and other writer
-errors retain their original observations and accepted output prefix. The native
-continuation is structural caller-owned state; it does not authenticate a prior
-writer result.
-
-### Template parsing
-
-`Template::parse` delegates the complete delimiter parser to HIA. Four-brace
-escapes take priority over two-brace delimiters. Placeholder names retain the
-original Unicode whitespace trimming, and malformed input keeps the original
-first-error variant and byte offset. The native plan distinguishes a new
-literal, an append to the preceding literal and a placeholder.
-
-The Rust adapter validates the returned frame and each source span while
-materializing independent owned strings, the existing segment vector and
-sorted placeholder set. Malformed plans never return a partial Template.
-The original Debug, Clone, equality and error interfaces remain available.
-Rendering is still the original Rust algorithm in this increment.
-
-Raw operations validate the entire input as UTF-8. Query writes the fixed
-header; emit writes the selected spans after complete validation and capacity
-checks. Transport failures write nothing. A semantic parse error returns an
-error header without constructing a partial template. Exact rules are in the
-template contract; owned public behavior is a separate complete-crate gate.
-
-### String interfaces
-
-`find_uuids` uses HIA to search the complete input for the fixed
-8-4-4-4-12 ASCII hexadecimal pattern. It preserves case, duplicates and
-encounter order, selecting non-overlapping matches without word boundaries,
-version/variant checks or normalization. Raw calls accept arbitrary bytes;
-the public Rust input is a valid string. The adapter validates the returned
-spans and creates independent owned strings. Every error leaves the whole
-output and request unchanged; successful queries write only the header.
-
-`utf8_prefix` borrows at most four boundary bytes plus its fixed descriptor from
-a valid Rust string. `metric_tag` transports chunks of at most 1 MiB, uses a
-32-byte state and emits at most 256 bytes. Its default decision examines the
-whole string, including alphanumeric characters beyond the output limit.
-
-`markdown_location` and `ascii_json_fragment` use windows of at most 4,096 bytes.
-The former preserves the original permissive endpoint grammar. The latter
-validates UTF-8, leaves an incomplete nonfinal scalar unconsumed, and produces
-lowercase Unicode escapes or surrogate pairs. Previously completed writer
-effects remain committed if a later write fails.
-
-`truncate` returns a 40-byte plan with prefix end, suffix start, removed units,
-original token count and result kind. Its strict entries validate UTF-8; trusted
-entries require a valid Rust string. It preserves odd-budget allocation,
-saturating arithmetic, marker collisions and Unicode scalar counts.
-
-`token_budget` uses `codex_hia_token_budget(value: u64, operation: u64) -> u64`.
-Operation 0 computes saturating multiplication by four. Operation 1 computes
-saturating addition of three followed by division by four. Other operation
-values trap. All u64 input and result values remain valid, including `u64::MAX`.
-
-The 1 MiB bootstrap buffer setting is not a product input-size limit. The patch,
-SourceFile, parser and truncation owners admit larger inputs according to their
-checked buffer contracts. A successful large-input test does not establish a
-latency deadline or qualify performance.
-
-## Build
-
-The locked Hepta revision is
-`0de5657a80f96b138525ac7ee9ce11712a83a10d`. Use a clean checkout at that revision,
-Python 3, GNU `ld`, `objcopy`, `ar` and `nm`, and the repository's Rust 1.96.1
-toolchain. Native output must be outside both source checkouts.
-
-From the Codex repository root:
-
-```bash
-python3 -B hia/build.py \
-  --hepta-root "$hepta_checkout" \
-  --output "$native_output"
-export CODEX_HIA_NATIVE_LIB_DIR="$native_output"
-```
-
-The builder reproduces three compiler generations, requires the B1/B2/B3 fixed
-point, compiles the locked HIA sources with B3, validates the object format and
-exports, and constructs namespaced static archives. The shared Cargo helper
-rejects source, compiler, report, object, symbol or archive drift. Only
-`token_budget` uses the locked `u64-pair-to-u64-v1` scalar profile.
-
-Installed production callers use the static archives and need no HIA shared
-library directory at runtime. Shared libraries are separate direct-ABI test
-artifacts. Their complete byte identity must not be inferred from matching
-static objects or archives across build hosts.
-
-Selecting `hia-native` on an unsupported target is an error. With the feature
-disabled, the build helper does not read HIA sources or native artifacts.
-
-Before the first native Cargo build, generate the compiler-policy configuration
-for this exact checkout and build. Use absolute paths for the external outputs:
-
-```bash
-python3 -B hia/prepare_unified_diff_policy.py \
-  --repo "$PWD" --rustc "$rustc_binary" \
-  --config "$build_parent/unified-policy/config.json" \
-  --receipt-root "$build_parent/unified-policy/receipts" \
-  --bind-input "$native_output/build.json" \
-  --report "$build_parent/unified-policy/configuration-report.json"
-export RUSTC_WRAPPER="$PWD/hia/similar_policy.py"
-export RUSTC="$rustc_binary"
-export CODEX_HIA_SIMILAR_POLICY_CONFIG="$build_parent/unified-policy/config.json"
-```
-
-Keep this environment for native Cargo builds, `just test`, Clippy and scoped
-`just fix`. Configuration creation qualifies no compiler artifact by itself.
-The wrapper captures and validates the real compiler invocations; the policy
-gate separately checks cached reuse and rejected arrangements. A cached native
-artifact without its matching receipt is rejected. Bind additional effective
-Cargo configuration files with repeated `--bind-input` options.
-
-The repository `just fix` recipe uses the admitted compiler bridge for a
-configured native checkout. Cargo's fix proxy invokes the workspace wrapper
-directly, so the bridge runs the real pinned Clippy compiler through the policy
-helper and validates the artifacts produced by that fix invocation. Every
-compiler call has paired start/completion records; failures and incomplete calls
-are rejected even if Cargo returns zero after reverting an attempted repair.
-Compiler-log identities include the actual source and diagnostic bytes, since
-a repair can change diagnostics while leaving metadata bytes identical.
-
-To require the native owner during a scoped fix, from `codex-rs`:
-
-```bash
-CODEX_HIA_POLICY_FIX_REQUIRE_NATIVE=1 \
-  just fix --locked -p codex-apply-patch --features hia-native
-git diff --exit-code
-```
-
-The command prints the external evidence report path. CI also checks the actual
-fix artifact's arithmetic mode and separately reruns strict all-target Clippy.
-Without a policy configuration, the recipe forwards the original Cargo Clippy
-fix command. The small compiler-chain controls described below do not replace
-the complete Codex owner gates.
-
-## Qualification
-
-### Current nineteen-module template-render candidate
-
-The opt-in renderer delegates duplicate, missing and extra-variable selection,
-segment lookup, checked output length and final rendered bytes to HIA. The Rust
-boundary retains the original generic iteration, key/value `AsRef` calls, owned
-errors and destructor order. The default implementation remains available.
-Whole-product migration, default release, performance and retirement are open.
-
-One fresh B1/B2/B3 bootstrap and all nineteen modules built successfully. All
-54 inherited namespaced artifacts remain byte-identical; the three new renderer
-artifacts match the frozen prototype. The initial qualification controller then
-failed while reading the receipt format header. Its failure is retained. The
-corrected continuation reused the same successful build, checked complete
-canonical receipt bytes and ran the previously unexecuted component gates.
-The formal renderer ABI passed 66,026 calls, including 54,262 whole-output
-no-write transport failures, with zero skips. The receipt mutation gate passed
-78 checks. These results do not qualify the current Cargo owner or product.
-
-Historical direct-rustc observations against the complete four-file original
-template crate remain separate: fourteen original tests, 13,206 public pairs,
-21 constructed values and the exact ownership/iteration/error observations.
-The current portable gate uses both actual native links and twenty-word traces,
-retains the complete original crate and tests, and checks each Cargo-staged
-archive against the admitted formal archive by complete bytes and digest.
-Its actual Cargo linkage directory is the build script's `OUT_DIR`.
-
-Both eighteen-module CI runs failed at the old public observer's incorrect
-linkage-directory assertion. Their full logs and API responses are preserved;
-the failed Cargo JSON row inside the undownloaded archive was not independently
-read. This increment contains the observer repair, whose current Cargo execution
-remains pending. The corrected seventeen-module UUID push and PR runs each
-completed all 69 steps and their complete uploaded archives were audited. Those
-historical results do not qualify this nineteen-module source; UUID scoped fix
-also remains outside their qualified scope.
-
-Current owner and six-consumer suites, default/native uncapped strict Clippy,
-scoped string/template fix, installed Codex checks and final-source CI remain
-pending. Installed checks require seventeen reachable CLI symbols and eighteen
-default-reference absences, with UUID positive coverage at the library boundary.
-Required platforms, release/LTO and scan-based renderer performance remain open.
-
-### Published eighteen-module template-parse checkpoint
-
-The formal B1/B2/B3 build reproduced the fixed point, retained all seventeen
-prior module sources and 51 namespaced machine artifacts, and matched the
-three frozen template-parse artifacts. The formal ABI gate ran 52,179 real
-calls, including 9,255 transport error/no-write cases. Its matrix includes
-16,383 brace cases, 5,888 byte-position mutations and 128 independent
-interleavings on one worker. It used actual buffers up to 2,097,159 source
-bytes and 1,572,952 output bytes. The 76-check template receipt gate admitted
-all eighteen modules. These results do not claim simultaneous threads,
-invented maximum-size pointers or public API equivalence by themselves.
-
-The earlier direct-rustc comparison compiled the complete unchanged four-file
-a201 template crate and complete candidate, using three genuine Cargo-produced
-dependency libraries and all 54 locked registry source files. All 14 original
-tests passed on each side with no omissions. Four uncapped strict Clippy
-invocations applied the actual 37 workspace lint levels with warnings denied.
-The public observers matched all 13,206 pairs and 21 constructed template
-values, with 40,287 real parse calls: 32,184 queries and 8,103 emits.
-Public payloads were compared byte for byte; native traces were checked
-separately. Observations include source ownership after drop, iterator,
-AsRef and destructor order, exact errors, Unicode, NUL and inputs over 1 MiB.
-Both sides retained the original Rust rendering algorithm.
-
-Two earlier harness failures remain recorded. The first omitted Rust's
-`cfg(test)` declaration from standalone Clippy; a continuation added that
-exact declaration without reducing the workspace lint levels. The second
-hit a disk reserve guard after the complete original observer finished and
-before the candidate observer started; its continuation ran the candidate.
-Neither failed attempt is relabeled as a successful complete run.
-
-These are historical source-bound direct-rustc results. The current parser
-and adapter bytes match that candidate, but its Cargo manifest/build entry,
-formatted portable harness and final workflow require separate qualification.
-The fifteen-file portable public gate has been integrated and formatted.
-It requires actual default/native ordinary-library and test-library Cargo
-rows, complete fingerprints and dependencies, exact hashed peers and
-publication aliases, and the full original crate. It has not executed on
-the current producer.
-
-The corrected UUID parent at `c468f632` has been adopted. Its initial push and
-PR installation failures and exact scope correction remain recorded below.
-All inherited default-reference absences remain required; adding the template
-parser brings that control to seventeen symbols. The repaired parent's CI
-status is not promoted by this increment.
-
-The final owner workflow is integrated and its actual formatting completed
-without source drift. It selects default/native `just test` for the template
-owner and six direct consumers: `codex-login`, `codex-models-manager`,
-`codex-prompts`, `codex-memories-write`, `codex-goal-extension` and
-`codex-memories-extension`. Each native consumer feature is selected explicitly.
-It also requires default/native uncapped all-target Clippy, actual scoped
-string/template fix with compiler and unchanged-source evidence, final format,
-and the installed full-Codex parser symbol alongside unchanged runtime checks.
-Those Cargo, test, lint/fix, consumer, installed and final-source CI executions
-remain pending. The actual 9,976-file source snapshot and all current input
-hashes are bound in the verification record; only these three metadata files
-are proposed after that snapshot. Source integration does not qualify runtime
-gates. Performance, default dispatch, required platforms and retirement remain
-unqualified. Exact evidence is recorded under
-`verification.json#template_parse_increment`.
-
-#### Inherited checkpoint scope
-
-The following seventeen-module and earlier checkpoint text is preserved
-verbatim. Its references to current or pending describe the producing source
-for that checkpoint; they do not qualify this eighteen-module composition.
-
-### Published seventeen-module UUID checkpoint
-
-The formal B1/B2/B3 build reproduced the fixed point, retained all sixteen
-prior module sources and 48 namespaced machine artifacts, and matched the
-three frozen UUID artifacts. The portable ABI gate ran 19,232 real calls,
-including 370 error/no-write cases and all 9,216 single-byte mutations.
-Its 128 independent interleavings used one worker. The 74-check UUID
-receipt gate admitted all seventeen modules. These results cover actual
-buffers up to 2,359,332 source bytes and a 1,048,656-byte output table;
-they do not claim simultaneous threads or invented maximum-size pointers.
-
-The earlier direct-rustc comparison compiled the complete unmodified
-a201 fifteen-file `utils/string` crate and complete 23-file locked
-`regex-lite` 0.1.8 crate. It passed all 26 original and 38 candidate tests
-with no omissions, plus actual workspace Clippy for the candidate library.
-The 9,609 public pairs returned 78,778 strings with 14,060 real native calls;
-owned results were observed after the source was overwritten and dropped.
-A separate complete-regex comparison checked every query/emit span plan
-in another 19,218 calls. These source-bound results remain historical
-direct-rustc evidence. They are not a new Cargo or installed-product result.
-
-Seventeen of the eighteen historical candidate crate files still match.
-The current Cargo build script additionally links `uuid_find`; the earlier
-direct-rustc commands linked it explicitly and did not execute that script.
-
-The integrated public gate captures real default/native `--lib --tests`
-Cargo graphs, binds the actual hashed artifacts and publication aliases,
-and compares the complete original crate with the actual native owner.
-That gate, current owner/consumer suites, strict lint/fix, installed binaries
-and final-source CI remain pending. The parent is the published standalone
-CLI repair `eb439d69`; neither that repair nor inherited results establish
-successful sixteen- or seventeen-module CI. Performance, default dispatch
-and retirement remain unqualified. Exact reports and input hashes are in
-`verification.json#uuid_find_increment`.
-
-Both initial `7c94ad70` native CI runs failed the installed full-Codex step.
-The inspected PR and push artifact reports each record successful `nm`, one
-definition of each of the fifteen required CLI symbols, and only
-`codex_hia_uuid_find` missing. The scope correction removes that library-only
-positive symbol requirement; it retains all sixteen default-binary absence
-assertions and all other symbol, dynamic-library and runtime checks. The
-initial failures remain recorded in
-`verification.json#uuid_installed_scope_repair_history`. The selected artifact
-members were CRC-checked; neither complete artifact ZIP was audited. This
-correction does not claim a successful rerun or promote any qualification.
-
-#### Inherited checkpoint text
-
-The following existing checkpoint sections are retained verbatim. Their
-uses of current or pending describe their original producing sources;
-they do not qualify this seventeen-module composition.
-
-### Published sixteen-module standalone checkpoint
-
-The B3 build contains all sixteen locked modules and preserves the preceding
-45 namespaced machine artifacts. The standalone ABI gate executed 6,310 native
-calls: 5,097 error/no-write cases and 1,213 successes, with 25 transition keys,
-27 source-condition outcomes, 17 actions and 13 complete callback traces. Its
-128 interleaved instances ran on one worker. The actual 72-check receipt gate
-admits all sixteen modules.
-
-The portable comparison has 994 independently materialized paired fixtures.
-Its complete original and native programs have not yet executed. The required
-gate observes all 1,988 process launches and terminals, exact argv/stdin/env/cwd,
-stdout/stderr/status and filesystem bytes, with no missing or skipped pair.
-Fresh complete effects360 and application1470 results from the same clean
-producing source are prerequisites.
-
-An independent H build reproduces all 48 namespaced machine artifacts. The
-original setup wrapper failed after its 24 successful commands; a separate
-read-only completion verified those artifacts and the empty target. A new
-owner preflight then passed all 20 commands, including native/default Cargo,
-101/99 actual `just test` cases with zero skips, both strict workspace Clippy
-modes and their native compiler receipt checks. Each Cargo graph binds
-666 units and 1,284 files. This prepublication scope is parent `cae5db67` plus
-18 overlays; its 9,933-file source map remained unchanged. These three final
-metadata documents were outside the tested source.
-
-Clean-source public comparisons, final scoped fix/format and installed
-executables remain pending. Runtime-initialization failure, isolated final-flush
-failure, internal write traces, cancellation and destructor order remain open.
-The earlier application records below describe their original published scope;
-they do not qualify this sixteen-module source.
-
-### Fifteen-module application parent history
-
-The current build reproduces the B1/B2/B3 fixed point and preserves every prior
-HIA source, namespaced object, archive and shared-library identity. A separate
-remote build reproduced all 45 machine artifacts. The application gate executed
-2,790 native calls, including 1,841 error/no-write cases, 512 concurrent calls and
-all 25 legal transitions, with zero skips. Its source/archive admission passed
-70 checks against the actual fifteen-module build.
-
-The actual owner preflight passed all 21 commands: native/default Cargo,
-101/99 tests through `just test` with zero skips, both strict all-target workspace
-Clippy modes and actual compiler receipt admissions. Its complete 9,922-file
-source snapshot and machine artifacts remained unchanged. After this
-prepublication test, final preparation changed the three metadata documents and
-formatted the order of two oracle imports; all production inputs remain identical.
-
-The first clean published `08dfcb76` public run passed the effects gate with
-121 complete original inputs, 13 unchanged root tests and 360 result pairs.
-Application comparison then stopped at case 756 during original fixture
-construction, before `apply_hunks`: the fixture used unsupported literal
-`<<'PATCH' ... PATCH`. It had matched 756 pairs, with 1,512 successful process
-observations and one failed original attempt; the native counterpart of the
-failed case did not run. Source bytes were unchanged. This attempt did not reach
-final fix or formatting and does not qualify the complete application matrix.
-
-The six-file test repair changes 18 materialized heredoc patches from `PATCH`
-to accepted `EOF` delimiters. The previous 1,468 serialized selectors remain an
-identical prefix, but those 18 actual patch inputs change. Two added rejection
-cases retain the exact old `PATCH` bytes through the string APIs with default
-options, no context and normal writers; other option/context combinations are
-not claimed for these two additions. Targeted real-library checks passed
-20 pairs/40 processes and 7 delimiter pairs in 2 processes, with zero mismatches
-or skips. These probes do not qualify the full repaired matrix.
-
-The subsequent clean `1083727e` run passed the fresh complete effects gate,
-then the application entrypoint rejected a stale `DRIVER_SHA256`. No application
-observer was compiled or executed, and final fix/format did not run. This
-follow-up changes that one constant to the already published driver SHA,
-retains the strict check and corpus, and verifies both hardcoded harness pins
-against their actual files. The earlier bounded probe did not exercise this
-full entrypoint admission; both failed runs are retained.
-
-The current requirement is 1,470 original/native pairs and 2,940 processes
-across three public APIs. That complete repaired gate has not run. The three
-metadata documents, earlier two-import ordering follow-up and these six test
-files are outside the original prepublication preflight scope; all production
-inputs and native artifacts remain identical. Final fix/format, installed
-executables and complete current consumer CI remain pending. The direct parent
-is `1083727e`; its consumer CI is audited separately from the H public run, and
-no H result substitutes its actual CI outcome. The earlier nextest version failure and UNKNOWN durable launch retain
-their original evidence and status. The machine-readable failure and targeted
-repair records are linked under `patch_application_increment` in verification.
-
-### Fourteen-module parent history
-
-The first published fourteen-module source, `0339bd5f`, ran both native CI
-attempts. Each had 56 successful steps, one failed cached arithmetic-policy
-admission, and two skipped steps. The checked Cargo build succeeded; its
-hashless publication alias still indexed a different real compiler unit.
-Wrapping, the eight policy rejection commands, and the complete unified public
-comparison did not execute. Both full failed-run archives remain retained.
-
-The published parent repair selects that alias through the unique hashed peer in the
-same actual Cargo row. Actual compiler output events, crate/features, output
-paths, immutable receipt identity, source/probe/mode checks, and complete
-alias/artifact byte hashes remain required. Seven real baseline commands
-reproduced the failure; 31 repaired commands exercised nine successful
-admissions, four linked policy observers and five genuine rejections. These
-small compiler controls are separate from the full owner gates. The repaired
-`e23bc0d7` parent subsequently passed both complete native CI runs on attempt 1,
-each with all 60 steps successful. These runs executed checked/wrapping owner
-admission, all eight rejection cases, 7,948 unified public pairs, inherited
-comparisons, installed checks and strict/fix. Broader checks and whole-product
-qualification remain separate; these parent results do not qualify this candidate.
-
-The recorded fourteen-module build reproduced the B1/B2/B3 fixed point. All twelve
-existing HIA sources and static archives match the qualified effect parent.
-The summary archive matches its exercised prototype. The unified formatter's
-raw and namespaced objects also match its exercised prototype; its canonical
-archive differs only in the ar member name, `hia.o` instead of `unified_diff.o`.
-Those receipt gates exercised that actual canonical archive.
-
-| Recorded fourteen-module combination | Observed result |
+# HIA components: revision-bound joint qualification
+
+## Current source follow-up: guarded inline head/tail equality
+
+Source commit `99e46153d4db235c00a14056d5e50735c3c69f47`, a direct child of
+`4468d5e58afd8cb2837896afbd2d3fae32c0b97b`, changes only the inline HIA kernel, its
+source-bound ABI contract and literal raw harness. For a comparison of at least
+16 bytes, equality checks the first and last eight-byte words, then compares
+the remaining middle interval with the unchanged word/byte loop. The intervals
+are disjoint and cover the requested length, including 16- and 17-byte cases.
+Short comparisons retain the original loop. Both callers establish slice
+bounds before comparison; the buffers remain immutable during the comparison.
+The previous UTF-8 fold/resolve boundary checks, selection and generic caller
+effects, 96-byte frame, compiler pin, configured lock and Rust source are
+unchanged. This is a static source review, not a native or performance result.
+
+All 63 predecessor literal cases are retained and 12 additional cases are
+configured: 75 cases, 600 planned calls over the existing capacity/fill
+matrix. No new native calls, build or runtime qualification are claimed.
+The predecessor's CI observations and earlier exact-revision local results do
+not qualify this source. All whole-product, production dispatch, default,
+platform, performance and retirement gates remain open.
+
+## Prior source follow-up: inline UTF-8 boundaries and word equality
+
+The following records the initial source-only assessment of that earlier
+revision; its evidence and pending statements are not transferred.
+
+Source commit `82b35fed31d860f647d7ac01226877ab13ec4515` changes only the inline HIA kernel,
+its ABI contract and literal raw harness. Fold and Resolve validate the
+stored suffix cut and any stored opener start/end as UTF-8 scalar boundaries
+after the existing geometric checks. Equality compares complete guarded
+eight-byte words and the unchanged byte tail; ordering and caller effects
+are unchanged. The 96-byte frame, lock, compiler pin and Rust source remain
+unchanged. This does not assert speedup.
+
+All 43 original literal cases remain; 20 additional cases are configured
+(63 cases, 504 planned calls over the existing capacity/fill matrix).
+No fresh build, native execution or runtime qualification has been completed
+for this source follow-up. The 37 configured modules, 34 opt-in caller
+kernels and three retained oracle-only kernels are unchanged. Production
+dispatch, whole product, platform, performance and retirement remain open.
+
+## Prior source increment: generic inline hidden tags
+
+The following local component results and source descriptions belong to
+the previous exact revision `450f22e370ce8db88a53ca6bbbae55262cbdab6e`, not to the new follow-up.
+The original metadata and all evidence remain accessible at that revision.
+
+`InlineHiddenTagParser<T>` now selects the `inline_hidden_tag` HIA owner under
+`hia-native`. HIA owns literal search, earliest-position selection, longest
+opener and first-spec tie breaks, proper-prefix suffix retention, open/close/
+stop commands and EOF routing. Arbitrary nonempty Unicode delimiters and the
+original non-nested grammar remain supported.
+
+The [buffer contract](inline_hidden_tag_buffer_contract.json) binds a 96-byte
+request/reply. Each native fold borrows the complete pending and delimiter
+strings. There is no one-MiB string limit, aggregate framing or spec-count cap.
+HIA validates capacity and state before writing; both borrowed strings and
+the output tail remain unchanged.
+
+Rust retains the original fields, spec `Vec`, pending `String`, active body,
+per-call output, standard `Debug` and exact generic `Clone`/`Eq` and drain
+order. The adapter validates the full response before mechanical effects.
+All five original generic tests and their assertions remain unchanged.
+
+The current source configures **37 modules and 34 opt-in caller kernels**:
+35 borrowed-buffer and two scalar profiles across eight build owners
+(9 + 7 + 3 + 8 + 1 + 1 + 4 + 1). The installed CLI still requires 31 symbols.
+`inline_hidden_tag`, `utf8_stream` and `uuid_find` are library-only owners;
+three retained oracle-only modules remain.
+
+Local Linux x86-64 GNU execution used the unchanged compiler revision
+`0de5657a80f96b138525ac7ee9ce11712a83a10d` and Rust 1.96.1:
+
+| Gate | Observed result |
 | --- | --- |
-| Native build | Fourteen B3 modules; three identical compiler generations; all twelve inherited static archives unchanged. |
-| Summary raw ABI | 1,328 calls, 157 error/no-write cases, 128 concurrent calls and 125 complete small-count traces; zero skips. |
-| Unified component ABI | 522,858 native calls against fresh complete Similar references, covering original corpora, raw contracts, frontend collisions and word boundaries; zero skips. |
-| Summary and unified source/archive admission | 68 checks for each mutation module, including admission of all fourteen modules. |
-| Shared scalar/build admission | 120 checks. |
-| Fix compiler-chain controls | Actual checked/wrapping `just fix`, each with 17 paired compiler records, two native helper calls and a real fixture repair; nine extended positive controls and eight small-control refusals. |
-| Complete public calls, Cargo, installed callers and CI | Separate gates on this final composition; prior component and parent results do not substitute for them. |
+| Fresh native-selfhost full-native37 build | All 37 modules and link bindings built |
+| B1 / B2 / B3 | Identical `76fe758b...9273` images |
+| Generic inline literal raw ABI | 43 cases, 344 native calls passed |
+| Seven retained raw ABI suites | UTF-8, output lines, item budget, environment display, citation, proposed plan and fuzzy match passed |
+| Public stream-parser owner, native feature | 85 passed, zero skipped |
+| Public stream-parser owner, default feature | 65 passed, zero skipped |
+| Strict Clippy, both selections | Passed with all targets and warnings denied |
+| `just fix`, both selections, and `just fmt` | Passed; Rust source hashes unchanged |
 
-The summary prototype passed the 13 unchanged root-owner tests and actual
-workspace lint/configuration with warnings denied. Its public writer matrix
-compared 1,002 complete original/native observations in 2,004 processes, with
-4,022 counted native calls and zero skips or mismatches. It covers the default
-writer and custom `write_fmt`, exact write attempts, partial accepted prefixes,
-all observed errors, duplicate/Unicode/invalid-UTF8 paths and large path values.
-Those complete libraries were compiled by direct rustc against the admitted
-666-unit, 1,284-file Cargo dependency graph; that is not a Cargo build of this
-new combined source tree.
+New public cases exercise scalar split points, overlapping delimiters, exact
+per-call results and Debug state, EOF reuse, strings and delimiters above one
+MiB, 4097 specs, custom Clone/Eq effects and a recoverable Clone panic. Native
+decoder tests reject malformed response fields before effects. Raw cases use
+literal expected states and commands, two fill values, short/exact/extra
+capacities and whole-buffer guards. Source, build, report and corrected early
+fixture/lint failures remain bound in [verification.json](verification.json).
 
-The frozen unified formatter separately passed actual checked and wrapping Cargo
-owner builds, cached receipt reuse, policy rejection tests and strict owner
-Clippy. Its complete immutable-original public comparison passed 3,974 fixtures
-under each of the two supported policies: 7,948 pairs and 15,864 native calls.
-The 1,417 outcomes that differ between checked and wrapping behavior are retained.
-These frozen-prototype results bind their exact source/artifact identities;
-the portable gates must separately qualify each final composition.
+Current raw gates select full-native37. Earlier profiles and defaults keep
+their exact module sets. Full current/historical CI, other owner/Core/UI and
+installed gates, supported platforms, search performance, default release and
+retirement remain pending. Local component success does not qualify them.
 
-The canonical component gate has also run on the actual fourteen-module build,
-binding that source, contract, objects and archives. It rebuilt the complete
-73-file Similar release into two reference libraries and four observers. Its
-522,858 native calls comprise 109,152 original-corpus calls, 2,490 raw-contract
-calls, 3,136 frontend calls and 408,080 word-boundary calls. This includes 1,082
-error/no-write cases, real line-hash collisions, concurrent calls and the complete
-65-by-65 half-length byte-scan matrix. These are component observations; actual
-production Cargo policy selection and the final public file/chunk adapters remain
-separate gates.
+## Earlier source increment: streaming UTF-8 validation
 
-Final source cleanup removes only extra trailing line breaks from eight catalog
-and test files, with identical parsed JSON and Python AST. The helper and CI
-catalog digests are updated together to retain strict byte admission. Earlier
-component and compiler-control reports preserve their original source identities;
-the complete production CI separately qualifies the final source tree.
+The following preserves the 36-module local qualification record. Its counts
+and pending statements belong to that source; the current increment is above.
 
-The three context states are None, a present disabled context and a present
-restricted context without configured sandbox runtime paths. The last observes
-the actual existing runtime-path error; it does not qualify an OS sandbox backend.
-The observer forwards filesystem return values unchanged and injects no filesystem
-or writer errors. Its only transcript normalization replaces exact temporary
-fixture paths, including their recorded hexadecimal encodings.
+`Utf8StreamParser<P>` now selects the `utf8_stream` HIA validator under
+`hia-native`. HIA decides complete, invalid or incomplete UTF-8 and the exact
+original `valid_up_to` / `error_len` values. It reads the complete borrowed
+byte slice and returns four little-endian u64 words in a 32-byte output.
+The [buffer contract](utf8_stream_buffer_contract.json) binds the source and
+capacity precedence. The input has no new one-MiB or framing limit.
 
-The immutable effect parent `aeb88f596b83186456caac577080bcb2f253ad32` passed both
-native CI runs: 50/50 steps and 5,375 Cargo tests with six existing skips per run.
-Each run includes 360 complete original/native filesystem-effect pairs, the 13
-unchanged root tests, installed apply_patch/full Codex, native/default strict lint
-and scoped fixes without source drift. Both uploaded artifact sets, their
-complete original snapshots and the tested PR merge tree were audited. Those
-results qualify that parent; the new summary/formatter composition requires its
-own Cargo, public-call, policy, installed and CI results.
+Rust keeps the original pending `Vec<u8>`, five validation call sites, whole
+chunk rollback, inner-call boundaries, EOF handling and `into_inner` behavior.
+The native adapter checks the complete return and result shape before it
+constructs a borrowed string. It has no Rust UTF-8 validator fallback.
+The six original UTF-8 tests and their assertions remain unchanged.
 
-[`codex-hia-native.yml`](../.github/workflows/codex-hia-native.yml) is the complete
-executable gate inventory. It preserves existing sandbox checks and exercises
-the listed original callers, raw ABIs, artifact admission, native/default crate and
-consumer suites, installed apply_patch and full Codex, strict lint and scoped
-fix/clean-diff. Its upload list includes the original snapshot's tracked hidden
-fixture. Uploaded reports and logs do not imply that unuploaded executable or
-rlib bytes were independently rehashed elsewhere.
+The current source configures **36 modules and 33 opt-in caller kernels**:
+34 borrowed-buffer and two scalar profiles across eight build owners
+(9 + 7 + 3 + 8 + 1 + 1 + 3 + 1). The installed CLI gate still requires 31
+symbols. `utf8_stream` and `uuid_find` are public library-only owners; no new
+CLI reachability is claimed. Three retained oracle-only modules remain.
 
-UUID component and public commands, after the native build:
+Local execution on Linux x86-64 GNU used the unchanged compiler revision
+`0de5657a80f96b138525ac7ee9ce11712a83a10d` and Rust 1.96.1:
 
-```bash
-python3 -B hia/tests/test_uuid_find_abi.py \
-  --producer "$PWD" --library-dir "$native_output" \
-  --report "$build_parent/uuid-abi.json"
-python3 -B hia/tests/test_build_receipt.py \
-  --artifacts "$native_output" --mutation-module uuid_find \
-  --rustc "$rustc_binary" --report "$build_parent/uuid-receipts.json"
-python3 -B hia/tests/test_native_uuid_find_caller.py \
-  --producer "$PWD" --original-repo "$original_a201_checkout" \
-  --library-dir "$native_output" --rustc "$rustc_binary" \
-  --work-dir "$build_parent/uuid-caller" \
-  --report "$build_parent/uuid-caller.json"
-```
+| Gate | Observed result |
+| --- | --- |
+| Fresh native-selfhost full-native36 build | All 36 modules and link bindings built |
+| B1 / B2 / B3 | Identical `76fe758b...9273` images |
+| UTF-8 literal raw ABI | 25 cases, 200 native calls passed |
+| Six retained raw ABI suites | Output lines, item budget, environment display, citation, proposed plan and fuzzy match passed |
+| Public stream-parser owner, native feature | 72 passed, zero skipped |
+| Public stream-parser owner, default feature | 54 passed, zero skipped |
+| Strict Clippy, both selections | Passed with all targets and warnings denied |
+| `just fix`, both selections, and `just fmt` | Passed; Rust source hashes unchanged |
 
-The public command requires clean producer and complete original checkouts,
-an external Cargo target, genuine locked dependencies and the existing
-admitted policy environment. It performs actual owner Cargo builds itself.
-Its reports do not become passing results merely by listing the command.
+The new public cases exercise rollback after a completed buffered scalar,
+partial EOF recovery, empty pushes, exact inner-call boundaries, scalar split
+points and input above one MiB. Native differential cases compare 111,996 raw
+byte inputs against `std::str::from_utf8`, including every one- and two-byte
+input and the three-/four-byte scalar boundary classes. Raw ABI cases compare
+whole output buffers and source/workspace guards with both nonzero and zero
+fills. The exact source, build and report bindings are recorded in
+[verification.json](verification.json#local_component_evidence).
 
-Template-specific component and complete-public commands, after the native
-build, are:
+Current raw gates select full-native36. Earlier profiles retain their exact
+module sets and defaults. Historical CI and prior source records keep their
+own scope. Complete current/historical CI, the other public/Core/UI/installed
+gates, supported platforms, performance, default release and retirement remain
+pending. Generic inline-tag grammar and state are the next stream-parser owner.
 
-```bash
-python3 -B hia/tests/test_template_parse_abi.py \
-  --producer "$PWD" --library-dir "$native_output" \
-  --report "$build_parent/template-parse-abi.json"
-python3 -B hia/tests/test_build_receipt.py \
-  --artifacts "$native_output" --mutation-module template_parse \
-  --rustc "$rustc_binary" --report "$build_parent/template-parse-receipts.json"
-python3 -B hia/tests/test_native_template_parse_caller.py \
-  --producer "$PWD" --original-repo "$original_a201_checkout" \
-  --library-dir "$native_output" --rustc "$rustc_binary" \
-  --work-dir "$build_parent/template-caller" \
-  --report "$build_parent/template-caller.json"
-```
+## Earlier source increment: Unicode fuzzy matching
 
-The public command requires clean producer/original checkouts, the actual
-pinned toolchain and dependencies, the native policy environment above and
-an external work directory. Listing a command is not a record of execution.
+The following preserves the 35-module source-preparation record. Its pending
+claims describe that earlier increment; current local execution is recorded
+above and does not establish complete fuzzy owner/UI or product qualification.
 
-Useful local commands, after the native build:
+The complete `fuzzy_match` source unit moves the original public matcher into
+HIA under the opt-in feature. HIA owns the pinned Rust 1.96.1 / Unicode 17
+lowercase tables, haystack scalar lowering, whole-needle Final_Sigma context,
+Case_Ignorable precedence, NUL retention, greedy matching, original-scalar
+index deduplication, prefix preference and score arithmetic.
 
-```bash
-python3 -B hia/tests/test_build_receipt.py \
-  --artifacts "$native_output" --mutation-module file_update \
-  --rustc "$rustc_binary" --report "$build_parent/file-update-receipts.json"
-python3 -B hia/tests/test_native_source_file_caller.py \
-  --library-dir "$native_output" --rustc "$rustc_binary" \
-  --report "$build_parent/source-file-original.json"
-python3 -B hia/tests/test_native_parser_caller.py \
-  --library-dir "$native_output" --rustc "$rustc_binary" \
-  --report "$build_parent/parser-original.json"
-python3 -B hia/tests/test_file_update_abi.py \
-  --library-dir "$native_output" --report "$build_parent/file-update-abi.json"
-python3 -B hia/tests/test_patch_effects_abi.py \
-  --library-dir "$native_output" --report "$build_parent/patch-effects-abi.json"
-python3 -B hia/tests/test_patch_summary_abi.py \
-  --library-dir "$native_output" --report "$build_parent/patch-summary-abi.json"
+The current source configures **35 modules and 32 opt-in caller kernels**:
+33 borrowed-buffer and two unchanged scalar profiles. Eight Cargo build owners
+account for the links (9 + 7 + 3 + 8 + 1 + 1 + 2 + 1). The fuzzy-match crate
+adds its link through TUI's feature forwarding and the existing CLI route.
+Installed CLI admission requires 31 symbols, with one library-only symbol
+and three retained oracle-only modules kept distinct.
 
-cd codex-rs
-just test -p codex-apply-patch -p codex-utils-string --features hia-native --locked
-just test -p codex-utils-string -p codex-utils-output-truncation \
-  -p codex-protocol -p codex-context-fragments \
-  --features codex-utils-string/hia-native --locked
-env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string \
-  -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments --locked
-```
+Kernel source origin: `ea64655b0152ff2a5009b01a8f45df28e6147702`.
+The [buffer contract](fuzzy_match_buffer_contract.json) binds its complete
+202030-byte source, blob `27c9136b4dd3229a9c4536164b06af61acf90e3e`. Its
+unassigned contract commit field stays null; this actual origin is recorded
+in the current roles and migration metadata instead of inventing a commit.
 
-The complete file-update and patch-effect oracles require an independent checkout at
-`a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095` and an external `CARGO_TARGET_DIR`
-containing the real dependency graph built by the native/default owner gates.
-Both producing checkouts must be clean. From the current repository root:
+Begin, LowerHaystack, LowerNeedle and Match use 32 finite u64 state words,
+a 320-byte request prefix and a 384-byte response prefix. UTF-8 frames carry
+at most 4096 bytes ending on complete scalars; Match carries at most 128 hay
+records and 128 needle scalars. The whole u64 wrapper result is validated
+before Core status. Structural INVALID, actual counter overflow and SHORT
+checks precede every store, and the workspace stays untouched. The compiler's
+known one-MiB seed-wrapper limit does not define a production string cap.
 
-```bash
-python3 -B hia/tests/test_native_file_update_caller.py \
-  --original-root "$original_checkout" --library-dir "$native_output" \
-  --rustc "$rustc_binary" --output-dir "$build_parent/file-update-caller" \
-  --report "$build_parent/file-update-caller.json"
-python3 -B hia/tests/test_native_patch_effects_caller.py \
-  --producer "$PWD" --original-root "$original_checkout" \
-  --library-dir "$native_output" --rustc "$rustc_binary" \
-  --work-dir "$build_parent/patch-effects-caller" \
-  --report "$build_parent/patch-effects-caller.json"
-python3 -B hia/tests/test_native_patch_summary_caller.py \
-  --producer "$PWD" --library-dir "$native_output" \
-  --effects-report "$build_parent/patch-effects-caller.json" \
-  --rustc "$rustc_binary" --work-dir "$build_parent/patch-summary-caller" \
-  --report "$build_parent/patch-summary-caller.json"
-```
+Rust retains mechanical framing, owned containers, complete response/state
+and command validation, direct fixed-anchor checks and result storage. HIA
+chooses the score and its first overflowing original i32 primitive; Rust
+replays only that ordinary primitive to preserve the actual compilation
+overflow-check policy, without guessing it from debug assertions. There is
+no Rust lowercase, search or score fallback. Strings and normalized vectors
+have no new aggregate semantic limit. Allocation, OOM and panic timing are
+not asserted equivalent to the original implementation.
 
-The output directory must be new and outside both source checkouts. The oracle
-compiles the complete pinned original library with actual dependencies and uses
-the actual filesystem API. It retains raw process observations and applies only
-the explicitly defined fixture-path/Debug normalization. Panic-precondition
-observations do not claim post-panic recovery equivalence.
+The raw gate contains **242 planned calls**: 16 literal streams with 70 calls
+and 172 standalone frames. A small manifest binds four exact-name, size and
+SHA-256 JSON shards, whose largest file is 308312 bytes. Every file remains
+below the unchanged 512000-byte source limit; the earlier oversized draft is
+not part of this source unit. Huge u64 history fixtures are logical states,
+not evidence that giant real workloads ran. No reference matcher computed
+the expected results.
 
-The unified formatter's complete original checkout contains the fixed effect
-parent `aeb88f596b83186456caac577080bcb2f253ad32`. Its public gate extracts all 109
-original crate files from that immutable Git tree. Run its policy and public gates
-serially against an exclusively owned external Cargo target:
+All eight original matcher tests remain. One new public method checks 50
+hand-derived literal rows under default and native selections. Thirteen
+private native decoder methods check invalid frames and transitions. Two
+native-only public tests carry inputs above one MiB; large default execution
+is not claimed. Five focused original UI regression groups run under both
+selections. The two skill-popup ranking oracles use the real matcher;
+selection-popup rendering uses supplied indices, command-popup logic is
+independent exact/prefix matching, file-search-popup checks paging, and the
+skills-toggle view routes through `match_skill`. These groups are not five
+direct matcher callers and do not establish whole-default-TUI coverage.
 
-```bash
-python3 -B hia/tests/test_unified_diff_policy.py \
-  --library-dir "$native_output" --rustc "$rustc_binary" \
-  --target-dir "$CARGO_TARGET_DIR" \
-  --output-dir "$build_parent/unified-policy-gate" \
-  --report "$build_parent/unified-policy-report.json"
-python3 -B hia/tests/test_native_unified_diff_caller.py \
-  --library-dir "$native_output" --rustc "$rustc_binary" \
-  --original-root "$unified_original_checkout" \
-  --policy-report "$build_parent/unified-policy-report.json" \
-  --target-dir "$CARGO_TARGET_DIR" \
-  --output-dir "$build_parent/unified-public-gate" \
-  --report "$build_parent/unified-public-report.json"
-```
+Current raw gates explicitly select full-native35. Earlier exact29 through
+exact34 profiles retain their closed module sets and defaults. Fresh B1/B2/B3,
+all 35 module bindings and every static-link receipt are required. The
+historical exact74d1 job and both 60-minute job budgets remain unchanged.
+Previous34 source state is retained in `previous_source_increment_34`; prior
+CI cannot qualify this new source. No current35 compilation, ABI execution,
+native artifact, full workflow or performance result is claimed here.
 
-Both supported policies use actual original/native owner libraries. The eight
-policy refusals execute real compiler or Cargo commands. Selected receipt indices
-and one selected metadata artifact are restored after their rejection tests;
-the target must have no concurrent Cargo user during this gate.
+The 198-component Rust inventory and all 15 capability groups are unchanged:
+13 remain pending and two remain partial. String utilities remains partial
+with the new candidate; CLI/TUI remains pending. Whole production dispatch,
+default release, workspace/product behavior, required platforms, independent
+artifact custody, performance and legacy retirement remain unqualified.
 
-The patch-effect oracle also verifies the actual Cargo fingerprint dependency
-chain shared by `serde_json` and the filesystem context type, runs the 13 unchanged
-original root tests, compares 360 complete public result pairs, and exercises
-the 14 native transport regression scenarios. Its output paths use ASCII letters,
-digits, underscores, dots and hyphens so temporary path normalization stays exact;
-this is a test-output precondition, not a production patch-path restriction.
+## Earlier source increment: proposed plan parsing
 
-Run `just fmt` after source changes and the scoped `just fix` gate before
-finalizing a large Rust change. Keep build products, logs, generated test corpora,
-runtime observations and publication manifests outside the repository. Retain the
-checksum-pinned original regression inputs and licenses required by the portable
-gates.
+The following is the preserved 34-module source-preparation record. Its
+counts and pending gates describe that earlier increment; subsequent CI
+observations remain bound to their own revisions and do not qualify Fuzzy35.
 
-## Remaining work and retirement
+The complete `proposed_plan_parser` source unit moves line-based plan parsing
+into HIA under the existing opt-in feature. HIA owns UTF-8 admission, the pinned
+25 whitespace scalars, LF line decisions, both marker-prefix candidates,
+normal/plan channels, pending counters, Start/End barriers and EOF reset.
+Explicit continuation commands preserve segments across internal frames while
+keeping distinct public calls separate.
 
-All 15 complete capability migrations remain open. In particular, native patch
-computation does not migrate model transport, authentication, turns, persisted
-history, tools/process effects, permissions and sandboxing, MCP, App Server v2,
-CLI/TUI ownership, SDK/frontends, platform release paths or the entire HIA runtime.
-Actual host filesystem execution, writer formatting/I/O and filesystem search
-remain outside the current HIA owners. Native unified formatting also retains an
-explicit compiler-policy boundary; release/LTO and other platforms remain open.
+The current source configures **34 modules and 31 opt-in caller kernels**:
+32 borrowed-buffer and two unchanged scalar profiles. Seven Cargo build owners
+account for the links (9 + 7 + 3 + 8 + 1 + 1 + 2). The stream-parser owner adds
+its second link through the existing Core and CLI feature route. Installed CLI
+admission requires 30 symbols, with one library-only and three retained
+oracle-only modules kept distinct.
 
-Retire an implementation only after its replacement owns the intended production
-path and passes original behavior, API/session compatibility, required-platform,
-clean-install and end-to-end tests. Then remove superseded source, dependencies
-and build rules together, while retaining required regression fixtures, licenses
-and release assets. The current candidate does not authorize deleting active
-Rust implementations or enabling native dispatch by default.
+Kernel source origin: `da3817ebea57da1a940c12abc57999ce3d50706a`.
+The [buffer contract](proposed_plan_parser_buffer_contract.json) binds the
+complete source. Push, Finish and readonly Inspect use an 88-byte request
+header and at most 4096 payload bytes, always ending at a complete UTF-8 scalar.
+An 80-byte output header precedes 32-byte commands. Required capacities are
+80 + 96*N, 176 and 80. The native wrapper's entire u64 result is checked before
+interpreting its bounded Core u32 extent.
 
-The parser's 2,480-line, file-update's 1,953-line, patch-effect's 1,365-line and
-unified formatter's 4,378-line HIA programs are cohesive compiler inputs. Their
-documented review exceptions do not turn component qualification into
-whole-product completion. Earlier detailed process records
-remain bound to their published commits and external evidence; this directory's
-canonical documents describe the current candidate.
+Rust retains the unbounded pending String and original segment Vec. It
+validates every command and the complete returned state before applying a
+frame's mechanical effects. The original `map_segments` runs exactly once
+per public call. Inspect supplies the exact original Debug fields without
+consuming pending input. The default parser and both generic parser tests
+remain; original method bodies and the streaming/finalization order are
+preserved.
+
+The raw gate has 204 literal templates and 713 planned native invocations:
+six streams with 532 calls plus 181 standalone cases. Two streams prescribe
+257 chunks of 4096 whitespace bytes each. These are authored fixtures and do
+not claim executed performance or a workload above 4 GiB. The corpus is below
+the unchanged 512000-byte limit; no reference parser computed its expectations.
+
+Five original ProposedPlan methods and two original generic methods are
+preserved. Thirteen added public methods run under both feature selections.
+Eleven native decoder methods check malformed frames and validation before
+effects. Two additional native-only public witnesses exceed 1 MiB; matching
+small literal cases cover the default path without claiming large default
+execution. Existing complete owner, strict lint and eight Core consumer gates
+cover the composition with Citation. Their commands and budgets remain intact.
+
+Current raw gates select full-native34. Historical exact29/30/31/32/33 profiles
+retain their closed module sets and defaults. Fresh B1/B2/B3, all 34 module
+bindings and every static-link receipt are required. Earlier receipts cannot
+qualify this source increment.
+
+At source preparation, this increment was uncompiled and unexecuted. This
+historical paragraph does not relabel later observed CI. Runtime, default
+release, whole workspace/product, required platforms, performance, independent
+artifact custody and retirement were not qualified by the source record; none
+of its evidence is transferred to the current Fuzzy35 increment.
+
+## Earlier source increment: citation streaming
+
+The following 33-module description records the earlier source increment.
+Its evidence is revision-bound and does not qualify the current 34-module tree.
+
+The complete citation_stream_parser source unit moves the literal, non-nested
+citation parser into HIA under the existing opt-in feature. HIA owns matching,
+pending prefixes, body/visible events, citation completion and EOF reset.
+Rust keeps owned containers and bounded transport. The original generic tag,
+plan and UTF-8 admission parsers remain available for their original roles.
+
+The current source configures **33 modules and 30 opt-in caller kernels**:
+31 borrowed-buffer and two unchanged scalar profiles. Seven Cargo build
+owners account for the links (9 + 7 + 3 + 8 + 1 + 1 + 1). The new owner is
+codex-utils-stream-parser. Core forwards its existing hia-native feature to
+that owner; the CLI already forwards Core, so no duplicate CLI route is added.
+Installed CLI admission requires 29 symbols, with one library-only and three
+retained oracle-only modules kept distinct.
+
+Kernel source origin after the fixed-compiler result-count repair:
+`20c7ce19ae5775c50e3999ba7fcca424939a8078`.
+The [buffer contract](citation_stream_parser_buffer_contract.json) binds its
+complete bytes. Push, Finish and readonly Inspect use a 40-byte request header
+and at most 4096 payload bytes. HIA returns packed records after a 48-byte
+header. The output reservations are 98 + 33*N, 98 and 64 + prefix respectively.
+The finite state does not contain an aggregate body, text or citation limit.
+Rust accumulates internal byte fragments before converting complete public
+results to UTF-8. Inspect supplies pending bytes for the original compact and
+alternate Debug structures without a second parser in Rust.
+
+The raw gate has 230 literal templates and 742 planned native invocations:
+13 streams with 558 calls plus 184 standalone frames. Two streams prescribe
+257 chunks of 4096 bytes each; they are unexecuted source fixtures and do not
+claim performance or a workload above 4 GiB. The corpus is below the unchanged
+512000-byte repository limit. No reference parser computed its expectations.
+
+All 15 original owner methods and eight selected Core streaming/finalization
+methods are preserved. Ten added public tests cover per-call extraction,
+empty/repeated finish and reuse, false prefixes, internal UTF-8 splits, many
+citations, visible/body data above 1 MiB, and exact Debug continuity. The
+workflow adds complete owner default/native tests, strict owner lint and
+the eight original Core consumers in both configurations. Existing groups,
+the complete historical job and both 60-minute budgets remain intact.
+
+Network, output-lines, item-budget and environment raw gates explicitly select
+full-native33; the new citation gate requires it. Historical exact29/30/31/32
+profiles retain their original closed module sets and defaults. Fresh B1/B2/B3,
+all33 module/artifact bindings and all seven-owner static-link receipts are
+required; earlier receipts cannot qualify this source increment.
+
+The source-preparation record for this earlier increment is retained here.
+Later execution evidence applies only to its exact source revision. It does
+not qualify the current increment, default release, complete workspace/product,
+performance, independent artifact custody or retirement.
+
+## Earlier source increment: bounded environment display
+
+The complete format_env_display source unit is authored with a borrowed v8
+HIA entry. HIA owns iterative heap sorting, byte comparison, masks, separators
+and join progress. Rust retains owned containers, mechanical swaps, bounded
+transport and complete-string UTF-8 validation. Map keys finish before each
+variable's original AsRef call, once per variable; the final join follows all
+variables. Empty and duplicate variable names remain observable. Map values
+are not read, and there is no Rust sorting/comparison fallback.
+
+The current configuration contains **32 modules and 29 opt-in caller kernels**:
+30 borrowed-buffer profiles and the unchanged two scalar profiles. Six Cargo
+build entries account for the links (9 + 7 + 3 + 8 + 1 + 1). The new owner is
+codex-utils-cli; the CLI's two MCP views and the TUI's MCP environment view
+continue to call its public function. These are source counts, not runtime
+coverage or qualification claims.
+
+The kernel's complete source origin is
+917b786fbf6f0d25a19fe5748074f59f997e0e04. The
+[buffer contract](format_env_display_buffer_contract.json) binds the exact
+kernel bytes and five bounded operations. Chunks are at most 4096 bytes per
+key; full key/output lengths are carried separately. This protocol avoids
+using a single frame or the u32 status to bound the public function's output.
+The configured seed-wrapper cap is not a claim that every B3 production path
+has that cap.
+
+The raw harness contains 231 authored literal frames: 71 calls in 22 complete
+streams and 160 standalone cases. Ten cases use logical large lengths and do
+not represent executed giant-payload workloads. The public source retains all
+four original methods and five complete equalities, and adds nine methods,
+including a comparison of two keys with a shared prefix over 1 MiB. No new
+kernel, default/native public test or current32 build has been executed here.
+
+The workflow retains all prior owner groups and selected Core methods. It
+adds only the new raw gate and the new owner's default/native crate tests;
+the existing four-owner and later consumer groups are not duplicated. The
+network, output-lines and output-item-budget raw commands select full-native32;
+the new environment raw gate requires it. Historical exact29/30/31 profiles
+remain closed sets with their original defaults. Installed CLI checks require
+28 linked symbols, plus one library-only and three retained oracle-only roles
+with their existing distinctions.
+
+Both workflow jobs retain their 60-minute budgets. Fresh B1/B2/B3, all32
+module/artifact bindings, six-owner static links and complete original oracles
+are pending. The workflow still has only original/current network baselines;
+the separate mandatory original/native16/current gate remains unexecuted.
+Earlier31/30/483 qualification records are preserved as historical objects.
+Current runtime, default release, workspace, performance, independent artifact
+custody and retirement flags remain false. The thirteen pending and two partial
+capability groups are unchanged.
+
+## Earlier source increment: output-item budget decisions
+
+The authored `output_item_budget` module moves only numeric per-item budget
+state and keep/omit/truncate decisions into HIA. Rust retains the original
+item order, callback timing, text truncation, opaque content and omission
+summaries. The current configuration has **31 modules and 28 opt-in caller
+kernels**: 29 borrowed-buffer entries and the same two scalar entries. Five
+Cargo build entries configure those links (9 + 7 + 3 + 8 + 1).
+
+The new [buffer contract](output_item_budget_buffer_contract.json) binds the
+kernel source bytes. Its raw harness contains 143 literal frames; eight new
+public Rust tests and the original truncation tests exercise the same public
+API in default and `hia-native` configurations. Two existing Core caller
+oracles are also selected in both configurations. These are authored gates,
+not execution results. Build, runtime, platform, performance, default-release,
+whole-product and retirement qualification remain open or false.
+
+The opt-in feature propagates from the CLI through `codex-core` to
+`codex-utils-output-truncation` and the existing native string feature. The
+default Rust implementation and all original budgets/oracles remain. Fresh
+`full-native31` compiler generations and all31 source/object/library/archive/
+link bindings are required; historical exact29/30 profiles remain distinct
+and cannot admit the new kernel. The installed symbol check requires27 CLI
+symbols, plus one library-only and three retained raw-only module identities;
+symbol presence alone does not prove a budget call executed.
+
+The current network-owner workflow still runs only `original` and `native31`.
+The separate mandatory `original`/`native16`/`native31` owner gate requires its
+admitted published16 bundle and is not satisfied by that workflow. The same
+60-minute limits, compiler pin and complete exact74d1 historical job remain.
+Kernel source origin: `3f18f08d19d59a49e2fbe19a85b306db14136abe` (source identity,
+not an execution or publication claim).
+
+## Earlier source increment: output line counting
+
+The following section preserves the earlier30 source-increment record. Its
+counts and unexecuted status describe that record, not current31 qualification.
+
+The authored `output_lines` source connects through the existing `hia-native`
+string feature. HIA owns LF counting, chunk state and final-line arithmetic;
+the host retains fixed 4096-byte transport chunks and the original output
+truncation order and budgets. The current configuration has **30 modules and
+27 opt-in caller kernels**, including 28 borrowed-buffer and two scalar entries.
+These are source counts, not a claim of a published release or successful build.
+
+The raw ABI harness and Rust public-oracle sources are authored. Neither has
+been executed for this increment. Current build, native/default public,
+installed-consumer, artifact-custody and performance qualification remain open.
+Fresh full-native30 compiler generations and all source/object/archive/link
+receipts are required; earlier full-native29 reports cannot qualify this lock.
+Kernel source: `8987467886706dfec8bfbd3e05f0f1f8ecbf965e`.
+
+The current network-owner workflow compares `original` and `native30` only.
+The separate mandatory owner gate requires `original`, `native16` and `native30`
+with an admitted published16 link bundle. This workflow does not execute or
+satisfy that three-baseline gate. Both original 60-minute job budgets, the
+separate exact74d1 historical job, compiler pin, default Rust dispatch and all
+whole-product/retirement flags remain unchanged.
+
+The earlier revision records below are retained as historical evidence.
+`verification.json` keeps their full build and qualification summaries separate
+from current unqualified source, without relabeling old results.
+
+## Earlier revision qualification
+
+The joint source at `48324e2e75f2ebf46540e8db667b3f33fc7b3a7c` passed
+[push run 43805537036](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43805537036),
+attempt 1. Its current29 job and the separate exact74d1 historical job both
+finished successfully within the original 60-minute budgets. The complete
+original decoded logs and API metadata support this result. The two full
+artifact ZIPs have **not** been independently downloaded or audited.
+
+These results belong to that exact qualification revision and tree
+`e96ac49ec70c97b7e5bd1938b060be65f094cb70`. They do not qualify later revisions.
+Whole-product, default-release, complete workspace, platform, performance and
+retirement qualification remain false.
+
+## Subsequent revision evidence
+
+Codex revision `2ab2266db6ae013f39f44e36cb062fbebb46b7c7` completed both
+[push run 43816434217](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43816434217)
+and
+[PR run 43816440180](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43816440180),
+attempt 1. Each current job completed 104 API steps, and each separate exact74d1
+job completed 54. The PR actually checked out merge
+`98f1cbc1930276a38cc5c93ca54158fb6d1267b3`, with the same source tree
+`22737e49aa026118115e0a7a97ae4956d421eb65`. These native results preserve their
+own logs and reports; they do not replace the 48324e evidence below. The general
+[blocking workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43816440014)
+failed. Source repairs in `8590718e50b8c2991e249988fe4467db989b22ba` and every
+successor require their own checks.
+
+Separately, Hepta revision `474aa8ccb94c1186afb8e4be4fd1217c43be4390` passed
+[push run 43813432186](https://github.com/TrillionniumFoundation/Hepta/actions/runs/43813432186),
+attempt 1, including the original source/native gates and the new selected
+artifact export. Its
+[PR run 43813438642](https://github.com/TrillionniumFoundation/Hepta/actions/runs/43813438642)
+failed the original ordinary-caller timeout assertion: 5.8470409960000325
+seconds against the unchanged 5-second bound. The PR had the same source tree,
+with a different merge commit. This failure remains an open qualification
+condition.
+
+Selected push artifact `14204797010` was independently received in full:
+12,806,029 bytes, SHA256
+`09734e5d7a3d7005c3fef6e4ec924a77bb2272874d9c62f5f7ccc7a7adaa0a05`.
+The data-only receiver verified all 464 member byte sequences, modes and hashes;
+the 2,593-file current source tree; 960 cold-source identity records; 13 complete
+compilation packets with their inputs, outputs and produced images; 38 phase
+reports and archive manifests; and 17 reference families. Its complete result
+has SHA256
+`3579cff0f9b9d6b2930bb8a8bc6c710e726f832d845ea33738e621db8ee2aeb4`.
+No delivered program was executed during this receiving step. The original
+large artifact and omitted phase archive payloads remain outside independent
+custody. This receipt is specific to the successful push and does not override
+the PR failure, qualify product execution, or authorize A/B or retirement.
+Codex retains compiler pin `0de5657a80f96b138525ac7ee9ce11712a83a10d`.
+
+## Names and current callers
+
+The tree composes the fixed `d2fb9ecd772da7736e973aaa3d90f14512dedddf`
+nineteen-name branch with the HIA scope of
+`74d1c0ebeced1b72a0ee74e375a0ace623762b01`, a historical union of 29 audited
+names. The later source increments add `output_lines`, `output_item_budget`,
+`format_env_display`, `citation_stream_parser`, `proposed_plan_parser` and
+`fuzzy_match` for 35 modules. Eight Cargo build entries configure 32 opt-in links
+(9 + 7 + 3 + 8 + 1 + 1 + 2 + 1) when
+`hia-native` is enabled.
+`utf8_boundaries`, `uuid_matches` and `template_parser` remain raw-oracle-only
+kernels; their current production replacements are `utf8_prefix`, `uuid_find`
+and `template_parse`. There are two scalar profiles, `token_budget` and
+`prefix_admission`; the other 33 entries retain the borrowed
+buffer profile. See `joint_module_roles.json` for source, role, replacement and
+link sites. Names, configured links, algorithms and observed calls are distinct
+counts.
+
+The current template uses the v9 parse/render ABI with the original HIA Index
+builder for placeholder storage. Kind-3 names keep their exact UTF-8 byte
+ranges, HIA owns deduplication/order, and owned `Vec` storage preserves the
+original ExactSizeIterator/drop behavior. The v9 render frame and private DTO
+tests are not normalized. The default Rust implementation remains in place.
+
+## Observed CI at 48324e (historical)
+
+The current job completed **104 API steps** in 2,610 seconds; the historical
+job completed **54 API steps** in 2,368 seconds. Both had zero failed or skipped
+API steps. API steps are not test counts. The historical job actually checked
+out exact `74d1c0ebeced1b72a0ee74e375a0ace623762b01`; its results do not qualify
+the current ABI.
+
+The current log records the full 29-module build with Hepta
+`0de5657a80f96b138525ac7ee9ce11712a83a10d` and B1/B2/B3 fixed-point SHA256
+`76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273`.
+Both scalar admission profiles passed 136 checks. Original public/raw gates,
+installed consumers, strict checks and final maintenance also completed. This
+is observed CI evidence; complete report and binary payload custody remains
+pending. Fresh receipts cannot be relabeled for later source or lock changes.
+
+The nine current nextest summaries are preserved separately:
+
+| Original selection | Passed | Reported skipped or filtered |
+| --- | ---: | ---: |
+| apply-patch, utils-string, utils-template, execpolicy | 202 | 0 |
+| output-truncation, protocol, context-fragments | 319 | 0 |
+| CLI, arg0, TUI owners | 4,473 | 6 |
+| Seven template owner/consumer packages, native | 387 | 0 |
+| Same seven packages, default | 384 | 0 |
+| Default production crates and truncation consumers | 504 | 0 |
+| Filtered Core exec-policy integration | 11 | 3,870 |
+| Filtered Core network-domain consumer | 1 | 3,880 |
+| Filtered protocol allowed-prefix consumer | 1 | 300 |
+
+These selections overlap and are **not added together**. The last three use
+explicit filters; their reported skipped counts include unselected tests. The
+CLI group retains its original six skips. This is not a complete workspace
+qualification. Separate historical summaries were 198, 4,474 with six skips,
+and 185; they are not current29 results.
+
+The four corrected public differentials (`policy_summary`, `network_domains`,
+`allowed_prefixes`, `command_dispatch`) each printed `passed: true` and an exact
+report SHA. Their public comparison counts remain `null`: the complete report
+payloads have not been read. `verification.json` records all four hashes and
+keeps adjacent raw ABI call counts separate.
+
+## Evidence and remaining limits
+
+The original current decoded log is 2,138,385 bytes, SHA256
+`18742a9e9da5517f1d7cdebe5aef1052a91216f9dc78176182b75a395a9c08c2`.
+The original historical decoded log is 1,640,806 bytes, SHA256
+`7d6b8b04e3020083fcb96a55bbb52df1f3b465f1dc338fd02c5bbb6f1ba38093`.
+Their API references, exact checkouts, timestamps and nine test summaries are
+recorded in `verification.json#ci_qualification_at_revision`.
+
+Artifact `14200325804` is 142,198,783 bytes; historical artifact `14199372814`
+is 20,570,859 bytes. Their API/upload digests are recorded, but both remain
+**metadata-only**. Independent whole-ZIP SHA/CRC, member and source custody are
+not complete. Earlier startup and wrapper failures remain recorded negatives;
+this successful run does not rewrite those results.
+
+The workflow retains its original current gates and separate historical ABI
+job. The old shared `codex_hia_template_render` symbol uses a v8 40-byte command,
+64-byte workspace, 32-byte output and success=32. The current v9 ABI uses a
+>=64-byte frame, 32-byte workspace, 80-byte header and success=0. Historical raw
+results must remain attached to their own library and checkout.
+
+## Preserved behavior and retirement
+
+Complete original oracles, payload/event order, source destruction, clone/drop,
+callbacks, AsRef/value Drop faults, 100 raw private DTO frames, UUID public
+harnesses, policy consumers and installed patch/CLI behaviors remain in the
+workflow. Original metadata files under `history/` are unchanged.
+
+All fifteen capability groups recorded in `migration.json` remain unclosed:
+thirteen are pending and two retain `partial_opt_in_caller`. This registry is
+not a complete inventory of the shared project. Required platforms and host
+combinations,
+complete workspace and product behavior, integrated performance, default
+migration and independent artifact custody still need their own evidence.
+Legacy removal requires a separately reviewed proposal after those conditions
+are met. This change grants no retirement or A/B execution authority.

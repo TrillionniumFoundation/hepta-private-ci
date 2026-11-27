@@ -80,19 +80,29 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "formal_render_component_and_receipts_passed_current_cargo_pending",
+    "qualification_status": "source_only_inline_followup_current_tree_pending",
     "remaining_work": [
+      "Fresh exact-source B1/B2/B3, all 37 bindings, all retained raw gates including 75 planned inline literal cases (600 calls), native/default owners, Core/UI/installed and full workflow gates. Prior local native37 passes are historical.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
-    "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Nineteen B3 modules cover seventeen algorithm groups. One actual fresh B1/B2/B3 and nineteen-module build completed; all 54 inherited namespaced artifacts are byte-identical and the three renderer artifacts match the frozen prototype. A subsequent controller receipt-reader failure is retained. The corrected continuation reused that exact successful build, rechecked its complete artifacts and executed the previously unrun formal renderer ABI and receipt gates: 66026 calls, 54262 whole-output no-write transport failures, zero skips, and 78 receipt checks. Historical complete-original direct-rustc public parity remains separately scoped. Current Cargo/public, owner and six-consumer suites, strict/fix, installed combination and CI remain pending. The public gate now verifies actual Cargo OUT_DIR staged archive bytes against admitted formal archives; both prior eighteen-module CI failures remain failures. Corrected seventeen-module push and PR CI archives were fully audited, but do not qualify this new source. All15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and legacy retirement remain open.",
+    "native_compiler_generations_reproduced": false,
+    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. At revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, run 43805537036 completed the current29 job (104 API steps) and separately checked-out exact74d1 historical17 job (54 API steps), within their unchanged 60-minute budgets. Original logs report a fresh 29-module B1/B2/B3 build, both scalar profiles, current/default selected owners, public/raw/installed gates and final strict/maintenance success. The nine nextest groups overlap and are not a full-workspace count. The two artifact ZIPs remain metadata-only; detailed report and binary payloads have not received independent complete custody. The documentation successor, all15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and retirement remain unqualified.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json#template_render_increment",
+    "report": "hia/history/owner19-d2fb9ecd/verification.json#template_render_increment",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "scope": "Linux x86-64 GNU, opt-in hia-native. Nineteen B3 modules cover seventeen algorithm groups. One actual fresh B1/B2/B3 and nineteen-module build completed; all 54 inherited namespaced artifacts are byte-identical and the three renderer artifacts match the frozen prototype. A subsequent controller receipt-reader failure is retained. The corrected continuation reused that exact successful build, rechecked its complete artifacts and executed the previously unrun formal renderer ABI and receipt gates: 66026 calls, 54262 whole-output no-write transport failures, zero skips, and 78 receipt checks. Historical complete-original direct-rustc public parity remains separately scoped. Current Cargo/public, owner and six-consumer suites, strict/fix, installed combination and CI remain pending. The public gate now verifies actual Cargo OUT_DIR staged archive bytes against admitted formal archives; both prior eighteen-module CI failures remain failures. Corrected seventeen-module push and PR CI archives were fully audited, but do not qualify this new source. All15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and legacy retirement remain open."
+    "scope": "Linux x86-64 GNU, opt-in hia-native. At revision 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c, run 43805537036 completed the current29 job (104 API steps) and separately checked-out exact74d1 historical17 job (54 API steps), within their unchanged 60-minute budgets. Original logs report a fresh 29-module B1/B2/B3 build, both scalar profiles, current/default selected owners, public/raw/installed gates and final strict/maintenance success. The nine nextest groups overlap and are not a full-workspace count. The two artifact ZIPs remain metadata-only; detailed report and binary payloads have not received independent complete custody. The documentation successor, all15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and retirement remain unqualified.",
+    "current_report": "hia/verification.json#current_qualification",
+    "report_scope": "The existing report points to immutable exact19 template history; current revision-bound CI evidence is in current_report.",
+    "previous_qualification_status": "ci_success_at_483_independent_artifact_audit_pending",
+    "current_source_module_count": 37,
+    "current_lock_build_qualified": false,
+    "current_lock_build_scope": "Configured 37-module lock unchanged; fresh build and raw input admission pending for changed kernel."
   },
   "candidate_modules": [
     {
@@ -101,8 +111,8 @@
       "source_path": "codex-rs/apply-patch/src/seek_sequence.rs",
       "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
       "source_function": "seek_sequence",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -125,11 +135,17 @@
         "hia/tests/native_patch_caller.rs",
         "codex-rs/apply-patch/tests/suite/hia_native.rs"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "seek_sequence"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "utf8_boundaries",
@@ -137,8 +153,8 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_blob": "2d081f79e29d1d7d9a351c92700262e4ed98b87f",
       "source_function": "take_bytes_at_char_boundary",
-      "implementation_status": "native_candidate",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -158,19 +174,25 @@
       "tests": [
         "hia/tests/test_utf8_boundaries.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "utf8_boundaries"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "retained_oracle_only"
     },
     {
       "id": "utf8_prefix",
       "hia_source": "hia/utf8_prefix.hepta",
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "take_bytes_at_char_boundary",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -186,19 +208,25 @@
         "hia/tests/native_string_caller.rs",
         "codex-rs/utils/string/src/hia_native_tests.rs"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "utf8_prefix"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "metric_tag",
       "hia_source": "hia/metric_tag.hepta",
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "sanitize_metric_tag_value",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -226,11 +254,17 @@
         "hia/tests/test_metric_tag_abi.py",
         "codex-rs/utils/string/src/hia_native_metric_tests.rs"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "metric_tag"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "markdown_location",
@@ -262,15 +296,21 @@
         "hia/tests/test_markdown_location_abi.py",
         "codex-rs/utils/string/src/markdown_location_tests.rs"
       ],
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "markdown_location"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "ascii_json_fragment",
@@ -302,15 +342,21 @@
         "hia/tests/test_ascii_json_abi.py",
         "codex-rs/utils/string/src/ascii_json_tests.rs"
       ],
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "ascii_json_fragment"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "truncate",
@@ -321,8 +367,8 @@
         "truncate_middle_chars",
         "truncate_middle_with_token_budget"
       ],
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -358,11 +404,17 @@
         "hia/tests/test_truncate_abi.py",
         "codex-rs/utils/string/src/truncate_native_tests.rs"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "truncate"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "token_budget",
@@ -374,8 +426,8 @@
         "approx_tokens_from_byte_count"
       ],
       "production_algorithm_group": "truncate",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -395,11 +447,17 @@
         "hia/tests/test_native_truncate_caller.py",
         "hia/tests/test_build_receipt.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "token_budget"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "source_file",
@@ -414,8 +472,8 @@
         "into_contents"
       ],
       "production_algorithm_group": "source_file",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -472,11 +530,6 @@
         "hia/tests/test_installed_patch.py",
         "hia/tests/test_installed_codex.py"
       ],
-      "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      },
       "materialization": {
         "owner": "Rust computes storage bounds only; HIA chooses every logical row and span.",
         "parse": "Direct emit when input bytes <=256, with at most one result row per byte; larger inputs use exact query then emit.",
@@ -485,7 +538,18 @@
         "into_contents": "Direct emit with checked(2 * old_line_count) records as the proven bound.",
         "capacity": "Checked 40 + 32 * record_bound allocation; validate native required size and count, require required size <= buffer length, then truncate logical buffer length to the complete returned plan. Spare initialized storage never becomes a row.",
         "fallback": "The alternative is another HIA query/emit sequence; no Rust algorithm fallback."
-      }
+      },
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "source_file"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "file_update",
@@ -498,8 +562,8 @@
         "apply_replacements"
       ],
       "production_algorithm_group": "file_update",
-      "implementation_status": "native_opt_in_complete_computation_owner_candidate",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "performance_qualified": false,
@@ -539,11 +603,17 @@
         "hia/tests/test_installed_patch.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "file_update"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "parser",
@@ -561,8 +631,8 @@
         "Hunk::resolve_path"
       ],
       "production_algorithm_group": "parser",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -609,11 +679,17 @@
         "hia/tests/test_parser_abi.py",
         "hia/tests/test_parser_host_receipt.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "parser"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "published_history": "hia/verification.json#historical_published_ci/parser",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "patch_effects",
@@ -633,8 +709,8 @@
         "apply_hunks"
       ],
       "production_algorithm_group": "patch_effects",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -660,10 +736,17 @@
         "hia/tests/patch_effects_oracle/transport_error_driver.rs",
         "hia/tests/test_build_receipt.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "patch_effects"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "qualified_parent": "hia/verification.json#historical_published_ci/patch_effects"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "unified_diff",
@@ -672,8 +755,8 @@
       "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
       "source_function": "unified_diff_from_chunks_with_context_and_mode",
       "production_algorithm_group": "unified_diff",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -695,10 +778,17 @@
         "hia/tests/test_installed_patch.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "unified_diff"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "component": "hia/verification.json#unified_diff_increment"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "patch_summary",
@@ -707,8 +797,8 @@
       "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
       "source_function": "print_summary",
       "production_algorithm_group": "patch_summary",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "inherited_source_specific_evidence_current_fifteen_module_product_requalification_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -729,10 +819,17 @@
         "hia/tests/test_installed_patch.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "patch_summary"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment",
-        "component": "hia/verification.json#patch_summary_increment"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "patch_application",
@@ -748,8 +845,8 @@
         "apply_hunks"
       ],
       "production_algorithm_group": "patch_application",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_components_and_owner_preflight_passed_targeted_fixture_repair_passed_full_public_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -770,9 +867,17 @@
         "hia/tests/test_installed_patch.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "patch_application"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_application_increment"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "patch_standalone",
@@ -785,8 +890,8 @@
         "line_ending_mode_from_env"
       ],
       "production_algorithm_group": "patch_standalone",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "current_native_components_and_owner_preflight_passed_complete_public_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -807,9 +912,17 @@
         "hia/tests/test_installed_patch.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "patch_standalone"
+      },
       "validation": {
-        "current": "hia/verification.json#patch_standalone_increment"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "uuid_find",
@@ -820,8 +933,8 @@
         "find_uuids"
       ],
       "production_algorithm_group": "uuid_find",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "formal_component_and_receipts_passed_historical_direct_rustc_parity_current_cargo_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -841,9 +954,17 @@
         "hia/tests/test_build_receipt.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "uuid_find"
+      },
       "validation": {
-        "current": "hia/verification.json#uuid_find_increment"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "template_parse",
@@ -856,8 +977,8 @@
         "push_literal"
       ],
       "production_algorithm_group": "template_parse",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "formal_parse_component_and_receipts_passed_historical_direct_rustc_parity_current_cargo_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -877,9 +998,17 @@
         "hia/tests/test_build_receipt.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "template_parse"
+      },
       "validation": {
-        "current": "hia/verification.json#template_parse_increment"
-      }
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
     },
     {
       "id": "template_render",
@@ -891,8 +1020,8 @@
         "render_template"
       ],
       "production_algorithm_group": "template_render",
-      "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "formal_render_component_and_receipts_passed_current_cargo_pending",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -912,8 +1041,952 @@
         "hia/tests/test_build_receipt.py",
         "hia/tests/test_installed_codex.py"
       ],
+      "historical_source_entry": {
+        "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+        "path": "hia/history/owner19-d2fb9ecd/migration.json",
+        "id": "template_render"
+      },
       "validation": {
-        "current": "hia/verification.json#template_render_increment"
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "template_index",
+      "hia_source": "hia/template_index.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "source_function": "Template placeholder ordering/deduplication through HIAIndexBuilder",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_index",
+        "contract": "hia/template_buffer_contract.md",
+        "error_effect": "Returned errors leave the current call output and workspace unchanged; successful earlier events remain committed."
+      },
+      "behavior": [
+        "HIA owns the AVL tree, byte comparison, duplicate detection, canonical traversal, lookup, usage marks and smallest-unused selection.",
+        "Stable IDs allow Rust to own strings and expose the original Clone/Debug/Eq/ordered iterator behavior without a second Rust ordered set."
+      ],
+      "tests": [
+        "hia/tests/native_template_placeholders.rs",
+        "hia/tests/test_native_template_parser.py",
+        "hia/tests/test_template_index_abi.py",
+        "codex-rs/utils/template/src/hia_native_index_tests.rs"
+      ],
+      "performance_equivalence": false,
+      "remaining_host_work": [
+        "allocation and deallocation",
+        "owned strings and AST storage",
+        "generic iterator/AsRef/Drop effects",
+        "public formatting and checked native result conversion"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "template_index"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production",
+      "current_scope": "The v9 render frame keeps its original ranges; old Index query ABI is retained only in cfg(test)."
+    },
+    {
+      "id": "uuid_matches",
+      "hia_source": "hia/uuid_matches.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "find_uuids",
+      "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_uuid_matches",
+        "maximum_frame_bytes": 4096,
+        "output_capacity": 36,
+        "workspace_bytes": 1,
+        "workspace": "Byte 0 is the final-window flag, 0 or 1.",
+        "success_return": "High 16 bits are match (1), exhausted (2), or more (3); low 16 bits are consumed bytes.",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_effect": "Errors and non-matches leave both mutable buffers unchanged."
+      },
+      "behavior": [
+        "Select leftmost non-overlapping matches of the original ASCII UUID pattern, without word-boundary requirements.",
+        "Preserve the exact matched 36 bytes and their case, including matches spanning borrowed windows.",
+        "No existing repository production caller is claimed; the public function and its feature-selected implementation are tested."
+      ],
+      "tests": [
+        "hia/tests/test_native_uuid_caller.py",
+        "hia/tests/native_uuid_caller.rs",
+        "hia/tests/test_uuid_abi.py",
+        "codex-rs/utils/string/src/uuid_tests.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "uuid_matches"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "retained_oracle_only"
+    },
+    {
+      "id": "template_parser",
+      "hia_source": "hia/template_parser.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "source_function": "Template::parse",
+      "implementation_status": "superseded_production_protocol_retained_for_raw_oracles",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_parser",
+        "contract": "hia/template_buffer_contract.md",
+        "error_effect": "Returned errors leave the current call output and workspace unchanged; successful earlier events remain committed."
+      },
+      "behavior": [
+        "HIA recognizes delimiter and four-brace escape precedence, decodes UTF-8, applies Rust Unicode whitespace trimming and preserves byte-offset parse errors.",
+        "Returned literal/placeholder spans refer to the original source. Native index insertion decides placeholder uniqueness and canonical order."
+      ],
+      "tests": [
+        "hia/tests/native_template_parser.rs",
+        "hia/tests/test_native_template_parser.py",
+        "hia/tests/test_template_parser_abi.py",
+        "codex-rs/utils/template/src/parser_native_tests.rs"
+      ],
+      "performance_equivalence": false,
+      "remaining_host_work": [
+        "allocation and deallocation",
+        "owned strings and AST storage",
+        "generic iterator/AsRef/Drop effects",
+        "public formatting and checked native result conversion"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "template_parser"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "retained_oracle_only"
+    },
+    {
+      "id": "prefix_match",
+      "hia_source": "hia/prefix_match.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "PrefixPattern::matches_prefix",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_prefix_match",
+        "source_wire": "u64 command_count, pattern_count; pattern_count groups of u64 alternative_count then u64 byte_length and bytes per alternative; min(command_count, pattern_count) length-prefixed command strings. All integers little-endian.",
+        "source_contract": "At least one pattern group; exactly one first-group alternative; later groups may have zero alternatives. Entire frame must be structurally valid and have no trailing bytes before matching.",
+        "output_wire": "u64 pattern_count for a match or zero for no match, little-endian",
+        "success_return": 8,
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_precedence": "Short output before source validation.",
+        "workspace": "Unused; never read or written; null with zero length accepted.",
+        "error_effect": "Output unchanged; source/workspace never modified. Success writes only output bytes 0..8.",
+        "source_schema": "hepta.hia.program.v9",
+        "word_operations": "Native buffer.load.u64.le and buffer.store.u64.le after explicit complete-frame/capacity validation; byte-exact 0..7 tail.",
+        "preflight_module": "prefix_admission",
+        "preflight_scope": "The public Rust adapter passes counts to HIA before frame sizing/allocation. HIA 0 is NoMatch, 1 requires complete framing, and every other result is an error. The raw prefix_match frame contract remains unchanged and still validates its entire supplied frame before any match result.",
+        "frame_storage": "Checked complete-frame capacity <=512 uses stack storage; larger frames retain reserved Vec append. Both use the same encoder and one existing full-frame HIA call."
+      },
+      "tests": [
+        "hia/tests/test_prefix_match_abi.py",
+        "hia/tests/test_native_execpolicy_caller.py",
+        "hia/tests/native_execpolicy_caller.rs",
+        "hia/tests/test_installed_execpolicy.py",
+        "hia/tests/test_prefix_admission_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_execpolicy_allocations.py",
+        "hia/tests/native_execpolicy_allocations.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "prefix_match"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "prefix_admission",
+      "hia_source": "hia/prefix_admission.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "PrefixPattern::matches_prefix count admission",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_prefix_admission",
+        "source_schema": "hepta.hia.program.v8",
+        "exports": [
+          "f0"
+        ],
+        "entry_profile": "u64-pair-to-u64-v1",
+        "arguments": [
+          "command_count:u64",
+          "pattern_count:u64"
+        ],
+        "return_type": "u64",
+        "invalid_pattern_count": 4294967295,
+        "insufficient_command_count": 0,
+        "need_complete_frame": 1,
+        "precedence": "pattern_count == 0 is invalid before the command-count comparison.",
+        "side_effects": "No buffers, string reads, allocations or pointer inputs.",
+        "rust_dispatch": "0 returns None, 1 continues to checked framing, every other status panics; Rust does not compare either count for matching or any string."
+      },
+      "behavior": "HIA owns the count decision before the adapter sizes or copies a pattern. Empty and short commands avoid the full-frame copy; admitted commands retain the complete validated prefix_match frame and byte comparisons. This helper belongs to the existing prefix algorithm and is not another complete owner migration.",
+      "tests": [
+        "hia/tests/test_prefix_admission_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_execpolicy_caller.py",
+        "hia/tests/test_native_execpolicy_allocations.py",
+        "hia/tests/native_execpolicy_allocations.rs",
+        "hia/tests/test_installed_execpolicy.py"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "prefix_admission"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "policy_summary",
+      "hia_source": "hia/policy_summary.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Evaluation::from_matches / Evaluation::is_match / CLI result reduction",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_policy_summary",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "input": "LE u64 count followed by count pairs of LE u64 kind and decision; exact length 8 + 16 * count.",
+        "kind": {
+          "prefix": 0,
+          "heuristics": 1
+        },
+        "decision": {
+          "allow": 0,
+          "prompt": 1,
+          "forbidden": 2
+        },
+        "output": "24 bytes: LE u64 present, strictest decision, explicit-match flag; empty vector returns 0,0,0.",
+        "success": 24,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "error_contract": "Output capacity first; validate the entire exact frame and all tags before writing; errors write nothing. Source and workspace never change; success preserves output beyond 24 bytes."
+      },
+      "behavior": {
+        "complete_pure_reduction": "Current RuleMatch vector to presence, strictest Allow/Prompt/Forbidden decision and whether any explicit PrefixRuleMatch exists.",
+        "production_callers": [
+          "Evaluation::from_matches",
+          "Evaluation::is_match",
+          "ExecPolicyCheckCommand JSON summary"
+        ],
+        "rust_retains": "Rule traversal; callbacks; iterator/as_ref/drop/panic effects; full RuleMatch metadata/order/owned strings; serialization and checked transport. Public mutable vectors are summarized afresh, without a cached is_match result.",
+        "whole_policy_or_core_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_policy_summary_abi.py",
+        "hia/tests/test_native_policy_summary.py",
+        "hia/tests/native_policy_summary.rs",
+        "hia/tests/native_policy_summary_allocations.rs",
+        "hia/tests/native_policy_summary_failures.rs",
+        "hia/tests/test_installed_execpolicy.py"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "policy_summary"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "network_domains",
+      "hia_source": "hia/network_domains.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::compiled_network_domains / upsert_domain",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_network_domains",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "SELECT": "LE u64 mode=0,count<=64, followed by exactly count decision bytes (Allow=0,Prompt=1,Forbidden=2). Output requires 8+count and returns LE u64 selected_count plus increasing u8 batch positions; workspace unchanged.",
+        "REDUCE": "LE u64 mode=1,M original_count,N selected_count; exactly N records of LE u64 original_index, decision, host_length plus raw bytes. N<=M, increasing indices<M, decisions 0/2 and exact end required.",
+        "REDUCE_output": "Capacity>=16+8*N; LE u64 allowed_count,denied_count, then winning original indices, Allow followed by Forbidden, increasing within each group.",
+        "REDUCE_workspace": "Capacity>=N; writes exactly N flags (0 superseded,1 Allow,2 Forbidden). Success preserves unused output/workspace bytes.",
+        "success": 0,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "short_workspace": 4294967293,
+        "error_contract": "Minimum output eight first; SELECT exact header/capacity then all tags; REDUCE complete frame then both capacities. All failures write neither output nor workspace; source is always unchanged. Raw host bytes need not be UTF-8."
+      },
+      "behavior": {
+        "complete_algorithm": "Policy::compiled_network_domains: exact raw-host last non-Prompt winner and ordered Allow/Forbidden vectors.",
+        "hia_owns": "SELECT excludes Prompt; REDUCE compares host bytes, chooses last winners and emits original rule indices in per-decision order.",
+        "rust_retains": "Decision encoding, checked framing/capacity, structural output validation and owned final String clones. No Rust host equality, normalization, sorting or policy deduplication.",
+        "ignored_fields": "Prompt hosts and every justification/protocol stay outside transport; raw from_parts hosts remain byte-exact.",
+        "error_scope": "Malformed status/count/index/order/decision outputs panic with no Rust or empty-list fallback. Structurally valid but semantically wrong callee output is not proven correct by these guards; the real HIA/original-owner differential supplies semantic evidence.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_network_domains_abi.py",
+        "hia/tests/test_native_network_domains.py",
+        "hia/tests/native_network_domains.rs",
+        "hia/tests/native_network_domains_allocations.rs",
+        "hia/tests/native_network_domains_failures.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "network_domains"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "allowed_prefixes",
+      "hia_source": "hia/allowed_prefixes.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::get_allowed_prefixes / render_pattern_token",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_allowed_prefixes",
+        "source_schema": "hepta.hia.program.v9",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "ADMIT": "Exact LE u64 mode=0,decision (Allow=0,Prompt=1,Forbidden=2). Output eight bytes: one iff Allow, otherwise zero; workspace unchanged.",
+        "PLAN": "LE u64 mode=1,N, then N prefix frames. Each has token_count>=1, then token kind (Single=0,Alts=1), alternative_count and repeated byte_length/raw bytes. First token must be Single; Single has one alternative, Alts may have zero. Exact end required.",
+        "PLAN_output": "Three LE u64 words: rendered serialized byte count R, workspace 24*N+8+R, and output capacity 8+8*N. Workspace unchanged.",
+        "RUN": "Mode=2 with the same complete selected prefix frame. Workspace contains N+1 rendered offsets, two N-index arrays and R rendered bytes. Stable bottom-up merge sort compares token bytes lexicographically, then vector length; dedup emits the earliest equal rendered-vector index.",
+        "RUN_output": "Capacity>=8+8*N: unique count U then U selected-frame indices; writes exactly 8+8*U. Workspace requires 24*N+8+R.",
+        "success": 0,
+        "invalid_frame": 4294967295,
+        "short_output": 4294967294,
+        "short_workspace": 4294967293,
+        "unrepresentable_layout": 4294967292,
+        "error_contract": "Minimum output eight first; complete exact validation and checked layout before matching capacities; RUN output capacity before workspace. Errors preserve output/workspace; source always unchanged, unused successful capacity unchanged. Raw ABI bytes need not be UTF-8.",
+        "empty_input": "N=0 still performs PLAN/RUN: R=0, workspace eight and output eight bytes. Public owner requires no heap allocation."
+      },
+      "behavior": {
+        "complete_algorithm": "Policy::get_allowed_prefixes: Allow admission, token rendering, ordered Vec<String> sorting and rendered-vector deduplication.",
+        "hia_owns": "ADMIT decides Allow; PLAN sizes the rendered representation; RUN renders Single/Alts tokens, stably mergesorts vector indices and chooses unique rendered vectors.",
+        "rust_retains": "Original rule iteration, as_any callbacks/downcasts, decision encoding, checked transport and structural output/UTF-8 validation, then owned result Strings. No Rust token rendering, sorting or deduplication.",
+        "effect_order": "Each admitted prefix is encoded before the next callback. Non-PrefixRule, Prompt and Forbidden patterns are not inspected; callback/panic prefixes, shared-Arc inputs and independent owned outputs are preserved.",
+        "rendering": "Single bytes are unchanged; Alts render exactly [ plus alternatives joined by | plus ]. Empty alternatives and delimiter-containing strings can collide; equality and ordering are on complete rendered vectors.",
+        "error_scope": "Invalid native status or structural output panics with no Rust algorithm or empty-list fallback. Structurally valid wrong semantic results require the actual HIA/original-owner differential.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_allowed_prefixes_abi.py",
+        "hia/tests/test_native_allowed_prefixes.py",
+        "hia/tests/native_allowed_prefixes.rs",
+        "hia/tests/native_allowed_prefixes_allocations.rs",
+        "hia/tests/native_allowed_prefixes_failures.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "allowed_prefixes"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "command_dispatch",
+      "hia_source": "hia/command_dispatch.hepta",
+      "source_path": "codex-rs/execpolicy/src/policy.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "Policy::matches_for_command / check_matches / match_with_heuristics",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_command_dispatch",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "source": "LE u64 version=1 and event tag, 160-byte continuation state, exact event payload. Nine event tags BEGIN through HEURISTIC_READY.",
+        "state": "Magic, phase, flags, command/rule/path counters and indices, resource bits, checked sequence and zero reserved words; no global state.",
+        "path_records": "Rust Path::components discriminant and raw Normal OsStr encoded bytes; HIA owns component/length/byte equality. Linux native profile only, no raw-path parser or UTF-8 normalization.",
+        "output": "Exactly 200 bytes: 160-byte next state, append disposition, cleanup mask, action, operand and zero reserved word.",
+        "success": 0,
+        "invalid_frame_or_state": 4294967295,
+        "short_output": 4294967294,
+        "validation": "Validate full source/state/event/component frame before checking output>=200, then before any output write. Reserved words, phase/action facts, booleans, indices, sequence overflow and exact frame end are checked. Errors do not write. Each accepted event increments sequence once; BEGIN starts at1.",
+        "workspace": "Untouched on every call; source, output and workspace are live disjoint ranges for the synchronous call.",
+        "transport": "512-byte stack frame with checked Vec spill; no native error becomes an unmatched result."
+      },
+      "behavior": {
+        "hia_owns": "Exact/host/fallback routing; ordered rule ordinals, all-path admission and component equality, first equal-path stop, match retention/annotation, cleanup scheduling and fallback invocation decision.",
+        "rust_retains": "Real containers/lookups, arbitrary Rule::matches and heuristic callbacks, owned results, original OS path services, Path::components encoding and check_multiple iterator/AsRef/Drop effects.",
+        "ordering": "Any exact Some suppresses host/fallback, but selected bucket callbacks stay exhaustive and ordered. Missing and present-empty buckets remain distinct. Fallback clones the original command before callback.",
+        "metadata": "Host PrefixRuleMatch gets the resolved program; HeuristicsRuleMatch metadata is retained. Returned owned objects remain independent.",
+        "failure": "Invalid statuses/state/structural replies panic without Rust fallback. Already performed callback effects cannot be rolled back; semantically wrong but structurally valid replies require the real HIA/original differential.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_command_dispatch_abi.py",
+        "hia/tests/test_native_command_dispatch.py",
+        "hia/tests/native_command_dispatch.rs",
+        "hia/tests/native_command_dispatch_effects.rs",
+        "hia/tests/native_command_dispatch_allocations.rs",
+        "hia/tests/native_command_dispatch_failures.rs",
+        "hia/tests/native_command_dispatch_performance.rs",
+        "hia/tests/command_dispatch_fixtures.rs"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "command_dispatch"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "network_host",
+      "hia_source": "hia/network_host.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "normalize_network_rule_host",
+      "implementation_status": "source_composed_opt_in_production_caller_ci_observed",
+      "qualification_status": "ci_gates_passed_at_483_independent_payload_audit_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_network_host",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "source": "Complete borrowed raw UTF-8 bytes, without a length prefix or input copy.",
+        "control": "Exactly 32 read-only workspace bytes: LE u64 version=1, mode, expected_length, reserved=0.",
+        "plan": "mode=0 requires expected_length=0; success writes 16 bytes containing LE u64 semantic_tag and result_byte_length.",
+        "run": "mode=1 requires 0<expected_length<=source_length, repeats complete validation/normalization and requires semantic success plus the exact planned length before writing the normalized bytes.",
+        "semantic_tags": {
+          "0": "success",
+          "1": "empty host",
+          "2": "scheme or path punctuation",
+          "3": "missing closing bracket",
+          "4": "unsupported bracket suffix",
+          "5": "wildcard",
+          "6": "internal Unicode whitespace"
+        },
+        "success": 0,
+        "invalid_frame_or_utf8_or_run": 4294967295,
+        "short_output": 4294967294,
+        "validation": "Validate control, mode/length and complete UTF-8 input before publishing; PLAN needs 16 output bytes, RUN needs the exact normalized length. Native errors write no output. Successful calls write only the used prefix. Source and control stay unchanged.",
+        "transport": "Rust borrows the input, uses a 16-byte stack plan, validates tag/length/status and unchanged 32-byte control, allocates the returned String, and preserves original error-object construction. A native contract failure panics; no fallback or no-match conversion.",
+        "target": "Existing opt-in Linux x86-64 GNU profile; buffers must remain live and disjoint for each synchronous call."
+      },
+      "behavior": {
+        "hia_owns": "The complete normalize_network_rule_host algorithm: Unicode trim, empty/scheme/path precedence, bracket and port handling, trim_end_matches dot followed by trim, ASCII lowercasing, wildcard-before-whitespace error precedence and normalized byte output.",
+        "rust_retains": "Owned String/error allocation, original public callers/parser validation and policy/file effects. No IP parser, DNS, IDNA, Unicode case folding, port-range validation or general network I/O is introduced.",
+        "compatibility": "Original permissive inputs remain permissive: a:abc, :123, multiple colons, bracketed non-IP strings, NUL and large numeric ports. Unsupported-suffix errors include the exact original raw string.",
+        "public_paths": [
+          "Policy::add_network_rule",
+          "PolicyParser::parse(network_rule)",
+          "blocking_append_network_rule"
+        ],
+        "effect_order": "Invalid normalization does not push a policy rule or create the append directory/file. Earlier parser protocol/decision/justification rejection remains earlier; direct and parsed calls retain their existing distinct precedence.",
+        "whole_policy_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_network_host_abi.py",
+        "hia/tests/test_native_network_host.py",
+        "hia/tests/native_network_host.rs",
+        "hia/tests/native_network_host_allocations.rs",
+        "hia/tests/native_network_host_failures.rs",
+        "hia/tests/native_network_host_performance.rs",
+        "hia/tests/network_host_fixtures.rs",
+        "hia/tests/network_host_predecessor16.py"
+      ],
+      "historical_source_entry": {
+        "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+        "path": "hia/history/owner17-74d1c0eb/migration.json",
+        "id": "network_host"
+      },
+      "validation": {
+        "current": "hia/verification.json#current_qualification",
+        "status": "ci_gate_success_at_483_independent_payload_audit_pending",
+        "historical_evidence_is_not_current_qualification": true
+      },
+      "current_role": "current_opt_in_production"
+    },
+    {
+      "id": "output_lines",
+      "hia_source": "hia/output_lines.hepta",
+      "hia_source_revision": "8987467886706dfec8bfbd3e05f0f1f8ecbf965e",
+      "hia_source_git_blob": "698cccefdbd04c83dc52c9680a71637d7e41aa77",
+      "source_path": "codex-rs/utils/output-truncation/src/lib.rs",
+      "source_revision": "3cc6201337959bc54b25d523b412a6e8ad9570b4",
+      "source_git_blob": "ed8193d175eacc05b06543ff83a5340e04d4818e",
+      "source_function": "formatted_truncate_text: content.lines().count() expression only",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_output_lines",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/output_lines_buffer_contract.json",
+        "transport": "Fixed 4096-byte payload chunks, 32-byte header and result; no total string-size limit or Rust line-scan fallback."
+      },
+      "behavior": {
+        "hia_owns": "LF decisions, cumulative state, checked overflow and final unterminated-line count.",
+        "rust_retains": "Ownership and transport; original early return, token budgets, truncation, formatting and mixed-media handling.",
+        "complete_output_truncation_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_output_lines_abi.py",
+        "hia/tests/output_lines_oracle_inputs.json",
+        "codex-rs/utils/string/src/output_lines_tests.rs",
+        "codex-rs/utils/output-truncation/src/truncate_tests.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false
+      }
+    },
+    {
+      "id": "output_item_budget",
+      "hia_source": "hia/output_item_budget.hepta",
+      "hia_source_revision": "c34d9e12eb87fc2452e855279351e9cfbfefa4fa",
+      "hia_source_git_blob": "ae957a5f1826bf4352662ddef54697b19b23cf5f",
+      "hia_source_sha256": "4700c1fd61778ef0eaf479f7be8ada24d9a65daff5e65324a504fb51f867c814",
+      "source_path": "codex-rs/utils/output-truncation/src/lib.rs",
+      "source_revision": "00a7d0f06fe62fa513ce6e4c4f80212e488e9e0b",
+      "source_git_blob": "c479f5163621e4e74337f45e39c0e4163229ccf3",
+      "source_function": "truncate_function_output_items_with_policy: numeric per-item budget decisions only",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_output_item_budget",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/output_item_budget_buffer_contract.json",
+        "transport": "Fixed40/96/88/80-byte event frames and88-byte output; nine u64 state words. Numeric item lengths/costs do not bound original text or collection sizes."
+      },
+      "behavior": {
+        "hia_owns": "Validated numeric item state, original saturating costs, keep/omit/truncate decisions, counters and Finish transition.",
+        "rust_retains": "Original per-item order, one audio callback at its original item, original truncate_text call and returned bytes, Vec/opaque content ownership, and text-before-audio omission summaries.",
+        "complete_output_truncation_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_output_item_budget_abi.py",
+        "hia/tests/output_item_budget_oracle_inputs.json",
+        "codex-rs/utils/output-truncation/src/output_item_budget_tests.rs",
+        "codex-rs/utils/output-truncation/src/truncate_tests.rs",
+        "codex-rs/core/src/context_manager/history_tests.rs",
+        "codex-rs/core/src/tools/code_mode/mod.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false
+      }
+    },
+    {
+      "id": "format_env_display",
+      "hia_source": "hia/format_env_display.hepta",
+      "hia_source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+      "hia_source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc",
+      "hia_source_sha256": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+      "source_path": "codex-rs/utils/cli/src/format_env_display.rs",
+      "source_revision": "9a310390e84372c2d3fa33e1614a531e1d50a7e7",
+      "source_git_blob": "714b44c312a6a9de6b6c3ec0c20be6e3b4a7cf37",
+      "source_function": "format_env_display",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_format_env_display",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/format_env_display_buffer_contract.json",
+        "transport": "Five bounded operations: SortInit/SortResume/Mask/JoinInit/Join. Compare chunks are at most4096 bytes per key; the private sort/mask/join states have18/3/7 u64 words. Full key and output lengths use checked u64 counters, not the u32 status."
+      },
+      "behavior": {
+        "hia_owns": "Complete iterative heap ordering and byte comparison, index swap decisions, mask bytes, separators and join progress.",
+        "rust_retains": "Owned key/index/string containers, mechanical swaps and bounded transport, each variable AsRef exactly once at its original position after map formatting, and complete-part/final UTF-8 conversion.",
+        "map_values_read": false,
+        "rust_sort_comparator_or_fallback": false,
+        "complete_cli_tui_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_format_env_display_abi.py",
+        "hia/tests/format_env_display_oracle_inputs.json",
+        "codex-rs/utils/cli/src/format_env_display.rs",
+        "codex-rs/utils/cli/src/format_env_display_additional_tests.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false
+      }
+    },
+    {
+      "id": "citation_stream_parser",
+      "hia_source": "hia/citation_stream_parser.hepta",
+      "hia_source_revision": "20c7ce19ae5775c50e3999ba7fcca424939a8078",
+      "hia_source_git_blob": "e0c936e7c646c0f1aa903b47ba96acb27be74601",
+      "hia_source_sha256": "a73619f953b10636e6201515fb324f5a9dcf0806df5ccd968dd3eda5b028b354",
+      "source_path": "codex-rs/utils/stream-parser/src/citation.rs",
+      "source_revision": "0941fd18d8f92942f8c944d1805e6c19d72474e6",
+      "source_git_blob": "d7be6dd5f1c8041f434c06c228ac73aced9b2f5e",
+      "source_function": "CitationStreamParser::push_str/finish and strip_citations",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_citation_stream_parser",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/citation_stream_parser_buffer_contract.json",
+        "transport": "Push/Finish/Inspect use a40-byte header and at most4096 payload bytes. The finite state is active/prefix; packed48-byte output headers precede Visible/Body/Commit/Pending records. Normative capacities are98+33*N,98,64+prefix; returnedu32 is only the bounded written extent."
+      },
+      "behavior": {
+        "hia_owns": "Literal non-nested marker matching, pending-prefix state, visible/body emission, citation completion, EOF flushing/reset and adjacent-event coalescing. Inspect reconstructs only the pending prefix without changing state.",
+        "rust_retains": "Owned unbounded body and per-public-call visible/extracted containers, bounded byte transport, complete UTF-8 conversion and exact original standard Debug structures. Existing Utf8StreamParser validates whole public byte chunks before calling its inner parser.",
+        "rust_marker_matcher_or_fallback": false,
+        "no_new_semantic_total_limit": true,
+        "original_default_and_generic_plan_parsers_retained": true,
+        "complete_streaming_or_Core_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_citation_stream_parser_abi.py",
+        "hia/tests/citation_stream_parser_oracle_inputs.json",
+        "codex-rs/utils/stream-parser/src/citation.rs",
+        "codex-rs/utils/stream-parser/src/citation_additional_tests.rs",
+        "codex-rs/utils/stream-parser/src/assistant_text.rs",
+        "codex-rs/utils/stream-parser/src/utf8_stream.rs",
+        "codex-rs/core/src/session/tests.rs",
+        "codex-rs/core/src/stream_events_utils_tests.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false
+      }
+    },
+    {
+      "id": "proposed_plan_parser",
+      "hia_source": "hia/proposed_plan_parser.hepta",
+      "hia_source_revision": "da3817ebea57da1a940c12abc57999ce3d50706a",
+      "hia_source_git_blob": "31e29d47a34f5db006319bf1b60c3285564e94c6",
+      "hia_source_sha256": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755",
+      "source_path": "codex-rs/utils/stream-parser/src/proposed_plan.rs",
+      "source_revision": "279b53306d78ea9cf1d584c518b5114691644122",
+      "source_git_blob": "cd3a2a35296c4a61de1e76fb7b9a09ea74b9c26a",
+      "source_function": "ProposedPlanParser::push_str/finish, strip_proposed_plan_blocks and extract_proposed_plan_text",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_proposed_plan_parser",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/proposed_plan_parser_buffer_contract.json",
+        "transport": "Push/Finish/Inspect use an88-byte header and at most4096 complete UTF-8 payload bytes. Eight finite state words and command count/reserved precede32-byte commands in an80-byte output header. Normative capacities are80+96*N,176,80; the fullu64 wrapper is checked before its bounded Coreu32 written extent."
+      },
+      "behavior": {
+        "hia_owns": "UTF-8/scalar admission, the pinned25 whitespace scalars, LF line decisions, both marker-prefix candidates regardless of active state, pending counters, normal/plan channels, Start/End barriers, explicit per-public-call continuation and EOF reset.",
+        "rust_retains": "Unbounded pending String and original result Vec, complete-scalar bounded transport, whole-frame structural validation before mechanical command effects, exact standard Debug projection through Inspect, and the original map_segments once per public call.",
+        "rust_marker_matcher_or_fallback": false,
+        "no_new_semantic_total_limit": true,
+        "original_default_parser_and_generic_test_oracles_retained": true,
+        "streaming_and_finalization_order_unchanged": true,
+        "complete_streaming_or_Core_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_proposed_plan_parser_abi.py",
+        "hia/tests/proposed_plan_parser_oracle_inputs.json",
+        "hia/tests/proposed_plan_literal_data.py",
+        "hia/tests/proposed_plan_command_oracle.py",
+        "codex-rs/utils/stream-parser/src/proposed_plan.rs",
+        "codex-rs/utils/stream-parser/src/tagged_line_parser.rs",
+        "codex-rs/utils/stream-parser/src/proposed_plan_additional_tests.rs",
+        "codex-rs/utils/stream-parser/src/proposed_plan_large_native_tests.rs",
+        "codex-rs/utils/stream-parser/src/hia_native_proposed_plan_parser_wire_tests.rs",
+        "codex-rs/utils/stream-parser/src/assistant_text.rs",
+        "codex-rs/utils/stream-parser/src/utf8_stream.rs",
+        "codex-rs/core/src/session/tests.rs",
+        "codex-rs/core/src/stream_events_utils_tests.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false,
+        "planned_raw_native_calls": 713,
+        "literal_frame_templates": 204,
+        "original_plan_methods_preserved": 5,
+        "original_generic_methods_preserved": 2,
+        "added_public_methods_both_features": 13,
+        "added_native_only_large_public_methods": 2,
+        "added_native_decoder_methods": 11,
+        "large_default_execution_claimed": false
+      }
+    },
+    {
+      "id": "fuzzy_match",
+      "hia_source": "hia/fuzzy_match.hepta",
+      "hia_source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+      "hia_source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
+      "hia_source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+      "source_path": "codex-rs/utils/fuzzy-match/src/lib.rs",
+      "source_revision": "e226cd0cf21e9b6e51c97b6b18207e87e22c051e",
+      "source_git_blob": "d644b31677745e938611852720add65d0d6f6f8c",
+      "source_function": "fuzzy_match(&str, &str) -> Option<(Vec<usize>, i32)>",
+      "implementation_status": "source_integrated_opt_in_caller_unqualified",
+      "qualification_status": "pending_original_native_and_default_ci",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "interface": {
+        "entry": "codex_hia_fuzzy_match",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/fuzzy_match_buffer_contract.json",
+        "transport": "Begin/LowerHaystack/LowerNeedle/Match use32 finite u64 state words, a320-byte request prefix and384-byte response prefix. UTF-8 payloads are at most4096 bytes ending at a complete scalar; Match transports at most128 hay records and128 needle scalars. Normative output capacities are384,384+72*N,384+24*(4*N+1),2048. The complete u64 wrapper return is checked before low32 Core status; no aggregate string/vector cap is added."
+      },
+      "behavior": {
+        "hia_owns": "Complete Unicode17 lowercase tables, haystack char lowering, whole-needle Final_Sigma context with Case_Ignorable precedence, NUL retention, greedy cursors, original-scalar index deduplication, prefix preference, wrapped i32 score and the first overflowing primitive trace.",
+        "rust_retains": "Complete-scalar framing, unbounded owned containers, whole-frame/state/command/anchor validation before effects, mechanical storage and index collection, and one ordinary i32 primitive at the HIA-selected first overflow to preserve the actual compilation overflow-check policy.",
+        "rust_lowercase_matcher_score_or_fallback": false,
+        "no_new_semantic_total_limit": true,
+        "original_default_matcher_and_all_eight_tests_retained": true,
+        "workspace_written": false,
+        "allocation_OOM_and_panic_timing_equivalence_claimed": false,
+        "logical_u64_raw_states_are_executed_giant_histories": false,
+        "complete_cli_tui_or_string_utilities_migrated": false
+      },
+      "tests": [
+        "hia/tests/test_fuzzy_match_abi.py",
+        "hia/tests/fuzzy_match_oracle_inputs.json",
+        "hia/tests/fuzzy_match_oracle_streams.json",
+        "hia/tests/fuzzy_match_oracle_raw_core.json",
+        "hia/tests/fuzzy_match_oracle_raw_hay_max.json",
+        "hia/tests/fuzzy_match_oracle_raw_tail.json",
+        "codex-rs/utils/fuzzy-match/src/lib.rs",
+        "codex-rs/utils/fuzzy-match/src/fuzzy_match_additional_tests.rs",
+        "codex-rs/utils/fuzzy-match/src/fuzzy_match_large_native_tests.rs",
+        "codex-rs/utils/fuzzy-match/src/hia_native_fuzzy_match_wire_tests.rs",
+        "codex-rs/utils/fuzzy-match/src/hia_native_fuzzy_match_transition_tests.rs",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "focused_original_UI_regression_groups": [
+        "bottom_pane::command_popup::",
+        "bottom_pane::file_search_popup::",
+        "bottom_pane::selection_popup_common::",
+        "bottom_pane::skill_popup::",
+        "bottom_pane::skills_toggle_view::"
+      ],
+      "focused_UI_scope": "Five focused original UI regression groups under native/default selections, not five direct fuzzy callers or whole-default-TUI coverage. The two skill_popup ranking oracles use the real matcher; selection_popup_common renders supplied scalar indices, command_popup has independent exact/prefix logic, file_search_popup preserves result paging, and skills_toggle_view routes through match_skill.",
+      "validation": {
+        "source_only": true,
+        "runtime_qualified": false,
+        "original_public_qualified": false,
+        "historical_ci_does_not_qualify_new_source": true,
+        "performance_closed": false,
+        "planned_raw_native_calls": 242,
+        "literal_frame_templates": 242,
+        "complete_literal_streams": 16,
+        "literal_stream_calls": 70,
+        "standalone_raw_cases": 172,
+        "raw_manifest_and_four_bound_shards": true,
+        "maximum_raw_shard_bytes": 308312,
+        "original_matcher_methods_preserved": 8,
+        "added_public_methods_both_features": 1,
+        "hand_derived_public_literal_rows": 50,
+        "added_native_only_large_public_methods": 2,
+        "added_private_decoder_methods": 13,
+        "focused_original_UI_regression_group_count": 5,
+        "large_default_execution_claimed": false,
+        "whole_default_TUI_qualified": false
+      }
+    },
+    {
+      "id": "utf8_stream",
+      "hia_source": "hia/utf8_stream.hepta",
+      "hia_source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+      "hia_source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
+      "hia_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+      "source_path": "codex-rs/utils/stream-parser/src/utf8_stream.rs",
+      "source_revision": "bbb534d8be9098c041d5f3dd1ca1214fbcc2fd8a",
+      "source_git_blob": "f9cd31eec62351b30f619d832424a9edc4b8b021",
+      "source_function": "Utf8StreamParser<P>::push_bytes/finish/into_inner",
+      "implementation_status": "source_integrated_opt_in_public_library_pending_current_tree",
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "library_only": true,
+      "interface": {
+        "entry": "codex_hia_utf8_stream",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v8",
+        "contract": "hia/utf8_stream_buffer_contract.json",
+        "transport": "Complete borrowed raw input; 32-byte output of four little-endian u64 words. Output capacity is checked before input. No aggregate input cap."
+      },
+      "behavior": {
+        "hia_owns": "UTF-8 scalar validity, overlong/surrogate/range rejection, first-invalid valid_up_to/error_len and incomplete tail classification.",
+        "rust_retains": "Original pending Vec, whole-chunk rollback, inner parser call and EOF/into_inner ordering, checked result decoding and borrowed str construction.",
+        "rust_utf8_validation_fallback": false,
+        "no_new_semantic_total_limit": true,
+        "all_six_original_utf8_tests_retained": true,
+        "installed_cli_reachability_claimed": false
+      },
+      "tests": [
+        "hia/tests/test_utf8_stream_abi.py",
+        "codex-rs/utils/stream-parser/src/utf8_stream.rs",
+        "codex-rs/utils/stream-parser/src/utf8_stream_additional_tests.rs",
+        "codex-rs/utils/stream-parser/src/hia_native_utf8_stream_tests.rs"
+      ],
+      "validation": {
+        "source_only": true,
+        "public_library_verified_locally": false,
+        "performance_closed": false,
+        "raw_native_calls_passed": null,
+        "native_owner_tests_passed": null,
+        "default_owner_tests_passed": null,
+        "skipped": null,
+        "previous_validation_source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+        "previous_validation_transferred": false
+      }
+    },
+    {
+      "id": "inline_hidden_tag",
+      "hia_source": "hia/inline_hidden_tag.hepta",
+      "hia_source_revision": "99e46153d4db235c00a14056d5e50735c3c69f47",
+      "hia_source_git_blob": "b0a2502a5c95dbe1f888b8ef82412a8445d7a257",
+      "hia_source_sha256": "4170045f784ac4c9ffd1f48e0d6ae78b82d49a092863afc28499598c7289d879",
+      "source_path": "codex-rs/utils/stream-parser/src/inline_hidden_tag.rs",
+      "source_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
+      "source_git_blob": "0b7501cdb958a38c0b93e44ca981c7dbd4d912ff",
+      "source_function": "InlineHiddenTagParser<T>::push_str/finish",
+      "implementation_status": "source_integrated_opt_in_public_library_pending_current_tree",
+      "qualification_status": "source_only_inline_followup_current_tree_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "current_role": "current_opt_in_production",
+      "library_only": true,
+      "interface": {
+        "entry": "codex_hia_inline_hidden_tag",
+        "entry_profile": "borrowed-buffers-u32-v1",
+        "core_schema": "hepta.hia.program.v9",
+        "contract": "hia/inline_hidden_tag_buffer_contract.json",
+        "transport": "Complete borrowed pending and delimiter strings; 96-byte initialized request/reply. Native ordinal folds arbitrary specs in their original order. No aggregate string or spec-count cap."
+      },
+      "behavior": {
+        "hia_owns": "Literal first-match search, earliest/longest/first-spec selection, UTF-8 proper-prefix suffix retention, open/close/stop and EOF decisions.",
+        "rust_retains": "Original Vec specs, pending String and ActiveTag fields, per-public-call containers, exact Clone/Eq/drain and panic effect order, bounded response validation and mechanical effects.",
+        "rust_search_or_suffix_fallback": false,
+        "no_new_semantic_total_limit": true,
+        "all_five_original_inline_tests_retained": true,
+        "installed_cli_reachability_claimed": false
+      },
+      "tests": [
+        "hia/tests/test_inline_hidden_tag_abi.py",
+        "codex-rs/utils/stream-parser/src/inline_hidden_tag.rs",
+        "codex-rs/utils/stream-parser/src/inline_hidden_tag_additional_tests.rs",
+        "codex-rs/utils/stream-parser/src/hia_native_inline_hidden_tag_wire_tests.rs"
+      ],
+      "validation": {
+        "source_only": true,
+        "public_library_verified_locally": false,
+        "performance_closed": false,
+        "raw_native_calls_passed": null,
+        "native_owner_tests_passed": null,
+        "default_owner_tests_passed": null,
+        "skipped": null,
+        "previous_validation_source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+        "previous_validation_transferred": false,
+        "literal_cases_planned": 75,
+        "native_calls_planned": 600,
+        "literal_cases_passed": null
       }
     }
   ],
@@ -1135,16 +2208,24 @@
     {
       "id": "string_utilities",
       "source_roots": [
-        "codex-rs/utils/string"
+        "codex-rs/utils/string",
+        "codex-rs/utils/output-truncation",
+        "codex-rs/utils/fuzzy-match",
+        "codex-rs/utils/stream-parser"
       ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
         "UTF-8 boundaries",
         "middle truncation and budget accounting",
-        "metric tag, UUID, JSON and location helpers"
+        "metric tag, UUID, JSON and location helpers",
+        "Streaming output line count with original Rust line semantics",
+        "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order",
+        "Unicode17 haystack scalar lowercase and needle Final_Sigma lowercase, greedy matching, original-scalar indices with deduplication, prefix preference and original i32 score/panic-policy behavior",
+        "Streaming UTF-8 complete/invalid/incomplete classification with original whole-call rollback, pending bytes and EOF behavior",
+        "Generic inline hidden tags with arbitrary nonempty Unicode delimiters, earliest/longest/first-spec ties, non-nesting, proper-prefix buffering and exact generic effects"
       ],
-      "next_implementation": "Complete UUID helpers, JSON serialization outside the fragment encoder, remaining truncation performance, current consumer/installed CI, then complete owner/default-release/platform qualification.",
+      "next_implementation": "Complete remaining assistant-text composition and other Rust-owned string/UUID/JSON/truncation boundaries while preserving public calls. Complete retained owner/Core/UI/installed and performance gates on native37; the two local public library passes do not qualify the whole capability.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
@@ -1152,7 +2233,12 @@
         "markdown_location",
         "ascii_json_fragment",
         "truncate",
-        "token_budget"
+        "token_budget",
+        "output_lines",
+        "output_item_budget",
+        "fuzzy_match",
+        "utf8_stream",
+        "inline_hidden_tag"
       ]
     },
     {
@@ -2656,7 +3742,10 @@
       "existing protocol, CLI, configuration, persisted-session and SDK interfaces remain compatible",
       "required platforms and app/exec host combinations pass",
       "clean build, package installation and end-to-end use pass on the resulting source tree",
-      "regression fixtures, licensing and required release assets remain available"
+      "regression fixtures, licensing and required release assets remain available",
+      "For utf8_boundaries, uuid_matches and template_parser, retain and pass the exact historical raw ABI gates alongside full current public, malformed, allocation and effect oracles before proposing retirement.",
+      "For the shared template_render symbol, keep v8 ABI reports bound to exact74d1; v9 library results never qualify that old protocol.",
+      "Demonstrate the complete joint lock, fresh link receipts, supported platform and full installed-consumer closure with no skipped substitute oracle, then separately review removal of any retained kernel."
     ],
     "cleanup_rule": "Remove superseded source and process artifacts only after the corresponding replacement satisfies these requirements. Build outputs and transient test files remain outside the repository."
   },
@@ -2664,11 +3753,8 @@
     "helper": "hia/cargo_build.rs",
     "builder": "hia/build.py",
     "tests": "hia/tests/test_build_receipt.py",
-    "feature_off_requires_artifacts": false,
-    "unsupported_native_targets": "build_error",
-    "runtime_shared_library_requirement": false,
-    "status": "current_nineteen_module_template_render_admission_passed_other_current_gates_pending",
-    "accepted_modules": [
+    "status": "source_only_inline_followup_current_tree_pending",
+    "accepted_build_modules": [
       "seek_sequence",
       "utf8_boundaries",
       "utf8_prefix",
@@ -2687,16 +3773,748 @@
       "patch_standalone",
       "uuid_find",
       "template_parse",
-      "template_render"
+      "template_render",
+      "template_index",
+      "uuid_matches",
+      "template_parser",
+      "prefix_match",
+      "prefix_admission",
+      "policy_summary",
+      "network_domains",
+      "allowed_prefixes",
+      "command_dispatch",
+      "network_host",
+      "output_lines",
+      "output_item_budget",
+      "format_env_display",
+      "citation_stream_parser",
+      "proposed_plan_parser",
+      "fuzzy_match",
+      "utf8_stream",
+      "inline_hidden_tag"
     ],
-    "checks_passed": 78,
-    "scalar_build_admission_checks_passed": 120,
-    "shared_cargo_helper_changed": false,
-    "report": "hia/verification.json#template_render_increment",
-    "checks_passed_scope": "78 current renderer mutation checks admit all nineteen locked modules; inherited checks retain their actual scopes.",
-    "mutation_modules": [
-      "template_render"
+    "actual_opt_in_link_modules": [
+      "allowed_prefixes",
+      "ascii_json_fragment",
+      "citation_stream_parser",
+      "command_dispatch",
+      "file_update",
+      "format_env_display",
+      "fuzzy_match",
+      "inline_hidden_tag",
+      "markdown_location",
+      "metric_tag",
+      "network_domains",
+      "network_host",
+      "output_item_budget",
+      "output_lines",
+      "parser",
+      "patch_application",
+      "patch_effects",
+      "patch_standalone",
+      "patch_summary",
+      "policy_summary",
+      "prefix_admission",
+      "prefix_match",
+      "proposed_plan_parser",
+      "seek_sequence",
+      "source_file",
+      "template_index",
+      "template_parse",
+      "template_render",
+      "token_budget",
+      "truncate",
+      "unified_diff",
+      "utf8_prefix",
+      "utf8_stream",
+      "uuid_find"
     ],
-    "scalar_build_admission_checks_scope": "Historical fourteen-module120-check result; current nineteen-module scalar gate pending."
+    "entry_profiles": {
+      "token_budget": "u64-pair-to-u64-v1",
+      "prefix_admission": "u64-pair-to-u64-v1"
+    },
+    "feature_off_requires_artifacts": false,
+    "unsupported_native_targets": "build_error",
+    "runtime_shared_library_requirement": false,
+    "build_report_sha256": null,
+    "checks_passed": null,
+    "existing_link_or_build_reports_reusable_without_regeneration": false,
+    "build_report_payload_independently_read": false,
+    "current_report": "hia/verification.json#current_qualification",
+    "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
+    "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
+  },
+  "current_qualification": {
+    "status": "source_only_inline_followup_current_tree_pending",
+    "qualification_revision": null,
+    "report": "hia/verification.json#current_qualification",
+    "documentation_successor_exact_head_qualified": false,
+    "current_tree_qualified": false,
+    "locally_verified_public_library_modules": [],
+    "pending_modules": [
+      "output_lines",
+      "output_item_budget",
+      "format_env_display",
+      "citation_stream_parser",
+      "proposed_plan_parser",
+      "fuzzy_match",
+      "utf8_stream",
+      "inline_hidden_tag"
+    ],
+    "new_kernel_source_revision": "99e46153d4db235c00a14056d5e50735c3c69f47",
+    "new_kernel_source_git_blob": "b0a2502a5c95dbe1f888b8ef82412a8445d7a257",
+    "new_kernel_source_sha256": "4170045f784ac4c9ffd1f48e0d6ae78b82d49a092863afc28499598c7289d879"
+  },
+  "source_owner_histories": {
+    "17": {
+      "revision": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "files": {
+        "migration.json": {
+          "path": "hia/history/owner17-74d1c0eb/migration.json",
+          "bytes": 167068,
+          "sha256": "8c977b4b604f75b4c8a71de98bfcfb9da0659f4761803deb5f0a5ecdfe2702d4",
+          "git_blob": "744e300723906d8c50829e8c1d6b27585f8ba5ae"
+        },
+        "verification.json": {
+          "path": "hia/history/owner17-74d1c0eb/verification.json",
+          "bytes": 458169,
+          "sha256": "d78f75b7f9d616e1abbe01585bae9c521d3988a654940d69832d17ae6a3093a1",
+          "git_blob": "d5e6e76a8832c1105111b1aedbf62dc7f412d71b"
+        },
+        "README.md": {
+          "path": "hia/history/owner17-74d1c0eb/README.md",
+          "bytes": 122550,
+          "sha256": "715126779d0fa78cf728c28adeba5d98654514cb953d2a9b7ac9530ee55abd63",
+          "git_blob": "f6c2b401d971500f0ad59d715c53756a9cc5cef5"
+        }
+      }
+    },
+    "19": {
+      "revision": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "files": {
+        "migration.json": {
+          "path": "hia/history/owner19-d2fb9ecd/migration.json",
+          "bytes": 112258,
+          "sha256": "5b9b1108aa1b2c41a7d868d601a260297b6ebf2001ce7147b28b48fda9aed00b",
+          "git_blob": "bafd8b4bf107284112345142ae2f83453faa098f"
+        },
+        "verification.json": {
+          "path": "hia/history/owner19-d2fb9ecd/verification.json",
+          "bytes": 234966,
+          "sha256": "6e3da32de124e015a1943959a410a9c146909ac6bd3c04eaa1448e405149c5f8",
+          "git_blob": "645b5e9deb01ae762c3ee4605601a91965481ee4"
+        },
+        "README.md": {
+          "path": "hia/history/owner19-d2fb9ecd/README.md",
+          "bytes": 49908,
+          "sha256": "833c700d5fdccf35cdc70fd438490fdcd264717612c9c7f8b9e98de6c0997b29",
+          "git_blob": "fe65efde72c34243ecc4aedca7418f77262decb5"
+        }
+      }
+    }
+  },
+  "module_roles": "hia/joint_module_roles.json",
+  "default_release_migrated": false,
+  "workspace_qualified": false,
+  "performance_qualified": false,
+  "legacy_source_retired": false,
+  "previous_source_increment_qualification": {
+    "source_revision": "00a7d0f06fe62fa513ce6e4c4f80212e488e9e0b",
+    "source_migration_sha256": "7ad4041051db39e508eda086a55afd5d52257ef2147426c001495d4483d1f77e",
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": "48324e2e75f2ebf46540e8db667b3f33fc7b3a7c",
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines"
+      ]
+    },
+    "qualification_transferred_to_current31": false
+  },
+  "previous_source_increment_31": {
+    "source_revision": "9a310390e84372c2d3fa33e1614a531e1d50a7e7",
+    "source_migration": {
+      "bytes": 159272,
+      "sha256": "731c9bd9e65126ee67c4b27bbd7ad39fc10f2e37b798f24e5d8594c79f9ef88e",
+      "git_blob": "a5d585946148d556d197b4159e68bd86b8a451ab"
+    },
+    "toolchain_current_source_module_count": 31,
+    "toolchain_remaining_work": [
+      "Build the exact thirty-one-module lock from fresh B1/B2/B3 receipts and qualify output_item_budget and retained output_lines raw/public/installed consumers. Previous29/30-lock receipts are not reusable.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "native_link_gate": {
+      "helper": "hia/cargo_build.rs",
+      "builder": "hia/build.py",
+      "tests": "hia/tests/test_build_receipt.py",
+      "status": "source_increment_requires_fresh_build_and_link_qualification",
+      "accepted_build_modules": [
+        "seek_sequence",
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "source_file",
+        "file_update",
+        "parser",
+        "patch_effects",
+        "unified_diff",
+        "patch_summary",
+        "patch_application",
+        "patch_standalone",
+        "uuid_find",
+        "template_parse",
+        "template_render",
+        "template_index",
+        "uuid_matches",
+        "template_parser",
+        "prefix_match",
+        "prefix_admission",
+        "policy_summary",
+        "network_domains",
+        "allowed_prefixes",
+        "command_dispatch",
+        "network_host",
+        "output_lines",
+        "output_item_budget"
+      ],
+      "actual_opt_in_link_modules": [
+        "allowed_prefixes",
+        "ascii_json_fragment",
+        "command_dispatch",
+        "file_update",
+        "markdown_location",
+        "metric_tag",
+        "network_domains",
+        "network_host",
+        "output_item_budget",
+        "output_lines",
+        "parser",
+        "patch_application",
+        "patch_effects",
+        "patch_standalone",
+        "patch_summary",
+        "policy_summary",
+        "prefix_admission",
+        "prefix_match",
+        "seek_sequence",
+        "source_file",
+        "template_index",
+        "template_parse",
+        "template_render",
+        "token_budget",
+        "truncate",
+        "unified_diff",
+        "utf8_prefix",
+        "uuid_find"
+      ],
+      "entry_profiles": {
+        "token_budget": "u64-pair-to-u64-v1",
+        "prefix_admission": "u64-pair-to-u64-v1"
+      },
+      "feature_off_requires_artifacts": false,
+      "unsupported_native_targets": "build_error",
+      "runtime_shared_library_requirement": false,
+      "build_report_sha256": null,
+      "checks_passed": null,
+      "existing_link_or_build_reports_reusable_without_regeneration": false,
+      "build_report_payload_independently_read": false,
+      "current_report": "hia/verification.json#ci_qualification_at_revision",
+      "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
+      "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
+    },
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget"
+      ],
+      "new_kernel_source_revision": "3f18f08d19d59a49e2fbe19a85b306db14136abe",
+      "new_kernel_source_git_blob": "fa974b63d1be45a765fe62d6c12411b0a130b8b9"
+    },
+    "qualification_transferred_to_current32": false
+  },
+  "previous_source_increment_32": {
+    "source_revision": "0941fd18d8f92942f8c944d1805e6c19d72474e6",
+    "source_migration": {
+      "git_blob": "22dfa03fa90931b45c91e5c93a81a85495e27797",
+      "sha256": "2813802cf79f8a7e14039c40c5c5b131e4a0bc3c7b4fb90873c967997d2e3d4a"
+    },
+    "toolchain_current_source_module_count": 32,
+    "toolchain_remaining_work": [
+      "Build the exact full-native32 lock with fresh B1/B2/B3 and all32 module/link bindings; qualify the new format_env_display and every retained raw/public/installed gate. Earlier29/30/31 receipts are not reusable.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "native_link_gate": {
+      "helper": "hia/cargo_build.rs",
+      "builder": "hia/build.py",
+      "tests": "hia/tests/test_build_receipt.py",
+      "status": "source_increment_requires_fresh_build_and_link_qualification",
+      "accepted_build_modules": [
+        "seek_sequence",
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "source_file",
+        "file_update",
+        "parser",
+        "patch_effects",
+        "unified_diff",
+        "patch_summary",
+        "patch_application",
+        "patch_standalone",
+        "uuid_find",
+        "template_parse",
+        "template_render",
+        "template_index",
+        "uuid_matches",
+        "template_parser",
+        "prefix_match",
+        "prefix_admission",
+        "policy_summary",
+        "network_domains",
+        "allowed_prefixes",
+        "command_dispatch",
+        "network_host",
+        "output_lines",
+        "output_item_budget",
+        "format_env_display"
+      ],
+      "actual_opt_in_link_modules": [
+        "allowed_prefixes",
+        "ascii_json_fragment",
+        "command_dispatch",
+        "file_update",
+        "format_env_display",
+        "markdown_location",
+        "metric_tag",
+        "network_domains",
+        "network_host",
+        "output_item_budget",
+        "output_lines",
+        "parser",
+        "patch_application",
+        "patch_effects",
+        "patch_standalone",
+        "patch_summary",
+        "policy_summary",
+        "prefix_admission",
+        "prefix_match",
+        "seek_sequence",
+        "source_file",
+        "template_index",
+        "template_parse",
+        "template_render",
+        "token_budget",
+        "truncate",
+        "unified_diff",
+        "utf8_prefix",
+        "uuid_find"
+      ],
+      "entry_profiles": {
+        "token_budget": "u64-pair-to-u64-v1",
+        "prefix_admission": "u64-pair-to-u64-v1"
+      },
+      "feature_off_requires_artifacts": false,
+      "unsupported_native_targets": "build_error",
+      "runtime_shared_library_requirement": false,
+      "build_report_sha256": null,
+      "checks_passed": null,
+      "existing_link_or_build_reports_reusable_without_regeneration": false,
+      "build_report_payload_independently_read": false,
+      "current_report": "hia/verification.json#ci_qualification_at_revision",
+      "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
+      "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
+    },
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget",
+        "format_env_display"
+      ],
+      "new_kernel_source_revision": "917b786fbf6f0d25a19fe5748074f59f997e0e04",
+      "new_kernel_source_git_blob": "0f24969be5dc22f29e5b7b58cc0e0ec19e3acfdc"
+    },
+    "qualification_transferred_to_current33": false
+  },
+  "previous_source_increment_33": {
+    "source_revision": "279b53306d78ea9cf1d584c518b5114691644122",
+    "source_migration": {
+      "git_blob": "9b47b5cb3d1573f4cd84b75cb0d3588c8ad86421",
+      "sha256": "a7c03e309394400501cac28f876449cd24892c8d44b669a0b2f5945a6dc46cd2"
+    },
+    "toolchain_current_source_module_count": 33,
+    "toolchain_remaining_work": [
+      "Build the exact full-native33 lock with fresh B1/B2/B3 and all33 module/link bindings; qualify citation_stream_parser and every retained raw/public/installed gate. Earlier29/30/31/32 receipts are not reusable.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "native_link_gate": {
+      "helper": "hia/cargo_build.rs",
+      "builder": "hia/build.py",
+      "tests": "hia/tests/test_build_receipt.py",
+      "status": "source_increment_requires_fresh_build_and_link_qualification",
+      "accepted_build_modules": [
+        "seek_sequence",
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "source_file",
+        "file_update",
+        "parser",
+        "patch_effects",
+        "unified_diff",
+        "patch_summary",
+        "patch_application",
+        "patch_standalone",
+        "uuid_find",
+        "template_parse",
+        "template_render",
+        "template_index",
+        "uuid_matches",
+        "template_parser",
+        "prefix_match",
+        "prefix_admission",
+        "policy_summary",
+        "network_domains",
+        "allowed_prefixes",
+        "command_dispatch",
+        "network_host",
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser"
+      ],
+      "actual_opt_in_link_modules": [
+        "allowed_prefixes",
+        "ascii_json_fragment",
+        "citation_stream_parser",
+        "command_dispatch",
+        "file_update",
+        "format_env_display",
+        "markdown_location",
+        "metric_tag",
+        "network_domains",
+        "network_host",
+        "output_item_budget",
+        "output_lines",
+        "parser",
+        "patch_application",
+        "patch_effects",
+        "patch_standalone",
+        "patch_summary",
+        "policy_summary",
+        "prefix_admission",
+        "prefix_match",
+        "seek_sequence",
+        "source_file",
+        "template_index",
+        "template_parse",
+        "template_render",
+        "token_budget",
+        "truncate",
+        "unified_diff",
+        "utf8_prefix",
+        "uuid_find"
+      ],
+      "entry_profiles": {
+        "token_budget": "u64-pair-to-u64-v1",
+        "prefix_admission": "u64-pair-to-u64-v1"
+      },
+      "feature_off_requires_artifacts": false,
+      "unsupported_native_targets": "build_error",
+      "runtime_shared_library_requirement": false,
+      "build_report_sha256": null,
+      "checks_passed": null,
+      "existing_link_or_build_reports_reusable_without_regeneration": false,
+      "build_report_payload_independently_read": false,
+      "current_report": "hia/verification.json#ci_qualification_at_revision",
+      "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
+      "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
+    },
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser"
+      ],
+      "new_kernel_source_revision": "20c7ce19ae5775c50e3999ba7fcca424939a8078",
+      "new_kernel_source_git_blob": "e0c936e7c646c0f1aa903b47ba96acb27be74601",
+      "new_kernel_source_sha256": "a73619f953b10636e6201515fb324f5a9dcf0806df5ccd968dd3eda5b028b354"
+    },
+    "qualification_transferred_to_current34": false,
+    "string_utilities_next_implementation": "Qualify output_item_budget and output_lines through a fresh full-native31 build, both raw ABI gates, original Rust/default/public and selected Core caller oracles. Complete remaining UUID/JSON/truncation ownership and performance, current installed CI, then owner/default-release/platform qualification."
+  },
+  "previous_source_increment_34": {
+    "source_revision": "e226cd0cf21e9b6e51c97b6b18207e87e22c051e",
+    "source_migration": {
+      "git_blob": "b60a3682a173363bcb06057e6f65e6ff1d938458",
+      "sha256": "97f691d8702218a5d009f2b074611414e1df5922ffb53f3da9f5301021282b17"
+    },
+    "toolchain_current_source_module_count": 34,
+    "toolchain_remaining_work": [
+      "Build the exact full-native34 lock with fresh B1/B2/B3 and all34 module/link bindings; qualify proposed_plan_parser and every retained citation/raw/public/installed gate. Earlier29/30/31/32/33 receipts are not reusable.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "native_link_gate": {
+      "helper": "hia/cargo_build.rs",
+      "builder": "hia/build.py",
+      "tests": "hia/tests/test_build_receipt.py",
+      "status": "source_increment_requires_fresh_build_and_link_qualification",
+      "accepted_build_modules": [
+        "seek_sequence",
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "source_file",
+        "file_update",
+        "parser",
+        "patch_effects",
+        "unified_diff",
+        "patch_summary",
+        "patch_application",
+        "patch_standalone",
+        "uuid_find",
+        "template_parse",
+        "template_render",
+        "template_index",
+        "uuid_matches",
+        "template_parser",
+        "prefix_match",
+        "prefix_admission",
+        "policy_summary",
+        "network_domains",
+        "allowed_prefixes",
+        "command_dispatch",
+        "network_host",
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser",
+        "proposed_plan_parser"
+      ],
+      "actual_opt_in_link_modules": [
+        "allowed_prefixes",
+        "ascii_json_fragment",
+        "citation_stream_parser",
+        "command_dispatch",
+        "file_update",
+        "format_env_display",
+        "markdown_location",
+        "metric_tag",
+        "network_domains",
+        "network_host",
+        "output_item_budget",
+        "output_lines",
+        "parser",
+        "patch_application",
+        "patch_effects",
+        "patch_standalone",
+        "patch_summary",
+        "policy_summary",
+        "prefix_admission",
+        "prefix_match",
+        "proposed_plan_parser",
+        "seek_sequence",
+        "source_file",
+        "template_index",
+        "template_parse",
+        "template_render",
+        "token_budget",
+        "truncate",
+        "unified_diff",
+        "utf8_prefix",
+        "uuid_find"
+      ],
+      "entry_profiles": {
+        "token_budget": "u64-pair-to-u64-v1",
+        "prefix_admission": "u64-pair-to-u64-v1"
+      },
+      "feature_off_requires_artifacts": false,
+      "unsupported_native_targets": "build_error",
+      "runtime_shared_library_requirement": false,
+      "build_report_sha256": null,
+      "checks_passed": null,
+      "existing_link_or_build_reports_reusable_without_regeneration": false,
+      "build_report_payload_independently_read": false,
+      "current_report": "hia/verification.json#ci_qualification_at_revision",
+      "previous_status": "ci_gate_success_at_483_independent_payload_audit_pending",
+      "previous_build_report_sha256": "a202bd9d62e8778651d5bc6a27896ee76ce64919a39c6a5f670c7bfb22d986b7"
+    },
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser",
+        "proposed_plan_parser"
+      ],
+      "new_kernel_source_revision": "da3817ebea57da1a940c12abc57999ce3d50706a",
+      "new_kernel_source_git_blob": "31e29d47a34f5db006319bf1b60c3285564e94c6",
+      "new_kernel_source_sha256": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755"
+    },
+    "string_utilities": {
+      "id": "string_utilities",
+      "source_roots": [
+        "codex-rs/utils/string",
+        "codex-rs/utils/output-truncation"
+      ],
+      "migration_status": "partial_opt_in_caller",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "UTF-8 boundaries",
+        "middle truncation and budget accounting",
+        "metric tag, UUID, JSON and location helpers",
+        "Streaming output line count with original Rust line semantics",
+        "Per-item text/audio budget decisions with original callbacks, opaque items and omission-summary order"
+      ],
+      "next_implementation": "Qualify proposed_plan_parser, citation_stream_parser, format_env_display, output_item_budget and output_lines through the exact full-native34 build, retained raw gates, original Rust/default/public and selected Core consumer oracles. Complete remaining UTF-8/inline-tag/UUID/JSON/truncation ownership and performance, current installed CI, then owner/default-release/platform qualification.",
+      "candidate_modules": [
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment",
+        "truncate",
+        "token_budget",
+        "output_lines",
+        "output_item_budget"
+      ]
+    },
+    "qualification_transferred_to_current35": false
+  },
+  "previous_source_increment_35": {
+    "source_revision": "bbb534d8be9098c041d5f3dd1ca1214fbcc2fd8a",
+    "current_qualification": {
+      "status": "source_increment_unqualified",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "recorded_previous_status": "ci_success_at_recorded_revision_independent_artifact_audit_pending",
+      "current_tree_qualified": false,
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser",
+        "proposed_plan_parser",
+        "fuzzy_match"
+      ],
+      "new_kernel_source_revision": "ea64655b0152ff2a5009b01a8f45df28e6147702",
+      "new_kernel_source_git_blob": "27c9136b4dd3229a9c4536164b06af61acf90e3e",
+      "new_kernel_source_sha256": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661"
+    },
+    "qualification_transferred_to_current36": false
+  },
+  "previous_source_increment_36": {
+    "source_revision": "d0bc89fcb84449459292ea8775c04492f4d5a333",
+    "source_migration_sha256": "7f1067ddfd26ef8e399d5a66618f47371958011f648562e950ac35cb99d031f2",
+    "toolchain_current_source_module_count": 36,
+    "toolchain_remaining_work": [
+      "Complete native36 retained public/Core/UI/installed and full workflow gates. The local fresh B1/B2/B3 build, 36 bindings, seven raw suites and UTF-8 library owner passed; earlier profiles are not reusable as current qualification.",
+      "Independently acquire and audit the complete current29 and exact74d1 CI artifact payloads; API metadata and original logs do not substitute for whole-file/member/source custody.",
+      "Bind any later source or lock change to its own build, receipts and qualification; the recorded CI applies to 48324e2e75f2ebf46540e8db667b3f33fc7b3a7c.",
+      "Qualify supported production platforms and full product behavior before enabling a default or deleting a legacy kernel.",
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "current_qualification": {
+      "status": "local_utf8_owner_passed_other_gates_pending",
+      "qualification_revision": null,
+      "report": "hia/verification.json#current_qualification",
+      "documentation_successor_exact_head_qualified": false,
+      "current_tree_qualified": false,
+      "locally_verified_public_library_modules": [
+        "utf8_stream"
+      ],
+      "pending_modules": [
+        "output_lines",
+        "output_item_budget",
+        "format_env_display",
+        "citation_stream_parser",
+        "proposed_plan_parser",
+        "fuzzy_match"
+      ],
+      "new_kernel_source_revision": "1c1b4ae55acc5b20ed0f2afa7e0625d7f3c35664",
+      "new_kernel_source_git_blob": "1ca698b92767507ff68de4b7fad120079a044c83",
+      "new_kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63"
+    },
+    "qualification_transferred_to_current37": false
+  },
+  "previous_inline_450f_source_record": {
+    "source_revision": "450f22e370ce8db88a53ca6bbbae55262cbdab6e",
+    "metadata_git_blobs": {
+      "hia/migration.json": "62e63f30c667a7a293a5bed5c21761fb0438c8ed",
+      "hia/verification.json": "41ac81e9cd957f61ce760736ea90bf68913bd00e",
+      "hia/joint_module_roles.json": "d38c3087e4157688da29e9ed33d97d048bbf5e71",
+      "hia/README.md": "4bc4ccce2dc93d2702553863c0b5acbd08e83fb4"
+    },
+    "kernel_source_revision": "4ec37e6c48e457278579d97bc6bd15a5040e3194",
+    "kernel_source_git_blob": "348fe7dc74abe1191b6e83781761c418d98dc7a9",
+    "kernel_source_sha256": "f3d38ffd2f06cbd9892664914ba979d1e40b920b795f74f876ed5aac72abc5f1",
+    "build_report_sha256": "5e2662712dffd52b014a4c844035fdd331a4a7e9c92109dea9b7385a45672a12",
+    "qualification_transferred_to_current": false
   }
 }

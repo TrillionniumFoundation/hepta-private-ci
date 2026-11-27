@@ -1,19 +1,21 @@
+#[cfg(not(feature = "hia-native"))]
 use crate::InlineHiddenTagParser;
+#[cfg(not(feature = "hia-native"))]
 use crate::InlineTagSpec;
 use crate::StreamTextChunk;
 use crate::StreamTextParser;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum CitationTag {
+pub(super) enum CitationTag {
     Citation,
 }
 
-const CITATION_OPEN: &str = "<oai-mem-citation>";
-const CITATION_CLOSE: &str = "</oai-mem-citation>";
+pub(super) const CITATION_OPEN: &str = "<oai-mem-citation>";
+pub(super) const CITATION_CLOSE: &str = "</oai-mem-citation>";
 
 /// Stream parser for `<oai-mem-citation>...</oai-mem-citation>` tags.
 ///
-/// This is a thin convenience wrapper around [`InlineHiddenTagParser`]. It returns citation bodies
+/// By default, this wraps [`crate::InlineHiddenTagParser`]. It returns citation bodies
 /// as plain strings and omits the citation tags from visible text.
 ///
 /// Matching is literal and non-nested. If EOF is reached before a closing
@@ -21,11 +23,21 @@ const CITATION_CLOSE: &str = "</oai-mem-citation>";
 /// extracted citation.
 #[derive(Debug)]
 pub struct CitationStreamParser {
+    #[cfg(not(feature = "hia-native"))]
     inner: InlineHiddenTagParser<CitationTag>,
+    #[cfg(feature = "hia-native")]
+    inner: crate::hia_native_citation_stream_parser::NativeCitationParser,
 }
 
 impl CitationStreamParser {
     pub fn new() -> Self {
+        #[cfg(feature = "hia-native")]
+        {
+            Self {
+                inner: crate::hia_native_citation_stream_parser::NativeCitationParser::new(),
+            }
+        }
+        #[cfg(not(feature = "hia-native"))]
         Self {
             inner: InlineHiddenTagParser::new(vec![InlineTagSpec {
                 tag: CitationTag::Citation,
