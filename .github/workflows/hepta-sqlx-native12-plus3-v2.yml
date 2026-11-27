@@ -1,0 +1,139 @@
+name: SQLx native12 plus three capability observations
+
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - ".github/workflows/hepta-sqlx-native12-plus3-v2.yml"
+      - "scripts/run_sqlx_native12_plus3_v2.py"
+      - "scripts/hepta_sqlx_native_inputs_v2.json"
+      - "qualification/sqlx_native12_plus3_admission_v2.json"
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    if: >-
+      true &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.user.login == 'ProfHepta' &&
+      github.event.pull_request.draft == true &&
+      github.event.pull_request.head.ref == 'fix/hepta-sqlx-native12-plus3-20261126-7c9e' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: source-head
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      V8_FROM_SOURCE: "0"
+      RUSTY_V8_ARCHIVE: ""
+      RUSTY_V8_SRC_BINDING_PATH: ""
+    steps:
+      - name: Record the original job clock before checkout
+        id: job_scope
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, re, time
+          head, run = os.environ["SOURCE_SHA"], os.environ["GITHUB_RUN_ID"]
+          assert re.fullmatch(r"[0-9a-f]{40}", head) and run.isdigit()
+          assert os.environ["GITHUB_RUN_ATTEMPT"] == "1"
+          stage = pathlib.Path(os.environ["RUNNER_TEMP"]) / f"sqlx-native-{head}-{run}-1"
+          stage.mkdir(mode=0o700)
+          evidence = stage / "evidence"
+          evidence.mkdir(mode=0o700)
+          value = {"head": head, "run_id": run, "run_attempt": "1",
+                   "monotonic_seconds": time.monotonic(),
+                   "boot_id": pathlib.Path("/proc/sys/kernel/random/boot_id").read_text().strip()}
+          with (evidence / "job-start.json").open("x") as output:
+              output.write(json.dumps(value, sort_keys=True) + "\n")
+              output.flush()
+              os.fsync(output.fileno())
+          with open(os.environ["GITHUB_ENV"], "a") as output:
+              output.write(f"SQLX_NATIVE_STAGE={stage}\n")
+          PY
+      - name: Acquire the exact source head and sole parent
+        id: checkout
+        timeout-minutes: 2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Bound checkout and start cumulative tool preparation
+        id: checkout_clock
+        shell: bash
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, time
+          root = pathlib.Path(os.environ["SQLX_NATIVE_STAGE"]) / "evidence"
+          start = json.loads((root / "job-start.json").read_bytes())
+          now = time.monotonic()
+          assert 0 <= now - start["monotonic_seconds"] <= 120
+          with (root / "checkout-end.json").open("x") as output:
+              output.write(json.dumps({"run_id": start["run_id"], "monotonic_seconds": now}) + "\n")
+              output.flush()
+              os.fsync(output.fileno())
+          PY
+      - name: Prepare the original Rust compiler
+        id: rust
+        timeout-minutes: 2
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - name: Prepare original native wrappers
+        id: tools
+        timeout-minutes: 2
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve the original verified V8 pair
+        id: v8
+        timeout-minutes: 2
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Run the first admitted native12 plus capability3 scope
+        id: native
+        timeout-minutes: 49
+        env:
+          SQLX_ALL_STEPS: ${{ toJSON(steps) }}
+        run: python3 -I -B scripts/run_sqlx_native12_plus3_v2.py
+      - name: Retain original successful and failed observations
+        id: upload
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sqlx-native12-plus3-${{ env.SOURCE_SHA }}-${{ github.run_id }}-1
+          path: ${{ env.SQLX_NATIVE_STAGE }}/evidence/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Account through retention without resetting any cap
+        if: always() && steps.job_scope.outcome == 'success'
+        timeout-minutes: 1
+        env:
+          SQLX_ALL_STEPS: ${{ toJSON(steps) }}
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os, pathlib, time
+          root = pathlib.Path(os.environ["SQLX_NATIVE_STAGE"]) / "evidence"
+          start = json.loads((root / "job-start.json").read_bytes())
+          elapsed = time.monotonic() - start["monotonic_seconds"]
+          steps = json.loads(os.environ["SQLX_ALL_STEPS"])
+          print(json.dumps({"seconds_through_upload": elapsed, "whole_cap_seconds": 3600,
+                            "prior_conservative_job_debit_seconds": 334,
+                            "cumulative_seconds_through_upload": 334 + elapsed,
+                            "full_original_GitHub_job_and_queue_still_required": True}))
+          assert 0 <= elapsed <= 3600 and steps["upload"]["outcome"] == "success"
+          assert steps["native"]["outcome"] == "success"
+          PY

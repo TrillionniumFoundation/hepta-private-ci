@@ -1,0 +1,532 @@
+{
+  "schema": "root-hepta7147-four-lock-and-two-graph-acceptance-v1",
+  "status": "EXACT_GENERATED_LOCKS_AND_ORIGINAL_FIXTURE_GRAPHS_ACCEPTED",
+  "accepted": true,
+  "reviewer": "root",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "origin": {
+    "artifact_id": 15132858586,
+    "attempt": 1,
+    "head": "a12b2d79c30a7a641cb5e15f245c610b08565428",
+    "job_id": 140005328424,
+    "leaf_count": 16124,
+    "parent": "5b9b1c5e123aa69bd71c0fb810af8f6b8c9d4ed1",
+    "parent_tree": "a720083f7bd3d1df4222908bd5aa946c9eb43dce",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 45847634451,
+    "tree": "6becd41bf74afd9a7a30e2d34bb72b83c8b84277"
+  },
+  "original_job_status": "success",
+  "source_binding": {
+    "all_original_checkout_bytes_independently_rehashed_here": false,
+    "all_reviewed_producer_inputs_match": true,
+    "candidate_tree": "6becd41bf74afd9a7a30e2d34bb72b83c8b84277",
+    "complete_original_before_after_equal": true,
+    "exact_new_paths": [
+      ".github/workflows/hepta-sqlx-unused-patch-successor-v1.yml",
+      "qa/b4-no-bypass/test_sqlx_unused_patch_successor_v1.py",
+      "qualification/sqlx_unused_patch_successor_admission_v1.json",
+      "scripts/hepta_sqlx_unused_patch_successor_contract_v1.py",
+      "scripts/hepta_sqlx_unused_patch_successor_inputs_v1.json",
+      "scripts/hepta_sqlx_unused_patch_successor_phases_v1.py",
+      "scripts/run_sqlx_unused_patch_successor_v1.py"
+    ],
+    "full_raw_git_tree_and_merkle_match": true,
+    "parent_tree": "a720083f7bd3d1df4222908bd5aa946c9eb43dce",
+    "physical_source_snapshot_leaves": 16124,
+    "scope": "The original producer's complete physical snapshot is matched to full Git objects; this data reader independently rehashes retained artifact bytes and six primary source files."
+  },
+  "lock_set": {
+    "MODULE.bazel.lock": {
+      "bytes": 1792663,
+      "sha256": "288cc0b12854164157ba9cd9b94f1c236af99f3cf532b2bedf2605f589e47892",
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7147-original-successor-artifact-root-v1/members/15132858586/candidate-locks/MODULE.bazel.lock"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 421756,
+      "sha256": "bc8b1abe42bdb85aa10a9ba2a0c3f022af07bc08e38ac50e94442e58806f9ae1",
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7147-original-successor-artifact-root-v1/members/15132858586/candidate-locks/codex-rs/Cargo.lock"
+    },
+    "qualification/sqlx_temporal_default_v1/Cargo.lock": {
+      "bytes": 183889,
+      "sha256": "a5957353fc709c66369b30c00c5f68001b5153402c6afe27f5d0fa0956878ec9",
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7147-original-successor-artifact-root-v1/members/15132858586/candidate-locks/qualification/sqlx_temporal_default_v1/Cargo.lock"
+    },
+    "qualification/sqlx_temporal_explicit_chrono_v1/Cargo.lock": {
+      "bytes": 183930,
+      "sha256": "260f1da8f05948a7faf74d661cfc574f1f533969acd60086225761ec7b5b037a",
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7147-original-successor-artifact-root-v1/members/15132858586/candidate-locks/qualification/sqlx_temporal_explicit_chrono_v1/Cargo.lock"
+    }
+  },
+  "fixture_graphs": {
+    "compatibility": {
+      "codec_features": [
+        {
+          "features": [
+            "bundled",
+            "chrono",
+            "json",
+            "migrate",
+            "offline",
+            "serde",
+            "time",
+            "uuid"
+          ],
+          "name": "sqlx-sqlite"
+        },
+        {
+          "features": [
+            "_rt-tokio",
+            "_tls-rustls",
+            "_tls-rustls-ring-webpki",
+            "any",
+            "chrono",
+            "crc",
+            "default",
+            "json",
+            "migrate",
+            "offline",
+            "rustls",
+            "serde",
+            "serde_json",
+            "sha2",
+            "time",
+            "tokio",
+            "tokio-stream",
+            "uuid",
+            "webpki-roots"
+          ],
+          "name": "sqlx-core"
+        },
+        {
+          "features": [
+            "_rt-tokio",
+            "_sqlite",
+            "chrono",
+            "derive",
+            "json",
+            "macros",
+            "migrate",
+            "runtime-tokio",
+            "sqlite-bundled",
+            "sqlx-macros",
+            "sqlx-sqlite",
+            "time",
+            "tls-rustls",
+            "tls-rustls-ring",
+            "tls-rustls-ring-webpki",
+            "uuid"
+          ],
+          "name": "sqlx"
+        }
+      ],
+      "dependency_delta_count": 53,
+      "full_normalization_and_lock_relation_reconstructed": true,
+      "lock_packages": 710,
+      "normalized_graph_sha256": "b0b1d8682a81f207f5c0f68c7e9962903e5e30fe411f2015d076aad67eb7cf9d",
+      "original_metadata": {
+        "bytes": 3411407,
+        "file": "generation-19-compatibility-original-unexecuted-locked-graph-once.stdout",
+        "sha256": "6ad17edd6d388f259ed9b98db137e4182f2a94a71f890354013992f9cd920fe6"
+      },
+      "packages": 629,
+      "removed_package_count": 816,
+      "root": {
+        "manifest": "qualification/sqlx_temporal_explicit_chrono_v1/Cargo.toml",
+        "name": "sqlx-temporal-explicit-chrono-contract-v1",
+        "source": null,
+        "version": "0.0.0"
+      }
+    },
+    "default": {
+      "codec_features": [
+        {
+          "features": [
+            "bundled",
+            "json",
+            "migrate",
+            "offline",
+            "serde",
+            "time",
+            "uuid"
+          ],
+          "name": "sqlx-sqlite"
+        },
+        {
+          "features": [
+            "_rt-tokio",
+            "_tls-rustls",
+            "_tls-rustls-ring-webpki",
+            "any",
+            "crc",
+            "default",
+            "json",
+            "migrate",
+            "offline",
+            "rustls",
+            "serde",
+            "serde_json",
+            "sha2",
+            "time",
+            "tokio",
+            "tokio-stream",
+            "uuid",
+            "webpki-roots"
+          ],
+          "name": "sqlx-core"
+        },
+        {
+          "features": [
+            "_rt-tokio",
+            "_sqlite",
+            "derive",
+            "json",
+            "macros",
+            "migrate",
+            "runtime-tokio",
+            "sqlite-bundled",
+            "sqlx-macros",
+            "sqlx-sqlite",
+            "time",
+            "tls-rustls",
+            "tls-rustls-ring",
+            "tls-rustls-ring-webpki",
+            "uuid"
+          ],
+          "name": "sqlx"
+        }
+      ],
+      "dependency_delta_count": 57,
+      "full_normalization_and_lock_relation_reconstructed": true,
+      "lock_packages": 710,
+      "normalized_graph_sha256": "edbfd90a0bedbf357323b8dd919cd63128df139235060743a5b7bd6ea6e76a9e",
+      "original_metadata": {
+        "bytes": 3411101,
+        "file": "generation-17-default-successor-locked-graph-once.stdout",
+        "sha256": "c89b992be67cf5ec6a8e7abddecdc3c125bcc218ebccc1f510193912444085f8"
+      },
+      "packages": 629,
+      "removed_package_count": 816,
+      "root": {
+        "manifest": "qualification/sqlx_temporal_default_v1/Cargo.toml",
+        "name": "sqlx-temporal-default-contract-v1",
+        "source": null,
+        "version": "0.0.0"
+      }
+    }
+  },
+  "default_order_only": {
+    "non_unused_bytes_identical": true,
+    "original_failed_sha256": "17e4c666095413b14b8457319785cf5870792312d11fce75d98245d66b247452",
+    "successor_sha256": "a5957353fc709c66369b30c00c5f68001b5153402c6afe27f5d0fa0956878ec9",
+    "ten_complete_records_with_duplicates_preserved": true
+  },
+  "main_lock_reuse": {
+    "accepted": true,
+    "original_failed_run": 45738227995,
+    "original_acceptance": {
+      "repo_path": "qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 416,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 416,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/root-sqlx7147-four-lock-original-data-review-v1/primary/qualification/sqlx_temporal_partial_main_reuse_acceptance_v1.json",
+      "sha256": "cf3e3d8c41332737d013699ded3c334411a9dfdcea02d222e75cf87b696d9e1f",
+      "size": 16175,
+      "version": "16777233:620219886:16175:1795711318845386754:1795711318845636753"
+    },
+    "original_status_preserved": "failure",
+    "bytes_identical_to_previously_accepted_main_locks": true,
+    "independent_main_relation": {
+      "added_identities": [],
+      "dependency_deltas": [
+        {
+          "added": [],
+          "identity": [
+            "sqlx-core",
+            "0.9.1",
+            "registry+https://github.com/rust-lang/crates.io-index"
+          ],
+          "removed": [
+            [
+              "chrono",
+              "0.4.45",
+              "registry+https://github.com/rust-lang/crates.io-index"
+            ]
+          ]
+        },
+        {
+          "added": [],
+          "identity": [
+            "sqlx-mysql",
+            "0.9.1",
+            "registry+https://github.com/rust-lang/crates.io-index"
+          ],
+          "removed": [
+            [
+              "chrono",
+              "0.4.45",
+              "registry+https://github.com/rust-lang/crates.io-index"
+            ]
+          ]
+        },
+        {
+          "added": [],
+          "identity": [
+            "sqlx-postgres",
+            "0.9.1",
+            "registry+https://github.com/rust-lang/crates.io-index"
+          ],
+          "removed": [
+            [
+              "chrono",
+              "0.4.45",
+              "registry+https://github.com/rust-lang/crates.io-index"
+            ]
+          ]
+        },
+        {
+          "added": [],
+          "identity": [
+            "sqlx-sqlite",
+            "0.9.1",
+            "registry+https://github.com/rust-lang/crates.io-index"
+          ],
+          "removed": [
+            [
+              "chrono",
+              "0.4.45",
+              "registry+https://github.com/rust-lang/crates.io-index"
+            ]
+          ]
+        }
+      ],
+      "packages": 1525,
+      "qualification": false,
+      "registry_versions_and_checksums_reused": true,
+      "removed_identities": []
+    },
+    "no_main_update_metadata_or_bazel_replay": true
+  },
+  "independent_review": {
+    "source": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 416,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 416,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/root-sqlx7147-four-lock-original-data-review-v1/review_original_data_once.py",
+      "sha256": "f543747fcfc0a056786d3f05b8654fee38aeeb8cc7a92b6e070abb60fecbd19e",
+      "size": 23052,
+      "version": "16777233:620220972:23052:1795711516515667039:1795711516515937331"
+    },
+    "input": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 416,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 416,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/root-sqlx7147-four-lock-original-data-review-v1/INPUT.json",
+      "sha256": "377062105d317a2a5b79ae53b580c6ffce5d14c0c4788caf7a8e55b7233b6571",
+      "size": 4884,
+      "version": "16777233:620220588:4884:1795711421011475669:1795711421011747419"
+    },
+    "result": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 384,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/root-sqlx7147-four-lock-original-data-review-v1/RESULT.json",
+      "sha256": "9dbeb6d8f5d5e10f84ae5c16f93aafac312d3a66a9223ce0d1eb12b7f074b9f7",
+      "size": 76139,
+      "version": "16777233:620221186:76139:1795711555684415671:1795711555684415671"
+    },
+    "terminal": {
+      "at_unix_ms": 1795711555768,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a218bfd470-ffbe-491d",
+      "launch_nonce": "180dbec9e290a2d677d5780f4e5a87bb",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 349,
+          "stored": 349
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "dual_eof": {
+      "stdout_bytes": 349,
+      "stderr_bytes": 0,
+      "stdout_eof": true,
+      "stderr_eof": true
+    },
+    "wall_seconds_including_result_io": 0.797891290858388,
+    "source_imports": 0,
+    "test_executions": 0,
+    "builds": 0,
+    "resolver_executions": 0
+  },
+  "artifact": {
+    "all_member_SHA256_and_CRC_rechecked": true,
+    "member_count": 218,
+    "original_zip": {
+      "bytes": 32819912,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/hepta7147-original-successor-artifact-root-v1/15132858586.zip",
+      "sha256": "3d3d56fd775590c46c486397e14610e8569a0a43bed8ae227c496d31c34cf129"
+    },
+    "uncompressed_bytes": 83576879
+  },
+  "original_commands": [
+    {
+      "elapsed_seconds": 16.294069933000003,
+      "label": "new-runner-locked-cache-recovery-once"
+    },
+    {
+      "elapsed_seconds": 0.4639315839999938,
+      "label": "default-successor-official-generation-once"
+    },
+    {
+      "elapsed_seconds": 0.5932874000000083,
+      "label": "default-successor-locked-graph-once"
+    },
+    {
+      "elapsed_seconds": 1.0721690059999958,
+      "label": "compatibility-original-unexecuted-update-once"
+    },
+    {
+      "elapsed_seconds": 0.34646105900000634,
+      "label": "compatibility-original-unexecuted-locked-graph-once"
+    }
+  ],
+  "cost": {
+    "cumulative_conservative_full_job_debit_seconds": 334,
+    "cumulative_generation_seconds": 128.61509769699998,
+    "cumulative_observed_full_job_seconds": 331,
+    "current_generation_seconds": 35.385781367,
+    "full_original_job_seconds": 79,
+    "nested_intervals_not_summed": true,
+    "old_failures_kept": true,
+    "phase_CPU_observations": [
+      {
+        "current_process_cpu_seconds": 1.639232,
+        "current_process_reaped_children_cpu_seconds": 0.942816,
+        "elapsed_seconds": 2.7241870709999993,
+        "mode": "begin"
+      },
+      {
+        "current_process_cpu_seconds": 3.355207,
+        "current_process_reaped_children_cpu_seconds": 0.28868099999999997,
+        "elapsed_seconds": 15.256224280000001,
+        "mode": "prepare"
+      },
+      {
+        "current_process_cpu_seconds": 11.251489,
+        "current_process_reaped_children_cpu_seconds": 18.882421,
+        "elapsed_seconds": 35.385781367,
+        "mode": "generation"
+      },
+      {
+        "current_process_cpu_seconds": 1.7006100000000002,
+        "current_process_reaped_children_cpu_seconds": 0.137369,
+        "elapsed_seconds": 2.3561721149999926,
+        "mode": "readback"
+      }
+    ],
+    "queue_is_separate": true,
+    "remaining_from_current_frozen_generation_cap_seconds": 720.614218633,
+    "remaining_from_current_frozen_whole_cap_seconds": 964,
+    "through_upload_seconds": 67.14796869,
+    "whole_job_CPU_seconds": null,
+    "current_full_job_seconds_from_second_resolution_GitHub_metadata": 79,
+    "current_conservative_full_job_debit_seconds": 80,
+    "current_timestamp_precision_reserve_seconds": 1,
+    "root_adjustment_explanation": "The data reader's 333 combines prior conservative debits 254 with the current observed 79-second API interval. Root adds one second for this new second-resolution interval, so the final conservative debit is 334, not a claim that the actual job took 80 seconds. No cost or failed attempt is removed. Phase intervals remain nested.",
+    "full_job_cpu_seconds": null,
+    "artifact_download": 11.854635457973927
+  },
+  "permitted_reuse": {
+    "exact_four_lock_bytes": true,
+    "exact_two_original_normalized_graphs": true,
+    "main_original_acceptance": true,
+    "candidate_source_and_dependency_inputs_must_be_rebound": true,
+    "rerun_original_generation": false,
+    "rerun_completed_controls": false
+  },
+  "execution_authorization": false,
+  "separate_native_scope_admission_required": true,
+  "remaining_open": [
+    "Original 12 consumer plus 3 capability native controls have not executed against this accepted set.",
+    "ARM official fixture Cargo binary and actual compatible compiler use must be acquired and verified in its separately admitted first native scope.",
+    "Ordinary locked CI and source-binding for any later combined candidate remain separate.",
+    "Earlier #7140 partial artifact readback remains incomplete; its failure and debits are preserved.",
+    "No scientific learning, adoption, delivery, FinalUse or model scaling result follows from lock/graph acceptance."
+  ],
+  "qualification": {
+    "four_locks": true,
+    "two_fixture_graphs": true,
+    "original_successful_successor_generation": true,
+    "main_lock_reuse": true,
+    "native12_plus3": false,
+    "new_native48": false,
+    "ordinary_locked_CI": false,
+    "advisory_closed": false,
+    "SDK_HTTP_modes": false,
+    "science": false,
+    "speed": false,
+    "adoption": false,
+    "FinalUse": false
+  },
+  "E1_E6_training_spent_unchanged": "16/16",
+  "E6_remaining_seconds_unchanged": 1.9960488015785813,
+  "E1_E6_added": 0
+}
