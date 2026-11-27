@@ -5,6 +5,8 @@ use codex_protocol::items::CommandExecutionItem;
 use codex_protocol::items::CommandExecutionStatus;
 use codex_protocol::items::TurnItem;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::ExecCommandEndEvent;
+use codex_protocol::protocol::ExecCommandStatus;
 use codex_protocol::protocol::ReviewDecision;
 use pretty_assertions::assert_eq;
 use tokio::sync::Mutex;
@@ -237,6 +239,55 @@ async fn completion_item(
     let TurnItem::CommandExecution(item) = completed.item else {
         panic!("expected canonical command item");
     };
+    // Session sends the canonical item followed by its legacy completion event.
+    let legacy_event = receiver
+        .try_recv()
+        .expect("legacy completion was emitted before return");
+    let EventMsg::ExecCommandEnd(legacy) = legacy_event.msg else {
+        panic!("expected legacy ExecCommandEnd");
+    };
+    assert_eq!(event.id, completed.turn_id);
+    assert_eq!(legacy_event.id, completed.turn_id);
+    assert_eq!(
+        serde_json::to_value(legacy).expect("serialize legacy completion"),
+        serde_json::to_value(ExecCommandEndEvent {
+            call_id: "parent-call".to_string(),
+            plugin_id: None,
+            script_path: None,
+            process_id: Some("process-1".to_string()),
+            turn_id: completed.turn_id,
+            completed_at_ms: completed.completed_at_ms,
+            command: vec!["owned-command".to_string(), "argument".to_string()],
+            cwd: item.cwd.clone(),
+            parsed_cmd: item.parsed_cmd.clone(),
+            source: item.source,
+            interaction_input: None,
+            stdout: "actual output before termination\n".to_string(),
+            stderr: failure_message.unwrap_or_default().to_string(),
+            aggregated_output: item
+                .aggregated_output
+                .clone()
+                .expect("fixture supplies aggregated output"),
+            exit_code: if failure_message.is_some() {
+                -1
+            } else {
+                exit_code
+            },
+            duration: Duration::from_millis(17),
+            formatted_output: item
+                .formatted_output
+                .clone()
+                .expect("fixture supplies formatted output"),
+            status: if explicit_cancel {
+                ExecCommandStatus::Declined
+            } else if failure_message.is_some() || exit_code != 0 {
+                ExecCommandStatus::Failed
+            } else {
+                ExecCommandStatus::Completed
+            },
+        })
+        .expect("serialize expected legacy completion")
+    );
     assert!(
         receiver.try_recv().is_err(),
         "one completion per emitter call"
