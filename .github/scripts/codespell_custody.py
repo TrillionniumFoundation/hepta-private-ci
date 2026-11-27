@@ -32,6 +32,10 @@ BINARY_ARCHIVE_PATHS = frozenset(
 
 # These retained qualification inputs admit only their registered original bytes.
 QUALIFICATION_SOURCE_SHA256 = {
+    # The archived GPU pilot embeds opaque base64 checkpoint bytes.
+    "qualification/hcsn_research_20261127/feedback/rog_pilot.json": (
+        "d17b48c0d9c227fffb32000ae2284df652027a69b20cd4af06ed721bb3af4141"
+    ),
     # Preserve the original HCSN CI diagnosis and the three transport-v2 shards
     # reported by Codespell 2.4.3. Only these exact bytes receive spelling custody.
     (
