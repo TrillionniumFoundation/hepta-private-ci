@@ -272,8 +272,11 @@ async fn mitm_policy_allows_matching_hooked_write_in_full_mode() {
 
 #[tokio::test]
 async fn mitm_policy_blocks_encoded_path_traversal_for_repository_allowlist() {
+    // This policy test never opens an upstream connection. A public IP literal keeps
+    // the local/private-address guard active without depending on live DNS.
+    let host = "8.8.8.8";
     let mut hook = github_write_hook();
-    hook.host = "github.com".to_string();
+    hook.host = host.to_string();
     hook.matcher.methods = vec!["GET".to_string()];
     hook.matcher.path_prefixes = vec!["pattern:/openai/openai/**".to_string()];
     hook.actions.inject_request_headers.clear();
@@ -283,12 +286,12 @@ async fn mitm_policy_blocks_encoded_path_traversal_for_repository_allowlist() {
         mode: NetworkMode::Full,
         ..NetworkProxyConfig::default()
     };
-    network.set_allowed_domains(vec!["github.com".to_string()]);
+    network.set_allowed_domains(vec![host.to_string()]);
     let app_state = Arc::new(network_proxy_state_for_policy(network));
     let ctx = policy_ctx(
         app_state.clone(),
         NetworkMode::Full,
-        "github.com",
+        host,
         /*target_port*/ 443,
     );
     let paths = [
@@ -302,7 +305,7 @@ async fn mitm_policy_blocks_encoded_path_traversal_for_repository_allowlist() {
         let req = Request::builder()
             .method(Method::GET)
             .uri(path)
-            .header(HOST, "github.com")
+            .header(HOST, host)
             .body(Body::empty())
             .unwrap();
         let response = mitm_blocking_response(&req, &ctx).await.unwrap();
