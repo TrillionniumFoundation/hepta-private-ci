@@ -1,11 +1,33 @@
 """Extract shared CLIP global embeddings and fixed projections of true hidden tokens."""
-import argparse, gc, hashlib, json, os, time
+import argparse, ctypes, ctypes.util, errno, gc, hashlib, json, os, socket, time
 from pathlib import Path
+def offline_process():
+ # This process consumes only pinned local files. Block Internet sockets, including calls from native libraries.
+ libname=ctypes.util.find_library('seccomp')
+ if libname is None:raise RuntimeError('local-only frontend requires libseccomp')
+ lib=ctypes.CDLL(libname,use_errno=True)
+ lib.seccomp_init.argtypes=[ctypes.c_uint32];lib.seccomp_init.restype=ctypes.c_void_p
+ lib.seccomp_syscall_resolve_name.argtypes=[ctypes.c_char_p];lib.seccomp_syscall_resolve_name.restype=ctypes.c_int
+ lib.seccomp_rule_add.argtypes=[ctypes.c_void_p,ctypes.c_uint32,ctypes.c_int,ctypes.c_uint]
+ lib.seccomp_load.argtypes=[ctypes.c_void_p];lib.seccomp_release.argtypes=[ctypes.c_void_p]
+ ctx=lib.seccomp_init(0x7fff0000)
+ if not ctx:raise RuntimeError('sandbox initialization')
+ try:
+  for nm in [b'socket',b'socketpair',b'connect',b'sendto',b'sendmsg',b'sendmmsg']:
+   nr=lib.seccomp_syscall_resolve_name(nm)
+   if nr>=0 and lib.seccomp_rule_add(ctx,0x00050000|errno.EPERM,nr,0)!=0:raise RuntimeError('install local-only socket filter')
+  if lib.seccomp_load(ctx)!=0:raise RuntimeError('unable to enforce local-only frontend')
+ finally:lib.seccomp_release(ctx)
+ try:socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+ except PermissionError:pass
+ else:raise RuntimeError('socket filter failed')
+offline_process()
 import numpy as np
 from PIL import Image
 from tokenizers import Tokenizer
 import onnx
 import onnxruntime as ort
+ort.disable_telemetry_events()
 ROOT=Path(__file__).resolve().parent
 NODES={'vision':('/vision_model/encoder/layers.11/Add_1_output_0',768),'text':('/text_model/final_layer_norm/Add_1_output_0',512)}
 def digest(path):
@@ -73,6 +95,6 @@ def main():
      for k in vals:vals[k].append(d[k])
    assert sum(len(x) for x in vals['index'])==len(items)
    np.savez_compressed(f,**{k:np.concatenate(v) for k,v in vals.items()})
-  info={'source_sha256':digest(c/(args.mod+'_model_quantized.onnx')),'enriched_graph':digest(dest),'manifest_sha256':digest(c/'selected.json'),'batch':args.batch,'threads':args.threads,'providers':session.get_providers(),'ort':ort.__version__,'n':len(items),'elapsed_this_invocation':time.perf_counter()-clock,'process_elapsed_this_invocation':time.perf_counter()-start,'sha256':digest(out/f'{args.mod}-{sp}.npz')}
+  info={'source_sha256':digest(c/(args.mod+'_model_quantized.onnx')),'enriched_graph':digest(dest),'manifest_sha256':digest(c/'selected.json'),'batch':args.batch,'threads':args.threads,'providers':session.get_providers(),'offline':'seccomp-deny-socket-and-connect-before-ort-import; ORT telemetry disabled','ort':ort.__version__,'n':len(items),'elapsed_this_invocation':time.perf_counter()-clock,'process_elapsed_this_invocation':time.perf_counter()-start,'sha256':digest(out/f'{args.mod}-{sp}.npz')}
   (out/f'{args.mod}-{sp}.json').write_text(json.dumps(info,indent=2));print(sp,info,flush=True)
 if __name__=='__main__':main()

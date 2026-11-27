@@ -1,0 +1,30 @@
+{
+  "single_layer_logit_diff": 0.0,
+  "single_layer_input_grad_diff": 0.0,
+  "(8, 8)": {
+    "chunk_logits": 0.0,
+    "chunk_grad": 0.0,
+    "first_grad_max": 0.00013605363326067423,
+    "last_grad_max": 0.0,
+    "silent_grad": 0.0,
+    "cold_resume": 0.0,
+    "central_difference": 1.4966041172190594e-10,
+    "tick": 11
+  },
+  "(8, 12, 6)": {
+    "chunk_logits": 0.0,
+    "chunk_grad": 0.0,
+    "first_grad_max": 6.41765607725737e-07,
+    "last_grad_max": 0.0,
+    "silent_grad": 0.0,
+    "cold_resume": 0.0,
+    "central_difference": 6.281383917618917e-11,
+    "tick": 11
+  },
+  "local_inverse": {
+    "max_drive_error": 9.103828801926284e-15,
+    "carrier_simple_gate_error": 2.7755575615628914e-16,
+    "infeasible_rejected": true,
+    "gate_constant": 0.29352408221793214
+  }
+}
