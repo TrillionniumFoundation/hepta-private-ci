@@ -8,7 +8,6 @@ pub(crate) mod util;
 pub use cli::Cli;
 
 use anyhow::anyhow;
-use chrono::Utc;
 use codex_cloud_tasks_client::TaskStatus;
 use codex_git_utils::current_branch_name;
 use codex_git_utils::default_branch_name;
@@ -296,7 +295,7 @@ fn parse_task_id(raw: &str) -> anyhow::Result<codex_cloud_tasks_client::TaskId> 
 #[derive(Clone, Debug)]
 struct AttemptDiffData {
     placement: Option<i64>,
-    created_at: Option<chrono::DateTime<Utc>>,
+    created_at: Option<codex_utils_time::Timestamp>,
     diff: String,
 }
 
@@ -427,7 +426,7 @@ fn summary_line(summary: &codex_cloud_tasks_client::DiffSummary, colorize: bool)
 
 fn format_task_status_lines(
     task: &codex_cloud_tasks_client::TaskSummary,
-    now: chrono::DateTime<Utc>,
+    now: codex_utils_time::Timestamp,
     colorize: bool,
 ) -> Vec<String> {
     let mut lines = Vec::new();
@@ -495,7 +494,7 @@ fn format_task_status_lines(
 fn format_task_list_lines(
     tasks: &[codex_cloud_tasks_client::TaskSummary],
     base_url: &str,
-    now: chrono::DateTime<Utc>,
+    now: codex_utils_time::Timestamp,
     colorize: bool,
 ) -> Vec<String> {
     let mut lines = Vec::new();
@@ -516,7 +515,7 @@ async fn run_status_command(args: crate::cli::StatusCommand) -> anyhow::Result<(
     let task_id = parse_task_id(&args.task_id)?;
     let summary =
         codex_cloud_tasks_client::CloudBackend::get_task_summary(&*ctx.backend, task_id).await?;
-    let now = Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let colorize = supports_color::on(SupportStream::Stdout).is_some();
     for line in format_task_status_lines(&summary, now, colorize) {
         println!("{line}");
@@ -575,7 +574,7 @@ async fn run_list_command(args: crate::cli::ListCommand) -> anyhow::Result<()> {
         println!("No tasks found.");
         return Ok(());
     }
-    let now = Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let colorize = supports_color::on(SupportStream::Stdout).is_some();
     for line in format_task_list_lines(&page.tasks, &ctx.base_url, now, colorize) {
         println!("{line}");
@@ -2231,7 +2230,7 @@ mod tests {
 
     #[test]
     fn format_task_status_lines_with_diff_and_label() {
-        let now = Utc::now();
+        let now = codex_utils_time::Timestamp::now();
         let task = TaskSummary {
             id: TaskId("task_1".to_string()),
             title: "Example task".to_string(),
@@ -2260,7 +2259,7 @@ mod tests {
 
     #[test]
     fn format_task_status_lines_without_diff_falls_back() {
-        let now = Utc::now();
+        let now = codex_utils_time::Timestamp::now();
         let task = TaskSummary {
             id: TaskId("task_2".to_string()),
             title: "No diff task".to_string(),
@@ -2285,7 +2284,7 @@ mod tests {
 
     #[test]
     fn format_task_list_lines_formats_urls() {
-        let now = Utc::now();
+        let now = codex_utils_time::Timestamp::now();
         let tasks = vec![
             TaskSummary {
                 id: TaskId("task_1".to_string()),

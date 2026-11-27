@@ -1,0 +1,61 @@
+{
+  "source_commit": "e9c9ad7782f736cde0981c0c6a18f5212cfa93cb",
+  "rustc": "1.96.0 (ac68faa20 2026-05-25)",
+  "scope": "Actual repository source through an isolated 56-package manifest; not full workspace or native Windows execution",
+  "linux_initial": {
+    "executed": 8,
+    "passed": 8,
+    "skipped": 0,
+    "test_seconds": 0.028,
+    "build_seconds": 14.27,
+    "exit_code": 0
+  },
+  "linux_capacity_added": {
+    "executed": 1,
+    "passed": 1,
+    "filtered_out": 8,
+    "test_seconds": 0.706,
+    "exit_code": 0
+  },
+  "windows_check": {
+    "target": "x86_64-pc-windows-msvc",
+    "command_kind": "cargo check --tests",
+    "exit_code": 0,
+    "wall_seconds": 0.82,
+    "native_tests_executed": 0
+  },
+  "clippy": {
+    "command_kind": "just fix --manifest-path isolated manifest --allow-no-vcs",
+    "exit_code": 0,
+    "wall_seconds": 6.71,
+    "source_edits": 0
+  },
+  "source_sha256": {
+    "codex-rs/hepta-bao-adapter/Cargo.toml": "5ca154dbb3e5b0f1f21df36b2e1984e9a57b8549d5f3c5a41b8605e51ee0d191",
+    "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs": "c786b3664bd0f70637ea2f511492386b6bb83f912dfecc27cee74ed94330549d",
+    "codex-rs/hepta-bao-adapter/src/lease_storage.rs": "329d0c78ccb714b35ad4b71f38c48c2a0aa0435866c08d73b2b16a5b729ef75f",
+    "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs": "5c6fa56861f6317a8d9ce39a6952170587038f69b678602812d5f9d9a2d765e2",
+    "codex-rs/utils/path-utils/src/windows_private.rs": "0360fae1b0f2123ad455e8ccfeb0eaab073c0654e1d2681778f964e5b563206d",
+    "codex-rs/utils/path-utils/src/windows_private_handles.rs": "fcabf668a4918dbe92dfea88ae330a918feb2828d9039515df3b26bde825c8ae",
+    "codex-rs/utils/path-utils/src/windows_private_security.rs": "330a608d42d33a65557fd25fd5dfe4cf1807a164ba7fd76362a0b5620e0eca2c"
+  },
+  "evidence_sha256": {
+    "linux-tests.txt": "35118a2133a60911fe113a3311cf618b799f65ead4ccb4aa8e32b98d33e4b3a3",
+    "capacity-test.txt": "b8f94bc631b1333345692521179fac9e973514b67e94582316de8d0529b857bc",
+    "windows-check.txt": "1fa94d74a175eef579d4a7090f3e629661770120e54a8a286f1980e18eee8c8f",
+    "clippy.txt": "d7e0c56b286ae89c7ece1ae3eb528912b17dfd5847fad94c71fc8767939e2a86"
+  },
+  "isolated_lock_sha256": "9ebc836756d0a88d2928f0a510c77e0cb957c381f29758788e236d2f7be70a6c",
+  "dependency_versions_matching_workspace": {
+    "serde": "1.0.229",
+    "serde_json": "1.0.154",
+    "tempfile": "3.27.0",
+    "windows-sys(native backend)": "0.52.0"
+  },
+  "remaining": [
+    "Full workspace consumers on final combined dependency locks",
+    "All 11 lease lifecycle tests on native Windows",
+    "PrivateDirectory native fixtures and actual directory flush behavior",
+    "Power-loss qualification is not claimed"
+  ]
+}

@@ -17,6 +17,7 @@ use codex_protocol::config_types::ModeKind;
 use codex_protocol::config_types::Settings;
 use codex_protocol::items::TurnItem;
 use codex_protocol::models::PermissionProfile;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::openai_models::ModelInfo;
 use codex_protocol::openai_models::ModelsResponse;
 use codex_protocol::protocol::AskForApproval;
@@ -5298,11 +5299,34 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         instruction_fragments(&requests[3]),
         vec![old_fragment.clone(), replacement_fragment]
     );
+    // Local history retains the complete persisted items, including their annotations.
+    let resumed_history = serde_json::to_value(
+        codex_core::test_support::active_context_snapshot(&resumed.codex)
+            .await
+            .items,
+    )?;
+    assert_eq!(
+        resumed_history
+            .as_array()
+            .and_then(|items| items.get(..replacement_history.len())),
+        Some(replacement_history.as_slice()),
+        "remote-v2 cold resume should retain persisted replacement history and local metadata"
+    );
+
+    // The localhost provider receives a request copy without internal metadata.
+    // Use the existing typed projection; preserve every item, ID, field and position otherwise.
+    let replacement_history_for_wire = replacement_history
+        .iter()
+        .map(|item| {
+            let item: ResponseItem = serde_json::from_value(item.clone())?;
+            serde_json::to_value(responses::strip_metadata(item))
+        })
+        .collect::<serde_json::Result<Vec<_>>>()?;
     let resumed_input = requests[3].input();
     assert_eq!(
         resumed_input.get(..replacement_history.len()),
-        Some(replacement_history.as_slice()),
-        "remote-v2 cold resume should replay persisted replacement history verbatim"
+        Some(replacement_history_for_wire.as_slice()),
+        "remote-v2 cold resume should replay the complete replacement history wire projection"
     );
     let post_compact_input = requests[2].input();
     assert_eq!(

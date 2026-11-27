@@ -2290,7 +2290,7 @@ fn remote_plugin_summary_to_info(summary: RemoteCatalogPluginSummary) -> PluginS
         installed: summary.installed,
         installed_at: summary
             .installed_at
-            .map(|installed_at| installed_at.timestamp()),
+            .map(|installed_at| installed_at.epoch_seconds()),
         enabled: summary.enabled,
         install_policy: summary.install_policy,
         install_policy_source: summary.install_policy_source,

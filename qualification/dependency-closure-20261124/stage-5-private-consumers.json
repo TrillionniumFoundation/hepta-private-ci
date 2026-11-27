@@ -1,0 +1,240 @@
+{
+  "recorded_utc": "2026-11-24T18:15:45.804792+00:00",
+  "previous_main_head": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+  "frozen_probe_head": "051be3cda3aad7a145830884a45999f2e549278f",
+  "source_head_before_receipt_commit": "121e4e593d03bf5d7c490c95bc1e45d41adecc15",
+  "source_commits_since_probe": [
+    "c63be7c654bc8f60e31dba0bbcad921c0b2ddbf4",
+    "cac02eb92fecfe81ee41c19272ef440c292fb4cf",
+    "ff57ed3a1a9689abd7c462dbb7c9eac7028e592d",
+    "3cd72b1e7e764a245eaed6858664edf106fafafa",
+    "33280e769a1d4682fb5abcdb9eac2baddc8add61",
+    "378ae47b36e6c3fc12472dc639b723754e9c9bf7",
+    "e8c420ca48b8061ddb9a4e09b9100cc32141b3e5",
+    "0e1629be9fa08c6a1edf0c70d7658a3a6c483485",
+    "a308cb346f342ad4cd90111e59f9f1bb83985948",
+    "28b5dc9ca036303e11cbf21688a9428b8ff6707a",
+    "76150ed04af64ae3dc16a0de6e6f2e49302616c5",
+    "26c80078b48130a3a40b48a53c75045e18c09d55",
+    "ccc36380f98ef6834ac1c4f22cd4b5b56f1ffe73",
+    "121e4e593d03bf5d7c490c95bc1e45d41adecc15"
+  ],
+  "scope": "Integrate explicit private SQLite consumers, production-matching native probe features, actual failure corrections, and source-bound public qualification evidence. No merge or deployment.",
+  "successful_checks": [
+    {
+      "name": "fmt",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "seconds": 0.22,
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "name": "bazel-lock-update",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "seconds": 5.467,
+      "bytes": 808,
+      "sha256": "a7c1b50cb99dfe311767451c460d1625ebb2aaf19a4bf83d5ae90b0633ade7d9"
+    },
+    {
+      "name": "bazel-lock-check",
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "seconds": 3.756,
+      "bytes": 923,
+      "sha256": "0e6b3440774d43cba75c02de323b33eb40e62c225e57c06263b59f5896dfe51a"
+    },
+    {
+      "name": "actionlint",
+      "command": [
+        "actionlint",
+        "-shellcheck=",
+        "-pyflakes=",
+        ".github/workflows/hepta-windows-durable-fixtures.yml",
+        ".github/workflows/matrix-store-compatibility.yml"
+      ],
+      "exit_code": 0,
+      "seconds": 0.009,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "blob-size-corrected",
+      "command": [
+        "python",
+        "scripts/check_blob_size.py",
+        "--base",
+        "07c8994f2402a58f6b59eb648c801fc40c6e2b96",
+        "--head",
+        "HEAD",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exit_code": 0,
+      "seconds": 7.98,
+      "bytes": 143744,
+      "sha256": "d628009600a1931540bc0ff10d6f1b942bc62596040b2cf5b9bed08a4e51f60c"
+    },
+    {
+      "name": "cargo-fmt-all-check",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 18.091,
+      "bytes": 44944,
+      "sha256": "12217a5cc188a17e3ee197fe3b53ec0b019840d3df9a3092385228c22076ee5d"
+    }
+  ],
+  "metadata_msvc_target": [
+    {
+      "name": "production",
+      "exit_code": 0,
+      "seconds": 4.751,
+      "metadata_sha256": "90f2c279a43fa63817a1aa95af6571cbcdfe258b6df5c8688745fe5d099dc6bf",
+      "metadata_bytes": 7778062,
+      "packages": 1387,
+      "workspace_members": 194,
+      "sqlite": {
+        "version": "0.39.1",
+        "source": null,
+        "manifest_path": "codex-rs/third_party/libsqlite3-sys-0.39.1/Cargo.toml",
+        "features": [
+          "bundled",
+          "bundled_bindings",
+          "cc",
+          "default",
+          "min_sqlite_version_3_45_3",
+          "pkg-config",
+          "vcpkg"
+        ]
+      }
+    },
+    {
+      "name": "probe",
+      "exit_code": 0,
+      "seconds": 0.563,
+      "metadata_sha256": "7f362df1f986bf8447f51ecf8c3bd6077d97d01567118fe68595b4fff4b5e183",
+      "metadata_bytes": 36356,
+      "packages": 10,
+      "workspace_members": 1,
+      "sqlite": {
+        "version": "0.39.1",
+        "source": null,
+        "manifest_path": "codex-rs/third_party/libsqlite3-sys-0.39.1/Cargo.toml",
+        "features": [
+          "bundled",
+          "bundled_bindings",
+          "cc",
+          "default",
+          "min_sqlite_version_3_45_3",
+          "pkg-config",
+          "vcpkg"
+        ]
+      }
+    }
+  ],
+  "native_probe_lock_packages": 17,
+  "native_probe_lock_sha256": "33016574d347160178193a142d149e1fb45fb61c762f164394d3c5df935b5b87",
+  "production_lock_hashes": {
+    "codex-rs/Cargo.lock": "0596dc4ca12f87645a6ca9893686e9fe82075b2a256eef2a05c4bb2e1d377622",
+    "MODULE.bazel.lock": "68c55ec19a77ed3009cae644780c9e1cd448cf0ca7ebc14515f0d05a74a62325",
+    "codex-rs/deny.toml": "de3b77f8b4639bdd7fb188048b09757cb6dd06ae01ecb10998537424c3c240f0"
+  },
+  "production_locks_and_policy_unchanged_since_probe": true,
+  "cargo_deny": {
+    "version": "0.19.0",
+    "exit_code": 0,
+    "seconds": 7.865,
+    "advisory_database_commit": "1d328b6bb9f2f350bf65c1c81ab68781cb9e018a",
+    "preexisting_advisory_exceptions_unchanged": 9,
+    "summary": {
+      "advisories": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 18,
+        "warnings": 3
+      },
+      "bans": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 22,
+        "warnings": 116
+      },
+      "licenses": {
+        "errors": 0,
+        "helps": 1351,
+        "notes": 0,
+        "warnings": 1
+      },
+      "sources": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 6,
+        "warnings": 1
+      }
+    },
+    "log_sha256": "3c103d307d55edfdd6422f6ece3a8f219d4667459774428ec9ef43859c58648e"
+  },
+  "codespell": {
+    "codespell_version": "2.4.3",
+    "command": [
+      "python",
+      "-m",
+      "codespell_lib",
+      "--count",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "scope": "Original Actions CLI, active repository configuration and tracked source preserved. Temporarily detach and finally restore the agent-created untracked formatter environment, which is absent in the Actions checkout.",
+    "exit_code": 0,
+    "seconds": 11.022,
+    "log_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "log_bytes": 2,
+    "tracked_status_unchanged": true,
+    "formatter_environment_restored": true,
+    "output": "0\n"
+  },
+  "configuration_attempts": [
+    "Initial blob command omitted its required --allowlist argument and exited 2 before inspection. The unchanged workflow command with its existing allowlist and 512000-byte threshold subsequently passed.",
+    "The first exact Codespell command found only local formatter package metadata outside the Git checkout inputs. Passing every tracked path explicitly was not equivalent to recursive directory pruning and reported upstream paths already excluded by repository configuration. The final original recursive CLI passed after temporarily detaching, then restoring, the untracked formatter environment. No repository ignore file, skip rule, or workflow was changed."
+  ],
+  "source_format_scope": "All authored changes since the probe pass git diff --check. Full cargo fmt --all --check passed. Verbatim upstream whitespace exceptions in the earlier source import remain documented in stage-5-native-probe.json; no blanket base-to-head whitespace pass is claimed.",
+  "actual_qualification": {
+    "keyring_fb00": "11 client steps, 49 encrypted sessions, 9/9 locked workspace secrets tests, 0 skipped. Entire dedicated Linux workflow passed; exact source and artifact are in qualification/dependency-native-results-20261124.",
+    "matrix_fb00": "Old create/reopen, new encrypted upgrade/reopen and wrong-passphrase rejection passed. The subsequent consumer test build failed E0615 before any test execution; SDK 0.19 fixtures corrected in this stage require the new-head CI.",
+    "windows_ebe": "87 unique cases: 57 passed, 30 failed; 117 attempts including retries. Exact logs and independent verifier are retained. Canonical-path failures were fixed; remaining owner and locked-ledger cases motivate this stage.",
+    "windows_probe051": "14 private primitives and 2 registry cases passed. The C probe failed during upstream build-script compilation, before native tests, because its standalone default feature set was incomplete. It was cancelled after evidence preservation to stop duplicate consumer builds.",
+    "corrected_probe_linux": "Actual libsqlite3-sys library and bundled Linux C check passed with unchanged source and pinned probe graph; parent receipt records 9.299 seconds and exact compiled archive. This is not Windows C qualification."
+  },
+  "pending_qualification": [
+    "Eight real Windows C owner-VFS cases with the corrected seven-feature graph.",
+    "Two SQLx worker cases and private state/cognitive consumers, including shared memory and cold-image recovery.",
+    "The four locked-ledger tests with the owner-file-object observation fixture.",
+    "Matrix SDK/store/protocol consumer tests after the field-to-method fixture migration.",
+    "All required normal CI lanes on the final integrated source head."
+  ],
+  "preserved_boundaries": [
+    "Stock/default SQLite VFS remains unchanged; the new VFS is explicit per consumer.",
+    "No existing-file ACL repair, process token/default-DACL mutation, source-identity fallback, signed authorization relaxation, or new security advisory ignore.",
+    "The separate Windows execution containment draft #7070 is not included.",
+    "Large-asset exceptions remain exactly the two reviewed SQLite amalgamation C/header paths."
+  ]
+}

@@ -38,7 +38,7 @@ impl RecoveredCognitiveReadOnly {
 }
 
 impl CognitiveStore {
-    /// Admit a Unix cold database as a read-only historical image, without
+    /// Admit a private Unix or local NTFS cold database as a read-only historical image, without
     /// opening the source path in SQLite or modifying source files.
     ///
     /// The host MUST supply its independently retained/authenticated CURRENT
@@ -52,8 +52,9 @@ impl CognitiveStore {
     /// Unused physical bytes are not authority and are not covered by that hash.
     /// A mismatch never falls back to an older cut or ordinary store opening.
     ///
-    /// This does NOT complete `open_with_recovery`: writer restoration still
-    /// requires a descriptor-backed VFS and an independently current writer fence.
+    /// This image grants no writer capability. Writable recovery is a separate
+    /// candidate-generation ceremony with an independently current writer fence;
+    /// reopening the suspect source through a filename remains unavailable.
     pub async fn open_read_only_recovery(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,

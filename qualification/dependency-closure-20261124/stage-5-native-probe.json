@@ -1,0 +1,206 @@
+{
+  "recorded_utc": "2026-11-24T17:36:16.351955+00:00",
+  "previous_main_head": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+  "source_head_before_lock_and_receipt_commit": "a9298f0aee5f6b04c16e59d1bdbfa28713bacf5d",
+  "source_import_commit": "88d24f166e56ef8406678425ad30cb16736512db",
+  "source_commits": [
+    "88d24f166e56ef8406678425ad30cb16736512db",
+    "0ad3c914bfac8f2f33bde2054313c4daf0c96f48",
+    "c13005ecf50a28afee6169882359bef8bf0174d0",
+    "a98a20cef0b32f5796f491e8e0fc918320947a38",
+    "cca8a88663593aeaf1def3946bcf0ed1f0268a31",
+    "82fdcff29c2def4135b4ace70d15e7e130bfd352",
+    "94d832315da93fb388bf029547318c83f118edaa",
+    "bc5dfb79194bd6a5e70edff6271edb9c72de06cd",
+    "7b1d2aca52e8263a122839b84744a64cbbb7c5df",
+    "8db7c1118ed97186ff3e9311e0a061d70621f04a",
+    "a9298f0aee5f6b04c16e59d1bdbfa28713bacf5d"
+  ],
+  "scope": "Native owner-VFS source and a separately locked eight-test Windows probe. SQLx private consumer selection is a later source stage, not implemented or qualified by this receipt.",
+  "toolchain": "Rust 1.96.0",
+  "cargo_metadata": {
+    "production_exit": 0,
+    "production_workspace_members": 194,
+    "production_packages": 1532,
+    "probe_locked_offline_windows_exit": 0,
+    "probe_locked_packages": 15,
+    "probe_windows_metadata_packages": 8,
+    "probe_workspace_members": 1
+  },
+  "cargo_deny": {
+    "version": "0.19.0",
+    "exit_code": 0,
+    "command": [
+      "cargo-deny",
+      "--locked",
+      "--all-features",
+      "--format",
+      "json",
+      "check",
+      "--hide-inclusion-graph",
+      "--show-stats",
+      "--disable-fetch"
+    ],
+    "advisory_database_commit": "1d328b6bb9f2f350bf65c1c81ab68781cb9e018a",
+    "unchanged_preexisting_advisory_exceptions": 9,
+    "summary": {
+      "advisories": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 18,
+        "warnings": 3
+      },
+      "bans": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 22,
+        "warnings": 116
+      },
+      "licenses": {
+        "errors": 0,
+        "helps": 1351,
+        "notes": 0,
+        "warnings": 1
+      },
+      "sources": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 6,
+        "warnings": 1
+      }
+    },
+    "log_sha256": "3c103d307d55edfdd6422f6ece3a8f219d4667459774428ec9ef43859c58648e"
+  },
+  "successful_checks": [
+    {
+      "name": "bazel-lock-update-fifth-bounded",
+      "exit_code": 0,
+      "seconds": 7.327,
+      "log_sha256": "80c4b28c67410551e875325585b7542c4a6c39143ae41de38a01f644abb0fae2",
+      "bytes": 2147
+    },
+    {
+      "name": "bazel-lock-check-fifth-bounded",
+      "exit_code": 0,
+      "seconds": 4.275,
+      "log_sha256": "489933065b34728fc8679ca6432595ee7dca43e93b18e1e8c31d926dc30d6e51",
+      "bytes": 923
+    },
+    {
+      "name": "workflow-actionlint-fifth-probe",
+      "exit_code": 0,
+      "seconds": 0.028,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "name": "cargo-fmt-fifth-probe",
+      "exit_code": 0,
+      "seconds": 18.821,
+      "log_sha256": "a9c355ac191e05cf051c87fc4cb2eedec943414fba51b26edfafd610bafe8230",
+      "bytes": 44414
+    }
+  ],
+  "lock_hashes": {
+    "codex-rs/Cargo.lock": "0596dc4ca12f87645a6ca9893686e9fe82075b2a256eef2a05c4bb2e1d377622",
+    "MODULE.bazel.lock": "68c55ec19a77ed3009cae644780c9e1cd448cf0ca7ebc14515f0d05a74a62325",
+    "codex-rs/deny.toml": "de3b77f8b4639bdd7fb188048b09757cb6dd06ae01ecb10998537424c3c240f0"
+  },
+  "lock_changes": "The libsqlite3-sys 0.39.1 package now resolves to the pinned local source and drops its registry source/checksum. Remove the unused imbl 6.1.0 patch marker; no selected third-party version changes. Bazel metadata tracks the corresponding local source.",
+  "retired_unused_imbl_patch": {
+    "selected_version": "7.0.2",
+    "direct_consumers": [
+      "eyeball-im 0.9.1",
+      "matrix-sdk 0.19.1",
+      "matrix-sdk-common 0.19.1"
+    ],
+    "scope": "The obsolete 6.1.0 patch registration and unused lock entry are removed after the real consumers selected upstream 7.0.2. Historical vendor source and provenance remain; no security fix is suppressed."
+  },
+  "bazel_input_proof": {
+    "exit_code": 0,
+    "seconds": 4.275,
+    "stdout_sha256": "c8190f04aa482b7138c10e12d16550b933a14560ee1e6d873605c388d768708b",
+    "stderr_tail": "$TEST_TMPDIR defined, some defaults will be overridden\nOpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.\nINFO: Invocation ID: a54e5203-d4ee-4c7d-8499-e173a2859d53\nWARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nWARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off\nLoading: 0 packages loaded\nLoading: 0 packages loaded\n    currently loading: @@rules_rs++crate+crates__libsqlite3-sys-0.39.1//\n",
+    "source_inputs": [
+      "@@rules_rs++crate+crates__libsqlite3-sys-0.39.1//:sqlite3/hepta_owner_vfs.c",
+      "@@rules_rs++crate+crates__libsqlite3-sys-0.39.1//:sqlite3/sqlite3.c",
+      "@@rules_rs++crate+crates__libsqlite3-sys-0.39.1//:sqlite3/sqlite3.h"
+    ],
+    "scope": "Direct build-script runfiles data labels, not a compilation or recursive dependency traversal."
+  },
+  "bazel_infrastructure_failures": [
+    "An initial recursive dependency query loaded LLVM packages and ended with an abrupt server connection reset, exit 37; no compilation or source-input pass is claimed.",
+    "A later daemon-mode lock update also ended with a server connection reset, exit 37. The unchanged just update/check recipes then passed using a local batch-mode 512 MiB JVM wrapper with the same trust store. No repository gate or workflow was changed for this resource setting."
+  ],
+  "asset_policy": {
+    "threshold_bytes": 512000,
+    "added_exact_paths": [
+      "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.c",
+      "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.h"
+    ],
+    "source_pin_receipt": "qualification/ci-remediation/windows-sqlite-owner-vfs-20261124/large-assets.json",
+    "scope": "Only the existing exact-path large build-asset exception mechanism is used. The checker and all other audited paths remain unchanged."
+  },
+  "format_scope": {
+    "head_before_lock_receipt": "a9298f0aee5f6b04c16e59d1bdbfa28713bacf5d",
+    "base": "ebe2737b4014c9b45ad995adccc53eb71e718f3d",
+    "authored_commit_checks": [
+      {
+        "commit": "0ad3c914bfac8f2f33bde2054313c4daf0c96f48",
+        "exit_code": 0
+      },
+      {
+        "commit": "c13005ecf50a28afee6169882359bef8bf0174d0",
+        "exit_code": 0
+      },
+      {
+        "commit": "a98a20cef0b32f5796f491e8e0fc918320947a38",
+        "exit_code": 0
+      },
+      {
+        "commit": "cca8a88663593aeaf1def3946bcf0ed1f0268a31",
+        "exit_code": 0
+      },
+      {
+        "commit": "82fdcff29c2def4135b4ace70d15e7e130bfd352",
+        "exit_code": 0
+      },
+      {
+        "commit": "94d832315da93fb388bf029547318c83f118edaa",
+        "exit_code": 0
+      },
+      {
+        "commit": "bc5dfb79194bd6a5e70edff6271edb9c72de06cd",
+        "exit_code": 0
+      },
+      {
+        "commit": "7b1d2aca52e8263a122839b84744a64cbbb7c5df",
+        "exit_code": 0
+      },
+      {
+        "commit": "8db7c1118ed97186ff3e9311e0a061d70621f04a",
+        "exit_code": 0
+      },
+      {
+        "commit": "a9298f0aee5f6b04c16e59d1bdbfa28713bacf5d",
+        "exit_code": 0
+      }
+    ],
+    "working_tree_diff_check": 0,
+    "full_range_exit": 2,
+    "full_range_log_sha256": "3e992f853a4dc2cd68a94977d0f9743230bb507e00ffefd904b31319eaae7e85",
+    "full_range_diagnostic_paths": 38,
+    "scope": "Every authored commit and the uncommitted manifest/lock edits pass. The full range retains whitespace in the separately pinned verbatim upstream source import; no blanket full-range pass is claimed."
+  },
+  "native_probe": {
+    "expected_tests": 8,
+    "actual_native_execution_before_publication": 0,
+    "production_sqlx_consumers_qualified": false,
+    "different_account_impersonation_qualified": false,
+    "ancestor_confinement_or_current_cut_fence_qualified": false,
+    "timeout_retry_policy": "Same 30-second slow timeout, terminate-after 2 and one retry as the repository default, checked by the receipt driver. No zero-test or partial-pass acceptance.",
+    "source_and_dependency_scope": "The probe has one standalone workspace member, depends on the actual local sys crate with bundled support, and includes the actual authored tests by path. The real vendor build.rs compiles the C extension on Windows."
+  },
+  "current_main_native_evidence": "At ebe273, 14 primitives produced 13 passes and the known default-owner fixture failure; the canonical-name case passed natively and registry was 2/2. Owner-aware fixture controls are new in this source and still need native execution.",
+  "non_goals": "No default SQLite VFS switch, process token/default-DACL mutation, existing-file ACL repair, advisory exception, license policy relaxation, signed authorization change, merge, or deployment."
+}

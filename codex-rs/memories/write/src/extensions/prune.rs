@@ -1,17 +1,17 @@
 use crate::memory_extensions_root;
-use chrono::DateTime;
-use chrono::Duration;
-use chrono::NaiveDateTime;
-use chrono::Utc;
 use std::path::Path;
 use tracing::warn;
 
 pub async fn prune_old_extension_resources(memory_root: &Path) {
-    prune_old_extension_resources_with_now(memory_root, Utc::now()).await
+    prune_old_extension_resources_with_now(memory_root, codex_utils_time::Timestamp::now()).await
 }
 
-async fn prune_old_extension_resources_with_now(memory_root: &Path, now: DateTime<Utc>) {
-    let cutoff = now - Duration::days(crate::extension_resources::RETENTION_DAYS);
+async fn prune_old_extension_resources_with_now(
+    memory_root: &Path,
+    now: codex_utils_time::Timestamp,
+) {
+    let cutoff =
+        now - codex_utils_time::SignedDuration::days(crate::extension_resources::RETENTION_DAYS);
     let extensions_root = memory_extensions_root(memory_root);
     let mut extensions = match tokio::fs::read_dir(&extensions_root).await {
         Ok(extensions) => extensions,
@@ -87,12 +87,12 @@ async fn prune_old_extension_resources_with_now(memory_root: &Path, now: DateTim
     }
 }
 
-fn resource_timestamp(file_name: &str) -> Option<DateTime<Utc>> {
+fn resource_timestamp(file_name: &str) -> Option<codex_utils_time::Timestamp> {
     let timestamp = file_name.get(..19)?;
     let naive =
-        NaiveDateTime::parse_from_str(timestamp, crate::extension_resources::FILENAME_TS_FORMAT)
+        codex_utils_time::parse_utc(timestamp, crate::extension_resources::FILENAME_TS_FORMAT)
             .ok()?;
-    Some(DateTime::from_naive_utc_and_offset(naive, Utc))
+    Some(naive)
 }
 
 #[cfg(test)]

@@ -3,6 +3,7 @@ use crate::transport::remote_control::protocol::normalize_remote_control_url;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use std::time::SystemTime;
+use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
 use tokio::sync::oneshot;
@@ -25,7 +26,8 @@ fn assert_transient_timeout(err: &io::Error, expected_status: Option<StatusCode>
             request_error.status,
             request_error.is_transient(err.kind()),
         ),
-        (ErrorKind::TimedOut, expected_status, true)
+        (ErrorKind::TimedOut, expected_status, true),
+        "actual request failure: {err:?}"
     );
 }
 
@@ -42,6 +44,22 @@ async fn timed_out_request(partial_response: Option<&'static [u8]>) -> io::Error
     let (request_done_tx, request_done_rx) = oneshot::channel();
     let server_task = tokio::spawn(async move {
         let (mut stream, _) = listener.accept().await.expect("request should connect");
+        // A response before the client has sent its request is a protocol error,
+        // not a stalled response body. Keep the original request deadline.
+        let mut request = [0_u8; 4096];
+        let mut received = 0;
+        while !request[..received]
+            .windows(/*size*/ 4)
+            .any(|bytes| bytes == b"\r\n\r\n")
+        {
+            assert!(received < request.len(), "bounded fixture request headers");
+            let count = stream
+                .read(&mut request[received..])
+                .await
+                .expect("request headers should arrive before the response");
+            assert_ne!(count, 0, "request must precede the partial response");
+            received += count;
+        }
         if let Some(partial_response) = partial_response {
             stream
                 .write_all(partial_response)

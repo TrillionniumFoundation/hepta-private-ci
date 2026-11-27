@@ -6,8 +6,6 @@
 use std::fmt;
 use std::str::FromStr;
 
-use chrono::DateTime;
-use chrono::Utc;
 use schemars::JsonSchema;
 use schemars::r#gen::SchemaGenerator;
 use schemars::schema::InstanceType;
@@ -203,7 +201,7 @@ pub struct ModelUpgrade {
     )]
     #[schemars(with = "Option<String>")]
     #[ts(type = "string", optional)]
-    pub retirement_at: Option<DateTime<Utc>>,
+    pub retirement_at: Option<codex_utils_time::Timestamp>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, TS, JsonSchema, PartialEq, Eq)]
@@ -661,12 +659,12 @@ pub struct ModelInfoUpgrade {
     )]
     #[schemars(with = "Option<String>")]
     #[ts(type = "string", optional)]
-    pub retirement_at: Option<DateTime<Utc>>,
+    pub retirement_at: Option<codex_utils_time::Timestamp>,
 }
 
 fn deserialize_optional_rfc3339_timestamp<'de, D>(
     deserializer: D,
-) -> Result<Option<DateTime<Utc>>, D::Error>
+) -> Result<Option<codex_utils_time::Timestamp>, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -674,8 +672,8 @@ where
     Ok(value
         .as_ref()
         .and_then(serde_json::Value::as_str)
-        .and_then(|value| DateTime::parse_from_rfc3339(value).ok())
-        .map(|value| value.with_timezone(&Utc)))
+        .and_then(|value| codex_utils_time::OffsetTimestamp::parse_rfc3339(value).ok())
+        .map(codex_utils_time::OffsetTimestamp::to_utc))
 }
 
 impl From<&ModelUpgrade> for ModelInfoUpgrade {
@@ -1608,7 +1606,7 @@ mod tests {
                 .upgrade
                 .as_ref()
                 .and_then(|upgrade| upgrade.retirement_at.as_ref())
-                .map(DateTime::timestamp),
+                .map(codex_utils_time::Timestamp::epoch_seconds),
             None
         );
 
@@ -1629,7 +1627,7 @@ mod tests {
             null.upgrade
                 .as_ref()
                 .and_then(|upgrade| upgrade.retirement_at.as_ref())
-                .map(DateTime::timestamp),
+                .map(codex_utils_time::Timestamp::epoch_seconds),
             None
         );
 
@@ -1652,7 +1650,7 @@ mod tests {
                 .upgrade
                 .as_ref()
                 .and_then(|upgrade| upgrade.retirement_at.as_ref())
-                .map(DateTime::timestamp),
+                .map(codex_utils_time::Timestamp::epoch_seconds),
             Some(1_893_456_000)
         );
 
@@ -1676,7 +1674,7 @@ mod tests {
                 .upgrade
                 .as_ref()
                 .and_then(|upgrade| upgrade.retirement_at.as_ref())
-                .map(DateTime::timestamp),
+                .map(codex_utils_time::Timestamp::epoch_seconds),
             None
         );
     }

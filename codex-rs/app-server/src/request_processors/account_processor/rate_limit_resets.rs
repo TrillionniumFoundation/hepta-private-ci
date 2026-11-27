@@ -165,7 +165,7 @@ fn rate_limit_reset_credit_from_backend(
 }
 
 fn rate_limit_reset_credit_timestamp(timestamp: &str) -> Result<i64, String> {
-    DateTime::parse_from_rfc3339(timestamp)
-        .map(|timestamp| timestamp.timestamp())
+    codex_utils_time::OffsetTimestamp::parse_rfc3339(timestamp)
+        .map(|timestamp| timestamp.epoch_seconds())
         .map_err(|err| format!("failed to parse timestamp `{timestamp}`: {err}"))
 }

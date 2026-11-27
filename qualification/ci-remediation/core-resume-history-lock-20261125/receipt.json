@@ -1,0 +1,154 @@
+{
+  "source_before_generated_lock": "20c3fa35c1381713e07fca23806e59acb314f589",
+  "cargo": {
+    "command": [
+      "cargo",
+      "metadata",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--format-version=1",
+      "--offline"
+    ],
+    "exit": 0,
+    "seconds": 2.561108822003007,
+    "before_sha256": "6fa28f49337cbd762666bb010cd070709b3bc96f41eeac07db5128bc9244a6a0",
+    "after_sha256": "6dfdacffab4e2a0382ccc09c4190065972520275b7b81db7a56983e30297b864",
+    "package_count_before": 1532,
+    "package_count_after": 1532,
+    "package_identities_unchanged": true,
+    "external_packages_changed": [],
+    "changes": [
+      {
+        "key": [
+          "core_test_support",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "core_test_support",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "assert_cmd",
+            "base64 0.22.1",
+            "codex-arg0",
+            "codex-config",
+            "codex-core",
+            "codex-exec-server",
+            "codex-extension-api",
+            "codex-features",
+            "codex-home",
+            "codex-hooks",
+            "codex-http-client",
+            "codex-login",
+            "codex-model-provider-info",
+            "codex-models-manager",
+            "codex-protocol",
+            "codex-thread-store",
+            "codex-utils-absolute-path",
+            "codex-utils-cargo-bin",
+            "codex-utils-path-uri",
+            "ctor 0.6.3",
+            "futures",
+            "notify",
+            "opentelemetry",
+            "opentelemetry_sdk",
+            "pretty_assertions",
+            "regex-lite",
+            "serde_json",
+            "shlex",
+            "similar",
+            "tempfile",
+            "tokio",
+            "tokio-tungstenite",
+            "tracing",
+            "tracing-opentelemetry",
+            "tracing-subscriber",
+            "walkdir",
+            "wiremock",
+            "zstd 0.13.4"
+          ]
+        },
+        "after": {
+          "name": "core_test_support",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "assert_cmd",
+            "base64 0.22.1",
+            "codex-arg0",
+            "codex-config",
+            "codex-core",
+            "codex-exec-server",
+            "codex-extension-api",
+            "codex-features",
+            "codex-history",
+            "codex-home",
+            "codex-hooks",
+            "codex-http-client",
+            "codex-login",
+            "codex-model-provider-info",
+            "codex-models-manager",
+            "codex-protocol",
+            "codex-thread-store",
+            "codex-utils-absolute-path",
+            "codex-utils-cargo-bin",
+            "codex-utils-path-uri",
+            "ctor 0.6.3",
+            "futures",
+            "notify",
+            "opentelemetry",
+            "opentelemetry_sdk",
+            "pretty_assertions",
+            "regex-lite",
+            "serde_json",
+            "shlex",
+            "similar",
+            "tempfile",
+            "tokio",
+            "tokio-tungstenite",
+            "tracing",
+            "tracing-opentelemetry",
+            "tracing-subscriber",
+            "walkdir",
+            "wiremock",
+            "zstd 0.13.4"
+          ]
+        }
+      }
+    ]
+  },
+  "bazel": {
+    "records": [
+      {
+        "label": "bazel-lock-update",
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit": 0,
+        "seconds": 6.1426862190055544,
+        "log_sha256": "80a588b67a3f928efce08e57b551b703a5dc02663fe252d89859dc20c8e8e44b"
+      },
+      {
+        "label": "bazel-lock-check",
+        "command": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit": 0,
+        "seconds": 2.965609172999393,
+        "log_sha256": "e575a803d4d21525435080810bea8ba24f0bc24ec2f2c0db7281da39d6aee608"
+      }
+    ],
+    "module_before_sha256": "295d10994d27413365b5e05d9d4d32db61ab21c43f9536ebde5ebcccdac61de3",
+    "module_after_sha256": "295d10994d27413365b5e05d9d4d32db61ab21c43f9536ebde5ebcccdac61de3"
+  },
+  "scope": {
+    "rust_compilations": 0,
+    "rust_tests": 0,
+    "external_package_changes": 0,
+    "only_new_direct_edge": "core_test_support -> codex-history",
+    "runtime_qualification_pending": true
+  }
+}

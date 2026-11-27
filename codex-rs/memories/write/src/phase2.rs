@@ -568,7 +568,7 @@ pub(super) fn get_watermark(
 ) -> i64 {
     latest_memories
         .iter()
-        .map(|memory| memory.source_updated_at.timestamp())
+        .map(|memory| memory.source_updated_at.epoch_seconds())
         .max()
         .unwrap_or(claimed_watermark)
         .max(claimed_watermark)

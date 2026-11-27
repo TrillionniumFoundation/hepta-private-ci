@@ -1,0 +1,37 @@
+{
+  "schema": "hepta_windows_acl_error_provenance_v1",
+  "original_head": "804ac018433ff08dfd195e93eed936394baf5053",
+  "original_run_id": 45458387224,
+  "original_job_id": 138713957842,
+  "original_job_bytes": 1651377,
+  "original_job_sha256": "1cfd2bd1344ec601b8095aaefa9ae70806df4193b772670047efbe3604d0ea5c",
+  "excerpt_lines_one_based": [
+    2964,
+    2984
+  ],
+  "excerpt_sha256": "e40f6f4a877c870b475f03b264d2566b7918563ab32202bedd82bcd13f9f9208",
+  "observed_root_error": "Access is denied. (os error 5)",
+  "observed_marker_exists": false,
+  "repair": "require root-cause std::io::Error with PermissionDenied and raw OS error 5, exact outer path context, and absent spawn marker",
+  "unchanged": [
+    "native named setter denied before spawn fixture",
+    "fresh WRITE_DAC handle denied",
+    "actual process launch attempted through original API",
+    "no process marker",
+    "process-test mutex poisoning behavior"
+  ],
+  "local_checks": {
+    "just_fmt": 0,
+    "git_diff_check": 0,
+    "original_git_diff_check_scope": "working tree before the raw excerpt was tracked; full range later identified original CRLF whitespace",
+    "raw_excerpt_preserved_in_archive": true
+  },
+  "native_qualification": "pending new source head; no Windows execution claimed",
+  "separate_open_blocker": "out-of-root deletion via WRITE_RESTRICTED token is not fixed by this fixture correction",
+  "excerpt_archive": {
+    "file": "original-native-excerpt.zip",
+    "member": "original-native-excerpt.log",
+    "bytes": 794,
+    "sha256": "6a17727b4ac637cdee449c1c935675b565a6ca0e98598c650c76bbec81ee9613"
+  }
+}

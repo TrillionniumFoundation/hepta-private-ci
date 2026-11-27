@@ -1176,6 +1176,8 @@ mod tests {
         let temp = TempDir::new().expect("temp");
         let fleet_root = temp.path().join("fleet");
         fs::create_dir_all(&fleet_root).expect("fleet root");
+        #[cfg(unix)]
+        let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet");
         let owner = AgentId::parse("00000000-0000-4000-8000-000000000981").expect("owner");
         let store = CognitiveStore::open(&fleet.layout().agent(&owner))
@@ -1335,7 +1337,7 @@ mod tests {
         )
         .expect("absolute sqlite home");
         let blocker_pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(store.path())
+            .open_private_durable_evidence_pool(store.path())
             .await
             .expect("open lock pool");
         let blocker = blocker_pool
@@ -1581,6 +1583,8 @@ mod tests {
         drop(store);
 
         let fleet_root = temp.path().join("fleet");
+        #[cfg(unix)]
+        let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet reopen");
         let owner = AgentId::parse("00000000-0000-4000-8000-000000000981").expect("owner");
         let reopened_store = CognitiveStore::open(&fleet.layout().agent(&owner))
@@ -1656,7 +1660,10 @@ mod tests {
         drop(input);
         drop(store);
 
-        let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet reopen");
+        let fleet_root = temp.path().join("fleet");
+        #[cfg(unix)]
+        let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
+        let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet reopen");
         let owner = AgentId::parse("00000000-0000-4000-8000-000000000981").expect("owner");
         let reopened_store = CognitiveStore::open(&fleet.layout().agent(&owner))
             .await
@@ -1940,7 +1947,10 @@ mod tests {
         drop(prepared_input);
         drop(store);
 
-        let fleet = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet reopen");
+        let fleet_root = temp.path().join("fleet");
+        #[cfg(unix)]
+        let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
+        let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet reopen");
         let reopened_store = CognitiveStore::open(&fleet.layout().agent(&owner))
             .await
             .expect("reopen store");

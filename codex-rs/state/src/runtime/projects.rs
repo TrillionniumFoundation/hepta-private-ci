@@ -182,7 +182,7 @@ impl StateRuntime {
             }
         }
         let id = Uuid::now_v7().to_string();
-        let now = chrono::Utc::now().timestamp_millis();
+        let now = codex_utils_time::Timestamp::now().epoch_milliseconds();
         let position = sqlx::query_scalar::<_, Option<i64>>("SELECT MAX(position) FROM projects")
             .fetch_one(&mut *tx)
             .await?
@@ -261,7 +261,7 @@ impl StateRuntime {
             tx.rollback().await?;
             return Ok(Some((current, false)));
         }
-        let now = chrono::Utc::now().timestamp_millis();
+        let now = codex_utils_time::Timestamp::now().epoch_milliseconds();
         sqlx::query("UPDATE projects SET name = ?, metadata = ?, updated_at_ms = ? WHERE id = ?")
             .bind(&next_name)
             .bind(serde_json::to_string(&next_metadata)?)
@@ -332,7 +332,7 @@ impl StateRuntime {
                 .await?;
         }
         sqlx::query("UPDATE projects SET updated_at_ms = ? WHERE id = ?")
-            .bind(chrono::Utc::now().timestamp_millis())
+            .bind(codex_utils_time::Timestamp::now().epoch_milliseconds())
             .bind(project_id)
             .execute(&mut *tx)
             .await?;

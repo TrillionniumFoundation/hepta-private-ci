@@ -24,6 +24,9 @@ use core_test_support::wait_for_event;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
 
+use super::local_annotations::assert_local_content_kinds;
+use super::local_annotations::persisted_request_items;
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn first_request_item_types_roles_and_content_annotations() -> Result<()> {
     skip_if_no_network!(Ok(()));
@@ -140,11 +143,11 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
     .await;
 
     let request = response.single_request();
-    assert!(request.has_content_kinds(&["guardian.approved_action"]));
-    let mut guardian_item = request
-        .input()
-        .into_iter()
-        .next()
+    let local_items = persisted_request_items(&test.codex, &request, |_| true).await?;
+    assert_local_content_kinds(&local_items, &["guardian.approved_action"]);
+    let mut guardian_item = local_items
+        .first()
+        .cloned()
         .expect("guardian approval should be the first context item");
     guardian_item
         .as_object_mut()
@@ -152,7 +155,7 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
         .remove("id");
     let guardian_metadata = guardian_item["internal_chat_message_metadata_passthrough"]
         .as_object_mut()
-        .expect("guardian approval should have passthrough metadata");
+        .expect("persisted guardian approval should retain local metadata");
     guardian_metadata.remove("turn_id");
     guardian_metadata.remove("create_time");
     let approved_action = serde_json::to_string_pretty(&serde_json::json!({
@@ -187,8 +190,7 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
         })
     );
 
-    let items = request
-        .input()
+    let items = local_items
         .into_iter()
         .map(|item| {
             let item_type = item["type"].as_str().expect("response item type");
@@ -239,11 +241,15 @@ async fn content_item_kinds_are_omitted_when_feature_disabled() -> Result<()> {
 
     test.submit_text_turn("inspect request metadata").await?;
 
-    let input = response.single_request().input();
-    assert!(input.iter().all(|item| {
+    let request = response.single_request();
+    // The feature controls the request copy. Durable local annotations remain
+    // available even when the provider does not accept them on the wire.
+    assert!(request.input().iter().all(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
             .is_none()
     }));
+    let input = persisted_request_items(&test.codex, &request, |_| true).await?;
+    assert_local_content_kinds(&input, &["user.text"]);
     assert!(input.iter().any(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/turn_id")
             .is_some()

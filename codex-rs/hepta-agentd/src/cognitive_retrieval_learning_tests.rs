@@ -170,8 +170,8 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let ledger_directory = fixture_directory(temp.path());
+    let witness_directory = fixture_directory(temp.path());
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,
@@ -181,6 +181,32 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     )
     .expect("product writer");
     (temp, CognitiveRetrievalLearningSink::new(writer))
+}
+
+fn fixture_directory(path: &std::path::Path) -> File {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+        const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+        // The real ledger barrier flushes this owned directory handle.
+        options
+            .write(true)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT);
+    }
+    let directory = options.open(path).expect("owned ledger fixture directory");
+    let metadata = directory.metadata().expect("inspect fixture directory");
+    assert!(metadata.is_dir());
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt;
+
+        assert_eq!(metadata.file_attributes() & 0x0400, 0);
+    }
+    directory
 }
 
 #[test]

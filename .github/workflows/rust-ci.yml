@@ -87,7 +87,7 @@ jobs:
           persist-credentials: false
       - name: Check local manifest graph before installing native prerequisites
         run: python3 scripts/hepta_workspace.py
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
       - name: Validate Cargo metadata for the actual checkout
         working-directory: codex-rs
         shell: bash
@@ -115,7 +115,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
         with:
           components: rustfmt
       - name: cargo fmt
@@ -139,7 +139,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
       - name: Rust benchmark smoke test
         run: just bench-smoke
       - name: Check for a clean worktree
@@ -160,7 +160,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: cargo-shear@1.11.2
@@ -180,14 +180,15 @@ jobs:
     needs: changed
     if: ${{ needs.changed.outputs.argument_comment_lint_package == 'true' }}
     env:
-      CARGO_DYLINT_VERSION: 5.0.0
-      DYLINT_LINK_VERSION: 5.0.0
+      CARGO_DYLINT_VERSION: 6.3.2
+      DYLINT_LINK_VERSION: 6.3.2
+      DYLINT_BUILD_TOOLCHAIN: 1.98.0
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
       - name: Install nightly argument-comment-lint toolchain
         shell: bash
         run: |
@@ -213,8 +214,11 @@ jobs:
         if: ${{ steps.cargo_dylint_cache.outputs.cache-hit != 'true' }}
         shell: bash
         run: |
-          cargo install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION"
-          cargo install --locked dylint-link --version "$DYLINT_LINK_VERSION"
+          # The CLI's published lock needs Rust >=1.97. Keep the compiler for
+          # the lint crate, generated driver and UI tests on its pinned nightly.
+          rustup toolchain install "$DYLINT_BUILD_TOOLCHAIN" --profile minimal --no-self-update
+          cargo +"$DYLINT_BUILD_TOOLCHAIN" install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION"
+          cargo +"$DYLINT_BUILD_TOOLCHAIN" install --locked dylint-link --version "$DYLINT_LINK_VERSION"
       - name: Check Python wrapper syntax
         run: python3 -m py_compile tools/argument-comment-lint/wrapper_common.py tools/argument-comment-lint/run.py tools/argument-comment-lint/run-prebuilt-linter.py tools/argument-comment-lint/test_wrapper_common.py
       - name: Test Python wrapper helpers
@@ -243,7 +247,7 @@ jobs:
         argument_comment_lint_package,
       ]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Summarize
         shell: bash

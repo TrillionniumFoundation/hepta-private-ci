@@ -13,6 +13,9 @@ use std::process::Child;
 use std::process::Command;
 use std::process::ExitStatus;
 use std::process::Stdio;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 use std::time::Instant;
@@ -65,6 +68,90 @@ fn unix_seconds() -> u64 {
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
+}
+
+#[tokio::test]
+async fn lease_test_clock_is_shared_by_clones_and_not_other_handles() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, /*number*/ 100).await;
+    let starts_at = 1_000;
+    let expires_at = starts_at + 1;
+    let clock = Arc::new(AtomicU64::new(starts_at));
+    let other_clock = Arc::new(AtomicU64::new(starts_at));
+    let lease = acquired(
+        store
+            .acquire_local_lease_bound(
+                "lease:test-clock",
+                /*authority_epoch*/ 7,
+                /*owner_epoch*/ 8,
+                /*generation*/ 1,
+                "fence:test-clock",
+                expires_at,
+            )
+            .await
+            .expect("bound lease"),
+    )
+    .with_test_clock(Arc::clone(&clock));
+    let cloned = lease.clone();
+    let other = acquired(
+        store
+            .acquire_local_lease_bound(
+                "lease:other-test-clock",
+                /*authority_epoch*/ 7,
+                /*owner_epoch*/ 8,
+                /*generation*/ 1,
+                "fence:other-test-clock",
+                expires_at,
+            )
+            .await
+            .expect("other bound lease"),
+    )
+    .with_test_clock(other_clock);
+
+    cloned.verify_current().await.expect("active clone");
+    let before = lease.snapshot_counts().await.expect("before expiry");
+    assert!(matches!(
+        lease.expire_lease().await,
+        Err(LocalLeaseOutboxError::StaleFence(message))
+            if message.starts_with("local lease has not expired")
+    ));
+    assert_eq!(
+        lease.snapshot_counts().await.expect("after early expiry"),
+        before,
+    );
+
+    clock.store(expires_at, Ordering::SeqCst);
+    for handle in [&lease, &cloned] {
+        assert!(matches!(
+            handle.verify_current().await,
+            Err(LocalLeaseOutboxError::StaleFence(message))
+                if message == "local lease has expired"
+        ));
+    }
+    other.verify_current().await.expect("other clock unchanged");
+    let terminal = lease.expire_lease().await.expect("expired terminal");
+    assert_eq!(terminal.state, LocalLeaseState::RolledBack);
+    let successor = acquired(
+        store
+            .acquire_local_lease_after_head_bound(
+                "lease:test-clock",
+                terminal,
+                /*authority_epoch*/ 7,
+                /*owner_epoch*/ 8,
+                /*generation*/ 2,
+                "fence:test-clock-successor",
+                expires_at + 1,
+            )
+            .await
+            .expect("successor"),
+    )
+    .with_test_clock(clock);
+    successor.verify_current().await.expect("active successor");
+    assert!(matches!(
+        cloned.verify_current().await,
+        Err(LocalLeaseOutboxError::StaleFence(message))
+            if message == "local lease generation or fencing token changed"
+    ));
 }
 
 #[tokio::test]

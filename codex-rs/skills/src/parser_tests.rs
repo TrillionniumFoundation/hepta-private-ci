@@ -1,7 +1,46 @@
 use pretty_assertions::assert_eq;
 
 use super::ParsedSkillFrontmatter;
+use super::SkillParseError;
 use super::parse_skill_frontmatter_metadata;
+
+#[test]
+fn preserves_yaml_aliases_and_scalar_text() {
+    let parsed = parse_skill_frontmatter_metadata(
+        "---\nname: &name 00123\ndescription: 1e999\nmetadata:\n  short-description: *name\n---\n",
+        || "fallback".to_string(),
+    )
+    .expect("scalar spellings and aliases are valid frontmatter");
+
+    assert_eq!(
+        parsed,
+        ParsedSkillFrontmatter {
+            name: "00123".to_string(),
+            description: "1e999".to_string(),
+            short_description: Some("00123".to_string()),
+        }
+    );
+}
+
+#[test]
+fn rejects_duplicate_skill_fields_and_does_not_expand_merge_keys() {
+    let duplicate = parse_skill_frontmatter_metadata(
+        "---\nname: first\nname: second\ndescription: Demo\n---\n",
+        || "fallback".to_string(),
+    )
+    .expect_err("repeated fields must remain invalid");
+    assert!(matches!(duplicate, SkillParseError::InvalidYaml(_)));
+
+    let merged = parse_skill_frontmatter_metadata(
+        "---\nbase: &base {description: inherited}\n<<: *base\n---\n",
+        || "fallback".to_string(),
+    )
+    .expect_err("merge keys must not provide required skill fields");
+    assert!(matches!(
+        merged,
+        SkillParseError::MissingField("description")
+    ));
+}
 
 #[test]
 fn parses_repairs_and_sanitizes_frontmatter() {

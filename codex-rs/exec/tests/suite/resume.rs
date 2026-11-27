@@ -8,6 +8,7 @@ use core_test_support::skip_if_no_network;
 use core_test_support::test_codex_exec::test_codex_exec;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
+use sqlx::Connection;
 use std::process::Stdio;
 use std::string::ToString;
 use std::time::Duration;
@@ -250,7 +251,7 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
 
     let test = test_codex_exec();
     let server = MockServer::start().await;
-    let _response_mock = mount_exec_responses(&server, /*count*/ 2).await;
+    let response_mock = mount_exec_responses(&server, /*count*/ 2).await;
     let repo_root = exec_repo_root()?;
 
     let marker = format!("resume-last-repair-{}", Uuid::new_v4());
@@ -273,7 +274,28 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    // Simulate loss of only the rebuildable index row. The public delete
+    // operation intentionally seals durable queue authority and cannot model
+    // this fixture: hard-deleted threads must never be resurrected by repair.
+    let mut index = state_db
+        .sqlite()
+        .open_existing_state_db_connection()
+        .await?;
+    assert_eq!(
+        sqlx::query("DELETE FROM threads WHERE id = ?")
+            .bind(thread_id.to_string())
+            .execute(&mut index)
+            .await?
+            .rows_affected(),
+        1
+    );
+    index.close().await?;
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -293,6 +315,34 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
         .expect("no resumed session file after SQLite repair");
     assert_eq!(resumed_path, path);
     assert!(state_db.get_thread(thread_id).await?.is_some());
+
+    // The same rollout is deliberately retained after the real hard-delete
+    // API. Its bytes must not authorize a fallback resurrection.
+    let before_delete = std::fs::read(&path)?;
+    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    assert!(
+        state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
+    let rejected = test
+        .cmd_with_server(&server)
+        .arg("--skip-git-repo-check")
+        .arg("-C")
+        .arg(&repo_root)
+        .arg("resume")
+        .arg(thread_id.to_string())
+        .arg("must not resurrect a deleted thread")
+        .output()?;
+    assert!(!rejected.status.success());
+    assert!(
+        String::from_utf8_lossy(&rejected.stderr).contains("sealed for hard deletion"),
+        "unexpected hard-delete rejection: {rejected:?}"
+    );
+    assert_eq!(std::fs::read(&path)?, before_delete);
+    assert_eq!(response_mock.requests().len(), 2);
+    assert!(state_db.get_thread(thread_id).await?.is_none());
     Ok(())
 }
 
@@ -336,7 +386,28 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    // Simulate loss of only the rebuildable index row. The public delete
+    // operation intentionally seals durable queue authority and cannot model
+    // this fixture: hard-deleted threads must never be resurrected by repair.
+    let mut index = state_db
+        .sqlite()
+        .open_existing_state_db_connection()
+        .await?;
+    assert_eq!(
+        sqlx::query("DELETE FROM threads WHERE id = ?")
+            .bind(newer_thread_id.to_string())
+            .execute(&mut index)
+            .await?
+            .rows_affected(),
+        1
+    );
+    index.close().await?;
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(newer_thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;

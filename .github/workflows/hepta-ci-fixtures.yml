@@ -1,0 +1,189 @@
+name: Hepta migration fixtures and trust tools
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - "research/wsp-ci-fixtures-*"
+      - "research/wsp-dependency-*"
+    paths:
+      - ".bazelrc"
+      - ".github/actions/setup-bazel-ci/**"
+      - ".github/workflows/hepta-ci-fixtures.yml"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-evidence/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/state/src/sqlite_recovery*"
+      - "codex-rs/hepta-operator-acceptance/**"
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/network-proxy/**"
+      - "codex-rs/third_party/rama-http-0.3.0-alpha.4/**"
+      - "codex-rs/third_party/rama-http-headers-0.3.0-alpha.4/**"
+      - "codex-rs/Cargo.lock"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ci-fixtures-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  migration-and-trust:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Set the runner-local target directory
+        shell: bash
+        run: echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hepta-fixture-target" >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Supply native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openssh-client build-essential pkg-config libcap-dev
+          test -x /usr/bin/ssh-keygen
+          mkdir -p "$RUNNER_TEMP/hepta-fixture-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-fixture-evidence/head.txt"
+          dpkg-query -W openssh-client > "$RUNNER_TEMP/hepta-fixture-evidence/openssh.txt"
+      - name: Exercise real SSHSIG trust qualification
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-operator-acceptance --lib --locked 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/trust.log"
+      - name: Replay the v1 automation migration
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-automation --test automation --locked v1_store_migrates_atomically_to_dispatch_outcome_schema 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/automation.log"
+      - name: Replay the v2 cognitive memory migration
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-memory --lib --locked v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_projection 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/memory.log"
+      - name: Verify AuthBus global and issuer capacity boundaries
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-evidence --lib --locked authbus_outbox_tests 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/authbus-outbox.log"
+      # Retain the exhausted-budget fault and verify synthetic signed decisions.
+      - name: Verify durable restart events and signed recovery quarantine
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --test signed_intent_recovery --locked 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/supervisor.log"
+      - name: Preserve Unix recovery identity and current-cut guarantees
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test -p codex-state -p codex-hepta-memory --lib --locked -E 'test(sqlite_recovery::) | test(cognitive_store::recovery::)' 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/recovery.log"
+      - name: Check recovery consumers with scoped Clippy fixes
+        if: success() || failure()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just fix -p codex-state -p codex-hepta-memory --locked 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/recovery-clippy.log"
+          git diff --exit-code 2>&1 | tee "$RUNNER_TEMP/hepta-fixture-evidence/recovery-clippy-diff.log"
+      - name: Upload exact-source results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-fixture-cargo-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-fixture-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+  bazel-native-trust:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: hepta-native-trust
+      - name: Run the OpenSSH-dependent Bazel target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          # This scoped job records JSON instead of the shared compact log.
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ""
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-trust-bazel-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-trust-bazel-evidence/head.txt"
+          dpkg-query -W openssh-client > "$RUNNER_TEMP/hepta-trust-bazel-evidence/openssh.txt"
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- \
+            test --cache_test_results=no --test_output=all \
+            --execution_log_json_file="$RUNNER_TEMP/hepta-trust-bazel-evidence/execution.json" -- \
+            //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests \
+            2>&1 | tee "$RUNNER_TEMP/hepta-trust-bazel-evidence/bazel.log"
+      - name: Upload native execution results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-fixture-bazel-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-trust-bazel-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+  network-time-boundaries:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Set the runner-local target directory
+        shell: bash
+        run: echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hepta-network-target" >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Exercise the actual network proxy and maintained time APIs
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-network-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-network-evidence/head.txt"
+          just test -p codex-network-proxy --lib --locked 2>&1 | tee "$RUNNER_TEMP/hepta-network-evidence/network-tests.log"
+      - name: Preserve network qualification evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-network-time-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-network-evidence
+          if-no-files-found: error
+          retention-days: 14

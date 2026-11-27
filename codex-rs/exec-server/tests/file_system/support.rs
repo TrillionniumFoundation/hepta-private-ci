@@ -24,8 +24,17 @@ use crate::common::exec_server::TestCodexHelperPaths;
 use crate::common::exec_server::exec_server;
 use crate::common::exec_server::test_codex_helper_paths;
 
+#[cfg(unix)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum BoundedReadSupport {
+    Available,
+    Unsupported,
+}
+
 pub(crate) struct FileSystemContext {
     pub(crate) file_system: Arc<dyn ExecutorFileSystem>,
+    #[cfg(unix)]
+    pub(crate) bounded_read_support: BoundedReadSupport,
     _helper_paths: Option<TestCodexHelperPaths>,
     _server: Option<ExecServerHarness>,
 }
@@ -57,6 +66,18 @@ pub(crate) async fn create_file_system_context(
             )?;
             Ok(FileSystemContext {
                 file_system: Arc::new(LocalFileSystem::with_runtime_paths(runtime_paths)),
+                #[cfg(unix)]
+                bounded_read_support: if cfg!(target_os = "macos")
+                    && !codex_exec_server::local_environment_info()
+                        .capabilities
+                        .stable_handle_authorized_read
+                {
+                    BoundedReadSupport::Unsupported
+                } else {
+                    // Non-Darwin local callers retain the bounded stream
+                    // contract; it does not assert the stronger RPC probe.
+                    BoundedReadSupport::Available
+                },
                 _helper_paths: Some(helper_paths),
                 _server: None,
             })
@@ -67,6 +88,17 @@ pub(crate) async fn create_file_system_context(
                 Environment::create_for_tests(Some(server.websocket_url().to_string()))?;
             Ok(FileSystemContext {
                 file_system: environment.get_filesystem(),
+                #[cfg(unix)]
+                bounded_read_support: if environment
+                    .info()
+                    .await?
+                    .capabilities
+                    .stable_handle_authorized_read
+                {
+                    BoundedReadSupport::Available
+                } else {
+                    BoundedReadSupport::Unsupported
+                },
                 _helper_paths: None,
                 _server: Some(server),
             })

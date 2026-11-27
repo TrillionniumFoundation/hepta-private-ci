@@ -2076,14 +2076,15 @@ mod tests {
     #[cfg(windows)]
     #[tokio::test]
     async fn connect_stdio_command_initializes_json_rpc_client_on_windows() {
+        let program = std::env::current_exe()
+            .expect("current native test binary")
+            .into_os_string()
+            .into_string()
+            .expect("stdio fixture executable path must be UTF-8");
         let client = ExecServerClient::connect_stdio_command(StdioExecServerConnectArgs {
             command: StdioExecServerCommand {
-                program: "powershell".to_string(),
-                args: vec![
-                    "-NoProfile".to_string(),
-                    "-Command".to_string(),
-                    "$null = [Console]::In.ReadLine(); [Console]::Out.WriteLine('{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\"}}'); $null = [Console]::In.ReadLine(); Start-Sleep -Seconds 60".to_string(),
-                ],
+                program,
+                args: vec![crate::client_stdio_fixture::ARGUMENT.to_string()],
                 env: HashMap::new(),
                 cwd: None,
             },

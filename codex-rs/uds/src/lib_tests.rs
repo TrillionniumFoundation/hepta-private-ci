@@ -42,7 +42,6 @@ async fn prepare_private_socket_directory_sets_existing_permissions_to_owner_onl
     }
 }
 
-#[cfg(unix)]
 #[tokio::test]
 async fn regular_file_path_is_not_stale_socket_path() {
     let temp_dir = tempfile::TempDir::new().expect("temp dir");

@@ -511,17 +511,19 @@ async fn turn_start_forwards_client_metadata_to_responses_websocket_request_body
 {
     skip_if_no_network!(Ok(()));
 
-    let websocket_server = responses::start_websocket_server(vec![vec![
-        vec![
+    // New client-owned metadata changes the complete socket compatibility identity.
+    // The real turn must use a new connection with its full input, without warmup state.
+    let websocket_server = responses::start_websocket_server(vec![
+        vec![vec![
             responses::ev_response_created("warm-1"),
             responses::ev_completed("warm-1"),
-        ],
-        vec![
+        ]],
+        vec![vec![
             responses::ev_response_created("resp-1"),
             responses::ev_assistant_message("msg-1", "Done"),
             responses::ev_completed("resp-1"),
-        ],
-    ]])
+        ]],
+    ])
     .await;
 
     let codex_home = TempDir::new()?;
@@ -573,14 +575,36 @@ async fn turn_start_forwards_client_metadata_to_responses_websocket_request_body
         .await
         .body_json();
     let request = websocket_server
-        .wait_for_request(/*connection_index*/ 0, /*request_index*/ 1)
+        .wait_for_request(/*connection_index*/ 1, /*request_index*/ 0)
         .await
         .body_json();
 
     assert_eq!(warmup["type"].as_str(), Some("response.create"));
     assert_eq!(warmup["generate"].as_bool(), Some(false));
     assert_eq!(request["type"].as_str(), Some("response.create"));
-    assert_eq!(request["previous_response_id"].as_str(), Some("warm-1"));
+    assert!(request.get("previous_response_id").is_none());
+    assert_eq!(websocket_server.handshakes().len(), 2);
+    assert_eq!(
+        websocket_server
+            .connections()
+            .iter()
+            .map(Vec::len)
+            .collect::<Vec<_>>(),
+        vec![1, 1]
+    );
+    assert!(
+        request["input"].as_array().is_some_and(|items| {
+            items.iter().any(|item| {
+                item["role"] == "user"
+                    && item["content"].as_array().is_some_and(|content| {
+                        content
+                            .iter()
+                            .any(|part| part["type"] == "input_text" && part["text"] == "Hello")
+                    })
+            })
+        }),
+        "the new connection must receive the original user input"
+    );
 
     let metadata = request["client_metadata"]["x-codex-turn-metadata"]
         .as_str()

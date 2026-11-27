@@ -1,0 +1,176 @@
+{
+  "head": "804ac018433ff08dfd195e93eed936394baf5053",
+  "baseline": "07c8994f2402a58f6b59eb648c801fc40c6e2b96",
+  "run_id": 45458365054,
+  "job_id": 138673838683,
+  "run_conclusion": "success",
+  "artifact": {
+    "id": 14956725268,
+    "bytes": 23102,
+    "sha256": "31a95009cfc136f35f0bf4801ac14152f891771e72a73014ad7d83220b00af26",
+    "file": "artifact.zip"
+  },
+  "verified_members": [
+    {
+      "name": "baseline-binary-sha256.txt",
+      "bytes": 151,
+      "sha256": "1dadbc7d73a8478d03579d4ca74f2db2e5707e91658f0dfdac8d4cf623bcb5c2"
+    },
+    {
+      "name": "baseline-create.log",
+      "bytes": 64875,
+      "sha256": "77485a7feff02b482b87ec2882325ffab23f39f481a18a9f78e9fee95b56bc59"
+    },
+    {
+      "name": "baseline-head.txt",
+      "bytes": 41,
+      "sha256": "312e4b9e7558aac824b24160d3bdd34e580af175e5f608276b7ca5363e270f3a"
+    },
+    {
+      "name": "baseline-reopen.log",
+      "bytes": 355,
+      "sha256": "1c218cbe43f59ea9270bf800e60035bd6b48f0417d459757cfc689c1ecfe5227"
+    },
+    {
+      "name": "consumer-tests.log",
+      "bytes": 26433,
+      "sha256": "ea89b20788d4d2036b37fa8be33f4c0f28ed1df523a4066a5c633b42615b63d8"
+    },
+    {
+      "name": "current-head.txt",
+      "bytes": 41,
+      "sha256": "642cd77f0055679b1e0786d0ee05a899ffb1b9ae89be3e35437fec396190f87b"
+    },
+    {
+      "name": "current-binary-sha256.txt",
+      "bytes": 151,
+      "sha256": "100313a2ed01f554cabfe763d0c4be5069f202df9cd1b0b755bc31804857398c"
+    },
+    {
+      "name": "expected-device.json",
+      "bytes": 279,
+      "sha256": "39e6aba887988f64ef583b9c7ff893701471d7f16a2769e904d4a92a5c7b7589"
+    },
+    {
+      "name": "source-sha256.txt",
+      "bytes": 320,
+      "sha256": "fbfe92f436f765510b51e2d71ed77b5f9e9db2a34fe5b30a6fa66101f89faa35"
+    },
+    {
+      "name": "upgrade.log",
+      "bytes": 24851,
+      "sha256": "370608b3516573478dee2169195c8896ffbdf1bff19235c85695660ece332a62"
+    },
+    {
+      "name": "upgraded-reopen.log",
+      "bytes": 1003,
+      "sha256": "688d152036bd0bca6589470e0244032f8a3ff692505edbe492fb7a3b20d81c54"
+    },
+    {
+      "name": "wrong-passphrase.log",
+      "bytes": 1024,
+      "sha256": "d0f07ea9de4f16907360ee3d3ad641e16a6687fd092f266b48701ecb104d3ad9"
+    }
+  ],
+  "consumer_cases": {
+    "unique_run": 78,
+    "passed": 78,
+    "skipped": 0,
+    "test_runtime_seconds": 23.544,
+    "passed_identities": [
+      "codex-hepta-matrix-protocol tests::bootstrap_and_fenced_methods_are_disjoint",
+      "codex-hepta-matrix-protocol tests::deterministic_bridge_ids_are_domain_separated_and_revision_bound",
+      "codex-hepta-matrix-protocol tests::control_wire_binds_agent_revision_generation_and_exact_turn",
+      "codex-hepta-matrix-protocol tests::binding_is_exact_unique_and_secret_free",
+      "codex-hepta-matrix-protocol tests::event_cursor_contract_requires_contiguous_or_empty_gap",
+      "codex-hepta-matrix-protocol tests::insecure_remote_homeservers_and_identifier_drift_are_rejected",
+      "codex-hepta-matrix-protocol tests::frozen_control_json_fixtures_are_exact",
+      "codex-hepta-matrix-protocol tests::matrix_binding_rejects_duplicates_and_empty_authority_sets",
+      "codex-hepta-matrix-protocol tests::response_payload_semantics_are_fail_closed",
+      "codex-hepta-matrix-protocol tests::pending_approval_rejects_uninitialized_unsafe_or_duplicate_values",
+      "codex-hepta-matrix-protocol tests::runtime_identifiers_are_bounded_separately_from_matrix_identifiers",
+      "codex-hepta-matrix-sdk gap_fill::tests::duplicate_or_null_scope_fields_are_rejected_in_both_raw_page_vectors",
+      "codex-hepta-matrix-sdk gap_fill::tests::chunk_and_state_identity_scope_failures_leave_accepted_evidence_unchanged",
+      "codex-hepta-matrix-sdk gap_fill::tests::empty_page_continues_and_exact_target_preserves_page_and_event_order",
+      "codex-hepta-matrix-sdk gap_fill::tests::invalid_plan_cannot_start_or_manufacture_zero_length_completion",
+      "codex-hepta-matrix-sdk gap_fill::tests::request_scope_drift_and_discontinuous_or_cyclic_pages_are_atomic_rejections",
+      "codex-hepta-matrix-sdk gap_fill::tests::exact_total_event_limit_can_reach_target_without_truncation",
+      "codex-hepta-matrix-sdk gap_fill::tests::sdk_bundled_latest_event_is_covered_by_the_raw_byte_budget",
+      "codex-hepta-matrix-sdk gap_fill::tests::transcript_binds_scope_limits_order_raw_bytes_state_and_terminal_evidence",
+      "codex-hepta-matrix-protocol tests::maximum_valid_snapshot_and_event_batch_fit_one_control_frame",
+      "codex-hepta-matrix-sdk gap_fill::tests::visibility_and_page_limit_are_terminal_incomplete_observations",
+      "codex-hepta-matrix-sdk sdk::tests::bounded_sync_keeps_ciphertext_needed_for_sdk_decryption",
+      "codex-hepta-matrix-sdk sdk::tests::missing_hepta_checkpoint_never_reuses_the_sdk_cursor",
+      "codex-hepta-matrix-sdk sdk::tests::logical_stream_revision_uses_matrix_replace_content",
+      "codex-hepta-matrix-sdk sdk::tests::send_status_classification_bounds_permanent_and_transient_errors",
+      "codex-hepta-matrix-sdk sync::tests::membership_and_tombstone_state_fence_without_enrolling_replacements",
+      "codex-hepta-matrix-sdk sync::tests::message_policy_and_repeated_page_keep_exact_ingress_counts",
+      "codex-hepta-matrix-sdk sync::tests::nested_redaction_and_missing_target_never_reenter_ingress",
+      "codex-hepta-matrix-sdk sync::tests::redaction_room_version_and_decision_payload_identity_are_enforced",
+      "codex-hepta-matrix-sdk sync::tests::unchanged_observation_requires_full_normalization_and_current_durable_checkpoint",
+      "codex-hepta-matrix-sdk sync::tests::v1_redaction_commits_before_replay_and_survives_reopen",
+      "codex-hepta-matrix-sdk gap_fill::tests::sdk_auxiliary_metadata_is_dropped_instead_of_retained_outside_raw_bounds",
+      "codex-hepta-matrix-sdk::durable_transport duplicate_sync_event_is_exactly_idempotent",
+      "codex-hepta-matrix-sdk::durable_transport exact_room_sender_and_mention_gate_precedes_persistence",
+      "codex-hepta-matrix-sdk::durable_transport malformed_remote_event_is_nonfatal_and_does_not_block_the_next_event",
+      "codex-hepta-matrix-sdk::durable_transport expired_crash_lease_reuses_the_stable_transaction_after_reopen",
+      "codex-hepta-matrix-sdk::durable_transport post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id",
+      "codex-hepta-matrix-sdk::durable_transport retry_preserves_stable_transaction_and_shutdown_is_bounded",
+      "codex-hepta-matrix-sdk::durable_transport sdk_store_paths_are_private_and_per_agent",
+      "codex-hepta-matrix-store::durable_core canonical_transaction_type_is_used_by_public_store_models",
+      "codex-hepta-matrix-sdk::durable_transport transient_failures_use_bounded_backoff_and_then_become_terminal",
+      "codex-hepta-matrix-store::durable_core control_cursor_gap_resets_to_snapshot_and_active_turn_is_paired",
+      "codex-hepta-matrix-store::durable_core crash_reopen_reconciles_dispatch_and_expired_outbox_lease",
+      "codex-hepta-matrix-store::durable_core cursor_gap_requires_snapshot_then_resumes_exactly",
+      "codex-hepta-matrix-store::durable_core duplicate_event_and_transaction_are_exact_or_conflict",
+      "codex-hepta-matrix-store::durable_core pending_approval_is_owner_local_fenced_and_restart_safe",
+      "codex-hepta-matrix-store::durable_core server_resolved_notification_closes_local_completion_crash_window",
+      "codex-hepta-matrix-store::durable_core stable_matrix_plane_recovers_across_agentd_generation_rollover",
+      "codex-hepta-matrix-store::durable_core sync_checkpoint_and_inbox_batch_commit_atomically_with_exact_replay",
+      "codex-hepta-matrix-store::durable_core capped_delta_replacement_renders_the_complete_prefix",
+      "codex-hepta-matrix-sdk gap_fill::tests::page_and_accumulated_count_and_byte_limits_include_ancillary_state",
+      "codex-hepta-matrix-store::durable_core two_agents_never_share_stream_or_owner_database",
+      "codex-hepta-matrix-store::sync_mutation_v2 caller_persisted_outbox_attempt_survives_a_later_room_leave",
+      "codex-hepta-matrix-store::sync_mutation_v2 durable_replay_precedes_a_reduced_runtime_capacity",
+      "codex-hepta-matrix-store::sync_mutation_v2 failed_mutation_rolls_back_prior_mutations_and_cursor",
+      "codex-hepta-matrix-store::durable_core token_burst_is_one_bounded_final_and_later_updates_replace_the_root",
+      "codex-hepta-matrix-store::sync_mutation_v2 journal_saturation_is_terminal_but_preserves_the_deletion_reserve",
+      "codex-hepta-matrix-store::sync_mutation_v2 kicked_room_rebind_preserves_the_account_cursor_and_resumes_sync",
+      "codex-hepta-matrix-store::sync_mutation_v2 one_room_rebind_does_not_fence_another_room_or_the_account_cursor",
+      "codex-hepta-matrix-store::sync_mutation_v2 redacted_v1_source_cannot_be_reused_in_another_room",
+      "codex-hepta-matrix-store::sync_mutation_v2 redaction_ignores_a_hidden_dispatch_from_an_old_room_fence",
+      "codex-hepta-matrix-store::sync_mutation_v2 redaction_ignores_another_rooms_active_dispatch",
+      "codex-hepta-matrix-store::sync_mutation_v2 room_leave_and_replacement_tombstones_prevent_replay",
+      "codex-hepta-matrix-store::sync_mutation_v2 redaction_missing_target_and_cancellation_remain_distinct",
+      "codex-hepta-matrix-store::sync_mutation_v2 room_leave_fences_an_active_dispatch_without_blocking_the_cursor",
+      "codex-hepta-matrix-store::sync_mutation_v2 room_tombstone_is_a_logical_fence_above_the_physical_scrub_bound",
+      "codex-hepta-matrix-store::sync_mutation_v2 startup_rejects_same_name_counterfeit_v2_schema_objects",
+      "codex-hepta-matrix-store::sync_mutation_v2 tombstone_refuses_to_orphan_an_active_dispatch",
+      "codex-hepta-matrix-store::sync_mutation_v2 v1_and_v2_timeline_identity_matches_exact_semantics_only",
+      "codex-hepta-matrix-store::sync_mutation_v2 tombstoned_v1_source_cannot_gain_a_new_v2_meaning",
+      "codex-hepta-matrix-store::sync_mutation_v2 v2_validation_rejects_wrong_schema",
+      "codex-hepta-matrix-store::sync_mutation_v2 v1_source_hidden_by_leave_cannot_be_reused_after_rebind",
+      "codex-hepta-matrix-store::sync_observation_v1 absent_stale_or_malformed_caller_fences_never_become_unchanged_success",
+      "codex-hepta-matrix-store::sync_observation_v1 observation_serializes_after_a_checkpoint_writer_and_rejects_the_old_token",
+      "codex-hepta-matrix-store::sync_observation_v1 repeated_observations_preserve_all_durable_evidence_and_survive_reopen",
+      "codex-hepta-matrix-store::sync_observation_v1 every_ordinary_journal_ceiling_refuses_idle_readiness_without_breaking_v2_replay",
+      "codex-hepta-matrix-sdk sync::tests::incomplete_or_conflicting_response_leaves_all_rooms_and_cursor_unchanged",
+      "codex-hepta-matrix-store::durable_core ten_thousand_deltas_are_bounded_and_final_is_exact"
+    ]
+  },
+  "migration_operations": [
+    "old0.18create",
+    "old0.18reopen",
+    "new0.19.1upgrade",
+    "new0.19.1reopen",
+    "wrong_passphrase_copy_rejected"
+  ],
+  "limits": [
+    "This is the exact804 Linux runner qualification.",
+    "These Linux results do not qualify Matrix SDK Windows private ACL or VFS selection.",
+    "No new run or model training was performed to obtain this receipt."
+  ],
+  "tree": "a7c03f0857f64d3644c019113ab9c37ae7e7d644",
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458365054",
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45458365054/job/138673838683"
+}

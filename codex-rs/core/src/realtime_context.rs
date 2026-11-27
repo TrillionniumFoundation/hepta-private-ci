@@ -1,7 +1,6 @@
 use crate::compact::content_items_to_text;
 use crate::event_mapping::is_contextual_user_message_content;
 use crate::session::session::Session;
-use chrono::Utc;
 use codex_exec_server::LOCAL_FS;
 use codex_git_utils::resolve_root_git_project_for_trust;
 use codex_protocol::models::ResponseItem;
@@ -182,12 +181,12 @@ async fn build_recent_work_section(
             .iter()
             .map(|entry| entry.updated_at)
             .max()
-            .unwrap_or_else(Utc::now);
+            .unwrap_or_else(codex_utils_time::Timestamp::now);
         let right_latest = right_entries
             .iter()
             .map(|entry| entry.updated_at)
             .max()
-            .unwrap_or_else(Utc::now);
+            .unwrap_or_else(codex_utils_time::Timestamp::now);
         (
             *left_group != current_group,
             Reverse(left_latest),
@@ -514,7 +513,7 @@ async fn format_thread_group(
     let mut lines = vec![
         group_label,
         format!("Recent sessions: {}", entries.len()),
-        format!("Latest activity: {}", latest.updated_at.to_rfc3339()),
+        format!("Latest activity: {}", latest.updated_at.rfc3339()),
     ];
 
     if let Some(git_branch) = latest

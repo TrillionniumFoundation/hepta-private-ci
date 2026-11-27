@@ -1,6 +1,8 @@
 use super::AuthRequestTelemetryContext;
 use super::CompactConversationRequestSettings;
+use super::LastResponse;
 use super::ModelClient;
+use super::NodeReplRequestPolicy;
 use super::PendingUnauthorizedRetry;
 use super::Prompt;
 use super::UnauthorizedRecoveryExecution;
@@ -17,6 +19,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -134,7 +137,8 @@ fn test_model_client_with_thread_id(
 }
 
 #[test]
-fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
+fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() -> anyhow::Result<()>
+{
     let client = test_model_client(SessionSource::Exec);
     let chatgpt_provider =
         ModelProviderInfo::create_openai_provider(Some(CHATGPT_CODEX_BASE_URL.to_string()))
@@ -153,6 +157,7 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         }],
         phase: None,
         internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            turn_id: Some("turn-a".to_string()),
             content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
             ..Default::default()
         }),
@@ -224,6 +229,33 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
             .get("internal_chat_message_metadata_passthrough")
             .is_none()
     );
+
+    // Exercise the feature gate on a provider that accepts internal metadata;
+    // localhost transport tests independently assert its stricter wire policy.
+    let mut disabled_client = test_model_client(SessionSource::Exec);
+    Arc::get_mut(&mut disabled_client.state)
+        .ok_or_else(|| anyhow::anyhow!("fresh test client must uniquely own its state"))?
+        .content_item_kinds_enabled = false;
+    let stored_item = item_with_metadata();
+    let mut request_item = stored_item.clone();
+    disabled_client.prepare_response_items_for_request(
+        std::slice::from_mut(&mut request_item),
+        &openai_provider,
+    );
+    assert_eq!(
+        serde_json::to_value(request_item)?,
+        json!({
+            "type": "message",
+            "role": "user",
+            "content": [{"type": "input_text", "text": "hello"}],
+            "internal_chat_message_metadata_passthrough": {"turn_id": "turn-a"},
+        }),
+    );
+    assert_eq!(
+        serde_json::to_value(stored_item)?["internal_chat_message_metadata_passthrough"],
+        json!({"turn_id": "turn-a", "content_item_kinds": ["user.text"]}),
+    );
+    Ok(())
 }
 
 struct TransportSelectionEphemeralContributor {
@@ -305,7 +337,8 @@ fn websocket_transport_gate_uses_exact_active_turn_contributors() {
 }
 
 #[test]
-fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics() {
+fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
+-> anyhow::Result<()> {
     let provider = codex_api::Provider {
         name: "provider-a".to_string(),
         base_url: "https://deployment.example.test/v1".to_string(),
@@ -335,6 +368,68 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
 
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    let mut turn_metadata = metadata_a.clone();
+    turn_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+    for metadata in [&prewarm_metadata, &turn_metadata] {
+        assert_eq!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), metadata)
+                .expect("prewarm and turn share a connection identity"),
+        );
+    }
+    assert_ne!(
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery projection"),
+        serde_json::to_value(turn_metadata.turn_recovery_compatibility_projection())
+            .expect("turn recovery projection"),
+        "connection reuse must not collapse request identity for recovery",
+    );
+    let recovery_a = serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+        .expect("baseline recovery projection");
+    for (parent_turn_id, root_turn_id) in [
+        (Some("parent-turn-a"), None),
+        (None, Some("root-turn-a")),
+        (Some("parent-turn-b"), Some("root-turn-b")),
+    ] {
+        let mut lineage_metadata = turn_metadata.clone();
+        lineage_metadata.parent_turn_id = parent_turn_id.map(str::to_owned);
+        lineage_metadata.root_turn_id = root_turn_id.map(str::to_owned);
+        assert_eq!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &lineage_metadata,
+            )
+            .expect("turn lineage does not select a new socket"),
+        );
+        let mut expected_recovery = recovery_a.clone();
+        for (key, value) in [
+            ("parent_turn_id", parent_turn_id),
+            ("root_turn_id", root_turn_id),
+        ] {
+            if let Some(value) = value {
+                expected_recovery[key] = json!(value);
+            }
+        }
+        assert_ne!(recovery_a, expected_recovery);
+        assert_eq!(
+            serde_json::to_value(lineage_metadata.turn_recovery_compatibility_projection())
+                .expect("lineage recovery projection"),
+            expected_recovery,
+            "recovery must bind both lineage fields without changing other compatibility fields",
+        );
+    }
+    let mut memory_metadata = metadata_a.clone();
+    memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &memory_metadata)
+            .expect("memory request identity"),
+    );
+
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
     volatile_metadata.window_id = "window-after-restart".to_string();
@@ -360,6 +455,33 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         )
         .expect("changed compatibility identity")
     );
+    for (key, value) in [
+        ("fiber_run_id", "fiber-start-123"),
+        ("origin", "gaas"),
+        ("codex_security_surface", "surface-b"),
+    ] {
+        let mut extra_metadata = metadata_a.clone();
+        extra_metadata
+            .extra
+            .insert(key.to_string(), value.to_string());
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &extra_metadata,
+            )?,
+            "changed {key} must remain a different connection identity",
+        );
+        let mut expected_recovery = recovery_a.clone();
+        expected_recovery["extra"] = json!({key: value});
+        assert_ne!(recovery_a, expected_recovery);
+        assert_eq!(
+            serde_json::to_value(extra_metadata.turn_recovery_compatibility_projection())?,
+            expected_recovery,
+            "recovery must retain the full changed {key} without changing other fields",
+        );
+    }
     assert_ne!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
@@ -377,6 +499,116 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         )
         .expect("changed provider identity")
     );
+    Ok(())
+}
+
+#[test]
+fn websocket_continuation_rejects_changed_node_policy_for_same_model() {
+    let client = test_model_client(SessionSource::Exec);
+    let provider =
+        ModelProviderInfo::create_openai_provider(Some("https://api.openai.com/v1".to_string()))
+            .to_api_provider(Some(AuthMode::ApiKey))
+            .expect("test provider");
+    let mut metadata = test_responses_metadata_for_client(
+        &client,
+        /*turn_id*/ None,
+        "window".to_string(),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    metadata.node_repl_auto_review_required = Some(true);
+    metadata.node_repl_disabled = Some(false);
+    metadata.sandbox_mode = Some("workspace-write".to_string());
+    metadata.auto_review_enabled = Some(true);
+    let request = client
+        .build_responses_request(
+            &Prompt::default(),
+            &test_model_info(),
+            /*effort*/ None,
+            codex_protocol::config_types::ReasoningSummary::None,
+            /*service_tier*/ None,
+            &metadata,
+            &provider,
+        )
+        .expect("test request");
+    let identity = WebsocketConnectionIdentity::from_provider(
+        &provider, /*beta_features_header*/ None, &metadata,
+    )
+    .expect("connection identity");
+    let recovery = serde_json::to_value(metadata.turn_recovery_compatibility_projection())
+        .expect("recovery projection");
+    for (model, tier, review_required, disabled, reuse) in [
+        (None, None, Some(true), Some(false), true),
+        (None, None, Some(false), Some(false), false),
+        (None, None, Some(true), Some(true), false),
+        (None, None, Some(false), Some(true), false),
+        (None, None, None, None, false),
+        (Some("another-model"), None, Some(true), Some(false), false),
+        (None, Some("priority"), Some(true), Some(false), false),
+    ] {
+        let mut current_metadata = metadata.clone();
+        current_metadata.node_repl_auto_review_required = review_required;
+        current_metadata.node_repl_disabled = disabled;
+        let mut current_request = request.clone();
+        if let Some(model) = model {
+            current_request.model = model.to_string();
+        }
+        if let Some(tier) = tier {
+            current_request.service_tier = Some(tier.to_string());
+        }
+        current_request.client_metadata = Some(current_metadata.client_metadata());
+        assert_eq!(
+            identity,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                /*beta_features_header*/ None,
+                &current_metadata,
+            )
+            .expect("per-request policy retains the socket identity"),
+        );
+        let mut expected_recovery = recovery.clone();
+        for (key, value) in [
+            ("node_repl_auto_review_required", review_required),
+            ("node_repl_disabled", disabled),
+        ] {
+            if let Some(value) = value {
+                expected_recovery[key] = json!(value);
+            } else {
+                expected_recovery
+                    .as_object_mut()
+                    .expect("projection object")
+                    .remove(key);
+            }
+        }
+        assert_eq!(
+            serde_json::to_value(current_metadata.turn_recovery_compatibility_projection())
+                .expect("current recovery projection"),
+            expected_recovery,
+        );
+        let mut session = client.new_session();
+        session.websocket_session.last_request = Some(request.clone());
+        session.websocket_session.last_request_node_repl_policy =
+            Some(NodeReplRequestPolicy::from(&metadata));
+        session.websocket_session.last_response_from_untraced_warmup = true;
+        let (sender, receiver) = tokio::sync::oneshot::channel();
+        sender
+            .send(LastResponse {
+                response_id: "previous-response".to_string(),
+                items_added: Vec::new(),
+            })
+            .expect("completed response fixture");
+        session.websocket_session.last_response_rx = Some(receiver);
+        let actual = session.prepare_websocket_request(
+            &current_request,
+            NodeReplRequestPolicy::from(&current_metadata),
+        );
+        let expected = if reuse {
+            (Some(("previous-response".to_string(), Vec::new())), true)
+        } else {
+            (None, false)
+        };
+        assert_eq!(actual, expected);
+    }
 }
 
 #[tokio::test]
@@ -514,6 +746,113 @@ fn test_responses_metadata_for_client(
         parent_thread_id,
         request_kind,
     )
+}
+
+#[test]
+fn responses_lite_base_instructions_are_request_only_and_obey_endpoint_metadata_policy() {
+    let client = test_model_client(SessionSource::Exec);
+    let prompt = Prompt {
+        input: vec![
+            serde_json::from_value(json!({
+                "type": "message", "role": "user",
+                "content": [{"type": "input_text", "text": "keep this history item"}],
+            }))
+            .expect("fixture history item"),
+        ],
+        tools: vec![codex_tools::ToolSpec::Function(
+            codex_tools::ResponsesApiTool {
+                name: "inspect".to_string(),
+                description: "Inspect a fixture value".to_string(),
+                strict: true,
+                defer_loading: None,
+                parameters: serde_json::from_value(json!({
+                    "type": "object",
+                    "properties": {"value": {"type": "string"}},
+                    "required": ["value"],
+                    "additionalProperties": false,
+                }))
+                .expect("fixture tool schema"),
+                output_schema: None,
+            },
+        )]
+        .into(),
+        base_instructions: BaseInstructions {
+            text: "request-only instructions".to_string(),
+            provenance: None,
+        },
+        ..Default::default()
+    };
+    let original_input = prompt.input.clone();
+    let original_tools = prompt.tools.clone();
+    let original_base_instructions = prompt.base_instructions.clone();
+    let mut model_info = test_model_info();
+    model_info.use_responses_lite = true;
+    let metadata = test_responses_metadata_for_client(
+        &client,
+        /*turn_id*/ None,
+        format!("{}:0", client.state.thread_id),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    for (base_url, expected_metadata) in [
+        (
+            "https://api.openai.com/v1",
+            Some(json!({"content_item_kinds": ["model.base_instructions"]})),
+        ),
+        ("http://127.0.0.1:12345/v1", None),
+    ] {
+        let api_provider = ModelProviderInfo::create_openai_provider(Some(base_url.to_string()))
+            .to_api_provider(Some(AuthMode::ApiKey))
+            .expect("test endpoint should resolve");
+        let request = client
+            .build_responses_request(
+                &prompt,
+                &model_info,
+                /*effort*/ None,
+                codex_protocol::config_types::ReasoningSummary::None,
+                /*service_tier*/ None,
+                &metadata,
+                &api_provider,
+            )
+            .expect("request should build without sending it");
+        let input = serde_json::to_value(&request.input).expect("input should serialize");
+        let mut expected = json!({
+            "type": "message",
+            "role": "developer",
+            "content": [{"type": "input_text", "text": "request-only instructions"}],
+        });
+        if let Some(expected_metadata) = expected_metadata {
+            expected["internal_chat_message_metadata_passthrough"] = expected_metadata;
+        }
+        assert_eq!(input.as_array().expect("input array").len(), 3);
+        assert_eq!(
+            input[0],
+            json!({
+                "type": "additional_tools",
+                "role": "developer",
+                "tools": [{
+                    "type": "namespace", "name": "functions", "description": "",
+                    "tools": [{
+                        "type": "function", "name": "inspect",
+                        "description": "Inspect a fixture value", "strict": true,
+                        "parameters": {
+                            "type": "object",
+                            "properties": {"value": {"type": "string"}},
+                            "required": ["value"], "additionalProperties": false,
+                        },
+                    }],
+                }],
+            })
+        );
+        assert_eq!(input[1], expected);
+        assert_eq!(
+            input[2],
+            serde_json::to_value(&original_input[0]).expect("history JSON")
+        );
+        assert_eq!(prompt.input, original_input);
+        assert_eq!(prompt.tools, original_tools);
+        assert_eq!(prompt.base_instructions, original_base_instructions);
+    }
 }
 
 fn test_model_info() -> ModelInfo {

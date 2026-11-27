@@ -1,0 +1,70 @@
+{
+  "schema": "hepta-recovery-fixture-and-workspace-qualification-v1",
+  "fixture_source_commit": "796f1310e6049412b61c52dc8585470848bd14d4",
+  "previous_native_source": "fb00e4422c293ffb318c9d7535e1991a3bbac707",
+  "native_run": 45434906085,
+  "native_job": 138589954514,
+  "observed_state_tests": {
+    "executed": 6,
+    "passed": 1,
+    "failed": 5,
+    "filtered_out": 203,
+    "attempts_per_failed_case": 2
+  },
+  "fixture_change_scope": "Only synthetic retained-file creation; existing bytes, rejection assertions, and Unavailable writer entry points preserved. Actual SQLite-created cold-image cases are unchanged and still require the owner VFS fix.",
+  "fixture_native_execution": "pending",
+  "normal_workspace_qualification": {
+    "source_head": "d5d05cbbb950542c3969bc977ff686d8178d31e4",
+    "registry_linux": {
+      "tests_passed": 50,
+      "tests_skipped": 0,
+      "test_run_seconds": 4.204,
+      "build_and_test_seconds": 24.48657665099745,
+      "strict_clippy_exit": 0
+    },
+    "path_utils_windows_msvc": {
+      "scoped_ordinary_clippy_exit": 0,
+      "elapsed_seconds": 13.988682989998779,
+      "native_tests_executed_by_this_check": 0
+    },
+    "cargo_lock_sha256": "8e795abd7481a489d5e80bfaec1991d978e55c846c1f93032b61a184fa608c4e",
+    "source_and_lock_unchanged": true,
+    "warning": "Cargo reports unused imbl patch for the scoped selection; this is retained, not counted as a Rust lint failure."
+  },
+  "registry_source_sha256": {
+    "codex-rs/hepta-prompt-registry/src/lib_tests.rs": "8c279e4c1e47c5e0984b6705b772f172b502eb4201fd9ec4c4fc6e20438cda51",
+    "codex-rs/hepta-prompt-registry/src/durable.rs": "d64eee4e8bf14407343d699014cf70b9ec82a5834e8898c71687bd0b34373240",
+    "codex-rs/hepta-prompt-registry/src/durable_payloads.rs": "8f786adc5f8993322b61e7a244f99c21b5056ca8853bf5378bac74d9efc2989e",
+    "codex-rs/hepta-prompt-registry/src/durable_windows_tests.rs": "999ef5fe687bec5bf7e4aa6a60e411412207f78ce4fdb9f9d9cdb2f2308b39af",
+    "codex-rs/hepta-prompt-registry/src/protocol.rs": "2cd4b31011d9a10153baabe2373eb2c226772361571310e142ccad5a6159f397",
+    "codex-rs/hepta-prompt-registry/src/lib.rs": "de594ddee53cdd018ffeba1f762d35bb734db84a0d1dc07a844d7d1890850b2a",
+    "codex-rs/hepta-prompt-registry/src/admission.rs": "afb4d303a6ab2fe6b711ff0d4fc829297b44a545ca1e26c67075de6f5aea5bb8",
+    "codex-rs/hepta-prompt-registry/src/durable_payloads_tests.rs": "c68ab51cde2a6469ef7f09bbfb7ac54ce46f2bf8782329c78b4637040c290ad8",
+    "codex-rs/hepta-prompt-registry/src/delivery.rs": "14237d986069a7b3c32ee3981bc839c6c0910ff7db2443de9113f18bcc0d53ef",
+    "codex-rs/hepta-prompt-registry/src/v2_tests.rs": "0013d5bd14833299f7dcfe2839c612de9c03c174ebfe41931fe5392d76263d1b",
+    "codex-rs/hepta-prompt-registry/src/v2.rs": "5818d08ff36379addf79d5694c0a891ad72d58eb714817200b8a949e067c4139"
+  },
+  "path_utils_source_sha256": {
+    "codex-rs/utils/path-utils/src/windows_private_security.rs": "a0847a1597338d0b201f562d64645e201e41c07a5b8705d21279fe43460ca3ee",
+    "codex-rs/utils/path-utils/src/path_utils_tests.rs": "e64f277c43eb9c85d5fd2c92ca3e180562f77ef4189f842e4bde5a333fcf2f10",
+    "codex-rs/utils/path-utils/src/windows_private_tests.rs": "24b16ea92848a75bb97fb2ce993926c91a3dd5e63ef44303debd74768f7ba4a1",
+    "codex-rs/utils/path-utils/src/env.rs": "a252bfec34d98d176179987e572377866ea52f371ce756aafa61bc1de91dfc76",
+    "codex-rs/utils/path-utils/src/windows_private_namespace.rs": "fb73c5343cd21f023363b46b959c042b03c1788d6fb79ff0e95722621d4c2dec",
+    "codex-rs/utils/path-utils/src/lib.rs": "a3783cdc34793fde57a6a984327e89c3b781c84e01d7476b8e6e1608944e6a31",
+    "codex-rs/utils/path-utils/src/windows_private_sqlite.rs": "e933495cacbe8a12a608ef1a93e5d87fe0af80091be9e01c48efc53e6e5679d7",
+    "codex-rs/utils/path-utils/src/windows_private_handles.rs": "e927417b72ac0a6c2b37567b207e58bc4611d15b39365c9ffbb794abe3b27763",
+    "codex-rs/utils/path-utils/src/windows_private.rs": "34d2910f4491fe0a0c5f5b16bf6605f603e8d5674612a936b07dfa32414d052b"
+  },
+  "fixture_source_sha256": "3675bff3c5bbeeb6aa694703f0eb0c1472bbed06c1eba8ef76597e17be2e137d",
+  "logs_sha256": {
+    "actual-workspace-tests.log": "bedf2a4a1996b0cf2b5fd51f2e7ad1f75528ccbcfe30ed2160cf3eb6929628b7",
+    "actual-workspace-clippy.log": "a9d645a565fc4ce2e61d89cfa422db74ecbb7eb4e51ca05a50fd62d110536fbc",
+    "namespace-workspace-clippy.log": "133d7b0805e1ddcdf80aef6235f201ec698d2609269ce80189c7f299ca6380a3"
+  },
+  "limits": [
+    "State fixture change was formatted and reviewed, not executed natively in this receipt.",
+    "These are scoped real-workspace checks, not a complete workspace test pass.",
+    "The earlier isolated registry graph remains separate historical evidence; this later run uses the actual production Cargo.lock.",
+    "No production permission, file-owner acceptance, writer fence, or current-cut check changes."
+  ]
+}

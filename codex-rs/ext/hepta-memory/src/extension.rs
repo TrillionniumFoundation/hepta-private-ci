@@ -426,7 +426,7 @@ where
                     codex_hepta_memory::RecallCandidate::new(
                         revision,
                         candidate.rollout_summary.as_str(),
-                        candidate.source_updated_at.timestamp(),
+                        candidate.source_updated_at.epoch_seconds(),
                         conservative_token_count(candidate.rollout_summary.as_str()),
                     )
                 })
@@ -826,8 +826,8 @@ fn stage1_revision(
     if candidate.thread_id != expected_source_thread_id {
         return Err(Stage1BindingError::SourceThreadMismatch);
     }
-    let source_updated_at = candidate.source_updated_at.timestamp();
-    let generated_at = candidate.generated_at.timestamp();
+    let source_updated_at = candidate.source_updated_at.epoch_seconds();
+    let generated_at = candidate.generated_at.epoch_seconds();
     if source_updated_at < 0 || generated_at < 0 || generated_at < source_updated_at {
         return Err(Stage1BindingError::InvalidSourceTime);
     }

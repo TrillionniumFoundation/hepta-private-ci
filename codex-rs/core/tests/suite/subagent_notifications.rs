@@ -1,3 +1,4 @@
+use anyhow::Context;
 use anyhow::Result;
 use codex_core::StartThreadOptions;
 use codex_core::ThreadConfigSnapshot;
@@ -19,6 +20,7 @@ use codex_protocol::openai_models::ReasoningEffortPreset;
 use codex_protocol::protocol::AgentStatus;
 use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::protocol::HookEventName;
 use codex_protocol::protocol::MULTI_AGENT_MODE_OPEN_TAG;
 use codex_protocol::protocol::Op;
 use codex_protocol::protocol::SessionSource;
@@ -52,6 +54,7 @@ use core_test_support::test_codex::test_codex;
 use core_test_support::test_codex::turn_permission_fields;
 use core_test_support::wait_for_event;
 use core_test_support::wait_for_event_match;
+use futures::FutureExt;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
@@ -335,8 +338,18 @@ async fn wait_for_hook_log(
             return Ok(inputs);
         }
         if Instant::now() >= deadline {
+            let observed_hook_states = inputs
+                .iter()
+                .take(expected_len)
+                .map(|input| {
+                    (
+                        input["hook_event_name"].as_str(),
+                        input["stop_hook_active"].as_bool(),
+                    )
+                })
+                .collect::<Vec<_>>();
             anyhow::bail!(
-                "expected at least {expected_len} entries in {filename}, got {}",
+                "expected at least {expected_len} entries in {filename}, got {}; observed hook states: {observed_hook_states:?}",
                 inputs.len()
             );
         }
@@ -372,6 +385,26 @@ async fn wait_for_requests(
         }
         if Instant::now() >= deadline {
             anyhow::bail!("expected at least 1 request, got {}", requests.len());
+        }
+        sleep(Duration::from_millis(10)).await;
+    }
+}
+
+async fn wait_for_child_request(
+    mock: &core_test_support::responses::ResponseMock,
+    prompt: &str,
+) -> Result<ResponsesRequest> {
+    let deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        // The recorder runs before the mock's final matcher. A captured parent
+        // request must not satisfy the child response's synchronization point.
+        if let Some(request) = mock.requests().into_iter().find(|request| {
+            request.body_contains_text(prompt) && !request.body_contains_text(SPAWN_CALL_ID)
+        }) {
+            return Ok(request);
+        }
+        if Instant::now() >= deadline {
+            anyhow::bail!("timed out waiting for matching child request");
         }
         sleep(Duration::from_millis(10)).await;
     }
@@ -612,7 +645,8 @@ async fn subagent_start_replaces_session_start_and_injects_context() -> Result<(
         .await?;
 
     test.submit_turn(TURN_1_PROMPT).await?;
-    let _ = wait_for_requests(&child_request_log).await?;
+    let child_request = wait_for_child_request(&child_request_log, CHILD_PROMPT).await?;
+    assert!(child_request.body_contains_text(SUBAGENT_START_CONTEXT));
 
     let start_inputs = wait_for_hook_log(
         test.codex_home_path(),
@@ -760,15 +794,150 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
         .await?;
 
     test.submit_turn(TURN_1_PROMPT).await?;
-    let _ = wait_for_requests(&first_child_request).await?;
-    let _ = wait_for_requests(&second_child_request).await?;
+    let _ = wait_for_child_request(&first_child_request, CHILD_PROMPT).await?;
+    let _ = wait_for_child_request(&second_child_request, SUBAGENT_STOP_CONTINUATION).await?;
 
-    let subagent_stop_inputs = wait_for_hook_log(
+    let subagent_stop_inputs = match wait_for_hook_log(
         test.codex_home_path(),
         "subagent_stop_hook_log.jsonl",
         /*expected_len*/ 2,
     )
-    .await?;
+    .await
+    {
+        Ok(inputs) => inputs,
+        Err(error) => {
+            // Observe only events already queued after the original deadline has
+            // failed. A request received by the model mock does not establish
+            // that the child has dispatched or completed its final stop hook.
+            let diagnostics: std::result::Result<_, &'static str> = (|| {
+                let child_ids = test
+                    .thread_manager
+                    .list_thread_ids()
+                    .now_or_never()
+                    .ok_or("child catalog pending; child lifecycle unknown")?
+                    .into_iter()
+                    .filter(|id| *id != test.session_configured.thread_id)
+                    .collect::<Vec<_>>();
+                if child_ids.len() != 1 {
+                    return Err("child count differs from one; child lifecycle unknown");
+                }
+                let child = test
+                    .thread_manager
+                    .get_thread(child_ids[0])
+                    .now_or_never()
+                    .ok_or("child lookup pending; child lifecycle unknown")?
+                    .map_err(|_| "child lookup failed; child lifecycle unknown")?;
+                let status = match child
+                    .agent_status()
+                    .now_or_never()
+                    .ok_or("child status pending; child lifecycle unknown")?
+                {
+                    AgentStatus::PendingInit => "pending_init",
+                    AgentStatus::Running => "running",
+                    AgentStatus::Interrupted => "interrupted",
+                    AgentStatus::Completed(_) => "completed",
+                    AgentStatus::Errored(_) => "errored",
+                    AgentStatus::Shutdown => "shutdown",
+                    AgentStatus::NotFound => "not_found",
+                };
+                let mut observed = Vec::new();
+                let mut examined = 0;
+                let mut omitted = 0;
+                let mut queue_state = "scan_limit";
+                let bounded_id = |id: &str| id.chars().take(64).collect::<String>();
+                // The three lookups above and these event polls total at most
+                // 128 non-waiting polls. Unobserved events remain unknown.
+                for _ in 0..125 {
+                    let Some(event) = child.next_event().now_or_never() else {
+                        queue_state = "pending";
+                        break;
+                    };
+                    let event = match event {
+                        Ok(event) => event,
+                        Err(_) => {
+                            queue_state = "error";
+                            if observed.len() < 8 {
+                                observed.push(json!({"kind": "channel_error"}));
+                            } else {
+                                omitted += 1;
+                            }
+                            break;
+                        }
+                    };
+                    examined += 1;
+                    let observation = match event.msg {
+                        EventMsg::HookStarted(event)
+                            if event.run.event_name == HookEventName::SubagentStop =>
+                        {
+                            json!({
+                                "kind": "hook_started",
+                                "turn_id_prefix": event.turn_id.as_deref().map(bounded_id),
+                                "turn_id_bytes": event.turn_id.as_ref().map(String::len),
+                                "event_name": event.run.event_name,
+                                "id_prefix": bounded_id(&event.run.id),
+                                "id_bytes": event.run.id.len(),
+                                "status": event.run.status,
+                            })
+                        }
+                        EventMsg::HookCompleted(event)
+                            if event.run.event_name == HookEventName::SubagentStop =>
+                        {
+                            json!({
+                                "kind": "hook_completed",
+                                "turn_id_prefix": event.turn_id.as_deref().map(bounded_id),
+                                "turn_id_bytes": event.turn_id.as_ref().map(String::len),
+                                "event_name": event.run.event_name,
+                                "id_prefix": bounded_id(&event.run.id),
+                                "id_bytes": event.run.id.len(),
+                                "status": event.run.status, "duration_ms": event.run.duration_ms,
+                                "status_message_bytes": event.run.status_message.as_ref().map(String::len),
+                                "entry_count": event.run.entries.len(),
+                            })
+                        }
+                        EventMsg::TurnComplete(event) => json!({
+                            "kind": "turn_complete",
+                            "turn_id_prefix": bounded_id(&event.turn_id),
+                            "turn_id_bytes": event.turn_id.len(),
+                            "error_present": event.error.is_some(), "duration_ms": event.duration_ms,
+                        }),
+                        EventMsg::Error(event) => json!({
+                            "kind": "error", "message_bytes": event.message.len(),
+                            "codex_error_info_present": event.codex_error_info.is_some(),
+                        }),
+                        _ => continue,
+                    };
+                    if observed.len() < 8 {
+                        observed.push(observation);
+                    } else {
+                        omitted += 1;
+                    }
+                }
+                Ok((status, examined, omitted, queue_state, observed))
+            })();
+            let mut diagnostic = match diagnostics {
+                Ok((status, examined, omitted, queue_state, observed)) => format!(
+                    "subagent stop lifecycle snapshot: status={status}; scanned={examined}; retained={}; omitted={omitted}; queue={queue_state}; absence is unknown; events={}",
+                    observed.len(),
+                    Value::Array(observed),
+                ),
+                Err(diagnostic_error) => format!(
+                    "subagent stop lifecycle snapshot: status=unknown; scanned=0; retained=0; queue=unknown; diagnostic_error={diagnostic_error}"
+                ),
+            };
+            let suffix = "; diagnostic_truncated=true";
+            if diagnostic.len() + "; diagnostic_truncated=false".len() > 4096 {
+                let mut end = 4096 - suffix.len();
+                while !diagnostic.is_char_boundary(end) {
+                    end -= 1;
+                }
+                diagnostic.truncate(end);
+                diagnostic.push_str(suffix);
+            } else {
+                diagnostic.push_str("; diagnostic_truncated=false");
+            }
+            return Err(error).context(diagnostic);
+        }
+    };
     assert_eq!(subagent_stop_inputs.len(), 2);
     assert_eq!(
         subagent_stop_inputs
@@ -884,10 +1053,16 @@ async fn subagent_notification_is_included_without_wait() -> Result<()> {
     test.submit_turn(TURN_2_NO_WAIT_PROMPT).await?;
 
     let turn2_requests = wait_for_requests(&turn2).await?;
-    assert!(
-        turn2_requests
-            .iter()
-            .any(|request| request.has_content_kinds(&["multi_agent.subagent_notification"]))
+    let mut local_items = Vec::new();
+    for request in &turn2_requests {
+        local_items.extend(
+            super::local_annotations::persisted_request_items(&test.codex, request, |_| true)
+                .await?,
+        );
+    }
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["multi_agent.subagent_notification"],
     );
 
     Ok(())
@@ -1337,9 +1512,42 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
 
     let child_request = wait_for_request_with_model(&child_request_log, expected_model).await?;
     assert!(child_request.body_contains_text(TURN_0_FORK_PROMPT));
-    let misaligned_child_messages = child_request
-        .inputs_of_type("message")
-        .into_iter()
+    let child_body = child_request.body_json();
+    let child_thread_id = ThreadId::from_string(
+        child_body["client_metadata"]["thread_id"]
+            .as_str()
+            .expect("child thread id"),
+    )?;
+    let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while !matches!(child_thread.agent_status().await, AgentStatus::Completed(_)) {
+            sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await?;
+    // Forking rewrites inherited instructions in the active context; the raw
+    // rollout retains the old items, and paginated threads reject legacy full
+    // history reads. Match every wire item against the completed child's
+    // actual context, preserving the full ordered content and annotations. Lite's
+    // request-only prefix is checked separately against its protocol and the
+    // child's actual base instructions; it is never part of inherited history.
+    let child_model = test
+        .config
+        .model_catalog
+        .as_ref()
+        .expect("fixture model catalog")
+        .models
+        .iter()
+        .find(|model| model.slug == expected_model)
+        .expect("selected fixture model");
+    let local_items = super::local_annotations::active_request_items_with_model_prefix(
+        &child_thread,
+        &child_request,
+        child_model,
+    )
+    .await?;
+    let misaligned_child_messages = local_items
+        .iter()
         .filter(|message| {
             message["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
                 .as_array()
@@ -1349,27 +1557,34 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
                         .is_none_or(|content| content.len() != kinds.len())
                 })
         })
+        .cloned()
         .collect::<Vec<_>>();
     assert_eq!(misaligned_child_messages, Vec::<Value>::new());
     let child_developer_messages = child_request.message_input_texts("developer");
     if matches!(selection, FullHistoryV2ModelSelection::ConfiguredDefault) {
+        super::local_annotations::assert_local_content_kinds(
+            &local_items,
+            &["generic.developer_instructions"],
+        );
         assert_eq!(
             (
                 parent_request.body_contains_text(FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS),
-                child_request.has_content_kinds(&["generic.developer_instructions"]),
                 child_developer_messages
                     .iter()
                     .filter(|text| text.as_str() == FULL_HISTORY_SUBAGENT_DEVELOPER_INSTRUCTIONS)
                     .count(),
             ),
-            (false, true, 1)
+            (false, 1)
         );
     }
     if !matches!(
         selection,
         FullHistoryV2ModelSelection::MultiAgentModeTransitions
     ) {
-        assert!(child_request.has_content_kinds(&["multi_agent.role_instructions"]));
+        super::local_annotations::assert_local_content_kinds(
+            &local_items,
+            &["multi_agent.role_instructions"],
+        );
         assert_eq!(
             child_developer_messages
                 .iter()
@@ -1438,14 +1653,7 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
         assert_eq!(reminder_count(&parent_request), 2);
         assert_eq!(reminder_count(&child_request), 1);
     }
-    let child_body = child_request.body_json();
     if matches!(selection, FullHistoryV2ModelSelection::WorldStateIdentity) {
-        let child_thread_id = ThreadId::from_string(
-            child_body["client_metadata"]["thread_id"]
-                .as_str()
-                .expect("child thread id"),
-        )?;
-        let child_thread = test.thread_manager.get_thread(child_thread_id).await?;
         child_thread.flush_rollout().await?;
         let child_rollout = codex_rollout::RolloutRecorder::get_rollout_history(
             &child_thread
@@ -1959,7 +2167,30 @@ async fn multi_agent_v2_spawn_sends_agent_message_to_child(
         }
     })
     .await
-    .expect("spawn communication logs should be emitted");
+    .with_context(|| {
+        let captured = match output.try_lock() {
+            Ok(captured) => captured,
+            Err(error) => {
+                return format!(
+                    "spawn communication logs should be emitted; capture unavailable during nonblocking failure inspection: {error}"
+                );
+            }
+        };
+        let captured_logs = String::from_utf8_lossy(&captured);
+        let communication_lines = captured_logs
+            .lines()
+            .filter(|line| line.contains("codex_otel.agent_communication"))
+            .take(8)
+            .map(|line| line.chars().take(800).collect::<String>())
+            .collect::<Vec<_>>();
+        let capture_enabled_now =
+            tracing::enabled!(target: "codex_otel.agent_communication", Level::INFO);
+        format!(
+            "spawn communication logs should be emitted; captured_bytes={}, captured_lines={}, capture_enabled_now={capture_enabled_now}, communication_lines={communication_lines:?}",
+            captured.len(),
+            captured_logs.lines().count(),
+        )
+    })?;
     let send = logs
         .lines()
         .find(|line| line.contains("kind=\"spawn\"") && line.contains("state=\"send\""))

@@ -1,0 +1,11 @@
+# The same timeout/retry defaults as codex-rs/.config/nextest.toml. The independent
+# probe has no workspace app/core package names for those unrelated overrides.
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 2 }
+retries = 1
+
+[profile.default.junit]
+path = "junit.xml"
+
+[profile.local]
+inherits = "default"

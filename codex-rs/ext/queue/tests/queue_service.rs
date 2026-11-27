@@ -72,6 +72,8 @@ use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio::sync::oneshot;
 
+mod support;
+
 const TINY_PNG_BYTES: &[u8] = &[
     137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0,
     0, 0, 31, 21, 196, 137, 0, 0, 0, 11, 73, 68, 65, 84, 120, 156, 99, 96, 0, 2, 0, 0, 5, 0, 1,
@@ -90,6 +92,20 @@ impl ExtensionEventSink for RecordingEventSink {
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
             .push(event);
+    }
+
+    fn emit_warning(&self, _warning: ExtensionWarning) {}
+}
+
+struct QueueChangeSink {
+    changes: tokio::sync::broadcast::Sender<ThreadId>,
+}
+
+impl ExtensionEventSink for QueueChangeSink {
+    fn emit(&self, event: Event) {
+        if let EventMsg::ThreadQueueChanged(change) = event.msg {
+            let _ = self.changes.send(change.thread_id);
+        }
     }
 
     fn emit_warning(&self, _warning: ExtensionWarning) {}
@@ -154,7 +170,7 @@ fn install_registered_queue(
 }
 
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
+    let script_path = home.join("queue prompt hook.py");
     let log_path = home.join("queue_prompt_hook.log");
     let script = format!(
         r#"import json
@@ -176,7 +192,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": support::python_hook_command(&script_path),
                 }]
             }]
         }
@@ -186,7 +202,7 @@ if payload["prompt"] == "blocked":
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
+    let script_path = home.join("queue blocking prompt hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
     let script = format!(
@@ -216,7 +232,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": support::python_hook_command(&script_path),
                 }]
             }]
         }
@@ -837,6 +853,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     let response =
         responses::mount_sse_once(&server, responses::sse_completed("one-cancel-safe-owner")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_blocking_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -948,6 +965,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     let response =
         responses::mount_sse_once(&server, responses::sse_completed("must-not-run")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_blocking_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -2230,7 +2248,15 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
         .build_with_auto_env(&server)
         .await?;
     let thread_id = test.session_configured.thread_id;
-    let queue = install_registered_queue(&test, installed.as_ref())?;
+    let (queue_changes_tx, _) = tokio::sync::broadcast::channel(/*capacity*/ 32);
+    let queue = Arc::new(QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Arc::downgrade(&test.thread_manager),
+        Arc::new(QueueChangeSink {
+            changes: queue_changes_tx.clone(),
+        }),
+    ));
+    assert!(installed.service.set(Arc::clone(&queue)).is_ok());
     let independent_thread = test
         .thread_manager
         .start_thread(StartThreadOptions::new(test.config.clone()))
@@ -2303,6 +2329,7 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
         .enqueue(thread_id, user_input("queued before ordinary resume"))
         .await?;
     tokio::time::sleep(Duration::from_secs(/*secs*/ 11)).await;
+    let mut queue_changes = queue_changes_tx.subscribe();
     let resumed = test
         .thread_manager
         .resume_thread_from_rollout(
@@ -2313,12 +2340,25 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
             Default::default(),
         )
         .await?;
-    wait_for_event_with_timeout(
-        resumed.thread.as_ref(),
-        |event| matches!(event, EventMsg::TurnComplete(_)),
-        Duration::from_secs(/*secs*/ 25),
-    )
-    .await;
+    // Core completion and queue persistence are separate asynchronous steps.
+    // Reuse the original 25-second value as a stricter, shared total deadline.
+    // Only existing queue change events trigger another state observation;
+    // this does not wake it.
+    let completion_deadline = tokio::time::Instant::now() + Duration::from_secs(/*secs*/ 25);
+    tokio::time::timeout_at(completion_deadline, async {
+        wait_for_event_with_timeout(
+            resumed.thread.as_ref(),
+            |event| matches!(event, EventMsg::TurnComplete(_)),
+            Duration::from_secs(/*secs*/ 25),
+        )
+        .await;
+        while !queue.list(thread_id).await?.is_empty() {
+            while queue_changes.recv().await? != thread_id {}
+        }
+        anyhow::Ok(())
+    })
+    .await
+    .context("resumed turn and queue persistence exceeded the shared 25-second deadline")??;
     assert!(queue.list(thread_id).await?.is_empty());
 
     let prompts = model_responses
@@ -2345,6 +2385,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let (installed, extensions) = registered_queue_extensions();
     let test = test_codex()
         .with_extensions(extensions)
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_rejecting_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -2399,6 +2440,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
     let responses =
         responses::mount_sse_once(&server, responses::sse_completed("unexpected-turn")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_rejecting_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)

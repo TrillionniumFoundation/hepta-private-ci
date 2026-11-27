@@ -6,9 +6,6 @@ use std::time::Duration;
 
 use anyhow::Result;
 use anyhow::anyhow;
-use chrono::DateTime;
-use chrono::Local;
-use chrono::Utc;
 use codex_core::SleepFuture;
 use codex_core::TimeFuture;
 use codex_core::TimeProvider;
@@ -69,7 +66,7 @@ impl TimeProvider for TestTimeProvider {
     fn current_time(&self, _thread_id: ThreadId) -> TimeFuture<'_> {
         let timestamp = self.current_time.fetch_add(60, Ordering::Relaxed);
         Box::pin(async move {
-            Ok(DateTime::<Utc>::from_timestamp(timestamp, 0)
+            Ok(codex_utils_time::Timestamp::from_parts(timestamp, 0)
                 .expect("test timestamp should be valid"))
         })
     }
@@ -153,10 +150,16 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
         .iter()
         .zip([FIRST_TIME_UNIX_SECONDS, FIRST_TIME_UNIX_SECONDS + 86_400])
     {
-        assert!(request.has_content_kinds(&["environments.environment_context"]));
-        let current_date = DateTime::<Utc>::from_timestamp(timestamp, 0)
+        let local_items =
+            super::local_annotations::persisted_request_items(&test.codex, request, |_| true)
+                .await?;
+        super::local_annotations::assert_local_content_kinds(
+            &local_items,
+            &["environments.environment_context"],
+        );
+        let current_date = codex_utils_time::Timestamp::from_parts(timestamp, 0)
             .expect("test timestamp should be valid")
-            .with_timezone(&Local)
+            .to_local()
             .format("%Y-%m-%d")
             .to_string();
         assert!(request.message_input_texts("user").iter().any(|text| {
@@ -343,7 +346,9 @@ async fn system_time_source_adds_current_time_reminder() -> Result<()> {
     test.submit_turn("what time is it?").await?;
 
     let request = responses.single_request();
-    assert!(request.has_content_kinds(&["current_time.reminder"]));
+    let local_items =
+        super::local_annotations::persisted_request_items(&test.codex, &request, |_| true).await?;
+    super::local_annotations::assert_local_content_kinds(&local_items, &["current_time.reminder"]);
     let reminders = current_time_reminders(&request);
     assert_eq!(reminders.len(), 1);
     assert_regex_match(

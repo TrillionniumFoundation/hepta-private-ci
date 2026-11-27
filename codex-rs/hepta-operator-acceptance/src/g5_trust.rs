@@ -870,7 +870,17 @@ fn verify_sshsig_bytes(
         }
         Ok(())
     }
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    {
+        crate::sshsig::verify(
+            statement,
+            signature_bytes,
+            allowed_signers_bytes,
+            principal,
+            namespace,
+        )
+    }
+    #[cfg(not(any(unix, windows)))]
     {
         let _ = (
             statement,
@@ -879,7 +889,9 @@ fn verify_sshsig_bytes(
             principal,
             namespace,
         );
-        Err(invalid("G5 SSHSIG verification requires Unix"))
+        Err(invalid(
+            "G5 SSHSIG verification is unsupported on this platform",
+        ))
     }
 }
 

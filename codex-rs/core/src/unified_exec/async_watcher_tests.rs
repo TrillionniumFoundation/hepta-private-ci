@@ -10,6 +10,7 @@ use crate::session::tests::make_session_and_context_with_rx;
 use crate::unified_exec::UnifiedExecContext;
 use crate::unified_exec::head_tail_buffer::HeadTailBuffer;
 use crate::unified_exec::process::NoopSpawnLifecycle;
+use crate::unified_exec::process::OutputHandles;
 use crate::unified_exec::process::UnifiedExecProcess;
 use codex_protocol::items::CommandExecutionStatus;
 use codex_protocol::items::TurnItem;
@@ -58,8 +59,8 @@ async fn streaming_output_harness() -> anyhow::Result<StreamingOutputHarness> {
         tokio_util::sync::CancellationToken::new(),
         "streaming-output-test".to_string(),
     );
-    let transcript = Arc::new(tokio::sync::Mutex::new(HeadTailBuffer::default()));
-    start_streaming_output(&process, &context, Arc::clone(&transcript));
+    let transcript = Arc::clone(&process.output_handles().transcript);
+    start_streaming_output(&process, &context);
 
     Ok(StreamingOutputHarness {
         process,
@@ -302,10 +303,10 @@ fn utf8_boundary_batches_malformed_output() {
 #[tokio::test]
 async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() {
     let (session, turn, rx_event) = make_session_and_context_with_rx().await;
-    let transcript = Arc::new(tokio::sync::Mutex::new(HeadTailBuffer::default()));
+    let producer: OutputHandles = OutputHandles::default();
+    let transcript = Arc::clone(&producer.transcript);
     let mut output = Buffer::<8> {
         pending: Vec::new(),
-        transcript: Arc::clone(&transcript),
         emitter: Emitter {
             remaining_deltas: 2,
             session,
@@ -316,7 +317,9 @@ async fn streaming_output_bounds_invalid_bytes_and_keeps_the_full_transcript() {
 
     // The first frame splits 😀; the last allowed frame leaves é incomplete.
     let bytes = b"\xff\xff\xff\xff\xff\xff\xf0\x9f\x98\x80\xff\xff\xff\xc3\xa9";
+    producer.record_chunk(bytes).await;
     output.push(bytes.to_vec()).await;
+    producer.record_chunk(&[0xfe, 0xfe]).await;
     output.push(vec![0xfe, 0xfe]).await;
     output.finish().await;
 

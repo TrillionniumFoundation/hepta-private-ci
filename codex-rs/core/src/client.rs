@@ -358,9 +358,27 @@ struct LastResponse {
 struct WebsocketSession {
     connection: Option<ConnectedWebsocket>,
     last_request: Option<ResponsesApiRequest>,
+    last_request_node_repl_policy: Option<NodeReplRequestPolicy>,
     last_response_rx: Option<oneshot::Receiver<LastResponse>>,
     last_response_from_untraced_warmup: bool,
     connection_reused: StdMutex<bool>,
+}
+
+/// Model-owned policy travels on every request. A change requires full input,
+/// even when the model slug stays the same and the socket can be reused.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct NodeReplRequestPolicy {
+    auto_review_required: Option<bool>,
+    disabled: Option<bool>,
+}
+
+impl From<&CodexResponsesMetadata> for NodeReplRequestPolicy {
+    fn from(metadata: &CodexResponsesMetadata) -> Self {
+        Self {
+            auto_review_required: metadata.node_repl_auto_review_required,
+            disabled: metadata.node_repl_disabled,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -391,7 +409,7 @@ impl WebsocketConnectionIdentity {
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"
@@ -1595,6 +1613,7 @@ impl ModelClientSession {
     fn reset_websocket_session(&mut self) {
         self.websocket_session.connection = None;
         self.websocket_session.last_request = None;
+        self.websocket_session.last_request_node_repl_policy = None;
         self.websocket_session.last_response_rx = None;
         self.websocket_session.last_response_from_untraced_warmup = false;
         self.websocket_session
@@ -1695,10 +1714,14 @@ impl ModelClientSession {
     fn prepare_websocket_request(
         &mut self,
         request: &ResponsesApiRequest,
+        node_repl_policy: NodeReplRequestPolicy,
     ) -> (Option<(String, Vec<ResponseItem>)>, bool) {
         let Some(last_response) = self.get_last_response() else {
             return (None, false);
         };
+        if self.websocket_session.last_request_node_repl_policy != Some(node_repl_policy) {
+            return (None, false);
+        }
         let previous_response_id_from_untraced_warmup =
             self.websocket_session.last_response_from_untraced_warmup;
         let Some(incremental_items) = self.get_incremental_items(
@@ -1799,6 +1822,7 @@ impl ModelClientSession {
 
         if needs_new {
             self.websocket_session.last_request = None;
+            self.websocket_session.last_request_node_repl_policy = None;
             self.websocket_session.last_response_rx = None;
             self.websocket_session.last_response_from_untraced_warmup = false;
             let new_conn = match self
@@ -2442,8 +2466,9 @@ impl ModelClientSession {
                 None
             };
 
+            let request_node_repl_policy = NodeReplRequestPolicy::from(responses_metadata);
             let (incremental_request, previous_response_id_from_untraced_warmup) =
-                self.prepare_websocket_request(&request);
+                self.prepare_websocket_request(&request, request_node_repl_policy);
             let inference_trace_attempt = if warmup {
                 // Prewarm sends `generate=false`; it is connection setup, not a
                 // model inference attempt that should appear in rollout traces.
@@ -2626,6 +2651,7 @@ impl ModelClientSession {
                 }
             }
             self.websocket_session.last_request = Some(request);
+            self.websocket_session.last_request_node_repl_policy = Some(request_node_repl_policy);
             self.websocket_session.last_response_from_untraced_warmup = warmup;
             let stream_result = match stream_result {
                 Ok(stream) => stream,

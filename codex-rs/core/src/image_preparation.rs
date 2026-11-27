@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use crate::config::ManagedFeatures;
 use crate::context::ContextualUserFragment;
 use crate::context::ImageResizeNotice;
@@ -20,7 +22,7 @@ use codex_protocol::openai_models::ModelInfo;
 use codex_utils_image::ImageProcessingError;
 use codex_utils_image::PromptImageMode;
 use codex_utils_image::PromptImageResizeLimits;
-use codex_utils_image::load_data_url_for_prompt;
+use codex_utils_image::load_data_url_for_prompt_with_observer;
 use tracing::warn;
 
 pub(crate) const IMAGE_PROCESSING_ERROR_PLACEHOLDER: &str =
@@ -297,7 +299,29 @@ fn prepare_image(
             Some(ImageDetail::Low) => return Err(ImagePreparationError::UnsupportedLowDetail),
         },
     };
-    let image = load_data_url_for_prompt(image_url, PromptImageMode::ResizeWithLimits(limits))?;
+    let load_started = Instant::now();
+    tracing::trace!(phase = "image_load_begin", "conversation image phase");
+    let image = load_data_url_for_prompt_with_observer(
+        image_url,
+        PromptImageMode::ResizeWithLimits(limits),
+        |phase| {
+            tracing::trace!(
+                phase = phase.as_str(),
+                elapsed_ms = load_started.elapsed().as_secs_f64() * 1_000.0,
+                "conversation image phase"
+            );
+        },
+    );
+    tracing::trace!(
+        phase = if image.is_ok() {
+            "image_load_ready"
+        } else {
+            "image_load_error"
+        },
+        elapsed_ms = load_started.elapsed().as_secs_f64() * 1_000.0,
+        "conversation image phase"
+    );
+    let image = image?;
     metadata.push(ImagePreparationMetadata {
         message_role: origin.message_role.map(str::to_string),
         item_id: origin.item_id.map(str::to_string),

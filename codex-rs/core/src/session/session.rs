@@ -42,6 +42,7 @@ type PendingStartTransitionCompletion = (
     Arc<()>,
     Arc<StartTransitionCompletion>,
     StartTransitionCleanupSlot,
+    crate::tasks::TerminalizationAdmission,
 );
 
 type PendingTaskTerminalizationCompletion = (
@@ -51,6 +52,7 @@ type PendingTaskTerminalizationCompletion = (
     Option<crate::tasks::SuspensionHandoffSlot>,
     Option<crate::tasks::TaskAbortHandoffSlot>,
     Option<crate::tasks::TaskFinishHandoffSlot>,
+    crate::tasks::TerminalizationAdmission,
 );
 
 /// Context for an initialized model agent

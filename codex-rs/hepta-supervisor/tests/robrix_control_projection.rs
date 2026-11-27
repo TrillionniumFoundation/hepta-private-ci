@@ -349,9 +349,27 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
-    )
+    // Resolve a declared file: manifest-only runfiles need not contain a
+    // directory entry. Enumerating its parent still checks the complete set.
+    let resource_path = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
+    let manifest = codex_utils_cargo_bin::find_resource!(resource_path)?;
+    let root = manifest.parent().context("projection manifest parent")?;
+    let mut artifacts = BTreeMap::new();
+    for entry in fs::read_dir(root).with_context(|| format!("read {}", root.display()))? {
+        let entry = entry?;
+        // Declared Bazel inputs can be symlinks. Resolve only these trusted
+        // inputs; the generated output below still requires regular entries.
+        let source = entry.path().canonicalize()?;
+        if !fs::metadata(&source)?.is_file() {
+            anyhow::bail!("tracked artifact is not a file: {}", entry.path().display());
+        }
+        let name = entry
+            .file_name()
+            .into_string()
+            .map_err(|_| anyhow::anyhow!("artifact name is not UTF-8"))?;
+        artifacts.insert(name, fs::read(source)?);
+    }
+    Ok(artifacts)
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {

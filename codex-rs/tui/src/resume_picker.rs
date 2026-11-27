@@ -32,8 +32,6 @@ use crate::tui::Tui;
 use crate::tui::TuiEvent;
 use crate::wrapping::RtOptions;
 use crate::wrapping::adaptive_wrap_lines;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_app_server_client::AppServerRequestHandle;
 use codex_app_server_protocol::ClientRequest;
 use codex_app_server_protocol::RequestId;
@@ -783,7 +781,7 @@ impl Drop for AltScreenGuard<'_> {
 
 struct PickerState {
     requester: FrameRequester,
-    relative_time_reference: Option<DateTime<Utc>>,
+    relative_time_reference: Option<codex_utils_time::Timestamp>,
     pagination: PaginationState,
     all_rows: Vec<Row>,
     filtered_rows: Vec<Row>,
@@ -911,8 +909,8 @@ struct Row {
     preview: String,
     thread_id: Option<ThreadId>,
     thread_name: Option<String>,
-    created_at: Option<DateTime<Utc>>,
-    updated_at: Option<DateTime<Utc>>,
+    created_at: Option<codex_utils_time::Timestamp>,
+    updated_at: Option<codex_utils_time::Timestamp>,
     cwd: Option<PathBuf>,
     git_branch: Option<String>,
 }
@@ -1380,7 +1378,7 @@ impl PickerState {
     }
 
     fn start_initial_load(&mut self) {
-        self.relative_time_reference = Some(Utc::now());
+        self.relative_time_reference = Some(codex_utils_time::Timestamp::now());
         self.reset_pagination();
         self.all_rows.clear();
         self.filtered_rows.clear();
@@ -1965,10 +1963,8 @@ fn row_from_app_server_thread(thread: Thread) -> Option<Row> {
         },
         thread_id: Some(thread_id),
         thread_name: thread.name,
-        created_at: chrono::DateTime::from_timestamp(thread.created_at, 0)
-            .map(|dt| dt.with_timezone(&Utc)),
-        updated_at: chrono::DateTime::from_timestamp(thread.updated_at, 0)
-            .map(|dt| dt.with_timezone(&Utc)),
+        created_at: codex_utils_time::Timestamp::from_parts(thread.created_at, 0),
+        updated_at: codex_utils_time::Timestamp::from_parts(thread.updated_at, 0),
         cwd: Some(thread.cwd.to_path_buf()),
         git_branch: thread.git_info.and_then(|git_info| git_info.branch),
     })
@@ -2009,9 +2005,9 @@ fn paths_match(a: &Path, b: &Path) -> bool {
 }
 
 #[cfg_attr(not(test), allow(dead_code))]
-fn parse_timestamp_str(ts: &str) -> Option<DateTime<Utc>> {
-    chrono::DateTime::parse_from_rfc3339(ts)
-        .map(|dt| dt.with_timezone(&Utc))
+fn parse_timestamp_str(ts: &str) -> Option<codex_utils_time::Timestamp> {
+    codex_utils_time::OffsetTimestamp::parse_rfc3339(ts)
+        .map(codex_utils_time::OffsetTimestamp::to_utc)
         .ok()
 }
 
@@ -2789,7 +2785,9 @@ fn render_comfortable_session_lines(
         return lines;
     }
 
-    let reference = state.relative_time_reference.unwrap_or_else(Utc::now);
+    let reference = state
+        .relative_time_reference
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let created = format_relative_time(reference, row.created_at);
     let updated = format_relative_time(reference, row.updated_at.or(row.created_at));
     let branch = row.git_branch.as_deref();
@@ -2846,7 +2844,9 @@ fn render_dense_session_lines(
     width: u16,
 ) -> Vec<Line<'static>> {
     let marker = selection_marker(is_selected, is_expanded);
-    let reference = state.relative_time_reference.unwrap_or_else(Utc::now);
+    let reference = state
+        .relative_time_reference
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let created = format_relative_time(reference, row.created_at);
     let updated = format_relative_time(reference, row.updated_at.or(row.created_at));
     let date = match state.sort_key {
@@ -3185,7 +3185,9 @@ fn render_expanded_session_details(
     state: &PickerState,
     width: u16,
 ) -> Vec<Line<'static>> {
-    let reference = state.relative_time_reference.unwrap_or_else(Utc::now);
+    let reference = state
+        .relative_time_reference
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let session = match (row.thread_name.as_deref(), row.thread_id) {
         (Some(thread_name), Some(thread_id)) => format!("{thread_name} ({thread_id})"),
         (Some(thread_name), None) => thread_name.to_string(),
@@ -3339,8 +3341,8 @@ fn expanded_detail_line(label: &'static str, value: &str, width: u16) -> Line<'s
 
 fn expanded_time_detail_line(
     label: &'static str,
-    reference: DateTime<Utc>,
-    ts: Option<DateTime<Utc>>,
+    reference: codex_utils_time::Timestamp,
+    ts: Option<codex_utils_time::Timestamp>,
     width: u16,
 ) -> Line<'static> {
     let Some(ts) = ts else {
@@ -3354,11 +3356,14 @@ fn expanded_time_detail_line(
     expanded_detail_line(label, &value, width)
 }
 
-fn format_relative_time(reference: DateTime<Utc>, ts: Option<DateTime<Utc>>) -> String {
+fn format_relative_time(
+    reference: codex_utils_time::Timestamp,
+    ts: Option<codex_utils_time::Timestamp>,
+) -> String {
     let Some(ts) = ts else {
         return "-".to_string();
     };
-    let seconds = (reference - ts).num_seconds().max(0);
+    let seconds = (reference - ts).whole_seconds().max(0);
     if seconds == 0 {
         return "now".to_string();
     }
@@ -3377,8 +3382,11 @@ fn format_relative_time(reference: DateTime<Utc>, ts: Option<DateTime<Utc>>) -> 
     format!("{days}d ago")
 }
 
-fn format_relative_time_long(reference: DateTime<Utc>, ts: DateTime<Utc>) -> String {
-    let seconds = (reference - ts).num_seconds().max(0);
+fn format_relative_time_long(
+    reference: codex_utils_time::Timestamp,
+    ts: codex_utils_time::Timestamp,
+) -> String {
+    let seconds = (reference - ts).whole_seconds().max(0);
     if seconds == 0 {
         return "now".to_string();
     }
@@ -3404,8 +3412,8 @@ fn plural_time(value: i64, unit: &str) -> String {
     }
 }
 
-fn format_timestamp(ts: DateTime<Utc>) -> String {
-    ts.format("%Y-%m-%d %H:%M:%S").to_string()
+fn format_timestamp(ts: codex_utils_time::Timestamp) -> String {
+    ts.format("%Y-%m-%d %H:%M:%S")
 }
 
 fn render_empty_state_line(state: &PickerState) -> Line<'static> {
@@ -3438,7 +3446,6 @@ fn render_empty_state_line(state: &PickerState) -> Line<'static> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::Duration;
     use codex_app_server_protocol::ThreadItem;
     use codex_app_server_protocol::ThreadSourceKind;
     use codex_config::CONFIG_TOML_FILE;
@@ -3779,30 +3786,39 @@ mod tests {
 
     #[test]
     fn relative_time_formats_zero_seconds_as_now() {
-        let reference = DateTime::parse_from_rfc3339("2026-05-02T12:00:00Z")
+        let reference = codex_utils_time::OffsetTimestamp::parse_rfc3339("2026-05-02T12:00:00Z")
             .expect("valid timestamp")
-            .with_timezone(&Utc);
+            .to_utc();
 
         assert_eq!(format_relative_time(reference, Some(reference)), "now");
         assert_eq!(
-            format_relative_time(reference, Some(reference - Duration::seconds(1))),
+            format_relative_time(
+                reference,
+                Some(reference - codex_utils_time::SignedDuration::seconds(1))
+            ),
             "1s ago"
         );
     }
 
     #[test]
     fn long_relative_time_uses_words() {
-        let reference = DateTime::parse_from_rfc3339("2026-05-02T12:00:00Z")
+        let reference = codex_utils_time::OffsetTimestamp::parse_rfc3339("2026-05-02T12:00:00Z")
             .expect("valid timestamp")
-            .with_timezone(&Utc);
+            .to_utc();
 
         assert_eq!(format_relative_time_long(reference, reference), "now");
         assert_eq!(
-            format_relative_time_long(reference, reference - Duration::minutes(20)),
+            format_relative_time_long(
+                reference,
+                reference - codex_utils_time::SignedDuration::minutes(20)
+            ),
             "20 minutes ago"
         );
         assert_eq!(
-            format_relative_time_long(reference, reference - Duration::hours(1)),
+            format_relative_time_long(
+                reference,
+                reference - codex_utils_time::SignedDuration::hours(1)
+            ),
             "1 hour ago"
         );
     }
@@ -4097,8 +4113,8 @@ mod tests {
                 preview: String::from("Fix resume picker timestamps"),
                 thread_id: None,
                 thread_name: None,
-                created_at: Some(now - Duration::minutes(16)),
-                updated_at: Some(now - Duration::seconds(42)),
+                created_at: Some(now - codex_utils_time::SignedDuration::minutes(16)),
+                updated_at: Some(now - codex_utils_time::SignedDuration::seconds(42)),
                 cwd: None,
                 git_branch: None,
             },
@@ -4107,8 +4123,8 @@ mod tests {
                 preview: String::from("Investigate lazy pagination cap"),
                 thread_id: None,
                 thread_name: None,
-                created_at: Some(now - Duration::hours(1)),
-                updated_at: Some(now - Duration::minutes(35)),
+                created_at: Some(now - codex_utils_time::SignedDuration::hours(1)),
+                updated_at: Some(now - codex_utils_time::SignedDuration::minutes(35)),
                 cwd: None,
                 git_branch: None,
             },
@@ -4117,8 +4133,8 @@ mod tests {
                 preview: String::from("Explain the codebase"),
                 thread_id: None,
                 thread_name: None,
-                created_at: Some(now - Duration::hours(2)),
-                updated_at: Some(now - Duration::hours(2)),
+                created_at: Some(now - codex_utils_time::SignedDuration::hours(2)),
+                updated_at: Some(now - codex_utils_time::SignedDuration::hours(2)),
                 cwd: None,
                 git_branch: None,
             },
@@ -5562,8 +5578,8 @@ session_picker_view = "dense"
                 preview: format!("item-{idx}"),
                 thread_id: None,
                 thread_name: None,
-                created_at: Some(now - Duration::hours(idx)),
-                updated_at: Some(now - Duration::minutes(idx * 5)),
+                created_at: Some(now - codex_utils_time::SignedDuration::hours(idx)),
+                updated_at: Some(now - codex_utils_time::SignedDuration::minutes(idx * 5)),
                 cwd: None,
                 git_branch: None,
             })
@@ -5614,8 +5630,8 @@ session_picker_view = "dense"
                 preview: format!("item-{idx}"),
                 thread_id: None,
                 thread_name: None,
-                created_at: Some(now - Duration::hours(idx)),
-                updated_at: Some(now - Duration::minutes(idx * 5)),
+                created_at: Some(now - codex_utils_time::SignedDuration::hours(idx)),
+                updated_at: Some(now - codex_utils_time::SignedDuration::minutes(idx * 5)),
                 cwd: None,
                 git_branch: None,
             })

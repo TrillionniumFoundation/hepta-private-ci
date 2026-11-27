@@ -4,7 +4,6 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
-use chrono::Utc;
 use codex_core::RolloutRecorder;
 use codex_core::RolloutRecorderParams;
 use codex_core::config::ConfigBuilder;
@@ -80,7 +79,7 @@ async fn upsert_thread_metadata(
     let mut builder = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
-        Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::default(),
     );
     builder.cwd = codex_home.to_path_buf();

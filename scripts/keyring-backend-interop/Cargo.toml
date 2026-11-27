@@ -1,0 +1,20 @@
+[package]
+name = "keyring-transport-interop-probe"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+resolver = "2"
+
+[features]
+baseline = ["dep:keyring-baseline"]
+candidate = ["dep:codex-keyring-store", "dep:keyring-candidate"]
+
+[dependencies]
+keyring-baseline = { package = "keyring", version = "=3.6.3", optional = true, default-features = false, features = ["crypto-rust", "linux-native-async-persistent"] }
+keyring-candidate = { package = "keyring", version = "=3.6.3", path = "../../codex-rs/third_party/keyring-3.6.3", optional = true, default-features = false, features = ["crypto-rust", "linux-native-async-persistent"] }
+codex-keyring-store = { path = "../../codex-rs/keyring-store", optional = true }
+
+[profile.dev]
+debug = 0
+incremental = false

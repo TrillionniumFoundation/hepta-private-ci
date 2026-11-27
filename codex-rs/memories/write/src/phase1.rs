@@ -269,7 +269,7 @@ mod job {
                 context,
                 claimed_thread.id,
                 &claim.ownership_token,
-                claimed_thread.updated_at.timestamp(),
+                claimed_thread.updated_at.epoch_seconds(),
                 &stage_one_output.raw_memory,
                 &stage_one_output.rollout_summary,
                 stage_one_output.rollout_slug.as_deref(),

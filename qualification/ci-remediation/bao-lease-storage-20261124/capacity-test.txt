@@ -1,0 +1,9 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling hepta-bao-storage-qualification v0.1.0 (/workspace/scratch/87d09924eef9/bao_storage_20261124)
+    Finished `test` profile [unoptimized] target(s) in 0.86s
+────────────
+ Nextest run ID 93861cd4-8a92-40d3-a239-90b85dcc72b6 with nextest profile: local
+    Starting 1 test across 1 binary (8 tests skipped)
+        PASS [   0.706s] hepta-bao-storage-qualification lease_lifecycle::tests::oversized_publication_cannot_create_an_unreadable_registry
+────────────
+     Summary [   0.706s] 1 test run: 1 passed, 8 skipped

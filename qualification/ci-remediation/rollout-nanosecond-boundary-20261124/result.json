@@ -1,0 +1,42 @@
+{
+  "source_parent": "ebf5c5c4b2460319f0aa4525e008aba7d600a43f",
+  "source_binding": {
+    "production_source": "codex-rs/rollout/src/list.rs",
+    "production_source_sha256": "f2c5a4d6b610be574ae2b0ebf7892e5c506403a77cbd5b78cb957f45d00ec2b5",
+    "conversion_sha256": "00c408b1cbddffeb67528ae51c11222b984a3ca8ae86ed6fc84939bb8d2f1bf7",
+    "actual_time_source": "codex-rs/utils/time/src/lib.rs",
+    "scope": "actual conversion and time source; opaque id fixture; not full rollout build"
+  },
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "oracle": {
+    "accepted_instants": 1010,
+    "cursor_comparisons": 2020,
+    "epoch_fallbacks": 197,
+    "legacy": "chrono=0.4.43",
+    "mismatches": 0,
+    "rejected_parts": 68,
+    "represented_leap_seconds": 20
+  },
+  "tests": {
+    "scope": "actual time utility source plus extracted actual Cursor conversion with opaque ID fixture",
+    "passed": 11,
+    "failed": 0,
+    "exit_code": 0,
+    "log_sha256": "015472df0b2c2e0ad138fb94fd8dad550c2c4ac38290ccea55d714162a0b6529"
+  },
+  "clippy": {
+    "scope": "same isolated oracle graph",
+    "deny_warnings": true,
+    "exit_code": 0,
+    "log_sha256": "e058ebcd3bd720f742043c7d8428185da31f9828ab285bcd1674577380d43408"
+  },
+  "initial_config_attempt": {
+    "exit_code": 96,
+    "tests_executed": 0,
+    "reason": "full workspace overrides name packages absent from isolated oracle graph"
+  },
+  "full_rollout_build": "not_executed_locally",
+  "full_consumer_json_regression": "24 cases added; normal CI pending",
+  "production_dependency_locks_changed": false,
+  "isolated_oracle_lock_sha256": "91af57c57f1e17ee5713260279578f9369a4edf7d2338bf7defd62b62ba874b2"
+}

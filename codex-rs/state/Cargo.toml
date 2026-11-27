@@ -7,7 +7,7 @@ license.workspace = true
 [dependencies]
 codex-git-utils = { path = "../git-utils" }
 anyhow = { workspace = true }
-chrono = { workspace = true }
+codex-utils-time = { workspace = true }
 codex-history = { workspace = true }
 codex-protocol = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
@@ -28,6 +28,9 @@ uuid = { workspace = true }
 codex-git-utils = { workspace = true }
 pretty_assertions = { workspace = true }
 scopeguard = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
 
 [lints]
 workspace = true

@@ -148,7 +148,12 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
         }),
         "expected skill instructions in user input, got {user_texts:?}"
     );
-    assert!(request.has_content_kinds(&["skills.selected_skill_instructions"]));
+    let local_items =
+        super::local_annotations::persisted_request_items(&test.codex, &request, |_| true).await?;
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["skills.selected_skill_instructions"],
+    );
 
     Ok(())
 }

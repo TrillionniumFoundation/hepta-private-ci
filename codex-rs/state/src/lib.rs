@@ -17,6 +17,7 @@ mod model;
 mod paths;
 mod runtime;
 mod sqlite;
+mod sqlite_private_owner;
 mod sqlite_recovery;
 mod telemetry;
 

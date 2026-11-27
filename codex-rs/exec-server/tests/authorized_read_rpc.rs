@@ -21,6 +21,7 @@ use codex_protocol::permissions::FileSystemSandboxPolicy;
 use codex_protocol::permissions::NetworkSandboxPolicy;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
+use pretty_assertions::assert_eq;
 
 use common::exec_server::exec_server;
 
@@ -54,8 +55,9 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
     .await?;
 
     let temp = tempfile::tempdir()?;
-    let allowed_dir = temp.path().join("allowed");
-    let denied_dir = temp.path().join("denied");
+    let temp_root = temp.path().canonicalize()?;
+    let allowed_dir = temp_root.join("allowed");
+    let denied_dir = temp_root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let allowed_file = allowed_dir.join("allowed.txt");
@@ -87,6 +89,25 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
         Err(error) => bail!("unexpected authorized-read failure: {error:?}"),
     }
 
+    for max_bytes in [0, u64::MAX] {
+        let error = client
+            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+                path: PathUri::from_host_native_path(&allowed_file)?,
+                sandbox: sandbox.clone(),
+                max_bytes,
+            })
+            .await
+            .expect_err("invalid bounds must be rejected before filesystem access");
+        let ExecServerError::Server { code, message } = error else {
+            bail!("invalid-bound rejection must be a protocol error");
+        };
+        assert_eq!(code, -32600);
+        assert_eq!(
+            message,
+            "authorized file read bound must leave room for an overflow sentinel"
+        );
+    }
+
     let denied = client
         .fs_read_file_authorized(FsReadFileAuthorizedParams {
             path: PathUri::from_host_native_path(&denied_file)?,
@@ -101,6 +122,12 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
         };
         assert_eq!(*code, -32600);
         assert_eq!(message, "Permission denied");
+    } else {
+        let ExecServerError::Server { code, message } = &denied else {
+            bail!("expected unsupported capability rejection, got {denied:?}");
+        };
+        assert_eq!(*code, -32603);
+        assert_eq!(message, "bounded authorized file reads are unsupported");
     }
     assert!(!denied.to_string().contains("secret.txt"));
 

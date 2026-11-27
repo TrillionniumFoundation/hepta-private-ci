@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use std::process::Command;
 
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::G5_ASSESSMENT_SCHEMA;
 use super::G5_REVOCATION_SCHEMA;
@@ -24,7 +23,10 @@ use super::prepare_g5_challenge;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
+use crate::test_support::PrivateTempDir;
+use crate::test_support::assert_ssh_keygen_success;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_keygen;
 use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
@@ -254,7 +256,7 @@ fn read_assessment(path: &Path) -> (G5Assessment, Vec<u8>) {
 }
 
 struct TrustFixture {
-    _temporary: TempDir,
+    _temporary: PrivateTempDir,
     allowed_signers: PathBuf,
     key: PathBuf,
     policy: PathBuf,
@@ -270,12 +272,12 @@ impl TrustFixture {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
         let key = root.join("operator-key");
-        let status = Command::new("/usr/bin/ssh-keygen")
+        let generated = Command::new(ssh_keygen())
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
-            .status()
+            .output()
             .expect("start test key generation");
-        assert!(status.success());
+        assert_ssh_keygen_success("generate test-only G5 Ed25519 key", &generated);
         let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
         let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));
@@ -285,12 +287,12 @@ impl TrustFixture {
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = Command::new(ssh_keygen())
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
             .expect("compute fingerprint");
-        assert!(fingerprint_output.status.success());
+        assert_ssh_keygen_success("fingerprint test-only G5 Ed25519 key", &fingerprint_output);
         let fingerprint = String::from_utf8_lossy(&fingerprint_output.stdout)
             .split_ascii_whitespace()
             .nth(1)
@@ -369,14 +371,14 @@ impl TrustFixture {
     }
 
     fn sign(&self, challenge: &Path) -> PathBuf {
-        let status = Command::new("/usr/bin/ssh-keygen")
+        let signed = Command::new(ssh_keygen())
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", SSHSIG_NAMESPACE])
             .arg(challenge)
-            .status()
+            .output()
             .expect("start SSHSIG signer");
-        assert!(status.success());
+        assert_ssh_keygen_success("create test-only G5 SSHSIG", &signed);
         let signature = PathBuf::from(format!("{}.sig", challenge.display()));
         set_private_permissions(&signature);
         signature
@@ -384,6 +386,8 @@ impl TrustFixture {
 }
 
 fn set_private_permissions(path: &Path) {
+    #[cfg(not(unix))]
+    let _ = path;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

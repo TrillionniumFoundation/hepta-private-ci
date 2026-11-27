@@ -7,7 +7,6 @@ use std::sync::LazyLock;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use codex_utils_cache::BlockingLruCache;
-use codex_utils_cache::sha1_digest;
 use image::ColorType;
 use image::DynamicImage;
 use image::GenericImageView;
@@ -32,8 +31,11 @@ pub const MAX_PROMPT_IMAGE_INPUT_BYTES: usize = 1024 * 1024 * 1024;
 const MAX_IMAGE_CACHE_BYTES: usize = 64 * 1024 * 1024;
 
 pub mod error;
+mod observation;
 
 pub use crate::error::ImageProcessingError;
+pub use crate::observation::PromptImageLoadPhase;
+pub use crate::observation::load_data_url_for_prompt_with_observer;
 
 #[derive(Debug, Clone)]
 pub struct EncodedImage {
@@ -91,26 +93,22 @@ pub fn load_for_prompt_bytes(
     file_bytes: Vec<u8>,
     mode: PromptImageMode,
 ) -> Result<EncodedImage, ImageProcessingError> {
-    let path_buf = path.to_path_buf();
-
-    let key = ImageCacheKey {
-        digest: sha1_digest(&file_bytes),
-        mode,
-    };
-
-    if let Some(image) = IMAGE_CACHE.get(&key) {
-        return Ok(image);
-    }
-
-    let image = load_for_prompt_bytes_uncached(&path_buf, file_bytes, mode)?;
-    cache_image(&IMAGE_CACHE, key, image.clone(), MAX_IMAGE_CACHE_BYTES);
-    Ok(image)
+    observation::load_for_prompt_bytes_observed(path, file_bytes, mode, &IMAGE_CACHE, &mut |_| {})
 }
 
 fn load_for_prompt_bytes_uncached(
     path: &Path,
     file_bytes: Vec<u8>,
     mode: PromptImageMode,
+) -> Result<EncodedImage, ImageProcessingError> {
+    load_for_prompt_bytes_uncached_observed(path, file_bytes, mode, &mut |_| {})
+}
+
+fn load_for_prompt_bytes_uncached_observed(
+    path: &Path,
+    file_bytes: Vec<u8>,
+    mode: PromptImageMode,
+    observe: &mut impl FnMut(PromptImageLoadPhase),
 ) -> Result<EncodedImage, ImageProcessingError> {
     let path_buf = path.to_path_buf();
     (move || {
@@ -143,6 +141,7 @@ fn load_for_prompt_bytes_uncached(
         };
         let dynamic = DynamicImage::from_decoder(decoder)
             .map_err(|source| ImageProcessingError::decode_error(&path_buf, source))?;
+        observe(PromptImageLoadPhase::PixelsDecoded);
 
         let (width, height) = dynamic.dimensions();
 
@@ -164,6 +163,13 @@ fn load_for_prompt_bytes_uncached(
             }
             PromptImageMode::ResizeToFit | PromptImageMode::Original => None,
         };
+        observe(PromptImageLoadPhase::ResizeFinished);
+        let output_phase =
+            if target_dimensions.is_none() && format.is_some_and(can_preserve_source_bytes) {
+                PromptImageLoadPhase::OriginalBytesReady
+            } else {
+                PromptImageLoadPhase::OutputEncoded
+            };
 
         let encoded = if let Some((prepared_width, prepared_height, resized)) = target_dimensions {
             let target_format = format
@@ -203,6 +209,7 @@ fn load_for_prompt_bytes_uncached(
                 }
             }
         };
+        observe(output_phase);
 
         Ok(encoded)
     })()

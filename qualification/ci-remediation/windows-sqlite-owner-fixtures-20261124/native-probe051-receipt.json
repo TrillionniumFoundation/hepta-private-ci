@@ -1,0 +1,102 @@
+{
+  "source_head": "051be3cda3aad7a145830884a45999f2e549278f",
+  "source_tree": "6925027d8bc143e061230bfa75db1b0a235b3b28",
+  "fixture_commit": "640825cbfe71d978991a30959b52a0b60a509895",
+  "source_pins": {
+    "codex-rs/utils/path-utils/src/windows_private_tests.rs": {
+      "matches_fixture_commit_640825": true,
+      "git_blob": "98f815b73eefe8a8497ac9caecfb0d90d9998205",
+      "sha256": "91e59cd8578453deb776bc789ea02ae7f18dc540e4aeb8d45fb9aede17a6a804"
+    },
+    "codex-rs/utils/path-utils/src/windows_private_owner_tests.rs": {
+      "matches_fixture_commit_640825": true,
+      "git_blob": "25ca89828e500976326cbaa7bde1b1911908a074",
+      "sha256": "4af661c6fd0f0678ef762f6d73a953097cda1be9d35c5b417bf4895722b758a9"
+    }
+  },
+  "run": {
+    "id": 45451454733,
+    "job_id": 138649381190,
+    "status": "completed",
+    "conclusion": "cancelled",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45451454733/job/138649381190",
+    "budget_cancelled": true
+  },
+  "artifact": {
+    "id": 14947368172,
+    "bytes": 4418,
+    "sha256": "617b71211f66981e583f7b0e5ea48c28f52eb4eb8da6cd21771ad16cbf21bffc",
+    "digest_matches_github": true,
+    "files": {
+      "head.txt": {
+        "bytes": 42,
+        "sha256": "b26d03955e43259ca4b304c64ba0e2faab1ba6bc06738a6b3b8a5d220e5f1e57"
+      },
+      "native-primitives.log": {
+        "bytes": 10613,
+        "sha256": "96a4a86ff2f26f79934a3e0f019e0efb6f61e2432e49768a0588dcf3bc57fb63"
+      },
+      "registry-native.log": {
+        "bytes": 6364,
+        "sha256": "8088bf704beaffca30e3ae3c7738a27a5e1922ca1a2920b7d53c1663caeedca6"
+      },
+      "rustc.txt": {
+        "bytes": 201,
+        "sha256": "88b7810119b8cb6083d3f2835d072d7048f479595a7c152b6716f4859675be36"
+      }
+    }
+  },
+  "selections": {
+    "native-primitives.log": {
+      "run": 14,
+      "passed_count": 14,
+      "failed_count": 0,
+      "outside_selector": 5,
+      "unique_attempts": 14,
+      "passed": [
+        "codex-utils-path windows_private::tests::broad_existing_dacl_is_rejected_without_automatic_repair",
+        "codex-utils-path windows_private::tests::hard_links_and_non_leaf_names_are_rejected_before_editing",
+        "codex-utils-path windows_private::tests::one_character_target_uses_a_complete_rename_header",
+        "codex-utils-path windows_private::tests::private_directory_preserves_exclusive_writer_locking",
+        "codex-utils-path windows_private::tests::private_state_replaces_atomically_and_reopens_with_the_same_acl",
+        "codex-utils-path windows_private::tests::reparse_child_cannot_be_opened_or_used_as_a_replacement_target",
+        "codex-utils-path windows_private::tests::reparse_root_and_reparse_ancestor_never_reach_the_target",
+        "codex-utils-path windows_private::tests::retained_directory_cannot_be_rebound_by_path_rename",
+        "codex-utils-path windows_private::tests::sqlite_canonical_name_comes_from_the_validated_handle",
+        "codex-utils-path windows_private::tests::sqlite_inheritance_is_owner_only_and_does_not_weaken_the_default_policy",
+        "codex-utils-path windows_private::tests::sqlite_inspection_never_creates_repairs_or_flushes_source_objects",
+        "codex-utils-path windows_private::tests::sqlite_namespace_witness_restarts_and_covers_multiple_native_pages",
+        "codex-utils-path windows_private::tests::sqlite_snapshots_detect_drift_and_failed_candidate_cleanup_binds_the_handle",
+        "codex-utils-path windows_private::tests::writable_directory_handle_executes_the_real_flush"
+      ],
+      "failed": []
+    },
+    "registry-native.log": {
+      "run": 2,
+      "passed_count": 2,
+      "failed_count": 0,
+      "outside_selector": 26,
+      "unique_attempts": 2,
+      "passed": [
+        "codex-hepta-prompt-registry durable::windows_tests::native_owner_reopens_and_rejects_a_second_writer",
+        "codex-hepta-prompt-registry durable::windows_tests::native_post_rename_failure_poisoning_requires_reopen"
+      ],
+      "failed": []
+    }
+  },
+  "owner_observations": {
+    "ordinary_creation_owner_matches_effective_user": [
+      false,
+      false
+    ],
+    "ordinary_matching_owner_branch_executed": false,
+    "explicit_owner_with_inherited_dacl_control": "passed within the same native test",
+    "validator_and_existing_sd_unchanged": true
+  },
+  "limits": [
+    "Only primitive and registry selections are qualified by this artifact.",
+    "The earlier C VFS step failed before executing native cases; Runtime owns that separate receipt and feature-graph fix.",
+    "State consumer step was cancelled; cognitive and later consumer test selections were skipped after budget cancellation.",
+    "This probe is not a successful full workflow, and it does not establish SQLite consumer success."
+  ]
+}

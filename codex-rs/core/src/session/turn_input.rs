@@ -464,6 +464,17 @@ async fn start_if_idle(
                                 == session.rollout_persistence_failure_generation()
                     }))
         {
+            crate::tasks::recovery_diagnostics::record(
+                session,
+                "admission_epoch_or_candidate",
+                || {
+                    serde_json::json!({
+                        "expected_epoch": expected_epoch,
+                        "current_epoch": session.turn_epoch.load(Ordering::Acquire),
+                        "persistence_failure_generation": session.rollout_persistence_failure_generation(),
+                    })
+                },
+            );
             return Ok(TurnInputSubmission::NotSubmitted {
                 reason: NotSubmittedReason::RecoveryStateChanged,
             });
@@ -499,6 +510,11 @@ async fn start_if_idle(
             let Some(expected_context) =
                 recovery_reference_context(session, &submission_id, replay).await
             else {
+                crate::tasks::recovery_diagnostics::record(
+                    session,
+                    "reference_context_rejected",
+                    || serde_json::json!({"replay_context_sha256": replay.turn_context_sha256}),
+                );
                 if session
                     .consume_recovery_candidate_for_mutation()
                     .await
@@ -519,6 +535,15 @@ async fn start_if_idle(
             {
                 Ok(history) => Some(history),
                 Err(_) => {
+                    crate::tasks::recovery_diagnostics::record(
+                        session,
+                        "history_boundary_rejected",
+                        || {
+                            serde_json::json!({
+                                "boundary_sha256": crate::tasks::recovery_diagnostics::digest(&replay.history_boundary),
+                            })
+                        },
+                    );
                     if session
                         .consume_recovery_candidate_for_mutation()
                         .await
@@ -621,6 +646,16 @@ async fn start_if_idle(
                 .as_ref()
                 != Some(&replay.environments)
         {
+            crate::tasks::recovery_diagnostics::record(
+                session,
+                "applied_context_or_environment_rejected",
+                || {
+                    serde_json::json!({
+                        "context": crate::tasks::recovery_diagnostics::context_comparison(expected_context, &turn_context.to_turn_context_item()),
+                        "environments_equal": super::turn::turn_recovery_environment_selections(&turn_context.environments).as_ref() == Some(&replay.environments),
+                    })
+                },
+            );
             release_start_reservation_after_error(session, start_reservation_owner.handle()).await;
             return Ok(TurnInputSubmission::NotSubmitted {
                 reason: NotSubmittedReason::RecoveryStateChanged,
@@ -755,6 +790,9 @@ async fn recovery_reference_context(
     current_mut.timezone = expected.timezone.clone();
     let current_item = current.to_turn_context_item();
     if expected != current_item {
+        crate::tasks::recovery_diagnostics::record(session, "reference_context_fields", || {
+            crate::tasks::recovery_diagnostics::context_comparison(&expected, &current_item)
+        });
         return None;
     }
     let expected_context_sha256 = crate::model_provider_policy::canonical_sha256(&expected)
@@ -764,6 +802,17 @@ async fn recovery_reference_context(
         || super::turn::turn_recovery_environment_selections(&current.environments).as_ref()
             != Some(&replay.environments)
     {
+        crate::tasks::recovery_diagnostics::record(
+            session,
+            "reference_context_digest_or_environment",
+            || {
+                serde_json::json!({
+                    "context_sha256": expected_context_sha256,
+                    "replay_context_sha256": replay.turn_context_sha256,
+                    "environments_equal": super::turn::turn_recovery_environment_selections(&current.environments).as_ref() == Some(&replay.environments),
+                })
+            },
+        );
         return None;
     }
     Some(expected)

@@ -26,7 +26,7 @@ use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 #[path = "cognitive_store_recovery_read_only_tests.rs"]
 mod cold_read_only;
 
@@ -92,6 +92,33 @@ async fn seeded(
         .await
         .expect("seed memory");
     (store, access, receipt.memory)
+}
+
+fn install_private_copy(source: &Path, destination: &Path) {
+    #[cfg(not(windows))]
+    std::fs::copy(source, destination).expect("copy private fixture");
+    #[cfg(windows)]
+    {
+        use codex_utils_path::windows_private::Access;
+        use codex_utils_path::windows_private::PrivateSqliteDirectory;
+
+        let directory =
+            PrivateSqliteDirectory::open_writable(destination.parent().expect("private parent"))
+                .expect("existing private root");
+        let name = destination
+            .file_name()
+            .and_then(|name| name.to_str())
+            .expect("fixture leaf");
+        // Preserve the replacement/publication scenario with a new object
+        // created under the real owner contract, without repairing an ACL.
+        let mut target = directory
+            .open(name, Access::CreateNew)
+            .expect("create private fixture");
+        let mut source = std::fs::File::open(source).expect("source bytes");
+        std::io::copy(&mut source, &mut target).expect("copy exact fixture bytes");
+        target.sync_all().expect("flush fixture bytes");
+        directory.sync_all().expect("flush fixture entry");
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -209,7 +236,7 @@ async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate(
         .expect("recovery fence digest");
     let root = store.path().parent().expect("cognitive root").to_path_buf();
     let candidate = root.join(recovered_database_filename(&anchor, &fence));
-    std::fs::copy(store.path(), &candidate).expect("candidate file");
+    install_private_copy(store.path(), &candidate);
     protect_database_file(&candidate).expect("private candidate");
     publish_active_database(&root, &candidate).expect("pointer rename");
 
@@ -255,6 +282,18 @@ async fn writable_recovery_requires_exclusive_store_fence() {
         .await,
         Err(CognitiveRecoveryError::Unavailable(_))
     ));
+    // Closing a shared pool cannot release the still-live owner's store fence.
+    store.clone().close().await;
+    assert!(matches!(
+        CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
+        )
+        .await,
+        Err(CognitiveRecoveryError::Unavailable(_))
+    ));
 }
 
 #[tokio::test]
@@ -288,7 +327,7 @@ async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
     drop(store);
     let authority = recovery_authority(&owner);
 
-    assert!(matches!(
+    let failure = recovery_failure(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
             CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor),
@@ -296,8 +335,11 @@ async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
             &RecoveryVerifier,
         )
         .await,
-        Err(CognitiveRecoveryError::AccessDenied(_))
-    ));
+    );
+    assert!(
+        matches!(failure, CognitiveRecoveryError::AccessDenied(_)),
+        "unexpected predecessor admission result: {failure:?}"
+    );
 
     let recovered = CognitiveStore::open_with_recovery(
         &layout(&temp, &owner),
@@ -362,7 +404,7 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
     drop(store);
     let mut tampered = anchor;
     tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
-    assert!(matches!(
+    let failure = recovery_failure(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
             CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
@@ -370,8 +412,11 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
             &RecoveryVerifier,
         )
         .await,
-        Err(CognitiveRecoveryError::AccessDenied(_))
-    ));
+    );
+    assert!(
+        matches!(failure, CognitiveRecoveryError::AccessDenied(_)),
+        "unexpected altered-witness admission result: {failure:?}"
+    );
 }
 
 #[cfg(unix)]
@@ -419,7 +464,7 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
     }
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 #[tokio::test]
 async fn byte_identical_rename_replacement_can_recover_only_with_current_witness() {
     let temp = TempDir::new().expect("temp dir");
@@ -432,9 +477,8 @@ async fn byte_identical_rename_replacement_can_recover_only_with_current_witness
 
     let retained = database.with_extension("retained");
     std::fs::rename(&database, &retained).expect("retain original database");
-    std::fs::copy(&retained, &database).expect("install byte-identical replacement");
-    std::fs::set_permissions(&database, std::fs::Permissions::from_mode(0o600))
-        .expect("protect replacement");
+    install_private_copy(&retained, &database);
+    protect_database_file(&database).expect("protect or verify private replacement");
 
     let authority = recovery_authority(&owner);
     let recovered = CognitiveStore::open_with_recovery(
@@ -513,7 +557,10 @@ async fn corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io() {
         )
         .await,
     );
-    assert!(matches!(failure, CognitiveRecoveryError::Indeterminate(_)));
+    assert!(
+        matches!(failure, CognitiveRecoveryError::Indeterminate(_)),
+        "unexpected corrupt-source admission result: {failure:?}"
+    );
     assert_eq!(
         std::fs::read(&database).expect("re-read damaged source"),
         before

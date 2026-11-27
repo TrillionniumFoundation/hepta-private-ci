@@ -11,8 +11,6 @@ use crate::update_versions::is_source_build_version;
 use crate::updates_cache::VersionInfo;
 use crate::updates_cache::read_version_info;
 use crate::updates_cache::version_filepath;
-use chrono::Duration;
-use chrono::Utc;
 use codex_http_client::ClientRouteClass;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::RouteAwareClientPool;
@@ -35,7 +33,10 @@ pub fn get_upgrade_version(config: &Config) -> Option<String> {
 
     if match &info {
         None => true,
-        Some(info) => info.last_checked_at < Utc::now() - Duration::hours(20),
+        Some(info) => {
+            info.last_checked_at
+                < codex_utils_time::Timestamp::now() - codex_utils_time::SignedDuration::hours(20)
+        }
     } {
         let http_client_factory = config.http_client_factory();
         // Refresh the cached latest version in the background so TUI startup
@@ -117,7 +118,7 @@ async fn check_for_update(
     let prev_info = read_version_info(version_file).ok();
     let info = VersionInfo {
         latest_version,
-        last_checked_at: Utc::now(),
+        last_checked_at: codex_utils_time::Timestamp::now(),
         dismissed_version: prev_info.and_then(|p| p.dismissed_version),
     };
 

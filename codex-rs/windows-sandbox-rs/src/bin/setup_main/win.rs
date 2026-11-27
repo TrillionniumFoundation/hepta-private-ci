@@ -117,7 +117,7 @@ enum SetupMode {
 }
 
 fn log_line(log: &mut dyn Write, msg: &str) -> Result<()> {
-    let ts = chrono::Utc::now().to_rfc3339();
+    let ts = codex_utils_time::Timestamp::now().rfc3339();
     writeln!(log, "[{ts}] {msg}").map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperLogFailed,
@@ -427,7 +427,7 @@ pub fn main() -> Result<()> {
                 let _ = writeln!(
                     f,
                     "[{}] top-level error: {}",
-                    chrono::Utc::now().to_rfc3339(),
+                    codex_utils_time::Timestamp::now().rfc3339(),
                     e
                 );
             }

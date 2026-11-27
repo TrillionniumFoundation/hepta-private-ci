@@ -4,6 +4,8 @@
 //! We prefer this to using a crate feature to avoid building multiple
 //! permutations of the crate.
 
+pub use crate::tasks::recovery_diagnostics::RecoveryDiagnostics;
+
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -65,6 +67,24 @@ pub fn set_thread_manager_test_mode(enabled: bool) {
 
 pub fn set_deterministic_process_ids(enabled: bool) {
     unified_exec::set_deterministic_process_ids_for_tests(enabled);
+}
+
+/// Read-only context and base instructions owned by a completed test thread.
+pub struct ActiveContextSnapshot {
+    pub items: Vec<codex_protocol::models::ResponseItem>,
+    pub base_instructions: codex_protocol::models::BaseInstructions,
+}
+
+/// Returns the complete active context after the host has applied history rewrites.
+///
+/// Integration tests should capture this after their turn completes. Unlike the
+/// append-only rollout, this snapshot includes rollback and compaction effects;
+/// it preserves all response items and their local annotations without filtering.
+pub async fn active_context_snapshot(thread: &crate::CodexThread) -> ActiveContextSnapshot {
+    ActiveContextSnapshot {
+        items: thread.session.clone_history().await.into_raw_items(),
+        base_instructions: thread.session.get_base_instructions().await,
+    }
 }
 
 pub fn auth_manager_from_auth(auth: CodexAuth) -> Arc<AuthManager> {

@@ -57,6 +57,8 @@ impl MatrixSdkPaths {
         config: &MatrixSidecarConfig,
     ) -> Result<Self, MatrixSidecarConfigError> {
         config.validate(layout)?;
+        // This is a persisted namespace, not the currently linked SDK version.
+        // Preserve it across SDK upgrades so upstream migrations see old state.
         let root = layout.matrix_root().join("matrix-sdk-0.18");
         let state = root.join("state");
         let cache = root.join("cache");

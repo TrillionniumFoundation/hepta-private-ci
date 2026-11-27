@@ -105,7 +105,7 @@ struct GapFillAccumulator {
     observation: GapFillObservation,
 }
 
-// SDK TimelineEvent metadata can contain unbounded recursive bundled events.
+// SDK TimelineEvent auxiliary metadata is outside the raw event byte budget.
 // Retain only the raw envelopes covered by this accumulator's bounds/digest.
 struct AcceptedGapPage {
     start: String,

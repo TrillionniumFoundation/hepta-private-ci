@@ -21,8 +21,6 @@ use crate::model::epoch_millis_to_datetime;
 use crate::paths::file_modified_time_utc;
 use crate::telemetry::DbKind;
 use crate::telemetry::DbTelemetry;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_history::RolloutItem;
 use codex_protocol::ThreadId;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -376,7 +374,7 @@ ON CONFLICT(id) DO NOTHING
     )
     .bind(1_i64)
     .bind(crate::BackfillStatus::Pending.as_str())
-    .bind(Utc::now().timestamp())
+    .bind(codex_utils_time::Timestamp::now().epoch_seconds())
     .execute(pool)
     .await?;
     Ok(())

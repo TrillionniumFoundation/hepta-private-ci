@@ -245,7 +245,8 @@ mod tests {
         let root = TempDir::new().expect("tempdir");
         let external_agent_home = root.path().join(".external");
         let project_root = root.path().join("repo");
-        let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+        let timestamp =
+            codex_utils_time::Timestamp::now().rfc3339_utc(codex_utils_time::Precision::Seconds);
         let modified_at = SystemTime::now();
         let mut expected = Vec::new();
         let default_limits = ExternalAgentSessionImportLimits::default();
@@ -408,7 +409,8 @@ mod tests {
     }
 
     fn record(role: &str, text: &str, cwd: &Path) -> JsonValue {
-        let timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+        let timestamp =
+            codex_utils_time::Timestamp::now().rfc3339_utc(codex_utils_time::Precision::Seconds);
         record_at(role, text, cwd, &timestamp)
     }
 

@@ -49,6 +49,10 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // V8 150.4 lazily initializes the sandbox's ArrayBuffer backend without a
+    // lock. Complete its first use before OnceLock admits concurrent isolates.
+    // Dropping this wrapper leaves the isolate group's backend alive.
+    drop(v8::new_default_allocator());
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

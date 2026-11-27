@@ -8,8 +8,6 @@ use anyhow::Result;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpError;
 use codex_protocol::auth::PlanType as AuthPlanType;
@@ -233,7 +231,8 @@ pub fn authorization_header_for_agent_task(
     key: AgentIdentityKey<'_>,
     task_id: &str,
 ) -> Result<String> {
-    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+    let timestamp =
+        codex_utils_time::Timestamp::now().rfc3339_utc(codex_utils_time::Precision::Seconds);
     let envelope = AgentAssertionEnvelope {
         agent_runtime_id: key.agent_runtime_id.to_string(),
         task_id: task_id.to_string(),
@@ -317,7 +316,8 @@ pub async fn register_agent_task(
     agent_identity_authapi_base_url: &str,
     key: AgentIdentityKey<'_>,
 ) -> Result<String> {
-    let timestamp = Utc::now().to_rfc3339_opts(SecondsFormat::Secs, true);
+    let timestamp =
+        codex_utils_time::Timestamp::now().rfc3339_utc(codex_utils_time::Precision::Seconds);
     let request = RegisterTaskRequest {
         signature: sign_task_registration_payload(key, &timestamp)?,
         timestamp,

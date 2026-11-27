@@ -1,0 +1,137 @@
+{
+  "recorded_utc": "2026-11-24T16:09:40.179420+00:00",
+  "previous_published_head": "676d59ef602e59790a58614541bfb92325bdc71f",
+  "source_head_before_receipt_and_lock_commit": "ee89d5311ba4054a7d2ee09402994d287aee0d40",
+  "source_commits": [
+    "aa002040ac1d4cf0c3ae418a6bb3019517aba77d",
+    "65dc8ffde3ee114528728f6106ef6ab7384e5382",
+    "e55c35ff6bfd99a18bf0d197edbafb9da003e4bb",
+    "c37a446ec6c9468186dbf7a3ee8a4d835f135cfd",
+    "d90a8be2bc0d2acff724045fcbc93997e8ad507d",
+    "03c9a273168ab8cd15a40a2caee8ab1d5468a22e",
+    "55eebaff8b34e71a5a3c0bb3ac6bd465295bd0c8",
+    "b91001d0bc5db75028bd61e9f1ae7b4a5dcd9892",
+    "29827bc4663514cb1fe996f602f1aa6bb7e4df32",
+    "31b11f64217550398f637da9b95061620cd0eac4",
+    "4ea8c9274028096220ccce01477ee8ef229ffb17",
+    "ebf5c5c4b2460319f0aa4525e008aba7d600a43f",
+    "d4fa0b05cddfc14a09578e777ab8d08104c45d46",
+    "f694b9b2f5a20f94b7c0731d3a75192d9d8bf083",
+    "de06c199ebc7c66136567a508bd0284f8bd878b6",
+    "ae08b36ff9b0c1f8314ec6d03940915465d2c99a",
+    "ee89d5311ba4054a7d2ee09402994d287aee0d40"
+  ],
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "cargo_deny": "0.19.0",
+  "advisory_database_commit": "1d328b6bb9f2f350bf65c1c81ab68781cb9e018a",
+  "cargo_deny_command": [
+    "cargo-deny",
+    "--locked",
+    "--all-features",
+    "--format",
+    "json",
+    "check",
+    "--hide-inclusion-graph",
+    "--show-stats",
+    "--disable-fetch"
+  ],
+  "exit_codes": {
+    "cargo_metadata_locked_offline": 0,
+    "cargo_deny": 0,
+    "bazel_lock_update": 0,
+    "bazel_lock_check": 0,
+    "cargo_fmt_workspace_check": 0,
+    "just_fmt": 0,
+    "actionlint_four_scoped_workflows": 0,
+    "source_range_diff_check": 0
+  },
+  "audit_summary": {
+    "advisories": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 18,
+      "warnings": 3
+    },
+    "bans": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 22,
+      "warnings": 116
+    },
+    "licenses": {
+      "errors": 0,
+      "helps": 1351,
+      "notes": 0,
+      "warnings": 1
+    },
+    "sources": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 6,
+      "warnings": 1
+    }
+  },
+  "unchanged_preexisting_advisory_exceptions": 9,
+  "remaining_yanked_warnings": [
+    "chacha20 0.10.0",
+    "clipboard-win 5.4.1",
+    "spin 0.9.8"
+  ],
+  "cargo_lock_sha256": "8e795abd7481a489d5e80bfaec1991d978e55c846c1f93032b61a184fa608c4e",
+  "module_lock_sha256": "71ed10405c5f99aff2969e9c765d9682e9df2d9d27d43ef7bf2e6523b2b31a7d",
+  "deny_policy_sha256": "de3b77f8b4639bdd7fb188048b09757cb6dd06ae01ecb10998537424c3c240f0",
+  "manifest_set_sha256": "c3915d16787faacea38ae6c5405991ebf491f596b485cc6954942a54888f6d1c",
+  "production_lock_delta": "Only codex-hepta-memory and codex-state gain their target-Windows codex-utils-path workspace edge; no third-party version changes. Bazel lock update/check succeed with byte-identical MODULE.bazel.lock.",
+  "chrono_graph": {
+    "actual_all_features_all_targets_tree": "No active reverse dependency; cargo tree says nothing to print.",
+    "metadata_optional_nodes": [
+      {
+        "name": "chrono",
+        "version": "0.4.43"
+      }
+    ],
+    "scope": "An inactive serde_with weak optional lock/metadata node remains. No textual lock-purge claim."
+  },
+  "logs_sha256": {
+    "cargo-deny-third-batch.jsonl": "469e817fd373b66fc2df4e7e9f11689c71e04832cec781c80108f5605cf6c786",
+    "cargo-metadata-third-batch.json.gz": "6005d636fbacba97402eaf334927a08a934d68cb35ca75e51011b817f7b8cc4e",
+    "cargo-metadata-third-batch.log": "88541132a6fce46a0a65f56189c26c72bfd46f5f2afd3a2ac8c429ef4c9d2945",
+    "bazel-lock-update-third-batch.log": "70532a53f7751c6aa2d7d952bffc332a32dc251475983de8ded5fca6467c549c",
+    "bazel-lock-check-third-batch.log": "2d900b797571c24174f38fdb47e0df46a436873a56e873e854f4e77802efaaa5",
+    "cargo-fmt-third-batch.log": "a9c355ac191e05cf051c87fc4cb2eedec943414fba51b26edfafd610bafe8230",
+    "scoped-workflow-actionlint-third-batch.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "chrono-third-tree.txt": "687e482bb699a1e7501c42543355a9a98f9df738e378085003a4ee1ba5b4f509",
+    "just-fmt-third-batch.log": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+  },
+  "workflow_sha256": {
+    "keyring-backend-interop.yml": "92e8ab99ca5487c5c0bcd0fa00a3aa336c84b6a6d04ae1a34a2953021dd280de",
+    "matrix-store-compatibility.yml": "bfe91fab2e3266be114db9c12aea6c948471e2495f3426edcef1d79933747670",
+    "hepta-ci-fixtures.yml": "7e43b183de3a531814932a1fe4799d843313c278e645645ddfff987070662025",
+    "hepta-windows-durable-fixtures.yml": "7f564d3d78f6824e471a46bfd4adcf73b2c9cd92d74fbaac0b4d743d6301ac73"
+  },
+  "actionlint": {
+    "version": "1.7.12",
+    "scope": "GitHub workflow syntax and contexts; external shellcheck/pyflakes unavailable."
+  },
+  "observed_previous_head_native_execution": {
+    "head": "676d59ef602e59790a58614541bfb92325bdc71f",
+    "run": 45428321717,
+    "job": 138566329525,
+    "primitive_tests": 9,
+    "passed": 7,
+    "failed": 2,
+    "failure": "Atomic replace and one-character rename returned Win32 error87. The internal Win32 wrapper cause is not established.",
+    "other_compile_failures": "Missing std::fs::File and removed timestamp_nanos_opt call; source fixes included."
+  },
+  "stage_specific_evidence": {
+    "registry": "Isolated actual-source Linux 50 passed/0 skipped; after test-helper repair, strict Clippy succeeds and two affected relation tests pass. Not a full workspace/native result.",
+    "cursor": "Actual extracted production conversion versus Chrono0.4.43:2020 comparisons,0 differences;197 overflow fallbacks;20 represented leap cases;68 rejected-part agreements;11 isolated tests passed. Full rollout/24 complete Cursor cases require CI.",
+    "windows": "MSVC compilation of the native65 candidate passed; no native execution of this candidate yet. Prior7/9 results are not transferred to new native source."
+  },
+  "excluded_security_change": {
+    "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/7070",
+    "scope": "Separate fail-closed containment draft for the observed outside-delete sandbox defect. Not included or claimed functionally repaired here."
+  },
+  "remaining_gates": "Actual final-head complete blocking CI; encrypted keyring and Matrix store qualification; native Windows storage/recovery; unchanged complete consumer tests.",
+  "preflight_error_boundary": "An initial metadata invocation from repo root exited101 before resolution; corrected codex-rs invocation passes. No tests were executed by that path error."
+}

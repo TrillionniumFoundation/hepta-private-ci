@@ -1,0 +1,65 @@
+{
+  "schema": "hepta-native-recovery-preparation-v1",
+  "base_commit": "a16a61fbe1652fb57c1ddb7031019d26ae79a24e",
+  "source_sha256": {
+    ".github/workflows/hepta-ci-fixtures.yml": "b4080cf403390ed75958a0f2518e3755d42507fbb71eb2f5236b4490907bf0f9",
+    ".github/workflows/hepta-windows-durable-fixtures.yml": "9957fa07373093e0f6ffb95d4cee171db28bae5d2aee5528f3a2e30afad803b8",
+    "codex-rs/hepta-memory/Cargo.toml": "68447808be2ddac5ff50bc7f8baceac73738fe6c43ed68e3621945e14703e5e8",
+    "codex-rs/hepta-memory/src/cognitive_store.rs": "315790c703d3d85063fca9fbf670167ff668b58bbef72645821708f168572ded",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "e8b8e58356563d791eb969b0a41284fba8b1d9bdeaa5b595f87514242466a6ab",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs": "6effcd2b22ca087ffc2fc66e800c720bdf650da69ae4f034c1085de8b43a295b",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs": "f5daf8e31d99cf73ca598f256acdc284ec33c7420e883470778250382af4b36b",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "cc165d3cb4598b6f06101da40c9c4dbab729fa2d4881252f20817630b9ddf528",
+    "codex-rs/hepta-memory/src/cognitive_store_windows.rs": "dc0edb63b8282ed3455908956b965cc4861bf6d7469d78754a17f2a6a8e658c9",
+    "codex-rs/state/Cargo.toml": "be810cc2c0311c334ac29f8e05da81a8ddfce0fdf4e1bbba05a509ead9dcc441",
+    "codex-rs/state/src/sqlite_recovery.rs": "472ea5a11ea42c526c1c953090b83673c68143986d51f2ab8e25c988bd71f077",
+    "codex-rs/state/src/sqlite_recovery_image.rs": "8851cac0e75bbaac886f063002b778e0680b55a8b6e0e9f310b062f991d305e0",
+    "codex-rs/state/src/sqlite_recovery_image_tests.rs": "d4f0c42fe2151e9a41c9a45587e807edb32c8738600ed5f87cb1ba53a3302ded",
+    "codex-rs/state/src/sqlite_recovery_windows.rs": "d589ea4dcef5a69a32ace6b84870f3733e1b3a452f638e07e354b32efeb2acd3",
+    "codex-rs/state/src/sqlite_recovery_windows_tests.rs": "c01453cf5ea34135e60508fd2f72c0fefc4f1c2711fadefc279865f4470e28cc",
+    "codex-rs/utils/path-utils/src/windows_private.rs": "ee48318166c17462b491183f89c1086654d355e0a72b639d26bcd156abeb9da0",
+    "codex-rs/utils/path-utils/src/windows_private_handles.rs": "cd5e80dca5d320c2bbdfb86e4f5d861d4a29aa714cf0826c4fec4009170dcb75",
+    "codex-rs/utils/path-utils/src/windows_private_security.rs": "759a15d4c638ba380cb7c192971e9bcc9c17ba0a13f76e6e32835b46f635abdc",
+    "codex-rs/utils/path-utils/src/windows_private_sqlite.rs": "880fe59a2d064f50069b4375f188e23eabf37303b2e47f8b3550addd329ac556",
+    "codex-rs/utils/path-utils/src/windows_private_tests.rs": "fa8df7eb6127cb47aa6ca9f7264149c22a244ea728122f8065bb80cd24b5e839"
+  },
+  "checks": {
+    "just_fmt": {
+      "exit_code": 0,
+      "native_execution": false
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    },
+    "actionlint_two_workflows": {
+      "exit_code": 0
+    },
+    "path_utils_msvc_check_tests": {
+      "target": "x86_64-pc-windows-msvc",
+      "toolchain": "1.96.0",
+      "isolated_package_count": 55,
+      "duration_seconds": 6.29,
+      "exit_code": 0,
+      "warnings": 0,
+      "native_tests_executed": 0,
+      "same_before_after_source": true,
+      "compiled_source_sha256": {
+        "codex-rs/utils/path-utils/src/env.rs": "a252bfec34d98d176179987e572377866ea52f371ce756aafa61bc1de91dfc76",
+        "codex-rs/utils/path-utils/src/lib.rs": "a3783cdc34793fde57a6a984327e89c3b781c84e01d7476b8e6e1608944e6a31",
+        "codex-rs/utils/path-utils/src/path_utils_tests.rs": "e64f277c43eb9c85d5fd2c92ca3e180562f77ef4189f842e4bde5a333fcf2f10",
+        "codex-rs/utils/path-utils/src/windows_private.rs": "ee48318166c17462b491183f89c1086654d355e0a72b639d26bcd156abeb9da0",
+        "codex-rs/utils/path-utils/src/windows_private_handles.rs": "cd5e80dca5d320c2bbdfb86e4f5d861d4a29aa714cf0826c4fec4009170dcb75",
+        "codex-rs/utils/path-utils/src/windows_private_security.rs": "759a15d4c638ba380cb7c192971e9bcc9c17ba0a13f76e6e32835b46f635abdc",
+        "codex-rs/utils/path-utils/src/windows_private_sqlite.rs": "a9ac8caea64ec17fd33f9a440a0acaf0689229dd2cc9c96999bf1755667ad8a0",
+        "codex-rs/utils/path-utils/src/windows_private_tests.rs": "fa8df7eb6127cb47aa6ca9f7264149c22a244ea728122f8065bb80cd24b5e839"
+      },
+      "subsequent_change": "rustdoc-only clarification of remove_created(File) precondition"
+    }
+  },
+  "pending": [
+    "Integrated Cargo/Bazel locks",
+    "Native Windows execution including consumers",
+    "Unix recovery regression execution",
+    "Scoped just fix and clean diff on integrated source"
+  ]
+}

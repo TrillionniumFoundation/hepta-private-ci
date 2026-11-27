@@ -8,8 +8,6 @@ use super::build_recent_work_section;
 use super::build_workspace_section_with_user_root;
 use super::format_section;
 use super::format_startup_context_blob;
-use chrono::TimeZone;
-use chrono::Utc;
 use codex_git_utils::GitSha;
 use codex_protocol::ThreadId;
 use codex_protocol::models::ContentItem;
@@ -39,17 +37,11 @@ fn stored_thread(cwd: &str, title: &str, first_user_message: &str) -> StoredThre
         model_provider: "test-provider".to_string(),
         model: Some("gpt-5.2".to_string()),
         reasoning_effort: None,
-        created_at: Utc
-            .timestamp_opt(1_709_251_100, 0)
-            .single()
+        created_at: codex_utils_time::Timestamp::from_parts(1_709_251_100, 0)
             .expect("valid timestamp"),
-        updated_at: Utc
-            .timestamp_opt(1_709_251_200, 0)
-            .single()
+        updated_at: codex_utils_time::Timestamp::from_parts(1_709_251_200, 0)
             .expect("valid timestamp"),
-        recency_at: Utc
-            .timestamp_opt(1_709_251_200, 0)
-            .single()
+        recency_at: codex_utils_time::Timestamp::from_parts(1_709_251_200, 0)
             .expect("valid timestamp"),
         archived_at: None,
         project_id: None,

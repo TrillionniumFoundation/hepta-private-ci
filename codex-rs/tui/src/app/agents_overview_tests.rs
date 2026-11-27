@@ -20,7 +20,7 @@ use codex_config::types::TuiKeymap;
 use codex_protocol::protocol::SubAgentSource;
 
 static OVERVIEW_TIMESTAMP: std::sync::LazyLock<i64> =
-    std::sync::LazyLock::new(|| chrono::Utc::now().timestamp() - 120);
+    std::sync::LazyLock::new(|| codex_utils_time::Timestamp::now().epoch_seconds() - 120);
 
 fn overview_thread(
     thread_id: ThreadId,

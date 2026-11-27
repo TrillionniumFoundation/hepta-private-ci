@@ -5,7 +5,6 @@ use super::bedrock_auth::ensure_user_model_provider_can_be_bedrock;
 use super::*;
 use crate::auth_mode::auth_mode_to_api;
 use crate::external_auth::ExternalAuthBridge;
-use chrono::DateTime;
 use codex_app_server_protocol::DesktopOnboardingEntrypoint;
 use codex_login::LoginOnboardingEntrypoint;
 use codex_login::login_with_bedrock_access_keys;
@@ -1447,8 +1446,8 @@ fn workspace_message_timestamp_from_backend(
 ) -> Result<Option<i64>, JSONRPCErrorError> {
     timestamp
         .map(|timestamp| {
-            DateTime::parse_from_rfc3339(&timestamp)
-                .map(|timestamp| timestamp.timestamp())
+            codex_utils_time::OffsetTimestamp::parse_rfc3339(&timestamp)
+                .map(|timestamp| timestamp.epoch_seconds())
                 .map_err(|err| {
                     internal_error(format!(
                         "failed to parse workspace message timestamp `{timestamp}`: {err}"

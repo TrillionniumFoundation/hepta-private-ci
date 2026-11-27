@@ -42,6 +42,7 @@ use serde_json::Value;
 use serde_json::json;
 use tempfile::TempDir;
 
+use super::local_annotations::assert_wire_has_no_internal_metadata;
 use super::rmcp_client::remote_aware_environment_id;
 use super::rmcp_client::remote_aware_stdio_server_bin;
 
@@ -52,6 +53,7 @@ const RMCP_ECHO_TOOL_NAME: &str = "mcp__rmcp__echo";
 const RMCP_HOOK_MATCHER: &str = RMCP_ECHO_TOOL_NAME;
 const RMCP_ECHO_MESSAGE: &str = "hook e2e ping";
 const GOVERNED_HOOK_ERROR: &str = "MCP tool hooks are disabled in governed threads";
+const RMCP_CALL_MARKER: &str = "synthetic_mcp_call.json";
 
 struct ActiveToolPolicy;
 
@@ -61,6 +63,12 @@ impl ToolPolicyContributor for ActiveToolPolicy {}
 enum PermissionRequestHookOutcome {
     Allow,
     Deny(&'static str),
+}
+
+#[derive(Clone, Copy)]
+enum ThreadHintVisibility {
+    Hidden,
+    ModelVisible,
 }
 
 fn enable_mcp_tool_name_features(config: &mut Config, prefix_mcp_tool_names: bool) {
@@ -294,7 +302,11 @@ fn write_thread_hint_mcp_tool_hook(home: &Path) -> Result<()> {
         .context("write governed MCP tool hook config")
 }
 
-fn set_rmcp_marker_env(config: &mut Config, marker_file: String) {
+fn set_thread_hint_fixture_env(
+    config: &mut Config,
+    marker_file: String,
+    visibility: ThreadHintVisibility,
+) {
     let mut servers = config.mcp_servers.get().clone();
     let server = servers
         .get_mut(RMCP_SERVER)
@@ -302,10 +314,15 @@ fn set_rmcp_marker_env(config: &mut Config, marker_file: String) {
     let McpServerTransportConfig::Stdio { env, .. } = &mut server.transport else {
         panic!("rmcp test server should use stdio transport");
     };
-    *env = Some(HashMap::from([(
-        "MCP_TEST_THREAD_HINT_MARKER_FILE".to_string(),
-        marker_file,
-    )]));
+    let mut fixture_env =
+        HashMap::from([("MCP_TEST_THREAD_HINT_MARKER_FILE".to_string(), marker_file)]);
+    if matches!(visibility, ThreadHintVisibility::ModelVisible) {
+        fixture_env.insert(
+            "MCP_TEST_THREAD_HINT_MODEL_VISIBLE".to_string(),
+            "1".to_string(),
+        );
+    }
+    *env = Some(fixture_env);
     config
         .mcp_servers
         .set(servers)
@@ -319,6 +336,28 @@ fn read_hook_inputs(home: &Path, log_name: &str) -> Result<Vec<Value>> {
         .filter(|line| !line.trim().is_empty())
         .map(|line| serde_json::from_str(line).with_context(|| format!("parse {log_name} line")))
         .collect()
+}
+
+fn enable_rmcp_call_marker(config: &mut Config) {
+    let mut servers = config.mcp_servers.get().clone();
+    let server = servers
+        .get_mut(RMCP_SERVER)
+        .expect("configured synthetic MCP server");
+    let McpServerTransportConfig::Stdio { env, .. } = &mut server.transport else {
+        panic!("synthetic call marker requires the stdio test server");
+    };
+    env.get_or_insert_with(HashMap::new).insert(
+        "MCP_TEST_CALL_MARKER_FILE".to_owned(),
+        config
+            .codex_home
+            .join(RMCP_CALL_MARKER)
+            .to_string_lossy()
+            .into_owned(),
+    );
+    config
+        .mcp_servers
+        .set(servers)
+        .expect("synthetic marker configuration");
 }
 
 fn insert_rmcp_test_server(
@@ -541,7 +580,7 @@ async fn run_governed_mcp_tool_hook_guard_test(
                 AppToolApproval::Prompt,
                 /*prefix_mcp_tool_names*/ true,
             );
-            set_rmcp_marker_env(config, marker_file_env);
+            set_thread_hint_fixture_env(config, marker_file_env, ThreadHintVisibility::Hidden);
             if enable_hepta {
                 config
                     .features
@@ -652,7 +691,16 @@ async fn mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval() -> R
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<()> {
+async fn mcp_tool_hook_rejects_model_hidden_tools_before_transport() -> Result<()> {
+    run_thread_hint_visibility_test(ThreadHintVisibility::Hidden).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn mcp_tool_hook_passes_thread_metadata_to_model_visible_tools() -> Result<()> {
+    run_thread_hint_visibility_test(ThreadHintVisibility::ModelVisible).await
+}
+
+async fn run_thread_hint_visibility_test(visibility: ThreadHintVisibility) -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = start_mock_server().await;
@@ -665,24 +713,13 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
         ]),
     )
     .await;
+    let marker_dir = TempDir::new()?;
+    let marker_file = marker_dir.path().join("thread_hint_called");
+    let marker_file_env = marker_file.to_string_lossy().into_owned();
     let rmcp_test_server_bin = stdio_server_bin()?;
     let test = test_codex()
         .with_pre_build_hook(|home| {
-            let hooks = json!({
-                "hooks": {
-                    "UserPromptSubmit": [{
-                        "hooks": [{
-                            "type": "mcp_tool",
-                            "server": RMCP_SERVER,
-                            "tool": "thread_hint",
-                            "input": {},
-                            "timeout": 5,
-                        }],
-                    }],
-                },
-            });
-            fs::write(home.join("hooks.json"), hooks.to_string())
-                .expect("write model-hidden MCP tool hook config");
+            write_thread_hint_mcp_tool_hook(home).expect("write thread metadata hook fixture");
         })
         .with_config(move |config| {
             enable_hooks_and_rmcp_server(
@@ -691,6 +728,7 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
                 AppToolApproval::Prompt,
                 /*prefix_mcp_tool_names*/ true,
             );
+            set_thread_hint_fixture_env(config, marker_file_env, visibility);
         })
         .build(&server)
         .await?;
@@ -703,17 +741,41 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
         "manual history hint for thread {}\nunstructured notes/thread_hint fixture result",
         test.session_configured.thread_id,
     );
-    assert!(
-        request
-            .message_input_texts("developer")
-            .contains(&expected_context)
-    );
-    assert!(
-        request
-            .tool_by_name(RMCP_PREFIXED_NAMESPACE, "thread_hint")
-            .is_none(),
-        "the hook tool must remain hidden from the model"
-    );
+    let context_messages = request
+        .message_input_texts("developer")
+        .into_iter()
+        .filter(|message| {
+            message.contains("manual history hint")
+                || message.contains("unstructured notes/thread_hint fixture result")
+        })
+        .collect::<Vec<_>>();
+    match visibility {
+        ThreadHintVisibility::Hidden => {
+            assert_eq!(context_messages, Vec::<String>::new());
+            let input = request.body_json()["input"].to_string();
+            assert!(
+                !input.contains("manual history hint")
+                    && !input.contains("unstructured notes/thread_hint fixture result"),
+                "a hidden-tool hook must inject no server output into any role"
+            );
+            assert!(
+                !marker_file.try_exists()?,
+                "a hidden-tool hook must be rejected before the server handler"
+            );
+            assert!(
+                request
+                    .tool_by_name(RMCP_PREFIXED_NAMESPACE, "thread_hint")
+                    .is_none(),
+                "the hidden hook tool must stay absent from the model catalog"
+            );
+        }
+        ThreadHintVisibility::ModelVisible => {
+            assert_eq!(context_messages, vec![expected_context]);
+            assert_eq!(fs::read(&marker_file)?, b"called");
+            // MCP tools can be deferred from the request's inline catalog. This
+            // successful hook still crosses the same model-visibility gate.
+        }
+    }
 
     Ok(())
 }
@@ -946,6 +1008,7 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
                 AppToolApproval::Approve,
                 prefix_mcp_tool_names,
             );
+            enable_rmcp_call_marker(config);
         })
         .build(&server)
         .await?;
@@ -956,15 +1019,34 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
 
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
-    let output_item = requests[1].function_call_output(call_id);
+    for request in &requests {
+        assert_wire_has_no_internal_metadata(request);
+    }
+    let attempted_call = requests[1]
+        .inputs_of_type("function_call")
+        .into_iter()
+        .find(|item| item["call_id"] == call_id)
+        .expect("original attempted MCP call");
     assert_eq!(
-        output_item["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        json!([{
-            "name": format!("{mcp_namespace}__echo"),
+        json!({
+            "namespace": attempted_call["namespace"],
+            "name": attempted_call["name"],
+            "arguments": serde_json::from_str::<Value>(attempted_call["arguments"].as_str().expect("call arguments"))?,
+        }),
+        json!({
+            "namespace": mcp_namespace,
+            "name": "echo",
             "arguments": { "message": RMCP_ECHO_MESSAGE },
-        }]),
-        "a blocked MCP request must still retain the original model-attempted call",
+        })
     );
+    assert!(
+        !test.codex_home_path().join(RMCP_CALL_MARKER).exists(),
+        "the blocked MCP attempt must not reach the synthetic server's tools/call handler"
+    );
+    let output_item = requests[1].function_call_output(call_id);
+    // Attempt metadata belongs to the pre-transport prompt clone. The recorder
+    // unit test covers its original name/arguments and unchanged history; the
+    // actual localhost wire is required to strip it.
     let output = output_item
         .get("output")
         .and_then(Value::as_str)
@@ -1043,6 +1125,7 @@ async fn pre_tool_use_rewrites_mcp_tool_before_execution() -> Result<()> {
                 AppToolApproval::Approve,
                 /*prefix_mcp_tool_names*/ true,
             );
+            enable_rmcp_call_marker(config);
         })
         .build(&server)
         .await?;
@@ -1052,6 +1135,17 @@ async fn pre_tool_use_rewrites_mcp_tool_before_execution() -> Result<()> {
         .await?;
 
     let final_request = final_mock.single_request();
+    assert_wire_has_no_internal_metadata(&final_request);
+    let marker: Value =
+        serde_json::from_slice(&fs::read(test.codex_home_path().join(RMCP_CALL_MARKER))?)?;
+    assert_eq!(
+        marker,
+        json!({
+            "name": "echo",
+            "arguments": { "message": rewritten_message },
+        }),
+        "successful echo proves the same call marker observes real execution"
+    );
     let output_item = final_request.function_call_output(call_id);
     let output = output_item
         .get("output")

@@ -46,6 +46,9 @@ const AGENT_IDS: [&str; 5] = [
     "019153a4-3088-7e03-a56a-9b1964f75dd6",
 ];
 
+#[path = "support/supervisord_failure.rs"]
+mod failure_diagnostics;
+
 /// The parent test spawns this integration-test executable as an isolated
 /// process so the exact product daemon implementation can itself own and
 /// survive independently from the test coordinator.
@@ -71,6 +74,11 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
+    // Keep the synthetic fleet's sockets within Darwin's sun_path limit,
+    // independent of the test runner's temporary-directory depth.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::Builder::new().prefix("hsp-").tempdir_in("/tmp")?;
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -85,7 +93,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let sources = root.join("release-sources");
     std::fs::create_dir(&sources)?;
-    let agentd = PathBuf::from(env!("CARGO_BIN_EXE_codex-hepta-agentd"));
+    let agentd = codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?;
     let source_v1 = agentd_wrapper(&sources, "agentd-v1", &agentd)?;
     let source_v2 = agentd_wrapper(&sources, "agentd-v2", &agentd)?;
     let release_v1 = ReleaseId::parse("agentd-v1")?;
@@ -249,7 +257,8 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     );
     ensure!(
         usize::from(left.is_ok()) + usize::from(right.is_ok()) == 1,
-        "two clients using one fence did not produce exactly one winner: left={left:?} right={right:?}"
+        "two clients using one fence did not produce exactly one winner: left={left:?} right={right:?}; {}",
+        failure_diagnostics::child_log_tail(&log_path)
     );
     let (concurrent_accepted, concurrent_rejected) = match (left, right) {
         (Ok(accepted), Err(rejected)) | (Err(rejected), Ok(accepted)) => (accepted, rejected),
@@ -396,6 +405,20 @@ fn register_agents(
 }
 
 fn assert_distinct_roots(agents: &[AgentFixture]) -> Result<()> {
+    #[cfg(target_os = "macos")]
+    for agent in agents {
+        for socket in [
+            agent.layout.agentd_control_socket(),
+            agent.layout.matrixd_control_socket(),
+            agent.layout.app_server_socket(),
+        ] {
+            ensure!(
+                socket.as_os_str().len() < 104,
+                "fixture socket exceeds Darwin sun_path: {}",
+                socket.display()
+            );
+        }
+    }
     let homes = agents
         .iter()
         .map(|agent| agent.layout.home_root().to_path_buf())

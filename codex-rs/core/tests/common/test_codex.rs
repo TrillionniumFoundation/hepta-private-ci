@@ -32,6 +32,8 @@ use codex_extension_api::LoadUserInstructionsFuture;
 use codex_extension_api::UserInstructionsProvider;
 use codex_extension_api::empty_extension_registry;
 use codex_features::Feature;
+use codex_history::InitialHistory;
+use codex_history::ResumedHistory;
 use codex_home::CodexHomeUserInstructionsProvider;
 use codex_login::CodexAuth;
 use codex_model_provider_info::ModelProviderInfo;
@@ -58,6 +60,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::protocol::TurnEnvironmentSelections;
 use codex_protocol::user_input::UserInput;
+use codex_thread_store::ReadThreadByRolloutPathParams;
 use codex_thread_store::ThreadStore;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::LegacyAppPathString;
@@ -163,6 +166,11 @@ impl TestEnv {
     /// Builds a host-local test environment, optionally using the provided
     /// exec-server URL instead of the normal implicit local executor.
     pub async fn local_with_exec_server_url(exec_server_url: Option<String>) -> Result<Self> {
+        // Darwin authorized reads compare the final kernel path with policy roots.
+        // Keep this owned local fixture under its canonical temporary parent.
+        #[cfg(target_os = "macos")]
+        let local_cwd_temp_dir = Arc::new(TempDir::new_in(std::env::temp_dir().canonicalize()?)?);
+        #[cfg(not(target_os = "macos"))]
         let local_cwd_temp_dir = Arc::new(TempDir::new()?);
         let cwd = local_cwd_temp_dir.abs();
         let selection = match exec_server_url {
@@ -338,6 +346,7 @@ pub struct TestCodexBuilder {
     code_mode_host_program: Option<PathBuf>,
     history_mode: Option<ThreadHistoryMode>,
     models_manager: Option<SharedModelsManager>,
+    resume_environments: Option<Vec<TurnEnvironmentSelection>>,
 }
 
 impl TestCodexBuilder {
@@ -586,6 +595,36 @@ impl TestCodexBuilder {
         .await
     }
 
+    /// Rebuilds an independent runtime with the original thread's complete
+    /// executor selections, including target-native paths for foreign executors.
+    /// The caller also retains the original configuration. Shell overrides are
+    /// unsupported by this explicit-environment resume fixture.
+    pub async fn resume_with_auto_env(
+        &mut self,
+        server: &wiremock::MockServer,
+        home: Arc<TempDir>,
+        rollout_path: PathBuf,
+        environments: Vec<TurnEnvironmentSelection>,
+    ) -> anyhow::Result<TestCodex> {
+        anyhow::ensure!(
+            self.user_shell_override.is_none(),
+            "explicit-environment resume does not support a shell override"
+        );
+        let base_url = format!("{}/v1", server.uri());
+        let test_env = test_env().await?;
+        self.resume_environments = Some(environments);
+        let resumed = Box::pin(self.build_with_home_and_base_url(
+            base_url,
+            home,
+            Some(rollout_path),
+            test_env,
+            /*include_local_environment*/ false,
+        ))
+        .await;
+        self.resume_environments = None;
+        resumed
+    }
+
     pub async fn restart(
         &mut self,
         server: &MockServer,
@@ -616,6 +655,12 @@ impl TestCodexBuilder {
             .exec_server_url
             .clone()
             .or_else(|| test_env.exec_server_url.clone());
+        #[cfg(windows)]
+        if config.permissions.windows_sandbox_mode.is_some()
+            && (exec_server_url.is_none() || include_local_environment)
+        {
+            crate::windows_sandbox_helpers::stage_windows_sandbox_helpers()?;
+        }
         #[cfg(target_os = "linux")]
         let codex_linux_sandbox_exe = Some(
             crate::find_codex_linux_sandbox_exe()
@@ -748,14 +793,39 @@ impl TestCodexBuilder {
                     auth,
                     config.codex_home.to_path_buf(),
                 );
-                Box::pin(thread_manager.resume_thread_from_rollout(
-                    config.clone(),
-                    path,
-                    auth_manager,
-                    /*parent_trace*/ None,
-                    client_mcp_extensions(),
-                ))
-                .await?
+                if let Some(environments) = self.resume_environments.take() {
+                    let stored = thread_store
+                        .read_thread_by_rollout_path(ReadThreadByRolloutPathParams {
+                            rollout_path: path.clone(),
+                            include_archived: true,
+                            include_history: true,
+                        })
+                        .await?;
+                    let history = stored.history.context("persisted resume history")?;
+                    let initial_history = InitialHistory::Resumed(ResumedHistory {
+                        conversation_id: stored.thread_id,
+                        history: Arc::new(history.items),
+                        rollout_path: Some(path),
+                    });
+                    Box::pin(thread_manager.resume_thread_with_history_and_environments(
+                        config.clone(),
+                        initial_history,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                        Some(environments),
+                    ))
+                    .await?
+                } else {
+                    Box::pin(thread_manager.resume_thread_from_rollout(
+                        config.clone(),
+                        path,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                    ))
+                    .await?
+                }
             }
             (None, Some(user_shell_override)) => {
                 Box::pin(
@@ -968,12 +1038,12 @@ impl TestCodex {
         prompt: &str,
         service_tier: Option<&str>,
     ) -> Result<()> {
-        self.submit_turn_with_permission_profile_context(
+        self.submit_turn_with_settings(
             prompt,
-            AskForApproval::Never,
-            PermissionProfile::Disabled,
-            Some(service_tier.map(str::to_string)),
-            /*environments*/ None,
+            ThreadSettingsOverrides {
+                service_tier: Some(service_tier.map(str::to_string)),
+                ..Default::default()
+            },
         )
         .await
     }
@@ -1061,28 +1131,40 @@ impl TestCodex {
         let turn_environment_selections = environments.map(|environments| {
             TurnEnvironmentSelections::new(self.config.cwd.clone(), environments)
         });
+        self.submit_turn_with_settings(
+            prompt,
+            ThreadSettingsOverrides {
+                environments: turn_environment_selections,
+                approval_policy: Some(approval_policy),
+                sandbox_policy: Some(sandbox_policy),
+                permission_profile,
+                service_tier,
+                collaboration_mode: Some(CollaborationMode {
+                    mode: ModeKind::Default,
+                    settings: Settings {
+                        model: session_model,
+                        reasoning_effort: None,
+                        developer_instructions: None,
+                    },
+                }),
+                ..Default::default()
+            },
+        )
+        .await
+    }
+
+    async fn submit_turn_with_settings(
+        &self,
+        prompt: &str,
+        settings: ThreadSettingsOverrides,
+    ) -> Result<()> {
         self.codex
             .start_or_steer_turn(
                 TurnInputRequest::user_input(vec![UserInput::Text {
                     text: prompt.into(),
                     text_elements: Vec::new(),
                 }])
-                .with_thread_settings(ThreadSettingsOverrides {
-                    environments: turn_environment_selections,
-                    approval_policy: Some(approval_policy),
-                    sandbox_policy: Some(sandbox_policy),
-                    permission_profile,
-                    service_tier,
-                    collaboration_mode: Some(CollaborationMode {
-                        mode: ModeKind::Default,
-                        settings: Settings {
-                            model: session_model,
-                            reasoning_effort: None,
-                            developer_instructions: None,
-                        },
-                    }),
-                    ..Default::default()
-                }),
+                .with_thread_settings(settings),
             )
             .await?;
 
@@ -1093,9 +1175,14 @@ impl TestCodex {
         .await;
         wait_for_event_with_timeout(
             &self.codex,
-            |event| match event {
-                EventMsg::TurnComplete(event) => event.turn_id == turn_id,
-                _ => false,
+            |event| {
+                if matches!(event, EventMsg::Error(_) | EventMsg::StreamError(_)) {
+                    eprintln!("test turn {turn_id} received provider error: {event:?}");
+                }
+                match event {
+                    EventMsg::TurnComplete(event) => event.turn_id == turn_id,
+                    _ => false,
+                }
             },
             SUBMIT_TURN_COMPLETE_TIMEOUT,
         )
@@ -1358,6 +1445,7 @@ pub fn test_codex() -> TestCodexBuilder {
         code_mode_host_program: None,
         history_mode: None,
         models_manager: None,
+        resume_environments: None,
     }
 }
 

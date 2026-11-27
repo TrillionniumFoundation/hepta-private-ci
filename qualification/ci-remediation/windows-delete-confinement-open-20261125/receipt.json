@@ -1,0 +1,45 @@
+{
+  "status": "OPEN",
+  "audit_head": "db517a89a5698fc15a6eb4c0fec76cc06cedc4db",
+  "observed_head": "804ac018433ff08dfd195e93eed936394baf5053",
+  "source_job": 138713957842,
+  "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/jobs/138713957842",
+  "source_log_bytes": 1651377,
+  "source_log_sha256": "1cfd2bd1344ec601b8095aaefa9ae70806df4193b772670047efbe3604d0ea5c",
+  "excerpts": [
+    {
+      "file": "token-delete.actual.txt",
+      "source_lines": [
+        2940,
+        2964
+      ],
+      "bytes": 1368,
+      "sha256": "a3538f47956033dddad4bb238b3938b0b7e4cd9451b45550c693849f8216aeea"
+    },
+    {
+      "file": "legacy-delete-not-executed.actual.txt",
+      "source_lines": [
+        3001,
+        3005
+      ],
+      "bytes": 479,
+      "sha256": "87cbd77cc4ca3e7e90a0365b150d0997b41fbfb4a644db28052a7b4093c5f04c"
+    }
+  ],
+  "new_experiments": 0,
+  "production_source_changes": 0,
+  "account_or_acl_changes": 0,
+  "token_test_observation": [
+    "write-existing PermissionDenied",
+    "create-new PermissionDenied",
+    "remove-file Ok",
+    "remove-directory Ok"
+  ],
+  "legacy_process_delete_test": "not executed at this head: shared test lock was already poisoned; not counted as a second successful exploit",
+  "excerpt_archive": {
+    "path": "original-excerpts.zip",
+    "bytes": 1043,
+    "sha256": "f13c530ac423b2fcdb06bdabf5d66b5eda18a532b35f6e56e9288bd24b16b8cf",
+    "note": "Exact CRLF original bytes are preserved in the archive; no line ending or trailing-space normalization."
+  }
+}

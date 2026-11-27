@@ -1,0 +1,236 @@
+{
+  "source_commit": "324be18793bc458389128b553f181982caaa33b6",
+  "source_tree": "6f5cd52ee52040bdd462d3f2c12f60964567363e",
+  "source_clean": true,
+  "source_files": [
+    {
+      "path": "tools/argument-comment-lint/.cargo/config.toml",
+      "bytes": 221,
+      "sha256": "780177665e7a4e22c4940ac1d1a3c391b712e7030949476ff3adde95ad16d558",
+      "git_blob": "226eca535bf5f246cbbd0fea86a23034e5b44db1"
+    },
+    {
+      "path": "tools/argument-comment-lint/.gitignore",
+      "bytes": 8,
+      "sha256": "44c92e3a70ad3307b7056871c2bdb096d8bfa9373f5bf06a79bb6324a20ff2fb",
+      "git_blob": "ea8c4bf7f35f6f77f75d92ad8ce8349f6e81ddba"
+    },
+    {
+      "path": "tools/argument-comment-lint/BUILD.bazel",
+      "bytes": 824,
+      "sha256": "c1bb162662d1fd9a95e516d8ccc35d55f6c55ca27af7c95f870e10a645002b6d",
+      "git_blob": "5d2695a80df4462ddf9b90f68865ffa1eb68a4ce"
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.lock",
+      "bytes": 34658,
+      "sha256": "ac480773a1a3bd70e0b8a2b5597cc19c20aad53f42871d21bcff770bdc1c6dd2",
+      "git_blob": "80dd7cee3e973637dde2871b5c3f09a9d4673c3e"
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.toml",
+      "bytes": 493,
+      "sha256": "df1a7ca1bca706a94c9bc3b92dfa13d0964adf6369b05e213e13ca84389f5070",
+      "git_blob": "1b00d573efecbe1e57c7f60fb754b4a277299c9b"
+    },
+    {
+      "path": "tools/argument-comment-lint/README.md",
+      "bytes": 6283,
+      "sha256": "437f640732f0f09d09271747015a71aa48c829be73731268ae4ff2bd0831dab6",
+      "git_blob": "889bae1df231358b342cd8f2fba127b9fe9cdb47"
+    },
+    {
+      "path": "tools/argument-comment-lint/argument-comment-lint",
+      "bytes": 2757,
+      "sha256": "3c1c2f928d4c0d10a97cdf94031d5df658038e5ac1f60a649b6fd94c3030b431",
+      "git_blob": "602117e3ce2af40792e31c1d50db872ad18e4160"
+    },
+    {
+      "path": "tools/argument-comment-lint/driver.rs",
+      "bytes": 1204,
+      "sha256": "58b8a87be404d11bc529459b8e60ad54c7530fb7f6c58b2a43382ab5fff153ef",
+      "git_blob": "b6417d45fdcbb43b0e858556d71eea1e007ed070"
+    },
+    {
+      "path": "tools/argument-comment-lint/lint_aspect.bzl",
+      "bytes": 5954,
+      "sha256": "a0ed39d947aa03ea9f3512110e8dd16731f4bb5f9f6cda92751c028bcf4847ad",
+      "git_blob": "c20a79caa2a710441cccb4e2a884224983404c13"
+    },
+    {
+      "path": "tools/argument-comment-lint/list-bazel-targets.sh",
+      "bytes": 1364,
+      "sha256": "c109d79880d8667fa06b7985510dab3f2458c28a889bec6236cc400cbf311ebb",
+      "git_blob": "9418f59fbd875da6659210c3b856fa74057e556b"
+    },
+    {
+      "path": "tools/argument-comment-lint/run-prebuilt-linter.py",
+      "bytes": 1212,
+      "sha256": "1bf103d013872a3a2f82a85b9bb7899355bba97c8db1fcc33e1840f7e35e81c6",
+      "git_blob": "31a5c226f361e06b564622fc131d8b970e84fd15"
+    },
+    {
+      "path": "tools/argument-comment-lint/run.py",
+      "bytes": 867,
+      "sha256": "3d8aea91aa602134ca318fe6e650deab1000fb9ab6aac3742123f0f4abf49d70",
+      "git_blob": "c6247c44b3eccb7bdc9719f36fca2f5217fb73ce"
+    },
+    {
+      "path": "tools/argument-comment-lint/rust-toolchain",
+      "bytes": 104,
+      "sha256": "d620e25a9f033951688d76b8b78e190bddb876772318d64b2fdf6b4e8e1a8396",
+      "git_blob": "d159253fc0367b25914cb8bbfcaa95f3c5196336"
+    },
+    {
+      "path": "tools/argument-comment-lint/src/bin/argument-comment-lint.rs",
+      "bytes": 8823,
+      "sha256": "1f6232976f5cf3783d046f1bdf5fca533f90de9eedcaacfc93b62e1033e72b7d",
+      "git_blob": "9dfe83b0fbb5330207d97811effb7e53f56666e5"
+    },
+    {
+      "path": "tools/argument-comment-lint/src/comment_parser.rs",
+      "bytes": 2047,
+      "sha256": "0ff09787585565529db07455e4ae24c5f2afb8ea11373b237f42f2652cbc291c",
+      "git_blob": "7ea66c195b7b4d50a4fb2c4ec7d73c73ea09e683"
+    },
+    {
+      "path": "tools/argument-comment-lint/src/lib.rs",
+      "bytes": 9366,
+      "sha256": "b8a5060cc872c21b7b5c79f057f194b43a0013658b5565349226edec35bab02e",
+      "git_blob": "76b9e17732db18c5e5dda3a3ddbdfa4e057bc6fa"
+    },
+    {
+      "path": "tools/argument-comment-lint/test_wrapper_common.py",
+      "bytes": 3594,
+      "sha256": "7d63b75d1b171564b556af6be00706e10cb298f2fe47b83c2a184e06c103eea5",
+      "git_blob": "3998f2e41a3fda6f7fd9e8384258f365643309ba"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/allow_char_literals.rs",
+      "bytes": 183,
+      "sha256": "5b5a5095d029dc2368e82700f27c6897a4d8ae9f4f57e7d1645aa3fc7e3b205a",
+      "git_blob": "85ef7d362f306918cb5b9f51941090ee740a2927"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/allow_self_documenting_methods.rs",
+      "bytes": 499,
+      "sha256": "8ad9e0b6fb41a0a1e8629fac5cf53dbf0517898ba8d494142508ab7f58d22b6e",
+      "git_blob": "d57f7c521da455f8067141294c6a8ace01e74f64"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/allow_string_literals.rs",
+      "bytes": 193,
+      "sha256": "062c1f5d55b841562a637dc5b7a7d78d0082ab65c904649196d44785ee264b98",
+      "git_blob": "9d61c4a761ed097dba3ce83aed250c3ded546f36"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/comment_matches.rs",
+      "bytes": 334,
+      "sha256": "94bf9377486df1b37141fa1bfe8fe9c54bac99a3147a0bb8396c2b6021f58a9e",
+      "git_blob": "f582fb958f24eccfcd01d601f6559b325624c207"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/comment_matches_multiline.rs",
+      "bytes": 361,
+      "sha256": "69c6a8ca20c43e227fe489054b08e35b7c8c2ff6f9f12731f2aaaf7ae9855c5e",
+      "git_blob": "45683841ff0cda533df6ff40cd2a4c961dc83afa"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/comment_mismatch.rs",
+      "bytes": 374,
+      "sha256": "5226b8514afcb1c83c3d10d43e3b991bdcf2d65403a8a595351ca9ce32190ffc",
+      "git_blob": "f3ad4db75478f4db40c6ea331e1a06fe78c7229d"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/comment_mismatch.stderr",
+      "bytes": 699,
+      "sha256": "31430c5eb2da8c4518a2554e29ca3a5d2b4a80495edb2c4a391db75b1e9039d5",
+      "git_blob": "058871395a31fb3f28328876db409958ea28111d"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/ignore_external_methods.rs",
+      "bytes": 250,
+      "sha256": "9d5b445f02e1544a2547e489f0388640303edb04bc9908ae2dff1738a5c22644",
+      "git_blob": "44c72707d069f0bf5e9776ae337c234b069b3b3b"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/multiple_method_arguments.rs",
+      "bytes": 279,
+      "sha256": "079f107aac9b1ff6e72bd9277c263af2ccd5a55b065a7c1a483959511e8030c8",
+      "git_blob": "e15f15624300bc09e4e1db165c51d68120cb34f3"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/multiple_method_arguments.stderr",
+      "bytes": 503,
+      "sha256": "e25c05aafd37126cb457be053e0f355abeec5d63223c16a623cc83d076a51e86",
+      "git_blob": "f9b452e4fce44186dbcd21fd8e07a0d3d52c7a1f"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/uncommented_literal.rs",
+      "bytes": 367,
+      "sha256": "955b41f7c9b71f244017e9b95405aff29091c04ea8cc4fe38dfd6f15f4600cf1",
+      "git_blob": "a64804c78094e74646e512cb2815d4592df8b495"
+    },
+    {
+      "path": "tools/argument-comment-lint/ui/uncommented_literal.stderr",
+      "bytes": 978,
+      "sha256": "7770f6f13a80bed8468ca49816c0f0ba437a083d7ef66b15b4045cf2eef62810",
+      "git_blob": "a1060ef6937a7c920b185099c96f1b4f442788a2"
+    },
+    {
+      "path": "tools/argument-comment-lint/wrapper_common.py",
+      "bytes": 9475,
+      "sha256": "722df7a0f58b70e721ab557eaa78196fd848addcc70d972a1fcbf4ab3ba3661f",
+      "git_blob": "2473029b8e1af16ef4692ffc2cd1786bf5d07b59"
+    }
+  ],
+  "original_ci": {
+    "run_id": 45458387224,
+    "job_id": 138723341148,
+    "head": "804ac018433ff08dfd195e93eed936394baf5053",
+    "failure": "dylint_driver5.0.0 Clippy master revparse_ext NotFound"
+  },
+  "upstream_fix": "https://github.com/trailofbits/dylint/commit/f1ed83623faead3799afd91533f8647715272c33",
+  "fixed_release": "https://github.com/trailofbits/dylint/releases/tag/v6.3.2",
+  "actual_tests": {
+    "outer_tests": 8,
+    "passed": 8,
+    "skipped": 0,
+    "ui_outer_test_seconds": 23.942,
+    "no_test_filter": true,
+    "python_wrapper_tests": 6
+  },
+  "driver_binary": {
+    "bytes": 42182192,
+    "sha256": "4cd6e84cf007124917017fd285ec4801c3f8cf4a9d91bddb1133f3037dbc2563",
+    "redistributed": false
+  },
+  "limitations": [
+    "Local Linux qualification, not the unpublished consolidated head or native Windows/macOS run.",
+    "The initial 0-test nextest config failure is retained. Projection preserves default timeouts/retries and removes only nonmatching foreign-workspace overrides.",
+    "Dylint bootstrap creates its own temporary dependency graph; transitive driver graph is upstream-resolved, not claimed hermetic.",
+    "Outer UI harness pass does not relabel each inner compiler fixture as an independently counted test."
+  ],
+  "archive": {
+    "name": "evidence.zip",
+    "bytes": 42685,
+    "sha256": "ca3f4ff3d08c9deb62a9b29f0fa79d115372b9e385545c6972b297084417129b"
+  },
+  "workflow_ast_audit": [
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "only_changes": "two Dylint version env values",
+      "nodes_changed": 2
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "only_changes": "two Dylint version env values",
+      "nodes_changed": 2
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "only_changes": "two Dylint version env values",
+      "nodes_changed": 2
+    }
+  ]
+}

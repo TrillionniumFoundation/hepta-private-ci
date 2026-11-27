@@ -87,6 +87,7 @@ mod injected_models_cache;
 mod items;
 mod json_result;
 mod live_cli;
+mod local_annotations;
 mod mcp_auth_elicitation;
 mod mcp_auth_refresh;
 #[cfg(unix)]
@@ -157,6 +158,7 @@ mod sqlite_state;
 mod stream_error_allows_next_turn;
 mod stream_no_completed;
 mod subagent_notifications;
+mod terminal_readiness;
 mod token_budget;
 mod tool_harness;
 mod tool_lifecycle;

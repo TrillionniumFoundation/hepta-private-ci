@@ -37,7 +37,7 @@ fn model_from_preset(preset: ModelPreset) -> Model {
             retirement_at: upgrade
                 .retirement_at
                 .as_ref()
-                .map(chrono::DateTime::timestamp),
+                .map(codex_utils_time::Timestamp::epoch_seconds),
         }),
         availability_nux: preset.availability_nux.map(Into::into),
         display_name: preset.display_name.to_string(),

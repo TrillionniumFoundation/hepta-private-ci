@@ -1,7 +1,6 @@
 use std::io::SeekFrom;
 use std::path::Path;
 
-use chrono::DateTime;
 use codex_app_server_protocol::ThreadHistoryChangeSet;
 use codex_app_server_protocol::project_rollout_line;
 use codex_protocol::ThreadId;
@@ -214,8 +213,8 @@ async fn read_projection_steps(
             .iter()
             .any(|item| item.started_at_ms.is_none())
         {
-            match DateTime::parse_from_rfc3339(line.timestamp.as_str()) {
-                Ok(timestamp) => Some(timestamp.timestamp_millis()),
+            match codex_utils_time::OffsetTimestamp::parse_rfc3339(line.timestamp.as_str()) {
+                Ok(timestamp) => Some(timestamp.epoch_milliseconds()),
                 Err(err) => {
                     warn!(
                         thread_id = %thread_id,

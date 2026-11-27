@@ -97,9 +97,11 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
     skip_if_no_network!(Ok(()));
 
     let (repo, head) = create_git_repo()?;
-    let server = start_websocket_server(vec![vec![
-        vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-        vec![
+    // Fresh Git metadata can change socket compatibility after prewarm. Close
+    // each scripted response so this freshness test does not require socket reuse.
+    let server = start_websocket_server(vec![
+        vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
+        vec![vec![
             ev_response_created("resp-1"),
             ev_function_call(
                 "wait-for-git",
@@ -107,13 +109,13 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
                 r#"{"sleep_after_ms":5000}"#,
             ),
             ev_completed("resp-1"),
-        ],
-        vec![
+        ]],
+        vec![vec![
             ev_response_created("resp-2"),
             ev_assistant_message("msg-2", "done"),
             ev_completed("resp-2"),
-        ],
-    ]])
+        ]],
+    ])
     .await;
     let cwd = repo.path().to_path_buf();
     let mut builder = test_codex()
@@ -129,13 +131,19 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
     )
     .await?
     .body_json();
+    assert_eq!(prewarm["generate"].as_bool(), Some(false));
     assert!(turn_metadata(&prewarm)?.get("workspaces").is_none());
 
     std::fs::write(repo.path().join("untracked.txt"), "dirty\n")?;
     test.submit_turn("inspect the workspace").await?;
-    let turn = server
-        .single_connection()
+    let connections = server.connections();
+    assert_eq!(
+        connections.iter().map(Vec::len).collect::<Vec<_>>(),
+        vec![1, 1, 1]
+    );
+    let turn = connections
         .get(2)
+        .and_then(|connection| connection.first())
         .context("turn follow-up request")?
         .body_json();
     assert_eq!(
@@ -259,25 +267,26 @@ async fn ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state(
     skip_if_no_network!(Ok(()));
 
     let (repo, head) = create_git_repo()?;
+    // These assertions concern fresh Git metadata, which itself can change
+    // socket compatibility. Each scripted response closes its connection so
+    // prewarm and enriched requests never require a stale socket identity.
     let server = start_websocket_server(vec![
         vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
-        vec![
-            vec![ev_response_created("warm-2"), ev_completed("warm-2")],
-            vec![
-                ev_response_created("resp-1"),
-                ev_function_call(
-                    "wait-for-git",
-                    "test_sync_tool",
-                    r#"{"sleep_after_ms":1000}"#,
-                ),
-                ev_completed("resp-1"),
-            ],
-            vec![
-                ev_response_created("resp-2"),
-                ev_assistant_message("msg-2", "done"),
-                ev_completed("resp-2"),
-            ],
-        ],
+        vec![vec![ev_response_created("warm-2"), ev_completed("warm-2")]],
+        vec![vec![
+            ev_response_created("resp-1"),
+            ev_function_call(
+                "wait-for-git",
+                "test_sync_tool",
+                r#"{"sleep_after_ms":1000}"#,
+            ),
+            ev_completed("resp-1"),
+        ]],
+        vec![vec![
+            ev_response_created("resp-2"),
+            ev_assistant_message("msg-2", "done"),
+            ev_completed("resp-2"),
+        ]],
     ])
     .await;
     let cwd = repo.path().to_path_buf();
@@ -322,10 +331,14 @@ async fn ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state(
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
-    let turn = server
-        .connections()
-        .get(1)
-        .and_then(|connection| connection.get(2))
+    let connections = server.connections();
+    assert_eq!(
+        connections.iter().map(Vec::len).collect::<Vec<_>>(),
+        vec![1, 1, 1, 1]
+    );
+    let turn = connections
+        .get(3)
+        .and_then(|connection| connection.first())
         .context("system turn follow-up request")?
         .body_json();
     assert_root_turn(&turn, /*expected*/ None)?;

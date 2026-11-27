@@ -345,8 +345,8 @@ async fn rollback_first_turn_model_change_removes_its_instructions(
 
     let request = &response_mock.requests()[1];
     assert_eq!(request.body_json()["model"], followup_model);
-    let misaligned_messages = request
-        .inputs_of_type("message")
+    let local_items = super::local_annotations::active_request_items(&test.codex, request).await?;
+    let misaligned_messages = local_items
         .into_iter()
         .filter(|message| {
             message["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
@@ -425,7 +425,13 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&["model_switch.instructions"]));
+    let local_items =
+        super::local_annotations::persisted_request_items(&test.codex, second_request, |_| true)
+            .await?;
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["model_switch.instructions"],
+    );
     let developer_texts = second_request.message_input_texts("developer");
     let model_switch_text = developer_texts
         .iter()
@@ -992,7 +998,13 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let first_request = requests.first().expect("expected first request");
-    assert!(first_request.has_content_kinds(&["user.image", "user.audio", "user.text"]));
+    let local_items =
+        super::local_annotations::persisted_request_items(&test.codex, first_request, |_| true)
+            .await?;
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["user.image", "user.audio", "user.text"],
+    );
     assert!(
         !first_request.message_input_image_urls("user").is_empty(),
         "first request should include the uploaded image"
@@ -1003,11 +1015,10 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     );
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&[
-        "images.unsupported",
-        "audio.unsupported",
-        "user.text",
-    ]));
+    // Unsupported-media annotations belong to the for_prompt projection, not
+    // persisted history. history_tests covers the exact projected kinds; here
+    // check the real provider payload and keep its media/text assertions below.
+    super::local_annotations::assert_wire_has_no_internal_metadata(second_request);
     assert!(
         second_request.message_input_image_urls("user").is_empty(),
         "second request should strip unsupported image content"
@@ -1016,18 +1027,23 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
         second_request.message_input_audio_urls("user").is_empty(),
         "second request should strip unsupported audio content"
     );
-    let second_user_texts = second_request.message_input_texts("user");
-    assert!(
-        second_user_texts
-            .iter()
-            .any(|text| text == "image content omitted because you do not support image input"),
-        "second request should include the image-omitted placeholder text"
-    );
-    assert!(
-        second_user_texts
-            .iter()
-            .any(|text| text == "audio content omitted because you do not support audio input"),
-        "second request should include the audio-omitted placeholder text"
+    let projected_first_user_message = second_request
+        .input()
+        .into_iter()
+        .find(|item| {
+            item["role"] == "user"
+                && item["content"]
+                    .as_array()
+                    .is_some_and(|content| content.iter().any(|part| part["text"] == "first turn"))
+        })
+        .expect("second request should retain the first turn with media placeholders");
+    assert_eq!(
+        projected_first_user_message["content"],
+        json!([
+            {"type": "input_text", "text": "image content omitted because you do not support image input"},
+            {"type": "input_text", "text": "audio content omitted because you do not support audio input"},
+            {"type": "input_text", "text": "first turn"},
+        ]),
     );
     Ok(())
 }

@@ -5,13 +5,19 @@ use pretty_assertions::assert_eq;
 #[test]
 fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
 -> Result<(), Box<dyn std::error::Error>> {
-    let temporary = tempfile::tempdir()?;
+    let temporary = observe_io("copy_fixture.tempdir", tempfile::tempdir())?;
     let source = temporary.path().join("source-program");
     let content = b"reviewed immutable program bytes";
-    std::fs::write(&source, content)?;
+    observe_io(
+        "copy_fixture.write_source",
+        std::fs::write(&source, content),
+    )?;
     set_mode(&source, /*mode*/ 0o555)?;
     let root = HeptaFleetRoot::parse(temporary.path().join("fleet"))?;
-    let registry = FleetRegistry::initialize(root.clone())?;
+    let registry = observe_release(
+        "copy_fixture.initialize",
+        FleetRegistry::initialize(root.clone()),
+    )?;
     let release_id = ReleaseId::parse("readonly-source")?;
     let installed = registry.install_release_bundle(
         release_id.clone(),
@@ -25,7 +31,7 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
         assert_eq!(std::fs::read(path)?, content);
         validate_immutable_regular_file(path, /*executable*/ true)?;
     }
-    let reopened = FleetRegistry::open_existing(root)?;
+    let reopened = observe_release("copy_fixture.reopen", FleetRegistry::open_existing(root))?;
     assert!(matches!(
         reopened.install_release(release_id, &source, Vec::new()),
         Err(FleetRegistryError::Invalid(_))

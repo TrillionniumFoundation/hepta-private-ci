@@ -1,6 +1,4 @@
 use super::StateRuntime;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use sqlx::QueryBuilder;
 use sqlx::Sqlite;
@@ -13,7 +11,7 @@ impl StateRuntime {
     pub async fn get_thread_section_ordering(
         &self,
         thread_ids: &[ThreadId],
-    ) -> anyhow::Result<HashMap<ThreadId, (Option<i64>, Option<DateTime<Utc>>)>> {
+    ) -> anyhow::Result<HashMap<ThreadId, (Option<i64>, Option<codex_utils_time::Timestamp>)>> {
         if thread_ids.is_empty() {
             return Ok(HashMap::new());
         }
@@ -36,7 +34,7 @@ impl StateRuntime {
                 let thread_id = ThreadId::try_from(thread_id)?;
                 let section_entered_at = section_entered_at_ms
                     .map(|millis| {
-                        DateTime::<Utc>::from_timestamp_millis(millis).ok_or_else(|| {
+                        codex_utils_time::Timestamp::from_milliseconds(millis).ok_or_else(|| {
                             anyhow::anyhow!("invalid unix timestamp millis: {millis}")
                         })
                     })
@@ -180,7 +178,7 @@ LIMIT ?
             )
             .bind(section)
             .bind(position)
-            .bind(Utc::now().timestamp_millis())
+            .bind(codex_utils_time::Timestamp::now().epoch_milliseconds())
             .bind(&thread_id)
             .execute(&mut *tx)
             .await?;

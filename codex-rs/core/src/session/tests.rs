@@ -1594,6 +1594,7 @@ async fn stale_runtime_start_transition_drop_retains_witness_for_shutdown_drain(
             transition_identity,
             Arc::clone(&completion),
             Arc::clone(&cleanup_slot),
+            crate::tasks::TerminalizationAdmission::Closed,
         ));
 
     // Build the owner in Runtime A, shut that runtime down, and then destroy
@@ -1696,6 +1697,7 @@ async fn queued_start_transition_cleanup_not_polled_before_runtime_shutdown_reta
             transition_identity,
             Arc::clone(&completion),
             Arc::clone(&cleanup_slot),
+            crate::tasks::TerminalizationAdmission::Closed,
         ));
 
     // Drop the owner while a live current-thread runtime is executing its
@@ -1842,6 +1844,7 @@ async fn cancelled_start_transition_terminalizer_retains_failed_closed_witness()
             transition_identity,
             Arc::clone(&completion),
             Arc::clone(&cleanup_slot),
+            crate::tasks::TerminalizationAdmission::Closed,
         ));
 
     // Run the detached terminalizer far enough to enter the task abort
@@ -2028,7 +2031,7 @@ fn cleanup_slot_is_populated(session: &Arc<Session>) -> bool {
         .lock()
         .expect("start transition registry mutex should be healthy")
         .iter()
-        .any(|(_, _, cleanup)| {
+        .any(|(_, _, cleanup, _admission)| {
             cleanup
                 .lock()
                 .expect("start transition cleanup slot mutex should be healthy")
@@ -10030,7 +10033,7 @@ async fn record_context_updates_emits_environment_item_for_time_changes() {
         .into_iter()
         .find(|text| text.contains("<environment_context>"))
         .expect("environment update item should be emitted");
-    let current_date = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let current_date = codex_utils_time::OffsetTimestamp::now_local().format("%Y-%m-%d");
     assert!(environment_update.contains(&format!("<current_date>{current_date}</current_date>")));
     assert!(environment_update.contains("<timezone>Europe/Berlin</timezone>"));
 }
@@ -12148,7 +12151,15 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
     timeout(Duration::from_secs(2), idle_entered.notified())
         .await
         .expect("finish terminalizer should reach idle lifecycle");
-    assert!(session.has_pending_task_terminalization());
+    assert!(!session.has_pending_task_terminalization());
+    assert!(
+        !session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("completion registry")
+            .is_empty(),
+        "the open admission fence must retain the unfinished owner's completion"
+    );
 
     finish_owner.abort();
     let _ = finish_owner.await;
@@ -12156,9 +12167,12 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
 
     timeout(Duration::from_secs(2), async {
         loop {
-            if session.active_turn.lock().await.is_none()
-                && !session.has_pending_task_terminalization()
-            {
+            let owner_finished = session
+                .pending_task_terminalization_completions
+                .lock()
+                .expect("completion registry")
+                .is_empty();
+            if session.active_turn.lock().await.is_none() && owner_finished {
                 break;
             }
             sleep(Duration::from_millis(10)).await;

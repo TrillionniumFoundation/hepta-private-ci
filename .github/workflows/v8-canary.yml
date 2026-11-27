@@ -190,18 +190,18 @@ jobs:
           python-version: "3.12"
 
       - name: Set up Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
 
       - name: Pin installed Cargo binary
         shell: bash
         run: |
           set -euo pipefail
           rustup_home="${RUSTUP_HOME:-${HOME}/.rustup}"
-          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)"
+          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.96.0-*/bin/cargo' -type f -print -quit)"
           if [[ -z "${cargo_bin}" || ! -x "${cargo_bin}" ]]; then
-            echo "Rust 1.95.0 Cargo binary is not installed under ${rustup_home}." >&2
+            echo "Rust 1.96.0 Cargo binary is not installed under ${rustup_home}." >&2
             exit 1
           fi
           echo "CARGO_1_95=${cargo_bin}" >> "${GITHUB_ENV}"
@@ -294,7 +294,7 @@ jobs:
           # The pinned Cargo binary still invokes rustup-managed rustc in
           # dependencies' build scripts; never let a nested toolchain select
           # rusty_v8's 1.91 compiler against 1.95-compiled rlibs (E0514).
-          RUSTUP_TOOLCHAIN: "1.95.0"
+          RUSTUP_TOOLCHAIN: "1.96.0"
         shell: bash
         run: |
           set -euo pipefail
@@ -323,7 +323,7 @@ jobs:
 
           (
             cd codex-rs
-            rustc --version --verbose | grep -Fx 'release: 1.95.0'
+            rustc --version --verbose | grep -Fx 'release: 1.96.0'
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
@@ -385,9 +385,9 @@ jobs:
           architecture: x64
 
       - name: Set up Codex Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
           targets: ${{ matrix.target }}
 
       - name: Install rusty_v8 Rust toolchain
@@ -399,20 +399,30 @@ jobs:
           rustup toolchain install 1.91.0 --profile minimal --no-self-update
           rustup target add --toolchain 1.91.0 "${TARGET}"
 
-      - name: Write upstream submodule status
+      - name: Record upstream source-cache identity
         shell: bash
         working-directory: upstream-rusty-v8
-        run: git submodule status --recursive > git_submodule_status.txt
+        run: |
+          set -euo pipefail
+          : "${ImageOS:?runner image OS is required for cache compatibility}"
+          : "${ImageVersion:?runner image version is required for cache compatibility}"
+          git submodule status --recursive > git_submodule_status.txt
+          {
+            git rev-parse HEAD
+            rustc +1.91.0 -vV
+            printf 'ImageOS=%s\nImageVersion=%s\n' "${ImageOS}" "${ImageVersion}"
+          } > git_cache_identity.txt
 
       - name: Restore upstream source-build cache
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        id: source_cache
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           path: |
             ${{ steps.setup_ci.outputs.cargo-target-dir }}/sccache
             ${{ steps.setup_ci.outputs.cargo-target-dir }}/${{ matrix.target }}/release/gn_out
-          key: rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt') }}
+          key: rusty-v8-source-v2-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt', 'upstream-rusty-v8/git_cache_identity.txt', '.github/workflows/v8-canary.yml', '.github/actions/setup-ci/action.yml') }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            rusty-v8-source-${{ matrix.target }}-${{ matrix.runner }}-sandbox-
+            rusty-v8-source-v2-${{ matrix.target }}-${{ matrix.runner }}-sandbox-${{ hashFiles('upstream-rusty-v8/Cargo.lock', 'upstream-rusty-v8/build.rs', 'upstream-rusty-v8/git_submodule_status.txt', 'upstream-rusty-v8/git_cache_identity.txt', '.github/workflows/v8-canary.yml', '.github/actions/setup-ci/action.yml') }}-
 
       - name: Install and start sccache
         shell: pwsh
@@ -438,13 +448,16 @@ jobs:
         run: python3 tools/clang/scripts/update.py
 
       - name: Build upstream rusty_v8 sandbox release pair
+        id: source_build
+        # Keep the job's 30-minute cap; leave time to retain stopped build state.
+        timeout-minutes: 20
         env:
           SCCACHE_IDLE_TIMEOUT: 0
           TARGET: ${{ matrix.target }}
           V8_FROM_SOURCE: "1"
         shell: bash
         working-directory: upstream-rusty-v8
-        run: cargo +1.91.0 build --locked --release --target "${TARGET}" --features v8_enable_sandbox
+        run: cargo +1.91.0 build -vv --locked --release --target "${TARGET}" --features v8_enable_sandbox
 
       - name: Stage upstream sandbox release pair
         env:
@@ -476,7 +489,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.96.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
           )
 
       - name: Upload staged artifacts
@@ -484,6 +497,39 @@ jobs:
         with:
           name: v8-canary-${{ needs.metadata.outputs.v8_version }}-ptrcomp-sandbox-${{ matrix.target }}
           path: dist/${{ matrix.target }}/*
+
+      - name: Check source-cache writers have stopped
+        id: source_cache_stopped
+        if: always() && !cancelled() && (steps.source_build.outcome == 'success' || steps.source_build.outcome == 'failure')
+        timeout-minutes: 1
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & sccache --stop-server
+          $stopStatus = $LASTEXITCODE
+          Write-Output ("Source-cache observation: stop_status={0}" -f $stopStatus)
+          $writerNames = @('cargo', 'rustc', 'gn', 'ninja', 'clang', 'clang-cl', 'clang++', 'cl', 'lld', 'lld-link', 'link', 'sccache')
+          $processes = @(Get-Process -ErrorAction Stop)
+          $writers = @($processes | Where-Object { $writerNames -contains $_.ProcessName })
+          $observedWriterNames = @($writerNames | Where-Object { $writers.ProcessName -contains $_ })
+          Write-Output ("Source-cache observation: writer_count={0}; writer_names=[{1}]" -f $writers.Count, ($observedWriterNames -join ','))
+          if ($stopStatus -ne 0 -or $writers.Count -ne 0) {
+            Write-Output '::warning::Source-cache writers are not confirmed stopped; no cache will be saved.'
+            Write-Output 'ready=false' >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Output 'ready=true' >> $env:GITHUB_OUTPUT
+          }
+          exit 0
+
+      - name: Save stopped upstream source-build cache
+        if: always() && !cancelled() && steps.source_cache_stopped.outputs.ready == 'true'
+        timeout-minutes: 3
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        with:
+          path: |
+            ${{ steps.setup_ci.outputs.cargo-target-dir }}/sccache
+            ${{ steps.setup_ci.outputs.cargo-target-dir }}/${{ matrix.target }}/release/gn_out
+          key: ${{ steps.source_cache.outputs.cache-primary-key }}
 
       - name: Check for a clean worktree
         if: always() && !cancelled()

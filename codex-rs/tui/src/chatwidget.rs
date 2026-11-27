@@ -474,7 +474,6 @@ use crate::streaming::controller::PlanStreamController;
 use crate::streaming::controller::StreamController;
 use crate::workspace_command::WorkspaceCommandRunner;
 
-use chrono::Local;
 use codex_app_server_protocol::AskForApproval;
 use codex_file_search::FileMatch;
 use codex_protocol::models::ActivePermissionProfile;

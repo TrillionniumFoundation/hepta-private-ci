@@ -3,7 +3,6 @@ use std::io::Write;
 use std::path::Path;
 use std::time::Duration;
 
-use chrono::Utc;
 use codex_app_server_protocol::ThreadItem;
 use codex_protocol::ThreadId;
 use codex_protocol::items::AgentMessageContent;
@@ -99,8 +98,11 @@ async fn paginated_history_without_state_db_does_not_initialize_sqlite() {
 #[tokio::test]
 async fn split_homes_support_backfill_listing_and_paginated_history() {
     let root = TempDir::new().expect("temp dir");
-    let codex_home = root.path().join("codex");
-    let sqlite_home = root.path().join("sqlite");
+    let root_path = root.path().to_path_buf();
+    #[cfg(unix)]
+    let root_path = root_path.canonicalize().expect("canonical fixture root");
+    let codex_home = root_path.join("codex");
+    let sqlite_home = root_path.join("sqlite");
     let thread_id = ThreadId::new();
     let sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs());
     let rollout_config = RolloutConfig {
@@ -1262,7 +1264,7 @@ async fn summary_items_use_final_answers_and_ignore_commentary() {
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         home.path().join("missing-rollout.jsonl"),
-        Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     );
     builder.history_mode = ThreadHistoryMode::Paginated;

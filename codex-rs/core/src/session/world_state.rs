@@ -196,9 +196,8 @@ impl Session {
                 .current_time(self.thread_id())
                 .await
                 .map_err(|err| CodexErr::Fatal(format!("failed to read current time: {err:#}")))?
-                .with_timezone(&chrono::Local)
-                .format("%Y-%m-%d")
-                .to_string();
+                .to_local()
+                .format("%Y-%m-%d");
             world_state.add_section(
                 EnvironmentsState::from_turn_context_with_environments(
                     turn_context,

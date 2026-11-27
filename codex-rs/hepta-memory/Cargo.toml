@@ -9,6 +9,9 @@ name = "codex_hepta_memory"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+test-lease-clock = []
+
 [lints]
 workspace = true
 
@@ -35,6 +38,9 @@ sqlx = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["time"] }
 unicode-segmentation = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

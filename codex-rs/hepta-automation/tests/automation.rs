@@ -785,7 +785,7 @@ async fn stale_generation_recovery_is_owner_fenced() {
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("open inspection pool");
     sqlx::query(
@@ -834,7 +834,7 @@ async fn stale_generation_recovery_is_owner_fenced() {
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("reopen inspection pool");
     let (state, generation): (String, Option<i64>) = sqlx::query_as(
@@ -965,12 +965,24 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("open legacy pool");
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // The v18 timer trigger reads dispatch outcomes and runs. Remove its
+    // owning table (and attached triggers) before either referenced table is
+    // changed. The v17 dedupe table must also be absent when migrations replay.
+    for statement in [
+        "DROP TABLE automation_timer_lifecycle",
+        "DROP TABLE destination_operation_dedupe",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("drop post-v16 owner objects before their dependencies");
+    }
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -997,6 +1009,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TABLE IF EXISTS automation_calendar_schedule_versions",
         "DROP TABLE IF EXISTS automation_occurrence_events",
         "DROP TABLE IF EXISTS taskflow_step_outbox",
+        // This also removes the terminal_scan_cursor column added by v16.
         "DROP TABLE IF EXISTS automation_occurrence_lifecycle",
         "DROP TABLE IF EXISTS automation_schedule_metadata",
     ] {
@@ -1101,7 +1114,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("inspect migrated pool");
     let schema: i64 =
@@ -1175,7 +1188,7 @@ async fn legacy_unknown_without_frozen_revision_requires_absence_proof_before_ne
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("open compatibility fixture");
     sqlx::query("DROP TRIGGER automation_runs_schedule_revision_no_update")
@@ -1288,7 +1301,7 @@ async fn legacy_unknown_without_frozen_revision_requires_absence_proof_before_ne
     let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
         .expect("absolute sqlite home");
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-        .open_durable_evidence_pool(&database_path)
+        .open_private_durable_evidence_pool(&database_path)
         .await
         .expect("inspect reconciliation evidence");
     let stored_proof: String = sqlx::query_scalar(
@@ -1562,14 +1575,26 @@ async fn copied_database_cannot_cross_agent_owner_boundary() {
     let first_path = first.path().to_path_buf();
     first.close().await;
 
-    let second_path = fixture.layouts[1]
-        .automation_root()
-        .join("automation_1.sqlite3");
-    std::fs::copy(first_path, second_path).expect("copy owner-bound database");
-    assert!(matches!(
-        AutomationStore::open(&fixture.layouts[1]).await,
-        Err(AutomationError::AccessDenied)
-    ));
+    // Keep the destination's real private-file creation policy while replacing
+    // its entire closed database image. This isolates Agent ownership from
+    // the operating system's default owner for a newly copied file.
+    let second = AutomationStore::open(&fixture.layouts[1])
+        .await
+        .expect("second private store");
+    let second_path = second.path().to_path_buf();
+    second.close().await;
+    let source_bytes = std::fs::read(first_path).expect("read owner-bound database");
+    std::fs::write(&second_path, &source_bytes).expect("copy owner-bound database bytes");
+    assert_eq!(
+        std::fs::read(&second_path).expect("read copied database"),
+        source_bytes
+    );
+    let foreign = AutomationStore::open(&fixture.layouts[1]).await;
+    assert!(
+        matches!(&foreign, Err(AutomationError::AccessDenied)),
+        "foreign database error: {:?}",
+        foreign.as_ref().err()
+    );
 }
 
 #[tokio::test]

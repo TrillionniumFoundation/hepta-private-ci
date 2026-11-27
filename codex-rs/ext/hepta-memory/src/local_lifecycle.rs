@@ -38,6 +38,25 @@ const FENCE_DOMAIN: &[u8] = b"hepta-memory:local-turn-lifecycle:fence:v1";
 const OCCURRENCE_DOMAIN: &[u8] = b"hepta-memory:local-turn-lifecycle:occurrence:v1";
 const LOCAL_LIFECYCLE_IO_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(250);
 
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, Default)]
+enum StartObservation {
+    #[default]
+    NotStarted,
+    Starting,
+    InvalidBinding,
+    AcquireTimedOut,
+    AcquireFailed,
+    ReplayNotAdmitted,
+    ReplayQueued,
+    ReplayReleased,
+    ReplayTimedOut,
+    ReplayFailed,
+    AdmitTimedOut,
+    AdmitFailed,
+    Admitted,
+}
+
 #[derive(Default)]
 struct TurnLeaseState {
     attempted: bool,
@@ -45,6 +64,8 @@ struct TurnLeaseState {
     terminal_requested: Option<TerminalAction>,
     terminal_started: bool,
     active: Option<ActiveTurnLease>,
+    #[cfg(test)]
+    last_start: StartObservation,
 }
 
 #[derive(Clone)]
@@ -226,13 +247,19 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                 // acquire/admit attempt.
                 guard.attempted = true;
                 guard.starting = true;
+                #[cfg(test)]
+                {
+                    guard.last_start = StartObservation::Starting;
+                }
             }
 
             let Some((lease_id, fence, occurrence_key)) = Self::turn_binding(&input) else {
-                state
-                    .lock()
-                    .unwrap_or_else(PoisonError::into_inner)
-                    .starting = false;
+                let mut guard = state.lock().unwrap_or_else(PoisonError::into_inner);
+                guard.starting = false;
+                #[cfg(test)]
+                {
+                    guard.last_start = StartObservation::InvalidBinding;
+                }
                 return;
             };
             let acquired = self
@@ -243,6 +270,10 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                 Err(_) => {
                     let mut guard = state.lock().unwrap_or_else(PoisonError::into_inner);
                     guard.starting = false;
+                    #[cfg(test)]
+                    {
+                        guard.last_start = StartObservation::AcquireTimedOut;
+                    }
                     // Permit a host replay to retry a transient/unavailable
                     // acquire; no scheduler or background retry is created.
                     guard.attempted = false;
@@ -255,6 +286,10 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                 Err(_) => {
                     let mut guard = state.lock().unwrap_or_else(PoisonError::into_inner);
                     guard.starting = false;
+                    #[cfg(test)]
+                    {
+                        guard.last_start = StartObservation::AcquireFailed;
+                    }
                     guard.attempted = false;
                     return;
                 }
@@ -272,12 +307,28 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                     lease.finalize_replayed_occurrence(occurrence_key.clone()),
                 )
                 .await;
+                #[cfg(test)]
+                let replay_observation = match &recovered {
+                    Ok(Ok(LocalReplayFinalization::NotAdmitted)) => {
+                        StartObservation::ReplayNotAdmitted
+                    }
+                    Ok(Ok(LocalReplayFinalization::Queued(_))) => StartObservation::ReplayQueued,
+                    Ok(Ok(LocalReplayFinalization::Released { .. })) => {
+                        StartObservation::ReplayReleased
+                    }
+                    Ok(Err(_)) => StartObservation::ReplayFailed,
+                    Err(_) => StartObservation::ReplayTimedOut,
+                };
                 match recovered {
                     Ok(Ok(LocalReplayFinalization::NotAdmitted)) => false,
                     Ok(Ok(LocalReplayFinalization::Queued(_))) => true,
                     Ok(Ok(LocalReplayFinalization::Released { .. })) => {
                         let mut guard = state.lock().unwrap_or_else(PoisonError::into_inner);
                         guard.starting = false;
+                        #[cfg(test)]
+                        {
+                            guard.last_start = replay_observation;
+                        }
                         guard.terminal_started = true;
                         guard.active = None;
                         return;
@@ -288,6 +339,10 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                         // an eager release or a background retry.
                         let mut guard = state.lock().unwrap_or_else(PoisonError::into_inner);
                         guard.starting = false;
+                        #[cfg(test)]
+                        {
+                            guard.last_start = replay_observation;
+                        }
                         guard.active = Some(ActiveTurnLease {
                             lease,
                             occurrence_key,
@@ -297,6 +352,12 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                 }
             } else {
                 false
+            };
+            #[cfg(test)]
+            let mut admission_observation = if already_admitted {
+                StartObservation::ReplayQueued
+            } else {
+                StartObservation::Starting
             };
             if !already_admitted {
                 let payload = json!({
@@ -322,6 +383,14 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                     ),
                 )
                 .await;
+                #[cfg(test)]
+                {
+                    admission_observation = match &admitted {
+                        Ok(Ok(_)) => StartObservation::Admitted,
+                        Ok(Err(_)) => StartObservation::AdmitFailed,
+                        Err(_) => StartObservation::AdmitTimedOut,
+                    };
+                }
                 if match admitted {
                     Ok(result) => result.is_err(),
                     Err(_) => true,
@@ -332,6 +401,10 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
                     // fail-closed semantics.
                     let mut guard = state.lock().unwrap_or_else(PoisonError::into_inner);
                     guard.starting = false;
+                    #[cfg(test)]
+                    {
+                        guard.last_start = admission_observation;
+                    }
                     guard.active = Some(ActiveTurnLease {
                         lease,
                         occurrence_key,
@@ -342,6 +415,10 @@ impl TurnLifecycleContributor for LocalTurnLifecycleContributor {
             let pending = {
                 let mut guard = state.lock().unwrap_or_else(PoisonError::into_inner);
                 guard.starting = false;
+                #[cfg(test)]
+                {
+                    guard.last_start = admission_observation;
+                }
                 if let Some(action) = guard.terminal_requested.take() {
                     guard.terminal_started = true;
                     Some(action)
@@ -452,6 +529,8 @@ mod tests {
     async fn opened_store(temp: &TempDir) -> Arc<CognitiveStore> {
         let fleet_root = temp.path().join("fleet");
         fs::create_dir_all(&fleet_root).expect("fleet root");
+        #[cfg(unix)]
+        let fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
         let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet root parse");
         let owner = AgentId::parse("00000000-0000-4000-8000-000000000901").expect("owner");
         Arc::new(
@@ -507,15 +586,16 @@ mod tests {
             .await;
 
         let state = turn.get::<Mutex<TurnLeaseState>>().expect("turn state");
-        let active = state
-            .lock()
-            .unwrap_or_else(PoisonError::into_inner)
-            .active
-            .clone()
-            .expect("active lease");
+        let (active, start_observation) = {
+            let guard = state.lock().unwrap_or_else(PoisonError::into_inner);
+            (
+                guard.active.clone().expect("active lease"),
+                guard.last_start,
+            )
+        };
         let counts = active.lease.snapshot_counts().await.expect("counts");
-        assert_eq!(counts.event_rows, 1);
-        assert_eq!(counts.outbox_rows, 1);
+        assert_eq!(counts.event_rows, 1, "{start_observation:?}; {counts:?}");
+        assert_eq!(counts.outbox_rows, 1, "{start_observation:?}; {counts:?}");
 
         contributor
             .on_turn_stop(TurnStopInput {

@@ -3,10 +3,6 @@
 use super::*;
 use crate::RolloutLine;
 use crate::list::parse_cursor;
-use chrono::DateTime;
-use chrono::NaiveDateTime;
-use chrono::Timelike;
-use chrono::Utc;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::SessionMeta;
 use codex_protocol::protocol::SessionMetaLine;
@@ -23,14 +19,59 @@ fn cursor_to_anchor_normalizes_timestamp_format() {
     let cursor = parse_cursor(ts_str).expect("cursor should parse");
     let anchor = cursor_to_anchor(Some(&cursor)).expect("anchor should parse");
 
-    let naive =
-        NaiveDateTime::parse_from_str(ts_str, "%Y-%m-%dT%H-%M-%S").expect("ts should parse");
-    let expected_ts = DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc)
-        .with_nanosecond(0)
-        .expect("nanosecond");
+    let naive = codex_utils_time::parse_utc(ts_str, "%Y-%m-%dT%H-%M-%S").expect("ts should parse");
+    let expected_ts = naive.with_nanoseconds(0).expect("nanosecond");
 
     assert_eq!(anchor.ts, expected_ts);
     assert_eq!(anchor.id, None);
+}
+
+#[test]
+fn anchor_to_cursor_preserves_nanoseconds_leap_normalization_and_overflow_fallback() {
+    let thread_id = ThreadId::from_string("00000000-0000-0000-0000-000000000123")
+        .expect("thread id should parse");
+    for id in [None, Some(thread_id)] {
+        for (input, expected_timestamp) in [
+            ("1970-01-01T00:00:00Z", "1970-01-01T00:00:00Z"),
+            (
+                "1969-12-31T23:59:59.999999999Z",
+                "1969-12-31T23:59:59.999999999Z",
+            ),
+            ("1969-12-31T23:59:59.5Z", "1969-12-31T23:59:59.5Z"),
+            (
+                "2026-11-24T12:34:56.123456789Z",
+                "2026-11-24T12:34:56.123456789Z",
+            ),
+            ("2016-12-31T23:59:60.5Z", "2017-01-01T00:00:00.5Z"),
+            ("1969-12-31T23:59:60.5Z", "1970-01-01T00:00:00.5Z"),
+            (
+                "1677-09-21T00:12:43.145224192Z",
+                "1677-09-21T00:12:43.145224192Z",
+            ),
+            (
+                "2262-04-11T23:47:16.854775807Z",
+                "2262-04-11T23:47:16.854775807Z",
+            ),
+            ("1677-09-21T00:12:43.145224191Z", "1970-01-01T00:00:00Z"),
+            ("2262-04-11T23:47:16.854775808Z", "1970-01-01T00:00:00Z"),
+            ("+10000-01-01T00:00:00Z", "1970-01-01T00:00:00Z"),
+            ("-262143-01-01T00:00:00Z", "1970-01-01T00:00:00Z"),
+        ] {
+            let cursor = Cursor::from(codex_state::Anchor {
+                ts: input.parse().expect("persisted anchor timestamp"),
+                id,
+            });
+            let expected = match id {
+                Some(id) => format!("{expected_timestamp}|{id}"),
+                None => expected_timestamp.to_owned(),
+            };
+            assert_eq!(
+                serde_json::to_value(&cursor).expect("cursor should serialize"),
+                serde_json::Value::String(expected),
+                "anchor timestamp {input}",
+            );
+        }
+    }
 }
 
 #[test]
@@ -65,7 +106,7 @@ async fn list_threads_db_rejects_mismatched_sqlite_config_without_cleanup() -> a
     let metadata = ThreadMetadataBuilder::new(
         thread_id,
         root.path().join("missing-rollout.jsonl"),
-        Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     )
     .build("test-provider");

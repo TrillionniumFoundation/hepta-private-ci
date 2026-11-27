@@ -559,7 +559,7 @@ pub(super) fn commit_setup_marker(
         version: SETUP_VERSION,
         offline_username: offline_user.to_string(),
         online_username: online_user.to_string(),
-        created_at: chrono::Utc::now().to_rfc3339(),
+        created_at: codex_utils_time::Timestamp::now().rfc3339(),
         proxy_ports: proxy_ports.to_vec(),
         allow_local_binding,
         read_roots: Vec::new(),

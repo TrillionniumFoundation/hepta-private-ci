@@ -5695,10 +5695,14 @@ fn thread_backwards_cursor_for_sort_key(
     // The state DB stores unique millisecond timestamps. Offset the reverse cursor by one
     // millisecond so the opposite-direction query includes the page anchor.
     let timestamp = match sort_direction {
-        SortDirection::Asc => timestamp.checked_add_signed(ChronoDuration::milliseconds(1))?,
-        SortDirection::Desc => timestamp.checked_sub_signed(ChronoDuration::milliseconds(1))?,
+        SortDirection::Asc => {
+            timestamp.checked_add(codex_utils_time::SignedDuration::milliseconds(1))?
+        }
+        SortDirection::Desc => {
+            timestamp.checked_sub(codex_utils_time::SignedDuration::milliseconds(1))?
+        }
     };
-    Some(timestamp.to_rfc3339_opts(SecondsFormat::Millis, true))
+    Some(timestamp.rfc3339_utc(codex_utils_time::Precision::Milliseconds))
 }
 
 struct ThreadTurnsPage {
@@ -6201,7 +6205,7 @@ pub(crate) fn thread_from_stored_thread(
         }),
         section_entered_at: thread
             .section_entered_at
-            .map(|entered_at| entered_at.timestamp()),
+            .map(|entered_at| entered_at.epoch_seconds()),
         project_id: thread.project_id,
         history_mode: thread.history_mode.into(),
         model_provider: if thread.model_provider.is_empty() {
@@ -6209,9 +6213,9 @@ pub(crate) fn thread_from_stored_thread(
         } else {
             thread.model_provider
         },
-        created_at: thread.created_at.timestamp(),
-        updated_at: thread.updated_at.timestamp(),
-        recency_at: Some(thread.recency_at.timestamp()),
+        created_at: thread.created_at.epoch_seconds(),
+        updated_at: thread.updated_at.epoch_seconds(),
+        recency_at: Some(thread.recency_at.epoch_seconds()),
         status: ThreadStatus::NotLoaded,
         path,
         cwd,
@@ -6252,12 +6256,12 @@ fn summary_from_stored_thread(
         timestamp: Some(
             thread
                 .created_at
-                .to_rfc3339_opts(SecondsFormat::Millis, true),
+                .rfc3339_utc(codex_utils_time::Precision::Milliseconds),
         ),
         updated_at: Some(
             thread
                 .updated_at
-                .to_rfc3339_opts(SecondsFormat::Millis, true),
+                .rfc3339_utc(codex_utils_time::Precision::Milliseconds),
         ),
         model_provider: if thread.model_provider.is_empty() {
             fallback_provider.to_string()
@@ -6328,10 +6332,10 @@ fn summary_from_thread_metadata(metadata: &ThreadMetadata) -> ConversationSummar
         metadata.preview.clone(),
         metadata
             .created_at
-            .to_rfc3339_opts(SecondsFormat::Secs, true),
+            .rfc3339_utc(codex_utils_time::Precision::Seconds),
         metadata
             .updated_at
-            .to_rfc3339_opts(SecondsFormat::Secs, true),
+            .rfc3339_utc(codex_utils_time::Precision::Seconds),
         metadata.model_provider.clone(),
         metadata.cwd.clone(),
         metadata.cli_version.clone(),

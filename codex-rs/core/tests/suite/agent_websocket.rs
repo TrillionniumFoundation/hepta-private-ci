@@ -46,7 +46,8 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
         .with_model("gpt-5.2");
     let test = builder.build_with_websocket_server(&server).await?;
 
-    test.submit_turn("non-lite turn").await?;
+    test.submit_turn_with_policy("non-lite turn", test.config.legacy_sandbox_policy())
+        .await?;
     test.codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {
@@ -217,6 +218,15 @@ async fn websocket_first_turn_uses_startup_prewarm_and_create() -> Result<()> {
             .expect("turn metadata"),
     )?;
     assert_eq!(turn_metadata["request_kind"].as_str(), Some("turn"));
+    assert!(warmup_metadata.get("root_turn_id").is_none());
+    let turn_id = turn_metadata["turn_id"]
+        .as_str()
+        .expect("first user turn has an identity");
+    assert_eq!(turn_metadata["root_turn_id"].as_str(), Some(turn_id));
+    assert_eq!(
+        turn["client_metadata"]["root_turn_id"].as_str(),
+        Some(turn_id)
+    );
 
     server.shutdown().await;
     Ok(())

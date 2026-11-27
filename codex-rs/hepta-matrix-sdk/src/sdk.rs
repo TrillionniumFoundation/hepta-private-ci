@@ -431,8 +431,6 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
             .unwrap_or(MatrixTransportError::Permanent),
         HttpError::Cached(error) => classify_http_error(error),
         HttpError::IntoHttp(_) | HttpError::RefreshToken(_) => MatrixTransportError::Permanent,
-        #[cfg(target_os = "android")]
-        HttpError::VerifierBuilder(_) => MatrixTransportError::Permanent,
     }
 }
 

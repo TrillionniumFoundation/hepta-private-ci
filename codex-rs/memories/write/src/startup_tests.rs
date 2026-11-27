@@ -181,7 +181,7 @@ async fn memories_startup_fails_consolidation_when_worker_creates_extension_syml
         seed_stage1_output(
             db.as_ref(),
             home.path(),
-            chrono::Utc::now(),
+            codex_utils_time::Timestamp::now(),
             "raw memory",
             "rollout summary",
             "worker-symlink",
@@ -242,11 +242,11 @@ async fn memories_startup_phase2_tracks_workspace_diff_across_runs() -> anyhow::
     let db = init_state_db(&home).await?;
     let memory_root = home.path().join("memories");
 
-    let now = chrono::Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let _thread_a = seed_stage1_output(
         db.as_ref(),
         home.path(),
-        now - chrono::Duration::hours(2),
+        now - codex_utils_time::SignedDuration::hours(2),
         "raw memory A",
         "rollout summary A",
         "rollout-a",
@@ -271,7 +271,7 @@ async fn memories_startup_phase2_tracks_workspace_diff_across_runs() -> anyhow::
     let _thread_b = seed_stage1_output(
         db.as_ref(),
         home.path(),
-        now - chrono::Duration::hours(1),
+        now - codex_utils_time::SignedDuration::hours(1),
         "raw memory B",
         "rollout summary B",
         "rollout-b",
@@ -333,7 +333,7 @@ async fn phase2_retries_when_clean_workspace_is_missing_artifacts() -> anyhow::R
     seed_stage1_output(
         db.as_ref(),
         home.path(),
-        chrono::Utc::now(),
+        codex_utils_time::Timestamp::now(),
         "raw memory",
         "rollout summary",
         "missing-artifacts",
@@ -382,11 +382,11 @@ async fn memories_startup_phase2_prunes_old_extension_resources() -> anyhow::Res
     let server = start_mock_server().await;
     let home = Arc::new(TempDir::new()?);
     let db = init_state_db(&home).await?;
-    let now = chrono::Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let _thread_id = seed_stage1_output(
         db.as_ref(),
         home.path(),
-        now - chrono::Duration::hours(1),
+        now - codex_utils_time::SignedDuration::hours(1),
         "raw memory",
         "rollout summary",
         "rollout",
@@ -403,12 +403,12 @@ async fn memories_startup_phase2_prunes_old_extension_resources() -> anyhow::Res
     .await?;
     let old_file = chronicle_resources.join(format!(
         "{}-abcd-10min-old.md",
-        (now - chrono::Duration::days(8)).format("%Y-%m-%dT%H-%M-%S")
+        (now - codex_utils_time::SignedDuration::days(8)).format("%Y-%m-%dT%H-%M-%S")
     ));
     tokio::fs::write(&old_file, "old resource").await?;
     let recent_file = chronicle_resources.join(format!(
         "{}-abcd-10min-recent.md",
-        (now - chrono::Duration::days(6)).format("%Y-%m-%dT%H-%M-%S")
+        (now - codex_utils_time::SignedDuration::days(6)).format("%Y-%m-%dT%H-%M-%S")
     ));
     tokio::fs::write(&recent_file, "recent resource").await?;
     seed_required_memory_artifacts(&home.path().join("memories")).await?;
@@ -458,7 +458,7 @@ async fn memories_startup_phase2_prunes_old_extension_resources_without_stage1_i
         .enqueue_global_consolidation(/*input_watermark*/ 1)
         .await?;
 
-    let now = chrono::Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let chronicle_resources = home.path().join("memories/extensions/chronicle/resources");
     tokio::fs::create_dir_all(&chronicle_resources).await?;
     tokio::fs::write(
@@ -469,7 +469,7 @@ async fn memories_startup_phase2_prunes_old_extension_resources_without_stage1_i
     .await?;
     let old_file = chronicle_resources.join(format!(
         "{}-abcd-10min-old.md",
-        (now - chrono::Duration::days(8)).format("%Y-%m-%dT%H-%M-%S")
+        (now - codex_utils_time::SignedDuration::days(8)).format("%Y-%m-%dT%H-%M-%S")
     ));
     tokio::fs::write(&old_file, "old resource").await?;
     seed_required_memory_artifacts(&home.path().join("memories")).await?;
@@ -677,7 +677,7 @@ async fn run_memory_phase_one_model_request_test(
     seed_stage1_candidate(
         db.as_ref(),
         home.path(),
-        chrono::Utc::now() - chrono::Duration::hours(2),
+        codex_utils_time::Timestamp::now() - codex_utils_time::SignedDuration::hours(2),
         "startup-models",
     )
     .await?;
@@ -718,7 +718,7 @@ async fn run_memory_phase_two_model_request_test(
     seed_stage1_output(
         db.as_ref(),
         home.path(),
-        chrono::Utc::now(),
+        codex_utils_time::Timestamp::now(),
         "raw memory for phase two",
         "rollout summary for phase two",
         "startup-models-phase-two",
@@ -955,7 +955,7 @@ impl ModelProvider for MockMemoryModelProvider {
 async fn seed_stage1_output(
     db: &codex_state::StateRuntime,
     codex_home: &Path,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    updated_at: codex_utils_time::Timestamp,
     raw_memory: &str,
     rollout_summary: &str,
     rollout_slug: &str,
@@ -976,7 +976,7 @@ async fn seed_stage1_output(
     seed_stage1_output_for_existing_thread(
         db,
         thread_id,
-        updated_at.timestamp(),
+        updated_at.epoch_seconds(),
         raw_memory,
         rollout_summary,
         Some(rollout_slug),
@@ -989,13 +989,13 @@ async fn seed_stage1_output(
 async fn seed_stage1_candidate(
     db: &codex_state::StateRuntime,
     codex_home: &Path,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    updated_at: codex_utils_time::Timestamp,
     rollout_slug: &str,
 ) -> anyhow::Result<ThreadId> {
     let thread_id = ThreadId::new();
     let rollout_path = codex_home.join(format!("rollout-{thread_id}.jsonl"));
     let line = RolloutLine {
-        timestamp: updated_at.to_rfc3339(),
+        timestamp: updated_at.rfc3339(),
         ordinal: None,
         item: RolloutItem::ResponseItem(
             ResponseItem::Message {

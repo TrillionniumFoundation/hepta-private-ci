@@ -4,8 +4,6 @@ use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use chrono::DateTime;
-use chrono::Utc;
 use codex_arg0::Arg0DispatchPaths;
 use codex_core::ThreadManager;
 use codex_core::config::ConfigOverrides;
@@ -453,7 +451,7 @@ impl ExternalAgentSessionImporter {
         } else {
             ThreadMemoryMode::Disabled
         };
-        let now = Utc::now();
+        let now = codex_utils_time::Timestamp::now();
         let create_params = CreateThreadParams {
             session_id: thread_id.into(),
             thread_id,
@@ -511,8 +509,8 @@ impl ExternalAgentSessionImporter {
             })
             .and_then(|(created_at, updated_at)| {
                 Some((
-                    DateTime::from_timestamp(created_at, /*nsecs*/ 0)?,
-                    DateTime::from_timestamp(updated_at, /*nsecs*/ 0)?,
+                    codex_utils_time::Timestamp::from_parts(created_at, /*nsecs*/ 0)?,
+                    codex_utils_time::Timestamp::from_parts(updated_at, /*nsecs*/ 0)?,
                 ))
             })
             .unwrap_or((now, now));

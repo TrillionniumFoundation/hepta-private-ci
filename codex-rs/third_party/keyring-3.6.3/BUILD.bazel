@@ -1,0 +1,23 @@
+load("//:defs.bzl", "codex_rust_crate")
+
+codex_rust_crate(
+    name = "keyring",
+    crate_edition = "2021",
+    crate_features = ["crypto-rust"] + select({
+        "@platforms//os:freebsd": ["sync-secret-service"],
+        "@platforms//os:linux": [
+            "async-secret-service",
+            "linux-native",
+            "linux-native-async-persistent",
+        ],
+        "@platforms//os:macos": ["apple-native"],
+        "@platforms//os:openbsd": ["sync-secret-service"],
+        "@platforms//os:windows": ["windows-native"],
+        "//conditions:default": [],
+    }),
+    crate_name = "keyring",
+    rustc_env = {"CARGO_PKG_VERSION": "3.6.3"},
+    # Upstream native tests require a dedicated credential store. The separate
+    # encrypted interoperability workflow supplies an isolated synthetic store.
+    test_tags = ["manual"],
+)

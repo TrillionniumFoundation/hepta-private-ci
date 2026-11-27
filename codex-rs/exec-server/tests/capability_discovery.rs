@@ -3,7 +3,6 @@ mod common;
 #[path = "common/fake_bwrap.rs"]
 mod fake_bwrap;
 
-#[cfg(target_os = "linux")]
 use anyhow::Context as _;
 use codex_exec_server::CAPABILITY_ROOTS_DISCOVER_METHOD;
 use codex_exec_server::CapabilityRootDiscovery;
@@ -251,7 +250,8 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
             },
         ],
     )
-    .await?;
+    .await
+    .context("capability discovery: shared-policy batch response")?;
     assert_eq!(
         response
             .roots
@@ -307,7 +307,8 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
                 },
             ],
         )
-        .await?;
+        .await
+        .context("capability discovery: fallback batch response")?;
         assert_eq!(
             fallback
                 .roots
@@ -365,7 +366,8 @@ async fn sandboxed_discovery_batches_roots_without_combining_different_permissio
             },
         ],
     )
-    .await?;
+    .await
+    .context("capability discovery: isolated-policy batch response")?;
     assert_eq!(
         response
             .roots
@@ -504,8 +506,12 @@ async fn discover_roots(
             CAPABILITY_ROOTS_DISCOVER_METHOD,
             serde_json::to_value(CapabilityRootsDiscoverParams { roots })?,
         )
-        .await?;
-    let response = server.next_event().await?;
+        .await
+        .context("capability discovery: send discover request")?;
+    let response = server
+        .next_event()
+        .await
+        .context("capability discovery: receive discover response")?;
     let JSONRPCMessage::Response(JSONRPCResponse { id, result }) = response else {
         anyhow::bail!("expected discovery response, received {response:?}");
     };
@@ -522,12 +528,14 @@ async fn initialize(server: &mut common::exec_server::ExecServerHarness) -> anyh
                 resume_session_id: None,
             })?,
         )
-        .await?;
+        .await
+        .context("capability discovery: send initialize request")?;
     let response = server
         .wait_for_event(|event| {
             matches!(event, JSONRPCMessage::Response(response) if response.id == initialize_id)
         })
-        .await?;
+        .await
+        .context("capability discovery: receive initialize response")?;
     let JSONRPCMessage::Response(JSONRPCResponse { result, .. }) = response else {
         unreachable!("wait predicate only accepts a response");
     };

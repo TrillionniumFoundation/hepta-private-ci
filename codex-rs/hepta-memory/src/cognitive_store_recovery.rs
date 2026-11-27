@@ -38,6 +38,7 @@ use super::unavailable;
 use super::verify_store;
 use crate::ProductionAuthorityLease;
 use crate::ProductionAuthorityVerifier;
+#[cfg(not(windows))]
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
@@ -139,6 +140,15 @@ impl CognitiveStore {
             .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
 
         let root = layout.cognitive_root();
+        #[cfg(windows)]
+        let retained_root =
+            codex_utils_path::windows_private::PrivateSqliteDirectory::inspect(root)
+                .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        #[cfg(windows)]
+        let canonical_root = retained_root
+            .canonical_path()
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        #[cfg(not(windows))]
         let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
@@ -146,11 +156,10 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
+        // Windows inspection rejects every reparse ancestor and verifies the
+        // local-drive root's owner/ACL before deriving its name from that handle.
+        // Keep the no-delete-sharing root handle through this recovery ceremony;
+        // a lexical spelling comparison is not the native redirection boundary.
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
@@ -158,18 +167,45 @@ impl CognitiveStore {
         let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
         let config = SqliteConfig::from_sqlite_home(sqlite_home);
+        #[cfg(windows)]
+        let retained_sqlite_home =
+            codex_utils_path::windows_private::PrivateSqliteDirectory::inspect(config.home())
+                .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        #[cfg(windows)]
+        if retained_root
+            .snapshot()
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
+            != retained_sqlite_home
+                .snapshot()
+                .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
+        {
+            return Err(CognitiveRecoveryError::Indeterminate(
+                "normalized SQLite home differs from the retained cognitive root".to_string(),
+            ));
+        }
+        // AbsolutePathBuf normalizes Windows verbatim prefixes. Keep the
+        // canonical spelling for Cognitive publication and return values, and
+        // derive the state-layer names from its exact home after validating
+        // both retained directory handles. Neither handle is released during
+        // this ceremony, and state keeps its strict parent-path equality gate.
+        let source_name = source_path.file_name().ok_or_else(|| {
+            CognitiveRecoveryError::Invalid("cognitive source has no filename".to_string())
+        })?;
+        let sqlite_source = config.home().join(source_name);
         let source_guard = config
-            .bind_existing_recovery_database(&source_path)
+            .bind_existing_recovery_database(&sqlite_source)
             .map_err(recovery_error)?;
 
-        let candidate = canonical_root.join(recovered_database_filename(expected, &writer_fence));
+        let candidate_name = recovered_database_filename(expected, &writer_fence);
+        let candidate = canonical_root.join(&candidate_name);
+        let sqlite_candidate = config.home().join(&candidate_name);
         config
-            .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
+            .materialize_identity_bound_recovery_copy(&source_guard, &sqlite_candidate)
             .map_err(recovery_error)?;
 
         let result = async {
             let pool = config
-                .open_durable_evidence_pool(&candidate)
+                .open_private_durable_evidence_pool(&candidate)
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let authenticated = async {
@@ -220,15 +256,21 @@ impl CognitiveStore {
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&candidate)
-                .and_then(|file| file.sync_all())
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&canonical_root)
-                .and_then(|directory| directory.sync_all())
+            #[cfg(not(windows))]
+            {
+                std::fs::File::open(&candidate)
+                    .and_then(|file| file.sync_all())
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                std::fs::File::open(&canonical_root)
+                    .and_then(|directory| directory.sync_all())
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            }
+            #[cfg(windows)]
+            super::windows_storage::sync_recovery_candidate(&canonical_root, &candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
             let pool = config
-                .open_durable_evidence_pool(&candidate)
+                .open_private_durable_evidence_pool(&candidate)
                 .await
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             let final_check = async {

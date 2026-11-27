@@ -31,16 +31,16 @@ fn preview(command: &[String]) -> String {
     }
 }
 
-pub fn log_file_path_for_utc_date(base_dir: &Path, date: chrono::NaiveDate) -> PathBuf {
+pub fn log_file_path_for_utc_date(base_dir: &Path, date: codex_utils_time::CivilDate) -> PathBuf {
     base_dir.join(format!(
         "{LOG_FILE_PREFIX}.{}.{}",
-        date.format("%Y-%m-%d"),
+        codex_utils_time::format_date(date, "%Y-%m-%d"),
         LOG_FILE_SUFFIX
     ))
 }
 
 pub fn current_log_file_path(base_dir: &Path) -> PathBuf {
-    log_file_path_for_utc_date(base_dir, chrono::Utc::now().date_naive())
+    log_file_path_for_utc_date(base_dir, codex_utils_time::Timestamp::now().date())
 }
 
 pub fn current_log_file_path_for_codex_home(codex_home: &Path) -> PathBuf {
@@ -94,7 +94,7 @@ pub fn debug_log(msg: &str, base_dir: Option<&Path>) {
 
 // Unconditional note logging to the daily sandbox log.
 pub fn log_note(msg: &str, base_dir: Option<&Path>) {
-    let ts = chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
+    let ts = codex_utils_time::OffsetTimestamp::now_local().format("%Y-%m-%d %H:%M:%S%.3f");
     append_line(&format!("[{ts} {}] {}", exe_label(), msg), base_dir);
 }
 
@@ -139,7 +139,7 @@ mod tests {
 
     #[test]
     fn log_file_path_for_utc_date_matches_rolling_appender_name() {
-        let date = chrono::NaiveDate::from_ymd_opt(2026, 5, 21).expect("valid date");
+        let date = codex_utils_time::civil_date(2026, 5, 21).expect("valid date");
 
         assert_eq!(
             log_file_path_for_utc_date(Path::new("logs"), date),

@@ -53,11 +53,27 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                     call.tool
                 )
             })?;
+            if let Some(environment_id) = call.environment_id.as_deref()
+                && prepared_call.server_environment_id() != environment_id
+            {
+                bail!(
+                    "MCP hook for environment `{environment_id}` cannot call server `{}` bound to environment `{}`",
+                    call.server,
+                    prepared_call.server_environment_id()
+                );
+            }
 
+            let mut metadata = call.metadata.unwrap_or_default();
+            // The owning session supplies this reserved identity even if a
+            // caller-provided metadata map contains a different threadId.
+            metadata.insert(
+                "threadId".to_string(),
+                Value::String(self.thread_id.to_string()),
+            );
             let result = prepared_call
                 .call(
                     Some(Value::Object(call.input)),
-                    Some(serde_json::json!({ "threadId": self.thread_id.to_string() })),
+                    Some(Value::Object(metadata)),
                     Some(call.timeout),
                 )
                 .await?;
@@ -80,3 +96,7 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
         .boxed()
     }
 }
+
+#[cfg(test)]
+#[path = "hook_mcp_executor_tests.rs"]
+mod tests;

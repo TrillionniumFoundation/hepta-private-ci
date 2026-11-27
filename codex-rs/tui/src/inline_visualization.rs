@@ -4,7 +4,6 @@ mod viewer;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use chrono::DateTime;
 use codex_protocol::ThreadId;
 use pulldown_cmark::Event;
 use pulldown_cmark::Options;
@@ -88,7 +87,8 @@ impl InlineVisualizationContext {
         let uuid = Uuid::parse_str(&thread_id).ok()?;
         let timestamp = uuid.get_timestamp()?;
         let (seconds, nanos) = timestamp.to_unix();
-        let created_at = DateTime::from_timestamp(i64::try_from(seconds).ok()?, nanos)?;
+        let created_at =
+            codex_utils_time::Timestamp::from_parts(i64::try_from(seconds).ok()?, nanos)?;
         let visualizations_dir = codex_home.join("visualizations");
         let granted_thread_dirs = writable_roots
             .into_iter()
@@ -97,7 +97,7 @@ impl InlineVisualizationContext {
         let thread_dir = match granted_thread_dirs.as_slice() {
             [thread_dir] => (*thread_dir).to_path_buf(),
             _ => visualizations_dir
-                .join(created_at.format("%Y/%m/%d").to_string())
+                .join(created_at.format("%Y/%m/%d"))
                 .join(&thread_id),
         };
         let artifact_thread_id = thread_dir.file_name()?.to_owned();

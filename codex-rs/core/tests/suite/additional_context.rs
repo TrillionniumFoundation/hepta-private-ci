@@ -81,9 +81,17 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     .await;
 
     let request = request.single_request();
-    assert!(request.has_content_kinds(&["additional_content.automation_info"]));
-    assert!(request.has_content_kinds(&["additional_content.browser_info"]));
-    assert!(request.has_content_kinds(&["user.text"]));
+    let local_items =
+        super::local_annotations::persisted_request_items(&test.codex, &request, |_| true).await?;
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["additional_content.automation_info"],
+    );
+    super::local_annotations::assert_local_content_kinds(
+        &local_items,
+        &["additional_content.browser_info"],
+    );
+    super::local_annotations::assert_local_content_kinds(&local_items, &["user.text"]);
     insta::assert_snapshot!(
         "additional_context_simple_input",
         context_snapshot::format_labeled_requests_snapshot(

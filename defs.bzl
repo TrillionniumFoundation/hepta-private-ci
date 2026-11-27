@@ -199,6 +199,7 @@ def codex_rust_crate(
         integration_compile_data_extra = [],
         integration_test_args = [],
         unit_test_args = [],
+        unit_test_runfile_env = {},
         unit_test_dependency_replacements = {},
         integration_test_dependency_replacements_by_test = {},
         unit_test_features = [],
@@ -206,12 +207,14 @@ def codex_rust_crate(
         integration_test_timeout = None,
         test_data_extra = [],
         test_shard_counts = {},
+        native_test_launcher_tags = {},
         test_tags = [],
         test_threads = 0,
         unit_test_timeout = None,
         extra_binaries = [],
         extra_binaries_non_windows = [],
-        run_tests_with_wine_exec = False):
+        run_tests_with_wine_exec = False,
+        wine_test_launcher_tags = {}):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -252,6 +255,8 @@ def codex_rust_crate(
         integration_compile_data_extra: Extra compile_data for integration tests.
         integration_test_args: Optional args for integration test binaries.
         unit_test_args: Optional args for the unit test binary.
+        unit_test_runfile_env: Binary or file labels to resolve into absolute
+            environment paths for unit tests, including manifest-only runfiles.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
         integration_test_timeout: Optional Bazel timeout for integration test
             targets generated from `tests/*.rs`.
@@ -263,6 +268,10 @@ def codex_rust_crate(
             and then assigns each libtest case to a stable bucket by hashing
             the test name. Matching tests are also marked flaky, which gives
             them Bazel's default three attempts.
+        native_test_launcher_tags: Extra tags keyed by generated test target name.
+            Non-empty tags use a native workspace-root launcher even without
+            sharding. Only that launcher inherits the tags; Rust compile helpers,
+            unit tests, Wine, and Windows cross wrappers do not.
         test_tags: Tags applied to unit + integration test targets.
             Typically used to disable the sandbox, but see https://bazel.build/reference/be/common-definitions#common.tags
         test_threads: Optional Rust test thread limit for sharded integration tests.
@@ -276,6 +285,9 @@ def codex_rust_crate(
         run_tests_with_wine_exec: Boolean, defaults to False. Whether to emit a
             Wine-exec variant for each integration test. Variants inherit the
             native test's timeout, tags, and shard count.
+        wine_test_launcher_tags: Extra tags keyed by generated Wine test target
+            name. Only the Wine workspace-root launcher inherits these tags;
+            Rust compile helpers, native tests, and Windows cross wrappers do not.
     """
     test_env = {
         # The launcher resolves an absolute workspace root at runtime so
@@ -402,6 +414,7 @@ def codex_rust_crate(
         workspace_root_test(
             name = unit_test_name,
             env = test_env,
+            runfile_env = unit_test_runfile_env,
             test_bin = ":" + unit_test_binary,
             workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
             tags = test_tags,
@@ -538,6 +551,8 @@ def codex_rust_crate(
         test_kwargs = {}
         test_kwargs.update(integration_test_kwargs)
         test_shard_count = _test_shard_count(test_shard_counts, test_name)
+        native_launcher_tags = native_test_launcher_tags.get(test_name, [])
+        use_native_test_launcher = test_shard_count != None or bool(native_launcher_tags)
         if test_shard_count:
             # Put Bazel sharding on the label users/CI invoke. Do not set
             # rules_rust's experimental_enable_sharding on the Rust test
@@ -551,12 +566,12 @@ def codex_rust_crate(
 
         # There are four generated integration-test shapes:
         #
-        # 1. Unsharded native tests keep the plain rust_test label for minimal
-        #    churn and the usual rules_rust Cargo-like environment.
-        # 2. Sharded native tests split into a manual rust_test binary plus an
-        #    outer workspace_root_test. The outer test action receives Bazel's
-        #    sharding environment, resolves the real binary through the
-        #    runfiles manifest, and implements stable libtest sharding itself.
+        # 1. Native tests without sharding or launcher tags keep the plain
+        #    rust_test label and the usual rules_rust Cargo-like environment.
+        # 2. Other native tests split into a manual rust_test binary plus an
+        #    outer workspace_root_test that resolves the real binary through
+        #    the runfiles manifest. Sharded tests additionally receive Bazel's
+        #    sharding environment and use the launcher's stable libtest sharding.
         # 3. Windows cross tests always use the workspace_root_test wrapper so
         #    runfile env vars become Windows-native absolute paths before the
         #    Rust process starts.
@@ -566,12 +581,13 @@ def codex_rust_crate(
         #    owns cleanup. The outer workspace_root_test resolves the runner,
         #    test, and server from runfiles, sets a Cargo-like cwd, and applies
         #    the native test's shard count.
-        if test_shard_count:
+        if use_native_test_launcher:
             # This target is intentionally a binary-like helper, not the public
-            # test target. The wrapper below owns cwd setup, runfile env
-            # materialization, sharding, and flaky retry behavior.
+            # test target. The wrapper below owns cwd setup and runfile env
+            # materialization, plus sharding and retries when configured above.
             rust_test(
                 name = integration_test_binary,
+                crate_features = crate_features,
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -602,7 +618,7 @@ def codex_rust_crate(
                 test_threads = test_threads,
                 workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
                 target_compatible_with = WINDOWS_GNULLVM_INCOMPATIBLE,
-                tags = test_tags,
+                tags = test_tags + native_launcher_tags,
                 **test_kwargs
             )
         else:
@@ -612,6 +628,7 @@ def codex_rust_crate(
             # Bazel's normal test environment.
             rust_test(
                 name = test_name,
+                crate_features = crate_features,
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -634,7 +651,7 @@ def codex_rust_crate(
 
         if run_tests_with_wine_exec:
             wine_test_name = test_name.removesuffix("-test") + "-wine-exec-test"
-            native_test_binary = ":" + (integration_test_binary if test_shard_count else test_name)
+            native_test_binary = ":" + (integration_test_binary if use_native_test_launcher else test_name)
             wine_test_binaries = dict(wine_host_binaries)
 
             wine_exec_server = wine_test_name + "-windows-exec-server"
@@ -675,7 +692,7 @@ def codex_rust_crate(
                 target_compatible_with = WINE_TEST_TARGET_COMPATIBLE_WITH,
                 # This wrapper has no Rust sources and transitions a data
                 # dependency to a Windows toolchain the lint does not register.
-                tags = test_tags + ["no-argument-comment-lint"],
+                tags = test_tags + ["no-argument-comment-lint"] + wine_test_launcher_tags.get(wine_test_name, []),
                 **wine_test_kwargs
             )
 
@@ -687,6 +704,7 @@ def codex_rust_crate(
 
         rust_test(
             name = windows_cross_test_binary,
+            crate_features = crate_features,
             crate_name = test_crate_name,
             crate_root = test,
             srcs = [test],

@@ -59,9 +59,9 @@ pub(super) fn extract_message_text(content: &JsonValue) -> Option<ExtractedMessa
 }
 
 pub(super) fn parse_timestamp(timestamp: &str) -> Option<i64> {
-    chrono::DateTime::parse_from_rfc3339(timestamp)
+    codex_utils_time::OffsetTimestamp::parse_rfc3339(timestamp)
         .ok()
-        .map(|value| value.timestamp())
+        .map(|value| value.epoch_seconds())
 }
 
 fn content_blocks(content: &JsonValue) -> Vec<JsonValue> {
