@@ -1,0 +1,103 @@
+{
+  "archives": [
+    {
+      "file": "bundle-000.zip",
+      "members": [
+        "107/first-predictions.npz",
+        "107/first-replay.json",
+        "107/qualification.json",
+        "211/first-predictions.npz",
+        "211/first-replay.json",
+        "211/qualification.json",
+        "431/first-predictions.npz",
+        "431/first-replay.json"
+      ],
+      "sha256": "b75efad81fbb11b66cc3c0daf062c9eeed5dc2703499fd9f25ab9d9cf432da97",
+      "size": 379456
+    },
+    {
+      "file": "bundle-001.zip",
+      "members": [
+        "431/qualification.json"
+      ],
+      "sha256": "119a930499e4efab5b1d67bddc9722ace3c7650b732c379b121255ae4ec34a84",
+      "size": 2111
+    }
+  ],
+  "protocol_sha256": "04d8dbf5aeb1b422aad892b08018b706b78ea15ee39e1ba6888a6c83d07ef52d",
+  "rows": [
+    {
+      "feature_cases": 36,
+      "largest_absolute_feature_or_trace_error": 0.0,
+      "largest_candidate_norm_error": 0.0,
+      "largest_gradient_error": 0.0,
+      "replay": {
+        "ar": {
+          "argmax_mismatches": 0,
+          "max_abs": 0.0,
+          "records": 2200
+        },
+        "eng": {
+          "argmax_mismatches": 0,
+          "max_abs": 0.0,
+          "records": 1000
+        }
+      },
+      "seed": 107,
+      "timings": {
+        "backward4": 1.7504830043712825,
+        "score48": 1.6842889436750879,
+        "trace48": 13.501619636037237
+      }
+    },
+    {
+      "feature_cases": 36,
+      "largest_absolute_feature_or_trace_error": 0.0,
+      "largest_candidate_norm_error": 0.0,
+      "largest_gradient_error": 0.0,
+      "replay": {
+        "ar": {
+          "argmax_mismatches": 0,
+          "max_abs": 0.0,
+          "records": 2200
+        },
+        "eng": {
+          "argmax_mismatches": 0,
+          "max_abs": 0.0,
+          "records": 1000
+        }
+      },
+      "seed": 211,
+      "timings": {
+        "backward4": 1.3585021468723137,
+        "score48": 1.9330617953659697,
+        "trace48": 13.847314921782163
+      }
+    },
+    {
+      "feature_cases": 36,
+      "largest_absolute_feature_or_trace_error": 0.0,
+      "largest_candidate_norm_error": 0.0,
+      "largest_gradient_error": 0.0,
+      "replay": {
+        "ar": {
+          "argmax_mismatches": 0,
+          "max_abs": 0.0,
+          "records": 2200
+        },
+        "eng": {
+          "argmax_mismatches": 0,
+          "max_abs": 0.0,
+          "records": 1000
+        }
+      },
+      "seed": 431,
+      "timings": {
+        "backward4": 1.4669373214750352,
+        "score48": 1.5318666627697872,
+        "trace48": 16.417106552353612
+      }
+    }
+  ],
+  "source_sha256": "4062e0932a92ebdc3b2f9e7dd1009db949e4e113628862cf73432b9b26c08787"
+}
