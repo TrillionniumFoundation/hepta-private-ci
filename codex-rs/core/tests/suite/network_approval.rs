@@ -1203,11 +1203,25 @@ async fn allowing_network_policy_amendment_persists_context_and_bypasses_prompt(
     assert!(policy.contains(
         r#"network_rule(host="codex-network-test.invalid", protocol="http", decision="allow""#
     ));
-    assert!(first_responses.requests().iter().any(|request| {
-        request.body_contains_text(
-            "Allowed network rule saved in execpolicy (allowlist): codex-network-test.invalid",
-        )
-    }));
+    let first_requests = first_responses.requests();
+    assert!(
+        first_requests.iter().any(|request| {
+            request.body_contains_text(
+                "Allowed network rule saved in execpolicy (allowlist): codex-network-test.invalid",
+            )
+        }),
+        "persisted allow rule was absent from the first turn's captured requests; \
+         captured_requests={}; latest_call_output=(bytes, truncated, prefix): {:?}",
+        first_requests.len(),
+        first_requests.iter().rev().find_map(|request| {
+            request
+                .function_call_output_text("network-amendment-1")
+                .map(|output| {
+                    let prefix: String = output.chars().take(1_024).collect();
+                    (output.len(), prefix.len() < output.len(), prefix)
+                })
+        })
+    );
     mount_exec_network_turn(
         &server,
         "resp-network-amendment-2",
