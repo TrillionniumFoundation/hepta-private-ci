@@ -71,6 +71,7 @@ const WRITE_ROOT_ALLOW_MASK: u32 =
     FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE | DELETE;
 
 mod sandbox_users;
+mod setup_completion;
 mod setup_runtime_bin;
 use no_reparse_dir::open_or_create_no_reparse;
 use read_acl_mutex::acquire_read_acl_mutex;
@@ -507,25 +508,24 @@ fn real_main() -> Result<()> {
 }
 
 fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
-    let writes_setup_marker = !payload.refresh_only && payload.mode != SetupMode::ReadAclsOnly;
-    if writes_setup_marker {
-        prepare_setup_marker(&payload.codex_home, &payload.real_user)?;
-    }
-    match payload.mode {
-        SetupMode::ReadAclsOnly => run_read_acl_only(payload, log),
-        SetupMode::ProvisionOnly => run_provision_only(payload, log, sbx_dir),
-        SetupMode::Full => run_setup_full(payload, log, sbx_dir),
-    }?;
-    if writes_setup_marker {
-        commit_setup_marker(
-            &payload.codex_home,
-            &payload.offline_username,
-            &payload.online_username,
-            &payload.proxy_ports,
-            payload.allow_local_binding,
-        )?;
-    }
-    Ok(())
+    setup_completion::run_with_marker(
+        payload,
+        || prepare_setup_marker(&payload.codex_home, &payload.real_user),
+        || match payload.mode {
+            SetupMode::ReadAclsOnly => run_read_acl_only(payload, log),
+            SetupMode::ProvisionOnly => run_provision_only(payload, log, sbx_dir),
+            SetupMode::Full => setup_completion::run_setup_full(payload, log, sbx_dir),
+        },
+        || {
+            commit_setup_marker(
+                &payload.codex_home,
+                &payload.offline_username,
+                &payload.online_username,
+                &payload.proxy_ports,
+                payload.allow_local_binding,
+            )
+        },
+    )
 }
 
 fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
@@ -753,7 +753,12 @@ fn run_provision_only(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) ->
     Ok(())
 }
 
-fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
+fn run_setup_acl_work(
+    payload: &Payload,
+    log: &mut dyn Write,
+    sbx_dir: &Path,
+    refresh_errors: &mut Vec<String>,
+) -> Result<()> {
     let refresh_only = payload.refresh_only;
     if !refresh_only {
         provision_and_hide_sandbox_users(payload, log, sbx_dir)?;
@@ -784,7 +789,6 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
     let sandbox_group_sid_str =
         string_from_sid_bytes(&sandbox_group_sid).map_err(anyhow::Error::msg)?;
 
-    let mut refresh_errors: Vec<String> = Vec::new();
     if !refresh_only {
         configure_offline_sandbox_network(payload, &offline_sid_str, log)?;
     }
@@ -843,7 +847,7 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
     if refresh_only {
         setup_runtime_bin::ensure_codex_app_runtime_paths_readable(
             sandbox_group_psid,
-            &mut refresh_errors,
+            refresh_errors,
             log,
         )?;
     }
@@ -1024,14 +1028,6 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
             LocalFree(sandbox_group_psid as HLOCAL);
         }
     }
-    if refresh_only && !refresh_errors.is_empty() {
-        log_line(
-            log,
-            &format!("setup refresh completed with errors: {refresh_errors:?}"),
-        )?;
-        anyhow::bail!("setup refresh had errors");
-    }
-    log_note("setup binary completed", Some(sbx_dir));
     Ok(())
 }
 
