@@ -2,7 +2,11 @@ name: Compare hosted issuer with original cold consumer runs
 on:
   push:
     branches: [research/paired-consumer-integrated-20261123]
-    paths: ['qualification/paired-consumer-integrated-20261123/verify_native_fixture.py', '.github/workflows/hepta-paired-integrated-originals.yml']
+    paths:
+      [
+        "qualification/paired-consumer-integrated-20261123/verify_native_fixture.py",
+        ".github/workflows/hepta-paired-integrated-originals.yml",
+      ]
 permissions:
   contents: read
   actions: read
