@@ -39,3 +39,14 @@ With float64 and the original one-path calibration, n=1 agrees with the source t
 For a frozen input, the analytic write moved two-path risk from 0.7980661 to the requested 0.9764322 with zero reported double-precision probability error. A protected key's preactivation moved −1.56e−17. A separate unprotected key's risk moved from 0.5934245 to 0.5431942. Over 25 targets at each n in {1,2,4,8}, maximum inverse preactivation error was 5.33e−15. Examples verify unreachable boundaries, zero target, conflicting duplicate keys and a non-positive-definite cost matrix. This experiment demonstrates a local write with fixed representation and fixed diffusion parameters. It supplies no measured whole-model training-time ratio.
 
 `microdomain.py` requires PyTorch. Run `python verify_microdomain.py verification.json` from this directory with the parent directory's registered `parent_cell.py` available. `PYTHONPATH=.. python law_lookup_audit.py` evaluates the old table's edge behavior. `FROZEN_DIAGNOSTIC.md` registers an independent CPU-only developmental comparison with previously trained scalar one-path captioners. The separate six-arm COCO experiment retains its original one-path specification.
+
+## Results and implementation files
+
+![Analytic release probability and wall gradients for independent single-, double- and four-path units, consistent expected reset and paired fixed-weight caption results](microdomain_curves.png)
+
+The analytic panels use the source log drift 0.03355, volatility 0.23, quarter horizon and reset 0.30. In the paired 256-photo frozen-weight comparison, neither n=2 nor n=4 showed a clear loss advantage over n=1. The mechanism has a close conceptual precedent at molecular scale. Basnayake et al. related fast calcium transients in dendritic spines to the fastest ions reaching a receptor (https://pmc.ncbi.nlm.nih.gov/articles/PMC6548358/). That study and this network describe different scales and observations.
+
+- [Frozen captioner results](FROZEN_RESULT.md) preserve every measured substitution.
+- [CPU timing results](LOCAL_TIMING_RESULT.md) compare three methods for one prescribed local edit at equal error tolerance.
+- [Nonzero-drift inversion](FINITE_DRIFT.md) extends the local numerical solve to the actual source calibration.
+- [Original table regularity](BOUNDARY_REGULARITY.md) compares values and slopes near the absorbing boundary.
