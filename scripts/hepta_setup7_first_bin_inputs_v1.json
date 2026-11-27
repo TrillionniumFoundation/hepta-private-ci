@@ -1,20 +1,20 @@
 {
   "schema": "hepta.setup7.first_native_input.v1",
-  "scope_id": "hepta-setup7-first-bin-20261127-7c9e",
+  "scope_id": "hepta-setup7-tool-homes-20261127-7c9e",
   "root_execution_authorized": true,
   "root_budget_accepted": true,
   "root_first_native_clearance": true,
-  "root_admission_sha256": "0482778c62abd85d1cf69e808fff7060ff15b4cfa6471f3b6da6d3b8d692da13",
-  "first_native_clearance_sha256": "93f07c2aecdf047e22802dc01b8e1c6fa22fab02fa33eecf61babfec459fa852",
-  "root_source_review_sha256": "d90e81a9b9a9e777945372f3cfd5faf23e0d6c208a1e17b22b0ed5bcfff0b99d",
+  "root_admission_sha256": "96689b0bd53538295ee03d0d087906cfc4bd50e66dc576f3c5202fb3b15c5088",
+  "first_native_clearance_sha256": "121c9b59bca3459cffbc4f38df2eba0ed7231d2ac15325b0686d83e44e1b661f",
+  "root_source_review_sha256": "e95cd1b5b71a72cdbe6ee87dd4f7b69ca65608c09aab163f0e875773f88f6b77",
   "parent": {
-    "head": "1b2ae899a8956ee96201956bced828f0824ea5f3",
-    "tree": "4944b2a7d5b8ef27f0f0b5c76a717b9127268493"
+    "head": "b8cb004664d7f89d16d4e031cdb35617fd7f6188",
+    "tree": "13edb5d85728189175527af9d0f479423d084892"
   },
   "source_sha256": {
     "scripts/hepta_setup7_windows_owner_v1.py": "be255914609d2b8b420357af6992c494b08523109616bb9e5d7d5436c9971be5",
     "scripts/hepta_setup7_collector_v1.py": "840ca1ce4770295e05564cfb55749373a60d5bbc0f86098b39acfa09ec59fd72",
-    "scripts/run_hepta_setup7_first_bin_v1.py": "65ecb29c5ce3f47cf2176265771e9bd5d1b0bb695f4d45d2cd940b52df7a4de7"
+    "scripts/run_hepta_setup7_first_bin_v1.py": "47c248db388061d5fa9d163e223996d87d17c1c244e8af35afd1d074cf99482c"
   },
   "attributes_sha256": {
     ".gitattributes": "182d9c13a747806ee4eeab7d9a49f368e09eabaf174f393be09ce14519f83396",
@@ -57,26 +57,64 @@
     "new_single_bin_measurement_available": false,
     "prior_design": "HEPTA7164_SETUP7_FIRST_BIN_SCOPE_DESIGN_SOURCE_ONLY_V1",
     "scope_body_count": 7,
-    "source_marker_cases": 14
+    "source_marker_cases": 14,
+    "original7176_publication_acceptance": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7176_EXACT5_INDEPENDENT_API_READBACK_ROOT_V1.json",
+      "bytes": 4619,
+      "sha256": "e499f183c3612da98f0d7ad80fc54d81632d7b2cee15c22bd17513c04830c376"
+    },
+    "original7176_result": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7176_SETUP7_FIRST_NATIVE_ORIGINAL_ROOT_V1/EXTRACTED_ORIGINAL_V1/RESULT.json",
+      "bytes": 13704,
+      "sha256": "16479c7d309638c9d1cdcac3604d560895e27f062993e9de24cce40ffb8651da",
+      "git_blob": "70e585bb356dda08cd6ea425318d2fbcbaec1b2c"
+    }
   },
   "publication": {
     "future_source_head": null,
     "future_source_tree": null,
-    "fixed_first_open_base": "fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e",
-    "fixed_first_open_head": "fix/hepta-setup7-first-bin-controls-20261127-7c9e",
+    "fixed_first_open_base": "fix/hepta-setup7-first-bin-controls-20261127-7c9e",
+    "fixed_first_open_head": "fix/hepta-setup7-explicit-tool-homes-20261127-7c9e",
     "source_paths": [
-      "scripts/hepta_setup7_windows_owner_v1.py",
-      "scripts/hepta_setup7_collector_v1.py",
       "scripts/run_hepta_setup7_first_bin_v1.py",
       "scripts/hepta_setup7_first_bin_inputs_v1.json",
       ".github/workflows/hepta-setup7-first-bin-v1.yml"
     ],
-    "activation": "Root must review all sources, first-native clearance and unchanged budget before removing the single workflow false gate and filling the three receipt hashes."
+    "activation": "Root must independently accept the successor actual7176 parent, original65-second failure, new budget, new first-native clearance and complete changed source; then bind the three new receipt hashes, three flags and workflow gate. The original7176 authorization is not transferable.",
+    "unchanged_retained_source_paths": [
+      "scripts/hepta_setup7_windows_owner_v1.py",
+      "scripts/hepta_setup7_collector_v1.py"
+    ]
   },
   "limitations": [
     "New ordinary engineering scope, not E1-E6 acceptance or proof of useful work.",
     "A successful native observation remains provisional until original whole-job <=1200s and artifact upload are independently verified.",
     "Host termination, hard kill, unavailable descendant handle or incomplete output remains FAIL_OR_UNKNOWN.",
-    "The observed runner/tool environment is not admitted for future source-only native-result reuse."
-  ]
+    "The observed runner/tool environment is not admitted for future source-only native-result reuse.",
+    "The original7176 run remains a65-second FAIL_OR_UNKNOWN with zero native commands and four unlaunched phases. This successor is not an original-run retry.",
+    "An explicit fresh tool home may incur additional installation/materialization time. All such work remains inside the chosen future whole-job budget; no cold binary or registry reuse is claimed.",
+    "The successor numeric1200/1000/200 cap needs its own explicit Root budget admission. This inactive source file allocates no new time and the old65 seconds are not refunded or erased."
+  ],
+  "prior_original_attempt": {
+    "head": "b8cb004664d7f89d16d4e031cdb35617fd7f6188",
+    "tree": "13edb5d85728189175527af9d0f479423d084892",
+    "run_id": 45953835760,
+    "run_attempt": 1,
+    "job_id": 140355614176,
+    "whole_job_seconds": 65,
+    "status": "FAIL_OR_UNKNOWN",
+    "errors": ["KeyError('RUSTUP_HOME')"],
+    "native_commands": 0,
+    "phase_attempts": 0,
+    "unlaunched_phases": [
+      "01-metadata",
+      "02-cold-single-bin",
+      "03-exact-seven-list",
+      "04-exact-seven-run"
+    ],
+    "source_unchanged": true,
+    "result_sha256": "16479c7d309638c9d1cdcac3604d560895e27f062993e9de24cce40ffb8651da",
+    "preserved_without_rerun": true,
+    "old_execution_authority_inherited": false
+  }
 }

@@ -22,10 +22,10 @@ import urllib.parse
 import urllib.request
 
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-PARENT_HEAD = "1b2ae899a8956ee96201956bced828f0824ea5f3"
-PARENT_TREE = "4944b2a7d5b8ef27f0f0b5c76a717b9127268493"
-BASE_BRANCH = "fix/hepta-setup-acl-ready-fail-closed-20261127-7c9e"
-HEAD_BRANCH = "fix/hepta-setup7-first-bin-controls-20261127-7c9e"
+PARENT_HEAD = "b8cb004664d7f89d16d4e031cdb35617fd7f6188"
+PARENT_TREE = "13edb5d85728189175527af9d0f479423d084892"
+BASE_BRANCH = "fix/hepta-setup7-first-bin-controls-20261127-7c9e"
+HEAD_BRANCH = "fix/hepta-setup7-explicit-tool-homes-20261127-7c9e"
 WORKFLOW = ".github/workflows/hepta-setup7-first-bin-v1.yml"
 NEW_PATHS = (
     "scripts/hepta_setup7_windows_owner_v1.py",
@@ -34,6 +34,7 @@ NEW_PATHS = (
     "scripts/hepta_setup7_first_bin_inputs_v1.json",
     WORKFLOW,
 )
+MODIFIED_PATHS = (NEW_PATHS[2], NEW_PATHS[3], WORKFLOW)
 PHASES = (
     "01-metadata",
     "02-cold-single-bin",
@@ -441,10 +442,10 @@ def main():
         )
         need(
             config["parent"] == {"head": PARENT_HEAD, "tree": PARENT_TREE},
-            "actual7164 parent binding",
+            "actual7176 predecessor binding",
         )
         need(
-            config["scope_id"] == "hepta-setup7-first-bin-20261127-7c9e",
+            config["scope_id"] == "hepta-setup7-tool-homes-20261127-7c9e",
             "frozen new scope identity",
         )
         for key in (
@@ -455,6 +456,51 @@ def main():
             need(
                 re.fullmatch("[0-9a-f]{64}", config.get(key) or ""),
                 "missing original Root receipt: " + key,
+            )
+        need(
+            config.get("prior_original_attempt")
+            == {
+                "head": "b8cb004664d7f89d16d4e031cdb35617fd7f6188",
+                "tree": "13edb5d85728189175527af9d0f479423d084892",
+                "run_id": 45953835760,
+                "run_attempt": 1,
+                "job_id": 140355614176,
+                "whole_job_seconds": 65,
+                "status": "FAIL_OR_UNKNOWN",
+                "errors": ["KeyError('RUSTUP_HOME')"],
+                "native_commands": 0,
+                "phase_attempts": 0,
+                "unlaunched_phases": [
+                    "01-metadata",
+                    "02-cold-single-bin",
+                    "03-exact-seven-list",
+                    "04-exact-seven-run",
+                ],
+                "source_unchanged": True,
+                "result_sha256": "16479c7d309638c9d1cdcac3604d560895e27f062993e9de24cce40ffb8651da",
+                "preserved_without_rerun": True,
+                "old_execution_authority_inherited": False,
+            },
+            "original7176 failure/cost record changed",
+        )
+        result["prior_original_attempt"] = config["prior_original_attempt"]
+        for key, previous_hash in (
+            (
+                "root_admission_sha256",
+                "0482778c62abd85d1cf69e808fff7060ff15b4cfa6471f3b6da6d3b8d692da13",
+            ),
+            (
+                "first_native_clearance_sha256",
+                "93f07c2aecdf047e22802dc01b8e1c6fa22fab02fa33eecf61babfec459fa852",
+            ),
+            (
+                "root_source_review_sha256",
+                "d90e81a9b9a9e777945372f3cfd5faf23e0d6c208a1e17b22b0ed5bcfff0b99d",
+            ),
+        ):
+            need(
+                config[key] != previous_hash,
+                "original7176 authority is not transferable",
             )
         need(
             config["budget"]
@@ -640,9 +686,9 @@ def main():
         )
         parent, current = tree_map(original_parent), tree_map(original_current)
         need(
-            len(parent) == 16147
-            and sum(x["bytes"] for x in parent.values()) == 335617461,
-            "actual7164 complete parent inventory",
+            len(parent) == 16152
+            and sum(x["bytes"] for x in parent.values()) == 335747692,
+            "actual7176 complete parent inventory",
         )
         need(
             {p for p in parent if parent[p]["mode"] == "120000"} == {LINK_PATH}
@@ -654,10 +700,13 @@ def main():
             p for p in set(parent) | set(current) if parent.get(p) != current.get(p)
         }
         need(
-            changed == set(NEW_PATHS) and not set(NEW_PATHS) & set(parent),
-            "candidate must add exactly five new source paths",
+            changed == set(MODIFIED_PATHS) and set(NEW_PATHS) <= set(parent),
+            "candidate must modify exactly three existing setup7 source paths",
         )
-        need(all(current[p]["mode"] == "100644" for p in NEW_PATHS), "new source modes")
+        need(
+            all(current[p]["mode"] == parent[p]["mode"] == "100644" for p in NEW_PATHS),
+            "existing setup7 source modes",
+        )
         need(len(current) == 16152, "full current source leaf count")
         attrs = {
             p: value
@@ -783,17 +832,48 @@ def main():
             all(step["conclusion"] == "success" for step in result["tool_setup_steps"]),
             "original provisioning steps did not finish successfully",
         )
-        # Original runner tools are captured, not asserted hermetic or reusable.
-        rustup = Path(os.environ["RUSTUP_HOME"]).absolute()
-        cargo_home = Path(os.environ["CARGO_HOME"]).absolute()
+        # Homes are explicitly declared before both pinned provisioning actions.
+        # No USERPROFILE/default-home lookup or alternate executable is admitted.
+        tools_root = Path(os.environ["RUNNER_TEMP"]).absolute() / (
+            "hepta-setup7-tools-" + run_id
+        )
+        rustup = tools_root / "rustup"
+        cargo_home = tools_root / "cargo"
         toolchain = rustup / "toolchains/1.96.0-x86_64-pc-windows-msvc/bin"
+        expected_homes = {
+            "schema": "hepta.setup7.explicit_tool_homes.v1",
+            "root": str(tools_root),
+            "rustup_home": str(rustup),
+            "cargo_home": str(cargo_home),
+            "toolchain": "1.96.0-x86_64-pc-windows-msvc",
+            "toolchain_bin": str(toolchain),
+            "selection": "explicit-before-provision-no-defaults",
+        }
+        result["tool_home_binding"] = {
+            "bootstrap": boot.get("tool_homes"),
+            "environment": {
+                name: os.environ.get(name) for name in ("RUSTUP_HOME", "CARGO_HOME")
+            },
+            "expected": expected_homes,
+            "accepted": False,
+        }
+        need(boot.get("tool_homes") == expected_homes, "original explicit tool homes")
+        need(
+            os.environ.get("RUSTUP_HOME") == str(rustup)
+            and os.environ.get("CARGO_HOME") == str(cargo_home),
+            "provisioning environment differs from the original declared homes",
+        )
+        result["tool_home_binding"]["accepted"] = True
+        # On Windows the pinned install-action uses dirname(type -P cargo).
+        # The preceding workflow step makes this exact toolchain bin first on PATH.
+        # Original runner binaries are captured, not asserted hermetic or reusable.
         tools = {
             "cargo": toolchain / "cargo.exe",
             "rustc": toolchain / "rustc.exe",
-            "nextest": cargo_home / "bin/cargo-nextest.exe",
+            "nextest": toolchain / "cargo-nextest.exe",
             "python": Path(sys.executable),
         }
-        tool_directories = set()
+        tool_directories = {tools_root, rustup, cargo_home}
         for path in tools.values():
             for parent_directory in path.absolute().parents:
                 if parent_directory != Path(parent_directory.anchor):
