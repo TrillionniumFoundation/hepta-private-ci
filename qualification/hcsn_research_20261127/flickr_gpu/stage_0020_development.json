@@ -1,0 +1,274 @@
+{
+  "task": "From-random Flickr8k conditional language modeling at equal elapsed budget",
+  "checkpoint": "first 20-second GPU stage, all 15 states, developmental results only",
+  "source": "c511a75b04eb24719f9d5e424d190b071c78f261",
+  "registration": "b2ae840e3c520146069d062ca2950623562bee01",
+  "machine": "ai395",
+  "scientific_process": "dpty-571841018c706229a3c2902dd3ba97d265d3a166545af72c134d20215f083deb",
+  "panel_qualification": "1a21cd90997-ffbe-51f4",
+  "canonical_preparation": "1a21cdba412-ffbe-51ff",
+  "gpu_origin": "All fifteen initialized from declared seeds on ROCm; previous partial CPU and GPU weights were never mixed.",
+  "splits": {
+    "train_images": 5999,
+    "validation_images": 1000,
+    "test_images": 1000,
+    "captions_per_image": 5,
+    "training_vocabulary": 3490,
+    "development_selection_images": 128
+  },
+  "interpretation": "The five arms share an autoregressive two-layer width-96 decoder with scaled-dot-product attention. Each changes image-prefix conditioning. Positive or negative differences concern this router and this captioning experiment. NLL is teacher-forced nats per target token (including EOS, excluding PAD). All seeds, even unfavorable outcomes, are included.",
+  "budget_protocol": "Cumulative device-synchronized train plus development timing, at 20, 120, 420, 720, 1020, 1320, 1620, 1920, 2220, 2520 s per arm/seed. First stage includes 20 s training then its development evaluation; at later stages the previous development cost is deducted from the next training allowance. Whole panel setup, checkpoint write/reload, cold testing and analysis are separate.",
+  "stage_means": {
+    "hcsn": {
+      "mean_dev_nll": 3.2678519771143706,
+      "mean_completed_updates": 1386.6666666666667
+    },
+    "smooth": {
+      "mean_dev_nll": 3.2497315335874983,
+      "mean_completed_updates": 1457.6666666666667
+    },
+    "lif": {
+      "mean_dev_nll": 3.2291697735780223,
+      "mean_completed_updates": 1547.3333333333333
+    },
+    "mean": {
+      "mean_dev_nll": 3.2040574335279506,
+      "mean_completed_updates": 1639.6666666666667
+    },
+    "dense": {
+      "mean_dev_nll": 3.2571130173376144,
+      "mean_completed_updates": 1543
+    }
+  },
+  "exact_stage_capture": {
+    "flickr_manifest": "ba7083f60f12be990ede3f9a60f04524aa81228989bf6384f1684f225c26dd1e",
+    "protocol": "a51605e1fc0b6617d70969c9c3eeb3518435f8289509c8015f3e4b5f152a016f",
+    "sealed_epoch": 1795781109.937046,
+    "states": {
+      "dense-17011": {
+        "dev_nll": 3.245120408601856,
+        "fit": "102c84fb0d68df4376a31e0ba4c55ce48a47769eef3d5be80f117eef3a07a32c",
+        "selected": "6857a3708034d470ef39a01472c49179bddd03597d051370c684f794b99d7919",
+        "steps": 1604
+      },
+      "dense-24203": {
+        "dev_nll": 3.2712080518014663,
+        "fit": "a47c9fdc929a2d69075f0ba72c02e77cc6bf08a7487ee8caa92e683ddc3159c2",
+        "selected": "3ea8b1309682391cb65fb194731fff6472ac9f6c8b55967f29cdc4ca7bed7dea",
+        "steps": 1490
+      },
+      "dense-39827": {
+        "dev_nll": 3.2550105916095213,
+        "fit": "3cfe955e2636aacd82fd30069d5f47dcbac7e9987d3fd17e37fb474aae1e4cd9",
+        "selected": "c0c83a86c3c1f4eaca2b9bca3e0638f092127c4b10351d2a241bb72ffee70fb5",
+        "steps": 1535
+      },
+      "hcsn-17011": {
+        "dev_nll": 3.291348739470572,
+        "fit": "a40f13fc4dcba7895ce1e135706de8d04b70b0762322f427f8cbdcef53ff442a",
+        "selected": "007cb1eb07cbd8ceccefeb4687917b4053b06a743baa661836b930f0a7e81a0c",
+        "steps": 1276
+      },
+      "hcsn-24203": {
+        "dev_nll": 3.2489071667761755,
+        "fit": "a75da604e4ab46a40cfe62448eada82f59e900b4b9d7c662b63399bd1323917c",
+        "selected": "cc801cab885c61753f8d0461863f31d111e3c50761edcc656cb23203c5249e7d",
+        "steps": 1476
+      },
+      "hcsn-39827": {
+        "dev_nll": 3.263300025096366,
+        "fit": "45a1aea15422c2fae09ee05cacb2911d9aa9c706b8e1248a9b063e4730ebbe0f",
+        "selected": "0ccacdf6aaca8c99cccc15b57a54ce63a31a74d60dc363aacedec9ca096d717d",
+        "steps": 1408
+      },
+      "lif-17011": {
+        "dev_nll": 3.209650314347223,
+        "fit": "726617c742800cdcefa99d56e21f0ab1612cda5e8d83d4d16e2b29aacd7bfb5c",
+        "selected": "89355d2914c30bf74f32531bc5b174b49875c1c72d2a3d1fd62ec2c828b8fec5",
+        "steps": 1586
+      },
+      "lif-24203": {
+        "dev_nll": 3.244998188432206,
+        "fit": "43e7131a2ac3d24fc7a1f0fae7771019a839d8cb518337817f04430f408b01d6",
+        "selected": "1ba978185350cabcdf9374ebe35ce134cd332754c50a17c0183b0d98bd94ea08",
+        "steps": 1528
+      },
+      "lif-39827": {
+        "dev_nll": 3.2328608179546374,
+        "fit": "fd9f924a5491192959126416a5a7e678887c00d4ed0cd08699628532e0c29938",
+        "selected": "efb3567d185ea4ef0a64bb8aa17ec0d60b4ffa4209a6a97de1bda05a8dd7af35",
+        "steps": 1528
+      },
+      "mean-17011": {
+        "dev_nll": 3.1845950349967107,
+        "fit": "a349e39ff7df59ad5051d8c689211cd67390e4f64dc4f1b1018b33161780cafd",
+        "selected": "2bef3a643240c7cdc41ce65f489a303815cf6be94d1ac26a76562c0d2f69b1d4",
+        "steps": 1666
+      },
+      "mean-24203": {
+        "dev_nll": 3.2188263475018664,
+        "fit": "fe7f9723b13cbbc5be4d741201a694fdf8fb6405ddec6140927d8fd698d813d7",
+        "selected": "7141a2d36c36b6df3062ee62d96a1a06f4556a8f70cf4e09ebd527d30b7fc6f0",
+        "steps": 1602
+      },
+      "mean-39827": {
+        "dev_nll": 3.208750918085275,
+        "fit": "55dac12954656a90289f91298303dc9a357175542d84a1324fcdfe92cf87e2cb",
+        "selected": "8e1917a9f4835dade4a89be18615cf1208d88252248aec43bb05481130844e34",
+        "steps": 1651
+      },
+      "smooth-17011": {
+        "dev_nll": 3.230181289195928,
+        "fit": "24ad837e5231203417fc52a4e61fa09b1f44ac2e222b2f2c7d91abb4b2c2fb50",
+        "selected": "fd1341c8914026593ff26cfdd0281c28afdf0662a1327638a58798a8ce0ab1ea",
+        "steps": 1496
+      },
+      "smooth-24203": {
+        "dev_nll": 3.2465238115317234,
+        "fit": "da27e75f56b73eb325b3e1734a97702547e4f7c156d7b6e7eb233a48ac7248af",
+        "selected": "3baa0e51d820f96f356b6a450bce5e381893725aaa8718b0c8d3a91e17935d49",
+        "steps": 1493
+      },
+      "smooth-39827": {
+        "dev_nll": 3.2724895000348435,
+        "fit": "4b7f7d670bdb727444ab982419c95f09218e9e69e25f7b41b45a59581557e3d5",
+        "selected": "c9055cf2aaea50a3ec5aecfa3720668eaee80134a918d1ded321728efa049c19",
+        "steps": 1384
+      }
+    }
+  },
+  "launch": {
+    "canonical_manifest": "ba7083f60f12be990ede3f9a60f04524aa81228989bf6384f1684f225c26dd1e",
+    "device": "AMD Radeon 8060S Graphics",
+    "hip": "7.15.26333",
+    "script": "b80255dcb82f0d5d979816ef1195be84e4b633cea5ef75ad393cd55317389df9",
+    "source": {
+      "PROTOCOL.md": "9467e393919703899a346aba89a3d3038e35659d6f603459a90c79b6935f57b1",
+      "SOURCE_AMENDMENT.md": "fb89d71d534e8a1b591f6108633b816840ec679855a13812adffa3cb09205511",
+      "model.py": "974c781f64662bc509e270d14e9eda35bfa113fcba115c8c83a4149678c33123",
+      "panel.py": "cb72324b14071e938ba4073cd5cbebcd290739d3b31cb14c9ceba131c58fbf3f",
+      "parent_cell.py": "f5d944a8d9929a7d37001a451168dda43e3f7de6b6e5ac1c2010df5f5f31bfa7",
+      "prepare.py": "9792498c7a0456b981c8019f038c1dbfbe09af98d2205d8e09c53c714ac8c5b3",
+      "qualify.py": "ff00b89f01df3d9ef1190ab257f5a34fadcdd88e1c135c726e79a2cc52b6710e"
+    },
+    "started": "2026-11-27T12:00:04.302159+00:00",
+    "torch": "2.13.0+rocm10.0.0"
+  },
+  "environment": {
+    "dataset": "ba7083f60f12be990ede3f9a60f04524aa81228989bf6384f1684f225c26dd1e",
+    "device": "cuda",
+    "device_name": "AMD Radeon 8060S Graphics",
+    "dtype": "float32",
+    "os": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+    "source": {
+      "PROTOCOL.md": "9467e393919703899a346aba89a3d3038e35659d6f603459a90c79b6935f57b1",
+      "SOURCE_AMENDMENT.md": "fb89d71d534e8a1b591f6108633b816840ec679855a13812adffa3cb09205511",
+      "model.py": "974c781f64662bc509e270d14e9eda35bfa113fcba115c8c83a4149678c33123",
+      "panel.py": "cb72324b14071e938ba4073cd5cbebcd290739d3b31cb14c9ceba131c58fbf3f",
+      "parent_cell.py": "f5d944a8d9929a7d37001a451168dda43e3f7de6b6e5ac1c2010df5f5f31bfa7",
+      "prepare.py": "9792498c7a0456b981c8019f038c1dbfbe09af98d2205d8e09c53c714ac8c5b3"
+    },
+    "threads": 1,
+    "torch": "2.13.0+rocm10.0.0"
+  },
+  "qualification": {
+    "device": "cuda",
+    "reference_grid": 4096,
+    "lookup_max_abs": {
+      "equity": 0.000054452486011769,
+      "year": 1.2427749340737648e-7,
+      "quarter": 3.27194030980138e-7,
+      "step": 2.2735428029108107e-7
+    },
+    "causality": "exact-prefix",
+    "shared_init": "identical",
+    "probe_vocab": 503,
+    "arms": {
+      "hcsn": {
+        "parameters": 276788,
+        "router_gradient_norms": [
+          0.0014327638782560825,
+          0.00005928581231273711,
+          0.00003144141010125168
+        ]
+      },
+      "smooth": {
+        "parameters": 276788,
+        "router_gradient_norms": [
+          0.0014100974658504128,
+          0.00008092197822406888,
+          0.000028477572413976304
+        ]
+      },
+      "lif": {
+        "parameters": 276788,
+        "router_gradient_norms": [
+          0.0005242057959549129,
+          0.0002749442064668983,
+          0
+        ]
+      },
+      "mean": {
+        "parameters": 276384,
+        "router_gradient_norms": []
+      },
+      "dense": {
+        "parameters": 276384,
+        "router_gradient_norms": []
+      }
+    }
+  },
+  "qualification_note": "The ordered prefix/route-gradient checks exercised this GPU. Table versus direct float64 numerical error in the original qualify.py is a CPU reference test. Probe_vocab is for short qualification only.",
+  "canonical_array_check": {
+    "all_files": {
+      "test_ids.npy": {
+        "sha256": "5770bcbda1b47168d17f96c67340106fbf22a6bd422d722ecedd059f035895cd",
+        "canonical": "5770bcbda1b47168d17f96c67340106fbf22a6bd422d722ecedd059f035895cd",
+        "match": true
+      },
+      "test_pixels.npy": {
+        "sha256": "3cacb9d5e9d5c298c9be3c61a13d764e78d3dd001c65fc82ef56d95d64d1f311",
+        "canonical": "3cacb9d5e9d5c298c9be3c61a13d764e78d3dd001c65fc82ef56d95d64d1f311",
+        "match": true
+      },
+      "test_tokens.npy": {
+        "sha256": "46b7b0df223ac3a7c347f1a1ef4df2c27ad1419c42443de826acc47545138a13",
+        "canonical": "46b7b0df223ac3a7c347f1a1ef4df2c27ad1419c42443de826acc47545138a13",
+        "match": true
+      },
+      "train_ids.npy": {
+        "sha256": "90e4a9a460014ea814e1dd9684449b008291288ddb19237b434651e8e42e04bb",
+        "canonical": "90e4a9a460014ea814e1dd9684449b008291288ddb19237b434651e8e42e04bb",
+        "match": true
+      },
+      "train_pixels.npy": {
+        "sha256": "df17fec7654572739907a63e8cc7d938295925e04f8d300c30f6e50031a98b71",
+        "canonical": "df17fec7654572739907a63e8cc7d938295925e04f8d300c30f6e50031a98b71",
+        "match": true
+      },
+      "train_tokens.npy": {
+        "sha256": "a52a3270810374357407821cac124796767514fddc1ecd4f878b2c13da3ccbd0",
+        "canonical": "a52a3270810374357407821cac124796767514fddc1ecd4f878b2c13da3ccbd0",
+        "match": true
+      },
+      "validation_ids.npy": {
+        "sha256": "3f973ff7529b42c155a6f25ff7d1e8241c24f96b5f617671a1f2689a22de9547",
+        "canonical": "3f973ff7529b42c155a6f25ff7d1e8241c24f96b5f617671a1f2689a22de9547",
+        "match": true
+      },
+      "validation_pixels.npy": {
+        "sha256": "9bbdd7ce3ea154cf2af7fbcaac1a5c14d1475a1b2c2673e4859d4951c967385c",
+        "canonical": "9bbdd7ce3ea154cf2af7fbcaac1a5c14d1475a1b2c2673e4859d4951c967385c",
+        "match": true
+      },
+      "validation_tokens.npy": {
+        "sha256": "7521f59f5808a286f23679b4bdf3b1b0e7a066b50afa9d565a4a77472b93e2c0",
+        "canonical": "7521f59f5808a286f23679b4bdf3b1b0e7a066b50afa9d565a4a77472b93e2c0",
+        "match": true
+      }
+    },
+    "manifest_equal": true
+  },
+  "primary_test_policy": "All fifteen candidates complete every registered budget before the single joint seal and process-cold evaluation of true and shifted captions. No Flickr holdout score appears in this stage.",
+  "separate_external_proposal": "The 20-second selected files were copied, verified against the live source bytes and then sealed. An exploratory external COCO caption evaluation uses all 15 independently and has no role in primary development or selection."
+}
