@@ -708,13 +708,16 @@ impl TestCodexBuilder {
             /*attestation_provider*/ None,
             /*external_time_provider*/ self.external_time_provider.clone(),
         );
-        let code_mode_host_program = self
-            .code_mode_host_program
-            .take()
-            .or_else(|| codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").ok());
-        let thread_manager = if config.features.enabled(Feature::CodeModeHost)
-            && let Some(code_mode_host_program) = code_mode_host_program
-        {
+        // Explicit host paths are test inputs even when the host feature is disabled.
+        // Only automatic host discovery follows the feature flag.
+        let code_mode_host_program = self.code_mode_host_program.take().or_else(|| {
+            if config.features.enabled(Feature::CodeModeHost) {
+                codex_utils_cargo_bin::cargo_bin("codex-code-mode-host").ok()
+            } else {
+                None
+            }
+        });
+        let thread_manager = if let Some(code_mode_host_program) = code_mode_host_program {
             codex_core::test_support::with_code_mode_host_program(
                 thread_manager,
                 code_mode_host_program,
