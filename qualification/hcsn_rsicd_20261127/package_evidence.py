@@ -1,5 +1,5 @@
 """Package retained model states, rankings and non-media receipts in independently verifiable pieces."""
-import argparse, hashlib, json, zipfile
+import argparse, hashlib, json, lzma, zipfile
 from pathlib import Path
 
 def package(data,panel,to):
@@ -26,16 +26,17 @@ def package(data,panel,to):
     tmp=to/"evidence.tmp.zip"
     with zipfile.ZipFile(tmp,"w",zipfile.ZIP_DEFLATED,compresslevel=6) as z:
         def add(name,body):
-            info=zipfile.ZipInfo(name,(2026,11,27,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
+            info=zipfile.ZipInfo(name,(2026,11,27,0,0,0));info.compress_type=zipfile.ZIP_STORED if panel=="warm" else zipfile.ZIP_DEFLATED
             z.writestr(info,body)
         for name,f in sorted(files.items()): add(name,f.read_bytes())
         add("state_map.json",json.dumps(state_map,sort_keys=True).encode())
     datazip=tmp.read_bytes();chunks=[]
-    for offset in range(0,len(datazip),360000):
-        value=datazip[offset:offset+360000];name=f'part{offset//360000:03d}.bin'
+    delivery=lzma.compress(datazip,preset=6) if panel=="warm" else datazip
+    for offset in range(0,len(delivery),360000):
+        value=delivery[offset:offset+360000];name=f'part{offset//360000:03d}.bin'
         (to/name).write_bytes(value);chunks.append({"file":name,"size":len(value),"sha256":hashlib.sha256(value).hexdigest()})
     tmp.unlink()
-    (to/"manifest.json").write_text(json.dumps({"panel":panel,"files":len(files)+1,"zip_sha256":hashlib.sha256(datazip).hexdigest(),"zip_bytes":len(datazip),"chunks":chunks,"inputs":{k:hashlib.sha256(v.read_bytes()).hexdigest() for k,v in files.items()}},indent=1))
+    (to/"manifest.json").write_text(json.dumps({"panel":panel,"delivery_encoding":"xz" if panel=="warm" else "identity","delivery_bytes":len(delivery),"delivery_sha256":hashlib.sha256(delivery).hexdigest(),"files":len(files)+1,"zip_sha256":hashlib.sha256(datazip).hexdigest(),"zip_bytes":len(datazip),"chunks":chunks,"inputs":{k:hashlib.sha256(v.read_bytes()).hexdigest() for k,v in files.items()}},indent=1))
     print(panel,len(files)+1,len(datazip),len(chunks),flush=True)
 if __name__=="__main__":
     p=argparse.ArgumentParser();p.add_argument("root",type=Path);p.add_argument("panel");p.add_argument("dest",type=Path);a=p.parse_args();package(a.root,a.panel,a.dest)

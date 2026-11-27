@@ -1,5 +1,5 @@
 """Validate the public binary pieces, the selection lock, and all row-level retrieval metrics."""
-import argparse, hashlib, io, json, zipfile
+import argparse, hashlib, io, json, lzma, zipfile
 from pathlib import Path
 import numpy as np
 
@@ -10,7 +10,10 @@ def verify(directory):
         data=(directory/part["file"]).read_bytes()
         assert len(data)==part["size"] and hashlib.sha256(data).hexdigest()==part["sha256"]
         chunks.append(data)
-    data=b"".join(chunks); assert hashlib.sha256(data).hexdigest()==manifest["zip_sha256"]
+    delivery=b"".join(chunks)
+    if "delivery_sha256" in manifest:assert hashlib.sha256(delivery).hexdigest()==manifest["delivery_sha256"]
+    data=lzma.decompress(delivery) if manifest.get("delivery_encoding")=="xz" else delivery
+    assert hashlib.sha256(data).hexdigest()==manifest["zip_sha256"]
     p=manifest["panel"]
     with zipfile.ZipFile(io.BytesIO(data)) as z:
         assert len(z.namelist())==manifest["files"]

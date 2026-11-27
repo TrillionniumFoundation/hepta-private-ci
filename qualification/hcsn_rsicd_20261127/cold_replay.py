@@ -5,11 +5,13 @@ from pathlib import Path
 def worker(kind,seed,budget):
     import numpy as np
     from study import ROOT,REF, gallery,score, atomic
-    import prepare
+    import importlib.util
+    spec=importlib.util.spec_from_file_location("rsicd_preparation",Path(__file__).with_name("prepare.py"))
+    prepare=importlib.util.module_from_spec(spec);spec.loader.exec_module(prepare)
     if kind in ("linear","conventional"):
         prepare.build=lambda:None
     prepare.main()
-    d,V=prepare_inputs=__import__("common").setup_data()
+    d,V=__import__("common").setup_data()
     tr=np.flatnonzero(d["split"]==0);dv=gallery(d,1);te=gallery(d,2)
     origin=Path(os.environ["RSICD_ORIGINAL_SHORT"]);old=origin/(kind+"-"+str(seed))
     history=json.loads((old/"history.json").read_text())
