@@ -1,0 +1,593 @@
+{
+  "catalogued_blobs": 7394,
+  "bytes": 56680068,
+  "patterns": {
+    "independent_first_hit": "(?:condition\\w* independent|independent(?:ly)?|iid|i\\.i\\.d\\.).{0,60}(?:microdomains?|microchannels?|first.{0,5}hitt?\\w*|first.{0,5}passage|competing risks?|survival.{0,15}power)|(?:first.{0,5}hitt?\\w*|first.{0,5}passage|competing risks?|survival).{0,45}(?:independent copies|independent paths|independent micro)",
+    "microdomain_lexical": "(?:microdomains?|microchannels?|competing.{0,3}risk|minimum.{0,10}hitting time|earliest.{0,8}hitting time)",
+    "survival_power": "(?:surviv(?:al|or)|s_live|p_live)\\s*(?:\\.pow\\(|\\*\\*|\\^)\\s*\\(?\\s*(?:n|k|copies|2|3)\\b",
+    "explicit_complement_product": "1\\s*[-\u2212]\\s*\\(?\\s*1\\s*[-\u2212]\\s*(?:hit|risk|passage|p_hit|f_t|cdf)\\s*\\)?\\s*(?:\\*\\*|\\^)\\s*(?:n|k|copies|2)\\b"
+  },
+  "results": {
+    "independent_first_hit": [
+      {
+        "sha": "00592a694ad484c72a5506ec327448ba17571286",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_independent_discount_loss_reference.py",
+        "matched_text": "independent_discount_loss_reference import first_hit_loss"
+      },
+      {
+        "sha": "012c40716743c2fd0133968dd38ed1267d2812c8",
+        "example_path": "experiments/hcsn_hx_unified_v3/RENEWAL_DISTANCE_SERIES_20261031.md",
+        "matched_text": "independent integration of the positive first-hit"
+      },
+      {
+        "sha": "016e897da34eaa623dc95f64ca1054d5b6ffc5c7",
+        "example_path": "qualification/hcsn_differentiable/tests/test_operator.py",
+        "matched_text": "independent_first_passage"
+      },
+      {
+        "sha": "0427064afc7e638f44704ba37c9837a300fbc981",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "05a9c0935c11b8ee366161f99bc5a184dcaefbd9",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "06194af47377daaf7b5675b77b72d3cf19bf3c47",
+        "example_path": "tools/hcsn/calibrated_operator_r11_20261031/propagation/resolution.py",
+        "matched_text": "Independent continuous first-hit"
+      },
+      {
+        "sha": "084a445f325e542357229a34f911634abb04aa8b",
+        "example_path": "qualification/hcsn_differentiable/tests/test_regenerative.py",
+        "matched_text": "independent_first_passage"
+      },
+      {
+        "sha": "08c25616c26990c84a0e1c39684343d2aa86227b",
+        "example_path": "experiments/hcsn_distributional_v2/results/content001/source/kernel_tests.py",
+        "matched_text": "independent closed first-passage"
+      },
+      {
+        "sha": "08d837bd95e4117d99b3b95bc4a55adb5ac744b0",
+        "example_path": "qualification/hcsn_population_observability_20261127/laplace_check.py",
+        "matched_text": "Independent time/space quadratures against discounted first-passage"
+      },
+      {
+        "sha": "09b20cc826f254f89267eda09a315f42f08fb90e",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_PIECEWISE_NARROW_SWITCH_QUADRATURE_GATE.md",
+        "matched_text": "independent closed-form `linear_boundary_first_hit"
+      },
+      {
+        "sha": "0d0dbf5208033fb4eab64bf958262100849d1df7",
+        "example_path": "experiments/hcsn_hx_unified_v3/SAMPLED_RENEWAL_SPIKES_20261031.md",
+        "matched_text": "independent first hit"
+      },
+      {
+        "sha": "0d724fc1af6c5fc762a16882953c63e26ea4fabc",
+        "example_path": "docs/research/library-recovery/2026-10-31/iteration9-code-only/hcsn_i9_moving_boundary_first_passage.py",
+        "matched_text": "Independent integration of inverse-Gaussian first hitting"
+      },
+      {
+        "sha": "0eeba81f82c791602d31dc619e8c4908a37eee56",
+        "example_path": "experiments/hcsn_distributional_v2/results/kernel_validation001/source/kernel_tests.py",
+        "matched_text": "independent closed first-passage"
+      },
+      {
+        "sha": "155b4622f76af85409f7f465c0bae371c2dae41b",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_hx_near_barrier_log1p.py",
+        "matched_text": "independent_first_passage"
+      },
+      {
+        "sha": "20bd41eb58c0ceccef8e1a9aa4a905cd5adb56ef",
+        "example_path": "experiments/hcsn_mechanism_content_v2/audit_mechanism.py",
+        "matched_text": "independent first-passage"
+      },
+      {
+        "sha": "228f948bf5ce4bbce7b2648e0b54ad13b2472e6a",
+        "example_path": "experiments/hcsn_distributional_v2/kernel_tests.py",
+        "matched_text": "independent closed first-passage"
+      },
+      {
+        "sha": "261600c042339956aa6a798738b84bd2896eb06a",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_HX_NEAR_BARRIER_LOG_GATE.md",
+        "matched_text": "independent first-passage"
+      },
+      {
+        "sha": "2755b0dfd0b69114871bd68d5bc80d5a8adc82ea",
+        "example_path": "tools/hcsn/identified_content_r13_20261101/propagation/THEORY.md",
+        "matched_text": "Independent continuous first-passage"
+      },
+      {
+        "sha": "27fcedf9e76ca62825ed43f0a6ace015b7a37b96",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "2b8f117fb445b431ad4c027b1b71866c51fa3653",
+        "example_path": "experiments/hcsn_hx_unified_v3/piecewise_boundary_oracle.py",
+        "matched_text": "Independent two-segment Brownian first-passage"
+      },
+      {
+        "sha": "2ba27880089b63f7c32684826b9ee25d9cc67c89",
+        "example_path": "proposals/hcsn_semigroup_v1/semigroup_candidate.py",
+        "matched_text": "Independent infinite-half-line Brownian first-hit"
+      },
+      {
+        "sha": "2cb2f6117ca88a7c1115675af88e34b73634d5f9",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "2e50826506ac04bfe19b8c65c7030fb3fdccdd0e",
+        "example_path": "experiments/hcsn_hx_unified_v3/piecewise_boundary_oracle.py",
+        "matched_text": "Independent two-segment Brownian first-passage"
+      },
+      {
+        "sha": "30a4d841032dbf8639f935dcbd40a8558b6496f9",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_HX_JOINT_FPT_ADMISSION_GATE.md",
+        "matched_text": "independently certified interval/tail-first-passage"
+      },
+      {
+        "sha": "315fc689169e158dd03c09c007dadbd4877aee6e",
+        "example_path": "docs/research/library-recovery/2026-10-31/iteration9-code-only/hcsn_i9_p2_affine_stochastic_evidence.py",
+        "matched_text": "independent first-hitting"
+      },
+      {
+        "sha": "31cf96c1381e5340321339dc071799ce4ced7eba",
+        "example_path": "experiments/hcsn_hx_unified_v3/first_hit_time_interval.py",
+        "matched_text": "Independent *rigorous rational* two-sided time first-hit"
+      },
+      {
+        "sha": "323bf54cf69fcbc9a9a5c9cd9f2f9725098c4a27",
+        "example_path": "experiments/hcsn_p1_contextual/P1_CONTEXTUAL_RANK_AUDIT_20261031.md",
+        "matched_text": "independent Torch-autograd/closed-form first-hit"
+      },
+      {
+        "sha": "33f86b8d9b796225543656a7a71a4b6e8c246a08",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_measured_debt_conditional_bridge.py",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "34c1b26327295d7573d9103ce428c426d3107a26",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "361e94b0e40a0a5768b85f2df484d04b0df03847",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_HX_BOND_NONUNITY_SMALL_Q_GATE.md",
+        "matched_text": "independent no-first-hit"
+      },
+      {
+        "sha": "37c3f53602bbc1b18735a3f1ff6ccd3ae879b33e",
+        "example_path": "experiments/hcsn_hx_unified_v3/piecewise_boundary_oracle.py",
+        "matched_text": "Independent two-segment Brownian first-passage"
+      },
+      {
+        "sha": "3a5658011e58ef587ba83865471fd11d792940a5",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_hx_tail_and_mp_reference.py",
+        "matched_text": "independent_mp_first_hit_time_integrals"
+      },
+      {
+        "sha": "3c33b8528adf655077cfca3a122a3543ec29c84e",
+        "example_path": "tools/hcsn/calibrated_operator_r11_20261031/propagation/README.md",
+        "matched_text": "independently solves the constant-coefficient first-hit"
+      },
+      {
+        "sha": "3e1fe137624b9c8c2a843b7eb6226eca695a8a5f",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_bond_mp_reference.py",
+        "matched_text": "Independent high-precision *time-domain* Brownian first-hit"
+      },
+      {
+        "sha": "41a84473702c28ce3262e81d6c75ccab0ed5b3a7",
+        "example_path": "experiments/hcsn_hx_unified_v3/rannacher_all_node_certificate.py",
+        "matched_text": "independent rational first-hit"
+      },
+      {
+        "sha": "4201bf98ec73060671799f089268240025ad341c",
+        "example_path": "tools/hcsn/wsp_event_semantics_20261105/PUBLICATION_NOTES.md",
+        "matched_text": "independently recomputed all 2,880 endpoint/first-hit"
+      },
+      {
+        "sha": "432edc232aa8668cb39b5f0e971d5d4594c5e785",
+        "example_path": "experiments/hcsn_hx_unified_v3/RANNACHER_ALL_NODE_CERTIFICATE_20261031.md",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "474b02e11a7ae443051c1306aea082e6330b2e49",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "49b2d16fcaccce2d838f04c15e5f25feb295df3f",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_hx_obstacle_grid_independent.py",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "49b9d489bd32edb56f18d8e0b8231c605d81fed7",
+        "example_path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/review/independent-review-v2.md",
+        "matched_text": "independent hx_equity. C is a killed single-cycle reward, F/G are first-hit"
+      },
+      {
+        "sha": "50fa3d457f368d449eaa6b187a43dfc9a87a80e9",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_moving_boundary_enclosure.py",
+        "matched_text": "Independent density-integral tests of slope-bounded first-hit"
+      },
+      {
+        "sha": "53c54b6eba14c9eb8e0889d3a93dc6348d5e96c4",
+        "example_path": "experiments/hcsn_free_boundary_v1/CLOSURE.md",
+        "matched_text": "independent trajectories. Active first-hit"
+      },
+      {
+        "sha": "556d390db4e01e3e7b77e3d8186769d2f8d6941b",
+        "example_path": "experiments/hcsn_v9_followup_20261101/refit_ablation/renewal_numpy.py",
+        "matched_text": "Independent adaptive integral of the first-passage"
+      },
+      {
+        "sha": "5b183edbdbee2775d3e6bc6ad9389bcab661341f",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "5bea457207d68d9f8fd5b021b3e7cd0985c3526d",
+        "example_path": "tools/hcsn/digital_read_before_20261031/REPORT.md",
+        "matched_text": "IID | first_passage"
+      },
+      {
+        "sha": "5e872fd95b8133286f5f82635ece12f2ae969540",
+        "example_path": "tools/hcsn/digital_mechanisms_20261101/evidence/ACTUAL_READOUT_REVIEW.md",
+        "matched_text": "iid | first_passage"
+      },
+      {
+        "sha": "5f26e10da899d5b6878465c4b8a86a1f03ecd0b6",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_financial_precision_screen.py",
+        "matched_text": "independent perturbed first-hit"
+      },
+      {
+        "sha": "60ef6896eb673b31ef20731b7408b64fbdd027e9",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_piecewise_boundary_oracle.py",
+        "matched_text": "Independent *time* first-hit"
+      },
+      {
+        "sha": "65443676d823c25ef9d4cb352cba5cd1677989d7",
+        "example_path": "experiments/hcsn_hx_unified_v3/piecewise_boundary_oracle.py",
+        "matched_text": "Independent two-segment Brownian first-passage"
+      },
+      {
+        "sha": "66d7a3065a2200b84713b7d077b9a028feacc8a8",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "6a0bd497cf5b4faa6bdda0a00d64b468c6e36bf4",
+        "example_path": "qualification/hcsn_memory_controls/generate.py",
+        "matched_text": "independent discrete irregular intervals; no diffusion or first-passage"
+      },
+      {
+        "sha": "6abb3a54f3e4e01a3e48a0031c0c049fb993ad46",
+        "example_path": "tools/hcsn/digital_read_followup_20261101/CONTROL_RESULTS.md",
+        "matched_text": "iid/first_passage"
+      },
+      {
+        "sha": "6b388bc8da9ff76fda50c3001bdfb91c97f3caf8",
+        "example_path": "experiments/hcsn_hx_unified_v3/FAR_FIELD_BOND_BUDGET_20261031.md",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "6f3689b8decf343792426a2f79f3e5a8eca21939",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "702227a127b23314c4123c252b48739c072625fb",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "7127ae2a7a1446c629779852a12ab77512eaa5e2",
+        "example_path": "qualification/hcsn_differentiable/tests/test_regenerative.py",
+        "matched_text": "independent_first_passage"
+      },
+      {
+        "sha": "71866f321981424fe05e3c1ffaca6b92c71f0e80",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_obstacle_grid_tail_v2.py",
+        "matched_text": "Independent Brownian first-hit"
+      },
+      {
+        "sha": "73b181d576ba66db399f1e07f9a1af855ca492b3",
+        "example_path": "experiments/hcsn_hx_unified_v3/PDE_OBSTACLE_INDEPENDENT_AUDIT_20261031.md",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "73ea759e2000983b5b234a27fcdda183a58367e3",
+        "example_path": "experiments/hcsn_v13_followup_20261102/review/audit_joint_events.py",
+        "matched_text": "independently re-executed events, continuous first passage"
+      },
+      {
+        "sha": "760071bdf44c48fe21ead6fe7165dcb5f75f709a",
+        "example_path": "qualification/hcsn_differentiable/tests/test_operator.py",
+        "matched_text": "independent_first_passage"
+      },
+      {
+        "sha": "76d83a27103d32d3559e4d1143596d16c28adbd2",
+        "example_path": "experiments/hcsn_mechanism_content_v2/renewal.py",
+        "matched_text": "Independent adaptive integral of the first-passage"
+      },
+      {
+        "sha": "772f9958f0c9e1488ef2178aebb2956a8ad2f221",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_piecewise_second_leg_transition.py",
+        "matched_text": "independently bound an unresolved sharp second-leg first-hit"
+      },
+      {
+        "sha": "782795200d55c23c58502f86715b9952b45b9b17",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_obstacle_grid_independent.py",
+        "matched_text": "Independent Brownian first-hit"
+      },
+      {
+        "sha": "7a9e8a1bec624c2520ec206c4a0199cde0fd46df",
+        "example_path": "docs/research/library-recovery/2026-10-31/iteration9-code-only/hcsn_i9_final_moving_boundary_first_passage.py",
+        "matched_text": "Independent integration of inverse-Gaussian first hitting"
+      },
+      {
+        "sha": "7ab52b022c1ea895fea2cfc3a09e598e1de21662",
+        "example_path": "experiments/hcsn_hx_unified_v3/HX_OCCUPATION_BOUND_AUDIT_20261031.md",
+        "matched_text": "independent killed-Green/first-hit"
+      },
+      {
+        "sha": "7f05701d18fe9f8b2978142e45f5b0180c2f9404",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_coupled_smoothfit_independent.py",
+        "matched_text": "independent import (bond_from_first_hit"
+      },
+      {
+        "sha": "7fe85b3c204ccf3970840d758fbf84be08a101b8",
+        "example_path": "experiments/hcsn_p2_memory/MAIN_P0_P5_ACCEPTANCE_20261031.md",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "82bd75191da619c709b2db795a3133b8ce66b4c4",
+        "example_path": "qualification/hcsn_differentiable/README.md",
+        "matched_text": "Independent analytic/numerical references check first passage"
+      },
+      {
+        "sha": "86329bc47362a962a0580f3f6f220aeb9a1f60b6",
+        "example_path": "experiments/hcsn_hx_unified_v3/piecewise_boundary_oracle.py",
+        "matched_text": "Independent two-segment Brownian first-passage"
+      },
+      {
+        "sha": "89252a89f49654bfeeedb4811ab8892833f16680",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "8a039d357c3464bc137b822dd0f02abed7589345",
+        "example_path": "experiments/hcsn_hx_unified_v3/piecewise_boundary_oracle.py",
+        "matched_text": "Independent two-segment Brownian first-passage"
+      },
+      {
+        "sha": "8b82f2ff5dde49160e052d3de8214e35b78e35fa",
+        "example_path": "qualification/hcsn_differentiable/README.md",
+        "matched_text": "Independent analytic/numerical references check first passage"
+      },
+      {
+        "sha": "914a402b593ff4b4899b9a1c3849b62cec8b616b",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "9307a081f593163427ce35aff2576ebbf5861390",
+        "example_path": "experiments/hcsn_hx_unified_v3/bond_fpt_independent.py",
+        "matched_text": "Independent finite-maturity He-Xiong bond/first-passage"
+      },
+      {
+        "sha": "94b18f3e28e473c0a28dcce724941d4c06d621cc",
+        "example_path": "experiments/hcsn_hx_unified_v3/FIRSTHIT_CPU_PRECISION_SCREEN_20261031.md",
+        "matched_text": "independently integrate the Brownian downward first-hit"
+      },
+      {
+        "sha": "969ba6fb47ee5bd8eb038254bedd7276487ab904",
+        "example_path": "experiments/hcsn_p1_structural/dual_channel_structural_gate.py",
+        "matched_text": "independent_first_hit_density_integral"
+      },
+      {
+        "sha": "99fb2bbe6ee40c49c18948004b5a3208daadf565",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_NORMALIZED_DISCOUNT_COMPOSITION_GATE.md",
+        "matched_text": "independent time-density first-hit"
+      },
+      {
+        "sha": "9b306cac2251d19f186ced1e0615d61cf6b58be4",
+        "example_path": "experiments/hcsn_p1_structural/test_dual_channel_structural_gate.py",
+        "matched_text": "Independent arithmetic / Jacobian / first-passage"
+      },
+      {
+        "sha": "9cffee5f616c183ec77dc9a231ecc8db9519d78f",
+        "example_path": "qualification/hcsn_reset_aligned/ADVANCEMENT_STATUS.md",
+        "matched_text": "Independent review #6165 retains coarse-grid first-hit"
+      },
+      {
+        "sha": "9e86af40f96cad0e922445251b44b8aaaa023df8",
+        "example_path": "experiments/hcsn_hx_unified_v3/FINANCIAL_OBSTACLE_INCREMENT_20261031.md",
+        "matched_text": "independent time-first-hit"
+      },
+      {
+        "sha": "9f531ee84ae6c331342ee5320f975e77ea2e2092",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_measured_debt_conditional_bridge.py",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "9f7e85bd951a877048456a486ba429b4cdee50c6",
+        "example_path": "experiments/hcsn_hx_unified_v3/piecewise_boundary_oracle.py",
+        "matched_text": "Independent two-segment Brownian first-passage"
+      },
+      {
+        "sha": "a6f90e9feb28be185f228e21737d6798c7ca6a96",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_P5_LIVE_BLOCKER_LEDGER_20261031.md",
+        "matched_text": "Independent maturity PDE and first-hit"
+      },
+      {
+        "sha": "a76cf77f9a068fae4e4b5f60ac53145c806f8e3d",
+        "example_path": "experiments/hcsn_hx_unified_v3/REFLECTION_FULL_GRID_AUDIT_20261031.md",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "a7a6085d93368d7fefde4044008b536e6d898359",
+        "example_path": "experiments/hcsn_hx_unified_v3/test_renewal_spike_sampler.py",
+        "matched_text": "Independent closed first-passage"
+      },
+      {
+        "sha": "ab86f915e9eae5aa537e26766307e546aaf8fd2d",
+        "example_path": "tools/hcsn/wsp_event_semantics_20261105/independent_semantic_review_r3/stdout.txt",
+        "matched_text": "independent efficacy evidence\", \"large endpoint/first-hit"
+      },
+      {
+        "sha": "ad54df18fef8b159739232d0084e6ee7e805ec36",
+        "example_path": "qualification/hcsn_joint_dde/short_gap_reference.py",
+        "matched_text": "Independent half-line first-hit"
+      },
+      {
+        "sha": "b5035773d18eb91e1dd7e13c7a8b734ab556229d",
+        "example_path": "qualification/hcsn_adaptive/regenerative_reference_tests.py",
+        "matched_text": "Independent first-passage"
+      },
+      {
+        "sha": "b54724a1407632fab7c735ccff2cbaf79fa1cb51",
+        "example_path": "qualification/hcsn_new_boundary_20261127/shd/RECOVERY_RESULTS.md",
+        "matched_text": "independent FP64 implementation of (A7) and the first-passage"
+      },
+      {
+        "sha": "b7e747c4ffb1a11a8505d1ad57f53f587b31d045",
+        "example_path": "experiments/hcsn_hx_unified_v3/hx_obstacle_panel_audit.py",
+        "matched_text": "independent first-hit"
+      },
+      {
+        "sha": "ba488cac6c339ea6985f10d4c862f0efc6777939",
+        "example_path": "experiments/hcsn_addressed_flow_20261101/operator_audit/FASTPATH_REPORT.md",
+        "matched_text": "independent reflected-diffusion mean first-passage"
+      },
+      {
+        "sha": "bdefd523b6b07198b7e55f2494797e4a155473dd",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_SECOND_LEG_TRANSITION_GATE.md",
+        "matched_text": "independently integrates the *time-domain* inverse-Gaussian first-hit"
+      },
+      {
+        "sha": "c0b9555d1e1db793a403865f1f52f2372ee54b72",
+        "example_path": "qualification/hcsn_regenerative/REGENERATIVE.md",
+        "matched_text": "Independent Brownian increments and the additive first-hit"
+      },
+      {
+        "sha": "c276b5ce95c08c0e174b2ed663ec2a7ad9fe8dec",
+        "example_path": "qualification/hcsn_finite_review/audit_short_gap.py",
+        "matched_text": "Independent first-hit"
+      },
+      {
+        "sha": "c4f2d92ce377e4a7e0579122046350401aace2ac",
+        "example_path": "experiments/hcsn_hx_unified_v3/CONDITIONAL_DEBT_INTERVAL_20261031.md",
+        "matched_text": "independent debt PDE and first-hit"
+      },
+      {
+        "sha": "c593b4d8bc132d95cd61ef33e8e53ed0463a1cc5",
+        "example_path": "experiments/hcsn_p1_structural/dual_channel_structural_gate.py",
+        "matched_text": "independent_first_hit_density_integral"
+      },
+      {
+        "sha": "c8133bcb6221be07c4bfa859c12276ca22091689",
+        "example_path": "experiments/hcsn_hx_unified_v3/P0_HX_NEAR_BARRIER_LOG_GATE.md",
+        "matched_text": "independent first-passage"
+      },
+      {
+        "sha": "c8c7c63734300309f94b6111d9f489c2c5622bc4",
+        "example_path": "tools/hcsn/round8_20261031/event_dynamics/generator.py",
+        "matched_text": "independent first-passage"
+      },
+      {
+        "sha": "c9aabfaa5391e1a58eb963b1d89662187cb1828a",
+        "example_path": "experiments/hcsn_distributional_v2/math_completion_map.py",
+        "matched_text": "Independent mean first-passage"
+      },
+      {
+        "sha": "cb82b480f6dd476d17466bbca085bf8b2ca037f0",
+        "example_path": "experiments/hcsn_hx_unified_v3/first_hit_time_interval.py",
+        "matched_text": "Independent *rigorous rational* two-sided time first-hit"
+      },
+      {
+        "sha": "ce41734d98afee780bff0797587b029fabc66d91",
+        "example_path": "qualification/hcsn_sixwork/evidence/20261121_e29f/INDEPENDENT_REVIEW.md",
+        "matched_text": "IID \u6761\u4ef6\u53ca first_passage"
+      },
+      {
+        "sha": "cf365c7c28e212906c330ab8838e25e80310c2f9",
+        "example_path": "experiments/hcsn_hx_unified_v3/RANNACHER_DEBT_AUDIT_20261031.md",
+        "matched_text": "independently prove the upstream first-hit"
+      },
+      {
+        "sha": "db87664a5917872d57d60f94aabe4700d2b1d217",
+        "example_path": "experiments/hcsn_p1_structural/STRUCTURAL_IDENTIFIABILITY_AUDIT_20261031.md",
+        "matched_text": "Independent first-passage"
+      },
+      {
+        "sha": "e09262068fb5652d28de4b748bc3ef88d029e96c",
+        "example_path": "experiments/hcsn_p1_structural/run_structural_panel.py",
+        "matched_text": "independent_first_hit_density_integral"
+      },
+      {
+        "sha": "e7c08d669785aff736007353e596d2424ae76552",
+        "example_path": "qualification/hcsn_reset_aligned/COMMON_CANDIDATE.md",
+        "matched_text": "independent review exhibits a first-hit"
+      },
+      {
+        "sha": "ee5301a01375b7e5122b2a06cd6e21c029b20191",
+        "example_path": "qualification/hcsn_differentiable/README.md",
+        "matched_text": "Independent analytic/numerical references check first passage"
+      },
+      {
+        "sha": "f37e032c33cede002b11ca092befcf7eff567a2f",
+        "example_path": "experiments/hcsn_hx_unified_v3/BOND_FPT_GATE.md",
+        "matched_text": "independently verifies finite-horizon bond and first passage"
+      },
+      {
+        "sha": "f5a0b047368c78298bcc8273b3f4fb86c52df007",
+        "example_path": "experiments/hcsn_hx_unified_v3/FPT_MODE_GATE.md",
+        "matched_text": "independent financial first-passage"
+      },
+      {
+        "sha": "f60f5deff8a77fda0a18abca474a1cf9147d47b8",
+        "example_path": "tools/hcsn/digital_read_before_20261031/summarize_research.py",
+        "matched_text": "iid','first_passage_bank','value'),7)} / {f(m('ood','first_passage"
+      },
+      {
+        "sha": "f6f021719593802bb1531a498597e17631c300a7",
+        "example_path": "experiments/hcsn_v10_closure_20261101/persistent_renewal/results/extension001/source_snapshot/physics.py",
+        "matched_text": "Independent adaptive integral of the first-passage"
+      },
+      {
+        "sha": "f9a075a90cbdcd4e64b445ee4b79598824537b1f",
+        "example_path": "experiments/hcsn_free_boundary_v1/oracle_tests.py",
+        "matched_text": "independent_first_passage"
+      },
+      {
+        "sha": "fa6aee5247a75e4812402847cbf938b279acd1c8",
+        "example_path": "experiments/hcsn_hx_unified_v3/HX_FIXED_PUT_DUAL_AUDIT_20261031.md",
+        "matched_text": "independently evaluated 120-digit first-hit"
+      },
+      {
+        "sha": "fbfaff4e67dbe2446ed24cfbf35b25c0244e39af",
+        "example_path": "experiments/hcsn_hx_unified_v3/FIRST_HIT_TRUE_DEBT_INTERVAL_20261031.md",
+        "matched_text": "independently enclose the first-hit"
+      },
+      {
+        "sha": "fcf5932f1340899bfc32b52b9ac41ed71081a403",
+        "example_path": "experiments/hcsn_hx_unified_v3/independent_discount_loss_reference.py",
+        "matched_text": "Independent finite-horizon Brownian first-hit"
+      }
+    ],
+    "microdomain_lexical": [
+      {
+        "sha": "5226e8623084a58f93aed4d9970b1a82a0cb52bc",
+        "example_path": "tools/hcsn/wsp_event_semantics_20261105/independent_semantic_review_r3/REVIEW.md",
+        "matched_text": "competing-risk"
+      }
+    ],
+    "survival_power": [],
+    "explicit_complement_product": []
+  }
+}

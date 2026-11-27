@@ -1,0 +1,100 @@
+{
+  "boundary": {
+    "equity_at_P0": {
+      "absorbed_left_derivative": 0.0,
+      "analytic_boundary_value": -1.4210854715202004e-14,
+      "analytic_continuation_right_derivative": 2.9842794901924208e-12,
+      "lookup_first_segment_derivative": 0.11316375434398651
+    },
+    "one_year_hit": {
+      "absorbed_left_derivative": 0.0,
+      "analytic_boundary_value": 1.0,
+      "analytic_continuation_right_derivative": -4.140120748502602,
+      "lookup_first_segment_derivative": -4.139404296875
+    },
+    "quarter_hit": {
+      "absorbed_left_derivative": 0.0,
+      "analytic_boundary_value": 1.0,
+      "analytic_continuation_right_derivative": -7.590787562268539,
+      "lookup_first_segment_derivative": -7.589599609375
+    }
+  },
+  "bounded_grid_checks": {
+    "equity_0.72P0_max_abs_error": 3.665390175910943e-05,
+    "equity_1.0P0_max_abs_error": 3.246489723096602e-05,
+    "equity_1.28P0_max_abs_error": 3.91282490568301e-05,
+    "moved_margin_max_abs_error": 9.58284005481147e-08,
+    "passage_0.25_max_abs_error": 3.250641440466495e-07,
+    "passage_1.0_max_abs_error": 1.2712078112375735e-07
+  },
+  "exact_spacing": 0.000244140625,
+  "independent_two_path_hit": {
+    "0.25:0.0": {
+      "derivative": -0.0,
+      "value": 1.0
+    },
+    "0.25:0.0001": {
+      "derivative": -0.01152181347266107,
+      "value": 0.9999994238726558
+    },
+    "0.25:0.001": {
+      "derivative": -0.11501577950499664,
+      "value": 0.9999424542994054
+    },
+    "0.25:0.01": {
+      "derivative": -1.1254908349187183,
+      "value": 0.9943235936228063
+    },
+    "1.0:0.0": {
+      "derivative": -0.0,
+      "value": 1.0
+    },
+    "1.0:0.0001": {
+      "derivative": -0.003427467418622112,
+      "value": 0.9999998286157509
+    },
+    "1.0:0.001": {
+      "derivative": -0.0342156813250461,
+      "value": 0.9999828812152061
+    },
+    "1.0:0.01": {
+      "derivative": -0.33600109056805494,
+      "value": 0.9983084054649303
+    }
+  },
+  "midpoints": 8192,
+  "reachable_domain": {
+    "log_boundary_max": 0.257370340343023,
+    "log_boundary_min": -0.34746616408810344,
+    "maximum_vertex_increment": 0.30000001192092896,
+    "support": "bounded tanh drive, current 4-patch reset router only",
+    "table_upper": 2.0,
+    "upper_live_per_nonterminal_patch": [
+      0.5274661640881034,
+      0.9048365163520553,
+      1.2048365282729843
+    ]
+  },
+  "upper_clipping_diagnostic": [
+    {
+      "clamped_table_equity": 131.6553497314453,
+      "margin": 1.0,
+      "source_analytic_equity": 131.655349815719
+    },
+    {
+      "clamped_table_equity": 449.76519775390625,
+      "margin": 2.0,
+      "source_analytic_equity": 449.76520943383184
+    },
+    {
+      "clamped_table_equity": 449.76519775390625,
+      "margin": 2.25,
+      "source_analytic_equity": 591.4339464286718
+    },
+    {
+      "clamped_table_equity": 449.76519775390625,
+      "margin": 3.0,
+      "source_analytic_equity": 1306.2938090318735
+    }
+  ]
+}
