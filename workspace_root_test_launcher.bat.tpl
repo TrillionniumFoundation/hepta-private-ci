@@ -14,6 +14,23 @@ set "test_bin=!resolve_runfile_result!"
 
 __RUNFILE_ENV_EXPORTS__
 
+rem Bazel declares Windows sandbox helpers as runfiles rather than siblings.
+rem Export only the resolved declared binaries to the test process search path.
+if defined CARGO_BIN_EXE_codex-windows-sandbox-setup (
+  if not exist "!CARGO_BIN_EXE_codex-windows-sandbox-setup!" (
+    >&2 echo declared Windows sandbox setup helper is missing
+    exit /b 1
+  )
+  for %%I in ("!CARGO_BIN_EXE_codex-windows-sandbox-setup!") do set "PATH=%%~dpI;!PATH!"
+)
+if defined CARGO_BIN_EXE_codex-command-runner (
+  if not exist "!CARGO_BIN_EXE_codex-command-runner!" (
+    >&2 echo declared Windows command runner is missing
+    exit /b 1
+  )
+  for %%I in ("!CARGO_BIN_EXE_codex-command-runner!") do set "PATH=%%~dpI;!PATH!"
+)
+
 if not defined test_bin (
   >&2 echo resolved test binary was lost while exporting runfile environment variables
   exit /b 1
