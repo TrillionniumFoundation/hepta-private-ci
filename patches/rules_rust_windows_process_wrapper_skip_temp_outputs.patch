@@ -1,6 +1,15 @@
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,17 @@ fn consolidate_dependency_search_paths(
+@@ -179,6 +179,8 @@
+             e
+         ))
+     })?;
++
++    let mut temp_dir_guard = TemporaryDirectoryGuard::new(Some(unified_dir.clone()));
+
+     let mut seen = HashSet::new();
+     for path in dependency_paths {
+@@ -213,12 +215,32 @@
              let file_name_lower = file_name
                  .to_string_lossy()
                  .to_ascii_lowercase();
@@ -18,3 +27,27 @@
              if !seen.insert(file_name_lower) {
                  continue;
              }
+
+             let dest = unified_dir.join(&file_name);
+             let src = entry.path();
++            // Creating a hard link only establishes another name for the file.
++            // Admit read access before the fast path and before child execution.
++            let _readable_source = fs::File::open(&src).map_err(|read_err| {
++                ProcessWrapperError(format!(
++                    "unable to copy {} into unified dependency dir {}: {read_err}",
++                    src.display(),
++                    dest.display()
++                ))
++            })?;
+             match fs::hard_link(&src, &dest) {
+                 Ok(_) => {}
+                 Err(err) if err.kind() == std::io::ErrorKind::AlreadyExists => {}
+@@ -244,7 +266,7 @@
+
+     filtered_args.push(format!("-Ldependency={}", unified_dir.display()));
+
+-    Ok((filtered_args, Some(unified_dir)))
++    Ok((filtered_args, temp_dir_guard.take()))
+ }
+
+ #[cfg(not(windows))]

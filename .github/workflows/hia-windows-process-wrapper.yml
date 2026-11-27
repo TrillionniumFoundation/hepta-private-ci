@@ -1,0 +1,71 @@
+name: Windows process wrapper regression
+
+on:
+  push:
+    branches:
+      - codex/hia-windows-wrapper-readable-deps-20261127-2ac5
+    paths:
+      - patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch
+      - .github/scripts/rust_process_wrapper_smoke.py
+      - .github/workflows/hia-windows-process-wrapper.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-wrapper:
+    name: Original six native Windows process wrapper cases
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run all original native wrapper cases
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import sys
+          import time
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "process-wrapper-evidence"
+          output.mkdir()
+          argv = [sys.executable, ".github/scripts/rust_process_wrapper_smoke.py", "--bazel-msvc"]
+          (output / "intent.json").write_text(json.dumps({"argv": argv, "source": os.environ["GITHUB_SHA"], "started_unix": time.time(), "automatic_retry": False}, indent=2) + "\n")
+          started = time.monotonic()
+          with (output / "stdout").open("wb") as stdout, (output / "stderr").open("wb") as stderr:
+              result = subprocess.run(argv, stdout=stdout, stderr=stderr)
+          record = {"returncode": result.returncode, "elapsed_seconds": time.monotonic() - started}
+          for stream in ("stdout", "stderr"):
+              raw = (output / stream).read_bytes()
+              record[stream] = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+          (output / "result.json").write_text(json.dumps(record, indent=2) + "\n")
+          sys.stdout.buffer.write((output / "stdout").read_bytes())
+          sys.stderr.buffer.write((output / "stderr").read_bytes())
+          print(json.dumps(record), flush=True)
+          raise SystemExit(result.returncode)
+          PY
+      - name: Preserve original execution evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: native-windows-process-wrapper-evidence
+          path: ${{ runner.temp }}/process-wrapper-evidence
+          if-no-files-found: error
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

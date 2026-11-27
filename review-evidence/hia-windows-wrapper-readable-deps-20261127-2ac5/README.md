@@ -1,0 +1,11 @@
+# Windows dependency readability before child execution
+
+The original full Bazel Windows shard 1 failed its real six-case process-wrapper smoke test. The wrapper created a hard link to an exclusively held required.rlib without first acquiring read access. It then spawned the Python probe, which failed while reading that same file through the link. This did not satisfy the existing requirement to reject before child execution.
+
+The existing upstream patch now opens each selected dependency for reading before the hard-link fast path. It retains that handle during link/copy construction. A failed read returns the same copy-context error before constructing the child. A local temporary-directory guard also owns cleanup throughout consolidation, including this new early failure path, and transfers ownership to the existing caller guard on success.
+
+Executable/temp/codegen-product exclusions and first-directory precedence are unchanged. All six original native Windows tests and their assertions remain. The inaccessible-library case additionally records an explicit child-start marker and verifies it remains absent, and verifies the owned unified directory was removed. The existing 30-second invocation timeout remains unchanged.
+
+The original full job log is preserved without modification in the gzip file. The dedicated workflow builds the real configured Bazel MSVC wrapper and runs the original six cases with a complete raw stdout/stderr and result artifact. Native Windows followup is required; local patch application and formatting do not constitute that execution result.
+
+The original just fmt dependency download stalled and was explicitly terminated only after verifying its owned uv process identity. That failed attempt and the independently failed direct download are preserved. The exact Ruff 0.15.13 wheel pinned by scripts/uv.lock was then downloaded through an owned SSH transport, checked against its 10,460,761-byte SHA256, installed without an index into this checkout, and the original just fmt completed successfully in 2.349 seconds. The dependency lock remained byte-identical; no source/version/lock relaxation was used. The original six test names, all previous assertion ASTs, and all timeout ASTs were mechanically checked again before this commit.

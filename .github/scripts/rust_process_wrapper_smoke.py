@@ -19,6 +19,8 @@ import run_bazel_with_buildbuddy
 
 PROBE = """
 import json, os, pathlib, sys
+if marker := os.environ.get("PROCESS_WRAPPER_PROBE_MARKER"):
+    pathlib.Path(marker).write_text("child started", encoding="utf-8")
 arguments = sys.argv[1:]
 expanded = []
 for argument in arguments:
@@ -203,6 +205,8 @@ class ProcessWrapperSmokeTest(unittest.TestCase):
     def test_inaccessible_library_still_rejects_before_child_execution(self) -> None:
         library = self.dependencies / "required.rlib"
         library.write_bytes(b"required library")
+        marker = self.root / "child-started"
+        self.env["PROCESS_WRAPPER_PROBE_MARKER"] = str(marker)
         with exclusive_read_handle(library):
             with self.assertRaises(PermissionError):
                 library.read_bytes()
@@ -211,6 +215,8 @@ class ProcessWrapperSmokeTest(unittest.TestCase):
         self.assertEqual(result.stdout, "")
         self.assertIn("required.rlib", result.stderr)
         self.assertIn("unable to copy", result.stderr)
+        self.assertFalse(marker.exists(), result.stderr)
+        self.assertEqual(list(self.root.glob("rules_rust_process_wrapper_deps_*")), [])
 
     def test_child_failure_keeps_its_status_and_cleans_dependency_directory(
         self,

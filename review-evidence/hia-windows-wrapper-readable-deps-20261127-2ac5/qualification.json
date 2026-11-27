@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.hia.windows-wrapper-readable-dependencies.v1",
+  "source_base": "922f5f9cb258e91d5dafa2a457cf674defd95643",
+  "original_run_id": 46025167575,
+  "original_job_id": 140594591624,
+  "original_log": {
+    "bytes": 187662,
+    "sha256": "ed702d4c8667a390517a19d0f38537e34a37240741ce56a386abb24a6e4379e4"
+  },
+  "original_test_count": 6,
+  "original_test_names": [
+    "test_arguments_without_dependency_paths_stay_unchanged",
+    "test_child_failure_keeps_its_status_and_cleans_dependency_directory",
+    "test_direct_dependency_paths_preserve_first_directory_precedence",
+    "test_executable_products_are_excluded_without_requiring_a_lock",
+    "test_inaccessible_library_still_rejects_before_child_execution",
+    "test_locked_executable_in_response_path_preserves_all_libraries"
+  ],
+  "original_test_timeout_seconds": 30,
+  "original_failure": "hard-link success bypassed read access, so the Python child attempted to read a share-denied required.rlib",
+  "upstream": {
+    "repository": "hermeticbuild/rules_rust",
+    "commit": "f19661ba71f77c993ce1eb082053692610fe4313",
+    "path": "util/process_wrapper/main.rs",
+    "git_blob_sha1": "3139b45a857fe8d2baae8d7c05495360bf9b8ae7",
+    "source_sha256": "8407dac24553b1d82d5eae8d46e082aa53509e841d16aae02db2590f908fb246"
+  },
+  "patched_source_sha256": "c2f56f5067f0e0b8b91562f22de6c9e4110524f546c2c97b4a4d9c3718a5922f",
+  "original_assertions_retained": true,
+  "added_controls": [
+    "explicit child-start marker remains absent on inaccessible library",
+    "owned unified directory absent after refusal"
+  ],
+  "native_windows_followup_pass": false,
+  "native_windows_followup_required": true,
+  "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createhardlinkw",
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew"
+  ],
+  "format_validation": {
+    "steps": [
+      {
+        "name": "offline-exact-wheel-install",
+        "returncode": 0,
+        "elapsed_seconds": 0.188338583
+      },
+      {
+        "name": "just-fmt",
+        "returncode": 0,
+        "elapsed_seconds": 2.3493145
+      },
+      {
+        "name": "git-diff-check",
+        "returncode": 0,
+        "elapsed_seconds": 0.02509962500000018
+      }
+    ],
+    "lock_sha256_after": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c",
+    "lock_unchanged": true,
+    "elapsed_seconds": 2.5647795419999997,
+    "passed": true
+  },
+  "format_initial_attempt": {
+    "result": {
+      "returncode": 1,
+      "elapsed_seconds": 733.9376815
+    },
+    "termination": "owned uv network-download child SIGINT after exact PID start-identity check; complete stdout/stderr preserved"
+  },
+  "locked_ruff_transport": {
+    "initial": {
+      "returncode": 28,
+      "elapsed_seconds": 60.01590525,
+      "bytes": 659224,
+      "sha256": "f2ebfdfbada276c272d2d4658ba4a963f5e531bcf083fb959ca0d089279417c0",
+      "verified": false
+    },
+    "repaired": {
+      "returncode": 0,
+      "bytes": 10460761,
+      "sha256": "1c26d2f66163deeb6e08d8b39fbbe983ce3c71cea06a6d7591cfd1421793c629",
+      "verified": true,
+      "owned_ssh_returncode": 0,
+      "elapsed_seconds": 28.383309625000003
+    },
+    "version": "0.15.13",
+    "lock_modified": false
+  },
+  "source_files": {
+    "patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch": {
+      "bytes": 2118,
+      "sha256": "8a323bdd61c17d790b559d20c3580bc16c121ba666dc63c7e48f7eaa610a1eca"
+    },
+    ".github/scripts/rust_process_wrapper_smoke.py": {
+      "bytes": 10280,
+      "sha256": "729e79e934dce8085ddafad7fcf10bb493329799c645d2edd50ff45f31b78760"
+    },
+    ".github/workflows/hia-windows-process-wrapper.yml": {
+      "bytes": 2862,
+      "sha256": "8787accfa7c0957873085e3b8de9bff1b91c0e70020b1636ec3d1c51236f649e"
+    },
+    "MODULE.bazel": {
+      "bytes": 23624,
+      "sha256": "ba062c491d8a0ab4cbd38846b8e7021c224cc7c9f6ec92d0c39507dbe86e4e8b"
+    }
+  },
+  "original_assertions_ast_subsequence_verified": true,
+  "original_test_timeouts_ast_equal": true
+}
