@@ -34,7 +34,7 @@ def verify(args, report):
     original = args.original_root.resolve(strict=True)
     library = args.library_dir.resolve(strict=True)
     sys.path.insert(0, str(producer / "hia/tests"))
-    from file_update_oracle import cargo, identity
+    from file_update_oracle import cargo, historical, identity
     from patch_effects_oracle import admission, observations
 
     require = admission.require
@@ -64,7 +64,7 @@ def verify(args, report):
     inputs = {
         Path(__file__).resolve(),
         *support.glob("*.py"), support / "driver.rs", support / "observed_fs.rs",
-        Path(cargo.__file__).resolve(), Path(identity.__file__).resolve(),
+        Path(cargo.__file__).resolve(), Path(historical.__file__).resolve(), Path(identity.__file__).resolve(),
         transport_path, transport_path.with_name("transport_error_driver.rs"),
     }
     input_hashes = {str(path): identity.sha(path) for path in sorted(inputs)}
@@ -79,16 +79,21 @@ def verify(args, report):
     original_manifest = identity.snapshot(original, snapshot)
     admission.original_lib(snapshot, original_manifest)
     write_json(work / "original-source-manifest.json", original_manifest)
-    producing = identity.producer_inputs(producer, snapshot, original_manifest)
-    producing["complete_lib_inverse"] = admission.recover_lib(producer)
     native_binding = admission.native_inputs(producer, library)
-    report.update(original_inputs=original_manifest, producer=producing,
+    report.update(original_inputs=original_manifest,
                   native_inputs=native_binding)
 
     rustc, real_cargo, env, compiler = cargo.compiler(args.rustc, commands, producer)
     env.update(CODEX_HIA_NATIVE_LIB_DIR=str(library), PYTHONDONTWRITEBYTECODE="1",
                RUST_BACKTRACE="0")
     report["toolchain"] = compiler
+    historical_graph, historical_packages, dependency_baseline = historical.capture(
+        original, identity.BASE, rustc, env, work / "historical-dependencies")
+    report["dependency_baseline"] = dependency_baseline
+    producing = identity.producer_inputs(producer, snapshot, original_manifest,
+                                        dependency_baseline=dependency_baseline)
+    producing["complete_lib_inverse"] = admission.recover_lib(producer)
+    report["producer"] = producing
     report["effective_build_environment"] = {
         name: env.get(name) for name in (
             "RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "CARGO_BUILD_JOBS",
@@ -100,13 +105,14 @@ def verify(args, report):
         real_cargo, producer, env, commands)
     report["cargo_metadata_inputs"] = metadata
     write_json(work / "metadata-source-inputs.json", metadata)
-    graphs = {}
+    graphs = {"default": historical_graph}
     graph_manifests = {}
-    for side, enabled in (("default", False), ("native", True)):
+    for side, enabled in (("current_default", False), ("native", True)):
         captured = cargo.capture(real_cargo, producer, env, enabled, commands)
         graph = cargo.admit(captured, packages, owner, dependencies, target,
                             work / (side + "-deps"), native=enabled)
         graphs[side] = graph
+    for side, graph in graphs.items():
         graph_path = work / (side + "-dependency-manifest.json")
         write_json(graph_path, graph)
         graph_manifests[side] = {"path": str(graph_path), "bytes": graph_path.stat().st_size,
@@ -120,12 +126,12 @@ def verify(args, report):
                "owner_unit": graph["direct"]["codex_apply_patch"]["unit"]}
         for side, graph in graphs.items()
     }
-    serde = {side: admission.shared_serde(graph, packages)
+    serde = {side: admission.shared_serde(graph, historical_packages if side == "default" else packages)
              for side, graph in graphs.items()}
     report["actual_serde_identity"] = serde
     write_json(work / "actual-serde-identity.json", serde)
     binaries, owner_receipts = admission.build_owners(
-        rustc, producer, snapshot, support, graphs["default"], graphs["native"],
+        rustc, producer, snapshot, support, graphs["default"], graphs["current_default"], graphs["native"],
         serde, env, commands, work)
     report.update(owner_receipts)
     public = observations.run(binaries, producer, env, work / "public-observations")
@@ -162,7 +168,9 @@ def verify(args, report):
                 manifest_path.stat().st_size == manifest_record["bytes"],
                 "an admitted actual Cargo graph manifest changed")
     identity.verify_sources(snapshot, original_manifest)
-    final_producer = identity.producer_inputs(producer, snapshot, original_manifest)
+    historical.verify(dependency_baseline)
+    final_producer = identity.producer_inputs(producer, snapshot, original_manifest,
+                                            dependency_baseline=dependency_baseline)
     final_producer["complete_lib_inverse"] = admission.recover_lib(producer)
     require(final_producer == producing, "the actual producing source changed")
     require(admission.native_inputs(producer, library) == native_binding,
@@ -190,8 +198,8 @@ def main():
                                   for root in roots):
         raise RuntimeError("report must be new and outside every source/artifact directory")
     report = {
-        "schema": "codex.hia.native-patch-effects-caller.v1", "passed": False,
-        "scope": "Complete pinned original library versus actual feature-selected Cargo owner; fixed natural public inputs and unchanged real LOCAL_FS.",
+        "schema": "codex.hia.native-patch-effects-caller.v2", "passed": False,
+        "scope": "Complete pinned original library and historical Cargo dependencies versus actual feature-selected Cargo owner and current dependencies; fixed natural public inputs and unchanged real LOCAL_FS.",
         "normalization": "Only exact fresh fixture-root bytes and bounded nested hex spellings in declared path/diagnostic fields. Input bytes, patch text, structured content fields and relative filesystem snapshots remain exact.",
         "metadata_timestamps_serialized": False,
         "filesystem_or_writer_errors_injected": False,

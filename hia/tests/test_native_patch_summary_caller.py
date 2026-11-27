@@ -50,7 +50,7 @@ def verify(args, report):
 
     bind(parent_path)
     parent = json.loads(parent_path.read_text())
-    require(parent["schema"] == "codex.hia.native-patch-effects-caller.v1" and
+    require(parent["schema"] == "codex.hia.native-patch-effects-caller.v2" and
             parent["passed"] and parent["source_and_artifacts_unchanged"],
             "the prerequisite complete-owner effects gate did not pass")
     parent_work = identity.outside(parent["work_dir"], roots)
@@ -61,7 +61,9 @@ def verify(args, report):
             "the prerequisite original is not the complete pinned crate")
     identity.verify_sources(snapshot, manifest)
     admission.original_lib(snapshot, manifest)
-    producing = identity.producer_inputs(producer, snapshot, manifest)
+    dependency_baseline = parent["dependency_baseline"]
+    producing = identity.producer_inputs(producer, snapshot, manifest,
+                                        dependency_baseline=dependency_baseline)
     producing["complete_lib_inverse"] = admission.recover_lib(producer)
     require(producing == parent["producer"], "the producing source changed after the effects gate")
     binding = admission.native_inputs(producer, library)
@@ -83,6 +85,8 @@ def verify(args, report):
     graphs = {}
     for side in ("default", "native"):
         manifest_record = parent["actual_cargo_graph_manifests"][side]
+        require(side != "default" or manifest_record["sha256"] == dependency_baseline["graph"]["sha256"],
+                "the reference dependency graph is not the qualified historical graph")
         graph_path = parent_work / (side + "-dependency-manifest.json")
         require(manifest_record["path"] == str(graph_path) and
                 manifest_record["bytes"] == graph_path.stat().st_size,
@@ -141,7 +145,8 @@ def verify(args, report):
     for graph in graphs.values():
         cargo.verify_graph(graph)
     identity.verify_sources(snapshot, manifest)
-    final = identity.producer_inputs(producer, snapshot, manifest)
+    final = identity.producer_inputs(producer, snapshot, manifest,
+                                    dependency_baseline=dependency_baseline)
     final["complete_lib_inverse"] = admission.recover_lib(producer)
     require(final == producing and admission.native_inputs(producer, library) == binding,
             "production sources or native artifacts changed during writer qualification")

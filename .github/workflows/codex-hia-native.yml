@@ -1010,6 +1010,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-caller.log"
 
       - name: Compare complete original and native file-update owners
+        id: file_update_caller
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
@@ -1020,6 +1021,16 @@ jobs:
             --output-dir "$RUNNER_TEMP/hia-file-update-caller" \
             --report "$RUNNER_TEMP/hia-file-update-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-caller.log"
+
+      - name: Reject changed historical Cargo dependency receipts
+        if: ${{ always() && steps.file_update_caller.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_historical_dependency_admission.py \
+            --receipt "$RUNNER_TEMP/hia-file-update-caller.json" \
+            --output-dir "$RUNNER_TEMP/hia-historical-dependency-controls" \
+            --report "$RUNNER_TEMP/hia-historical-dependency-controls.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-historical-dependency-controls.log"
 
       - name: Compare complete original and native filesystem-effect owners
         id: effects_caller
@@ -1122,9 +1133,16 @@ jobs:
             ${{ runner.temp }}/hia-file-update-caller.json
             ${{ runner.temp }}/hia-file-update-caller.log
             ${{ runner.temp }}/hia-file-update-caller/original-source-manifest.json
+            ${{ runner.temp }}/hia-file-update-caller/historical-dependencies/commands/
+            ${{ runner.temp }}/hia-file-update-caller/historical-dependencies/*.json
+            ${{ runner.temp }}/hia-historical-dependency-controls/
+            ${{ runner.temp }}/hia-historical-dependency-controls.json
+            ${{ runner.temp }}/hia-historical-dependency-controls.log
             ${{ runner.temp }}/hia-patch-effects-caller.json
             ${{ runner.temp }}/hia-patch-effects-caller.log
             ${{ runner.temp }}/hia-patch-effects-caller/original-source-manifest.json
+            ${{ runner.temp }}/hia-patch-effects-caller/historical-dependencies/commands/
+            ${{ runner.temp }}/hia-patch-effects-caller/historical-dependencies/*.json
             ${{ runner.temp }}/unified-public-report.json
             ${{ runner.temp }}/unified-public-gate.log
             ${{ runner.temp }}/unified-public-gate/complete-original-source.json

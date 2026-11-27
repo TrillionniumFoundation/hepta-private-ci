@@ -242,12 +242,28 @@ def _exec_server_test_projection(relative, expected, actual, listing):
     }
 
 
-def producer_inputs(producer, original_root, original_manifest):
+def producer_inputs(producer, original_root, original_manifest, *, dependency_baseline=None):
     current = clean_identity(producer)
-    # Equality to immutable originals rejects manifest/default-feature changes even
-    # if an attacker updates a self-reported manifest SHA to match that change.
+    # A changed workspace lock cannot qualify by updating its hash. It requires
+    # a real, still-verifiable Cargo graph from the unchanged original workspace.
+    dependency_declarations = {}
+    if dependency_baseline is not None:
+        from . import historical
+        historical.verify(dependency_baseline)
+        baseline = dependency_baseline["source"]
+        if (baseline["commit"] != BASE or baseline["tree"] != original_manifest["tree"]
+                or dependency_baseline["overflow_mode"] != 0):
+            raise RuntimeError("historical dependency graph belongs to another original")
+        for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock"):
+            old = original_manifest["files"][path]["sha256"]
+            if baseline["declarations"][path]["sha256"] != old or sha(original_root / path) != old:
+                raise RuntimeError("historical dependency declaration differs from the pinned original")
+            dependency_declarations[path] = {"original_sha256": old,
+                                             "producer_sha256": sha(producer / path)}
     matched = {}
     for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", CRATE + "/Cargo.toml", *TYPE_SOURCES):
+        if path in dependency_declarations:
+            continue
         if sha(producer / path) != sha(original_root / path):
             raise RuntimeError(f"original dependency/type declaration changed: {path}")
         matched[path] = sha(producer / path)
@@ -270,6 +286,9 @@ def producer_inputs(producer, original_root, original_manifest):
               "exact_routing_inverse": recover_owner(producer)}
     if projections:
         result["path_dependency_projections"] = projections
+    if dependency_baseline is not None:
+        result["dependency_declarations"] = dependency_declarations
+        result["historical_dependency_graph"] = dependency_baseline["graph"]
     return result
 
 

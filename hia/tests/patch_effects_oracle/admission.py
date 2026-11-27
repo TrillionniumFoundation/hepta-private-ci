@@ -258,15 +258,15 @@ def verify_fingerprints(receipt):
         require(identity.sha(path) == digest, "a selected Cargo dependency identity changed")
 
 
-def build_owners(rustc, producer, snapshot, support, default, native, serde,
+def build_owners(rustc, producer, snapshot, support, default, current_default, native, serde,
                  env, commands, output):
     for name in identity.REQUIRED:
         for field in ("package_id", "target", "features", "profile"):
-            require(default["direct"][name]["unit"][field] ==
+            require(current_default["direct"][name]["unit"][field] ==
                     native["direct"][name]["unit"][field],
                     "default/native direct dependency changed: " + name + "/" + field)
     for field in ("package_id", "target", "features", "profile"):
-        require(serde["default"]["unit"][field] == serde["native"]["unit"][field],
+        require(serde["current_default"]["unit"][field] == serde["native"]["unit"][field],
                 "default/native selected serde_json differs: " + field)
     child = env.copy()
     child.pop("CODEX_HIA_NATIVE_LIB_DIR", None)

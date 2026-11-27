@@ -1,0 +1,264 @@
+{
+  "schema": "codex.hia.historical-dependency-admission-evidence.v1",
+  "status": "PASS",
+  "scope": "Real pinned a201 ordinary Cargo graph and receipt rejection controls only",
+  "full_native_original_owner_comparisons_qualified": false,
+  "whole_product_qualified": false,
+  "capture": {
+    "archive_sha256": "ed9287dd74c3743e19fd345b74b2931ebc5e6e18579f4db0529b383212c331fd",
+    "status": "passed",
+    "scope": "historical dependency graph only; no native equivalence claimed",
+    "qualification": {
+      "schema": "codex.hia.historical-dependency-graph.v1",
+      "source": {
+        "root": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original",
+        "commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+        "tree": "475a24b1d0e96520327767e618b7e69c7fbe9b4a",
+        "crate_tree": "f3e0f3637151b2fe823d25e643cb69b21b6295b3",
+        "declarations": {
+          "codex-rs/Cargo.toml": {
+            "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original/codex-rs/Cargo.toml",
+            "bytes": 22551,
+            "sha256": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7"
+          },
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original/codex-rs/Cargo.lock",
+            "bytes": 422290,
+            "sha256": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955"
+          },
+          "codex-rs/apply-patch/Cargo.toml": {
+            "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original/codex-rs/apply-patch/Cargo.toml",
+            "bytes": 954,
+            "sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a"
+          }
+        }
+      },
+      "rustc": {
+        "path": "/home/qian-qi/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+        "bytes": 646024,
+        "sha256": "4a84e05991ad6f2a84c1361c29b52b38c390365bd1fc269b1936c88d482a8928"
+      },
+      "cargo": {
+        "path": "/home/qian-qi/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/cargo",
+        "bytes": 42878680,
+        "sha256": "a73b2c25573d251489101c0d8f19ad3702eb9761166de5ed8437b472b6c038ce"
+      },
+      "graph": {
+        "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-probe-v2/dependency-manifest.json",
+        "bytes": 1397668,
+        "sha256": "02560d5ac3a7f7d841738729662828868abca9bfbccbe1802912038c30511bac"
+      },
+      "metadata": {
+        "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-probe-v2/metadata-source-inputs.json",
+        "bytes": 613119,
+        "sha256": "81fc6dec10d7a25c0b95af4054e15c9ae41aaf25951696d6865cbb6c87415c2c"
+      },
+      "commands": {
+        "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-probe-v2/commands/commands.json",
+        "bytes": 1843,
+        "sha256": "3bff42fdc932ddf55a7610419717d7d969a8a397c7ef6e8308383082f4f19002"
+      },
+      "overflow_mode": 0,
+      "configuration": null,
+      "excluded_producer_wrapper_environment": {
+        "RUSTC_WRAPPER": null,
+        "RUSTC_WORKSPACE_WRAPPER": null,
+        "CODEX_HIA_SIMILAR_POLICY_CONFIG": null,
+        "CODEX_HIA_NATIVE_LIB_DIR": null
+      },
+      "codegen_environment_overrides": {},
+      "actual_target_directory": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/target/historical-originals/a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095/0",
+      "actual_ordinary_cargo_build_succeeded": true,
+      "native_features_enabled": false
+    },
+    "library_units": 666,
+    "library_files": 1284
+  },
+  "controls": {
+    "schema": "codex.hia.historical-dependency-admission-controls.v1",
+    "passed": true,
+    "actual_original": {
+      "root": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original",
+      "commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "tree": "475a24b1d0e96520327767e618b7e69c7fbe9b4a",
+      "crate_tree": "f3e0f3637151b2fe823d25e643cb69b21b6295b3",
+      "declarations": {
+        "codex-rs/Cargo.toml": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original/codex-rs/Cargo.toml",
+          "bytes": 22551,
+          "sha256": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7"
+        },
+        "codex-rs/Cargo.lock": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original/codex-rs/Cargo.lock",
+          "bytes": 422290,
+          "sha256": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955"
+        },
+        "codex-rs/apply-patch/Cargo.toml": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/file-update-original/codex-rs/apply-patch/Cargo.toml",
+          "bytes": 954,
+          "sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a"
+        }
+      }
+    },
+    "actual_graph": {
+      "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-probe-v2/dependency-manifest.json",
+      "bytes": 1397668,
+      "sha256": "02560d5ac3a7f7d841738729662828868abca9bfbccbe1802912038c30511bac"
+    },
+    "positive_unchanged": true,
+    "rejections": [
+      {
+        "name": "native-feature",
+        "rejected": true,
+        "diagnostic": "missing successful historical Cargo dependency qualification",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/native-feature-record.json",
+          "bytes": 2883,
+          "sha256": "9daca1e34c3955dbd6dc9edfb761f46983e039fb99c0ed6b34e1951474318f78"
+        }
+      },
+      {
+        "name": "unapproved-codegen",
+        "rejected": true,
+        "diagnostic": "historical dependency compiler flags lack their explicit admission",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/unapproved-codegen-record.json",
+          "bytes": 2928,
+          "sha256": "df6c8f779acecc41dde41fe8f5bc50f3d9526e6227409b3943ec8ac715de4d2c"
+        }
+      },
+      {
+        "name": "different-original",
+        "rejected": true,
+        "diagnostic": "unreviewed historical dependency baseline",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/different-original-record.json",
+          "bytes": 2884,
+          "sha256": "14d11053c281308cc1fffa9caf87b207630217b94122fda5890081665e006828"
+        }
+      },
+      {
+        "name": "unlocked-build",
+        "rejected": true,
+        "diagnostic": "historical Cargo command or feature selection changed",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/unlocked-build-record.json",
+          "bytes": 2894,
+          "sha256": "f93ff7e2fccb1cbfbee54ca5a1d50d6e8c9336ab25240ff662f53f47d89769a8"
+        }
+      },
+      {
+        "name": "failed-build",
+        "rejected": true,
+        "diagnostic": "historical dependency command failed or used another workspace",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/failed-build-record.json",
+          "bytes": 2892,
+          "sha256": "f2fb273e5d41e7c54f159e4a598b55874e574399c1d96a897a2e28fcacaffd2a"
+        }
+      },
+      {
+        "name": "boolean-returncode",
+        "rejected": true,
+        "diagnostic": "historical dependency command failed or used another workspace",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/boolean-returncode-record.json",
+          "bytes": 2898,
+          "sha256": "a1cf3d1c3840b63b686cdb599af610afd99be688c8f1e19af57aff393d0b9f2b"
+        }
+      },
+      {
+        "name": "unbound-graph",
+        "rejected": true,
+        "diagnostic": "historical graph is not bound to its successful Cargo output",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/unbound-graph-record.json",
+          "bytes": 2891,
+          "sha256": "26c765ea62af1e0708758864e3a81973d2c53547bb073343df8ee34197b48ef4"
+        }
+      },
+      {
+        "name": "wrong-native-owner",
+        "rejected": true,
+        "diagnostic": "historical graph selected another owner or native feature",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/wrong-native-owner-record.json",
+          "bytes": 2896,
+          "sha256": "d06bdf694430599c1649d01b73b3da0d204ec2cbb08d220c9958cce42bc2f6a4"
+        }
+      },
+      {
+        "name": "wrong-target",
+        "rejected": true,
+        "diagnostic": "historical dependency artifact escaped the actual target directory",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/wrong-target-record.json",
+          "bytes": 2851,
+          "sha256": "50abf9c49b866bc4494537b5c8d0a68c5a6add926d6c95edb1340e624801d1a9"
+        }
+      },
+      {
+        "name": "mixed-overflow-policy",
+        "rejected": true,
+        "diagnostic": "historical direct dependency profile or unit differs: similar",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/mixed-overflow-policy-record.json",
+          "bytes": 2899,
+          "sha256": "985b062bc2da5731d97f86888c6b90ce190eb3a41d7d938aab0ec6023b4933d3"
+        }
+      },
+      {
+        "name": "changed-manifest",
+        "rejected": true,
+        "diagnostic": "historical dependency manifest changed",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/changed-manifest-record.json",
+          "bytes": 2891,
+          "sha256": "f4885d6f933566039f5a91422dc40012fad5ca3697397809b3f832a8c499f8dd"
+        }
+      },
+      {
+        "name": "changed-package-version",
+        "rejected": true,
+        "diagnostic": "historical source inventory differs from actual Cargo metadata",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/changed-package-version-record.json",
+          "bytes": 2898,
+          "sha256": "15671e30e0a7ea357c816a9b1a469c942dbde2c1a811a2c3fcc249d63eee222d"
+        }
+      },
+      {
+        "name": "invented-unit",
+        "rejected": true,
+        "diagnostic": "historical graph differs from the actual Cargo artifact stream",
+        "mutated_record": {
+          "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-admission-controls-v2/invented-unit-record.json",
+          "bytes": 2891,
+          "sha256": "89cefa451704dae1206a6fc31b39efa7eba255d86a7fc324d55c865f78dc641f"
+        }
+      }
+    ],
+    "rejection_count": 13,
+    "input_receipt": {
+      "path": "/home/qian-qi/codex-historical-dependencies-20261127-2ac5/historical-a201-probe-v2-receipt.json",
+      "bytes": 3267,
+      "sha256": "23c669795d90deae0863ae1087235a96101b4d1987ab81f786e957cea916627f"
+    }
+  },
+  "terminal": {
+    "host": "rog",
+    "id": "dpty-13320bdf6e98870011f1211cb7af07e38dbfc87725bd6a9fa00601b9b198bff1",
+    "exit_code": 0,
+    "output_complete": true
+  },
+  "first_common_native_run": 45991034792,
+  "first_common_head": "ecac3513c280a5d2ca66fd12f33aa487aea01041",
+  "first_failed_original_owner_artifact": 15196501850,
+  "first_failed_artifact_sha256": "66e0c342391ad34d822bdc5356def81507eed2b3d060e33b86d91c8afbb14382",
+  "actual_cargo_archive_sha256": "1c5d32ee81c2488a6ef1e5871cdba401aca2055021521ae3ce0f144172b849f3",
+  "original_dependency_projection_controls": {
+    "tests_run": 7,
+    "failures": 0,
+    "skipped": 0
+  }
+}

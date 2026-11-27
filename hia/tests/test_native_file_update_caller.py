@@ -13,6 +13,7 @@ import sys
 
 from file_update_oracle import cargo
 from file_update_oracle import corpus
+from file_update_oracle import historical
 from file_update_oracle import identity
 from file_update_oracle import wire
 
@@ -49,13 +50,17 @@ def verify(args, report):
     original_manifest = identity.snapshot(original, snapshot)
     report["original_inputs"] = original_manifest
     (output / "original-source-manifest.json").write_text(json.dumps(original_manifest, indent=2) + "\n")
-    producer = identity.producer_inputs(ROOT, snapshot, original_manifest)
-    report["producer"] = producer
     native_inputs = identity.native_inputs(ROOT, library)
     report["native_inputs"] = native_inputs
     rustc, real_cargo, env, compiler = cargo.compiler(args.rustc, commands, ROOT)
     env["CODEX_HIA_NATIVE_LIB_DIR"] = str(library)
     report["toolchain"] = compiler
+    original_graph, _, dependency_baseline = historical.capture(
+        original, identity.BASE, rustc, env, output / "historical-dependencies")
+    report["dependency_baseline"] = dependency_baseline
+    producer = identity.producer_inputs(ROOT, snapshot, original_manifest,
+                                       dependency_baseline=dependency_baseline)
+    report["producer"] = producer
     graph, packages, owner, dependencies, graph_receipt = cargo.metadata(real_cargo, ROOT, env, commands)
     del graph
     report["metadata"] = graph_receipt
@@ -69,7 +74,7 @@ def verify(args, report):
     for name, receipt in (("default", default), ("native", native)):
         (output / (name + "-dependency-manifest.json")).write_text(json.dumps(receipt, indent=2) + "\n")
     binaries = cargo.build_drivers(rustc, snapshot, ROOT, SUPPORT / "driver.rs",
-                                   default, native, env, commands, output)
+                                   original_graph, default, native, env, commands, output)
     report["original_tests"] = {"passed": 5, "skipped": 0,
         "scope": "The five unchanged file_update tests inside the complete original library test binary; not the entire crate suite."}
     binary_hashes = {name: identity.sha(path) for name, path in binaries.items()}
@@ -124,8 +129,10 @@ def verify(args, report):
             raise RuntimeError("an executed binary changed during observation")
     cargo.verify_graph(default)
     cargo.verify_graph(native)
+    historical.verify(dependency_baseline)
     identity.verify_sources(snapshot, original_manifest)
-    if identity.producer_inputs(ROOT, snapshot, original_manifest) != producer:
+    if identity.producer_inputs(ROOT, snapshot, original_manifest,
+                               dependency_baseline=dependency_baseline) != producer:
         raise RuntimeError("the actual producing source changed")
     if identity.native_inputs(ROOT, library) != native_inputs:
         raise RuntimeError("the actual native source/archive changed")
@@ -151,8 +158,8 @@ def main():
     report_path = identity.outside(args.report, (ROOT, args.original_root.resolve()))
     if report_path.exists():
         raise RuntimeError("refusing to replace an existing qualification report")
-    report = {"schema": "codex.hia.native-file-update-caller.v1", "passed": False,
-        "scope": "Complete pinned original crate and actual feature-selected production crate; real LOCAL_FS and full public results.",
+    report = {"schema": "codex.hia.native-file-update-caller.v2", "passed": False,
+        "scope": "Complete pinned original crate with its actual historical dependencies and actual feature-selected production crate with current dependencies; real LOCAL_FS and full public results.",
         "normalization": "Only exact supplied per-process fixture-root bytes and the emitted actual Rust Debug spelling are replaced in path/diagnostic fields; all raw streams and independent post-exit file state are retained.",
         "original_private_planner_transcripts_observed": False,
         "unsafe_abi_qualified_by_this_report": False,
