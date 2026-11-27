@@ -137,4 +137,3 @@ UI #2885、Agentd #2915 已交各自 owner，本报告保留身份但不重复�
 - `security_p0/` 与 `memory_p0/`：已另行冻结交接的 P0 修复/7tests/历史 Windows 证据，不因本报告扩写而改动。
 
 接下来唯一获授权的新准备项是 Operations oracle/compiled migration 去重分析；先查全量 PR 清单与后继 source，宣布精确文件范围后才动候选。最终要有未篡改 schema 正向打开、tamper 拒绝、destination immutable proof 的 UPDATE/DELETE/REPLACE 负例和原 23 例回归。P0 尚未收敛，旧 SQL 历史保持暂停。
-

@@ -23,6 +23,10 @@ FSDD_README = "experiments/hcsn_free_boundary_v1/data/FSDD_UPSTREAM_README.md"
 FSDD_README_VIEW_SHA256 = (
     "f59207b4ee0ec917162a23a7d5471dc9341c92ad17f95373996f93d438ac686c"
 )
+P5_INVENTORY_REPORT = "AUDIT/2026-10-20-agent-continuation/p5_inventory/REPORT.md"
+P5_INVENTORY_VIEW_SHA256 = (
+    "7fc952a0b9ab00b96a783618b6a351069697265c2883194815e6308401a2c5a5"
+)
 BINARY_ARCHIVE_PATHS = frozenset(
     {
         "qualification/memory-cell-mem6/run-001/raw-transfer/"
@@ -500,10 +504,14 @@ def parse_manifest(raw):
 
 def verified_skip(root):
     entries = parse_manifest(read_regular(root, MANIFEST, MAX_MANIFEST_BYTES))
+    archive_views = {
+        FSDD_README: FSDD_README_VIEW_SHA256,
+        P5_INVENTORY_REPORT: P5_INVENTORY_VIEW_SHA256,
+    }
     for path, expected in entries.items():
         source = read_regular(root, path, MAX_SOURCE_BYTES)
-        if path == FSDD_README:
-            if hashlib.sha256(source).hexdigest() != FSDD_README_VIEW_SHA256:
+        if path in archive_views:
+            if hashlib.sha256(source).hexdigest() != archive_views[path]:
                 raise ValueError(f"archived source display digest mismatch: {path}")
             compressed = read_regular(root, path + ".evidence.gz", MAX_SOURCE_BYTES)
             decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
