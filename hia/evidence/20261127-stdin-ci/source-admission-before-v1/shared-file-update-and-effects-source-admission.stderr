@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/589c0a6dd85b/reproduce_stdin_source_admission.py", line 21, in <module>
+    result=call()
+           ^^^^^^
+  File "/workspace/scratch/589c0a6dd85b/reproduce_stdin_source_admission.py", line 15, in <lambda>
+    calls=[('shared-file-update-and-effects-source-admission',lambda:identity.producer_inputs(ROOT,snapshot,manifest)),
+                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/589c0a6dd85b/codex-hia-deps/hia/tests/file_update_oracle/identity.py", line 252, in producer_inputs
+    raise RuntimeError(f"original dependency/type declaration changed: {path}")
+RuntimeError: original dependency/type declaration changed: codex-rs/Cargo.toml

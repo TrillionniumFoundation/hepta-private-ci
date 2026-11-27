@@ -648,22 +648,6 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
-      - name: Test native exec stdin consumer and all exec regressions
-        if: ${{ always() && steps.build.outcome == 'success' }}
-        working-directory: codex/codex-rs
-        run: |
-          set -euo pipefail
-          just test -p codex-exec --features codex-exec/hia-native --locked \
-            2>&1 | tee "$RUNNER_TEMP/hia-exec-native.log"
-
-      - name: Test default exec stdin consumer and all exec regressions
-        if: ${{ always() && steps.build.outcome == 'success' }}
-        working-directory: codex/codex-rs
-        run: |
-          set -euo pipefail
-          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-exec --locked \
-            2>&1 | tee "$RUNNER_TEMP/hia-exec-default.log"
-
       - name: Test all four production crates with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -1126,6 +1110,24 @@ jobs:
             --output-dir "$RUNNER_TEMP/unified-public-gate" \
             --report "$RUNNER_TEMP/unified-public-report.json" \
             2>&1 | tee "$RUNNER_TEMP/unified-public-gate.log"
+
+      - name: Preserve complete original-owner comparison diagnostics
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codex-hia-original-owner-diagnostics
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hia-file-update-caller.json
+            ${{ runner.temp }}/hia-file-update-caller.log
+            ${{ runner.temp }}/hia-file-update-caller/original-source-manifest.json
+            ${{ runner.temp }}/hia-patch-effects-caller.json
+            ${{ runner.temp }}/hia-patch-effects-caller.log
+            ${{ runner.temp }}/hia-patch-effects-caller/original-source-manifest.json
+            ${{ runner.temp }}/unified-public-report.json
+            ${{ runner.temp }}/unified-public-gate.log
+            ${{ runner.temp }}/unified-public-gate/complete-original-source.json
 
       - name: Compare native execution policy matching with original Rust
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -1624,8 +1626,6 @@ jobs:
             {0}/hia-utf8-stream-abi.log
             {0}/hia-prompt-decode-caller.json
             {0}/hia-prompt-decode-caller.log
-            {0}/hia-exec-native.log
-            {0}/hia-exec-default.log
             {0}/hia-inline-hidden-tag-abi.json
             {0}/hia-inline-hidden-tag-abi.log
             {0}/hia-fuzzy-match-abi.json
@@ -1794,6 +1794,102 @@ jobs:
             {0}/hia-joint-*-receipt.json
             {0}/hia-joint-*-receipt.log
             {0}/hia-native/*.link', runner.temp) }}
+
+  exec-stdin-consumers:
+    name: Native and default exec stdin consumers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      HEPTA_SOURCE: ${{ github.workspace }}/Hepta
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out Codex
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: codex
+          persist-credentials: false
+
+      - name: Check out pinned HIA compiler
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: TrillionniumFoundation/Hepta
+          ref: 0de5657a80f96b138525ac7ee9ce11712a83a10d
+          path: Hepta
+          persist-credentials: false
+
+      - name: Prepare Rust oracle and production caller compiler
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          rustup component add --toolchain 1.96.1 clippy rustfmt
+          rustc_path="$(rustup which --toolchain 1.96.1 rustc)"
+          test -x "$rustc_path"
+          echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
+          echo "RUSTUP_TOOLCHAIN=1.96.1" >> "$GITHUB_ENV"
+          echo "CODEX_HIA_NATIVE_LIB_DIR=$RUNNER_TEMP/hia-native" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hia-cargo-target" >> "$GITHUB_ENV"
+          {
+            "$rustc_path" --version
+            cargo +1.96.1 clippy --version
+            python3 --version
+            ld --version
+            git -C codex rev-parse HEAD
+            git -C Hepta rev-parse HEAD
+          } > "$RUNNER_TEMP/hia-toolchain.log"
+          cat "$RUNNER_TEMP/hia-toolchain.log"
+
+      - name: Rebuild compiler generations and native components
+        id: build
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/build.py \
+            --hepta-root "$HEPTA_SOURCE" \
+            --output "$RUNNER_TEMP/hia-native" \
+            2>&1 | tee "$RUNNER_TEMP/hia-build.log"
+
+      - name: Install pinned repository test runners
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Test native exec stdin consumer and all exec regressions
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-exec --features codex-exec/hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-exec-native.log"
+
+      - name: Test default exec stdin consumer and all exec regressions
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-exec --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-exec-default.log"
+
+      - name: Preserve exec consumer build and regression results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codex-hia-exec-stdin-consumer-results
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hia-native/build.json
+            ${{ runner.temp }}/hia-toolchain.log
+            ${{ runner.temp }}/hia-build.log
+            ${{ runner.temp }}/hia-exec-native.log
+            ${{ runner.temp }}/hia-exec-default.log
 
   historical-native17:
     name: Exact 74d1 legacy ABI and original owner gates

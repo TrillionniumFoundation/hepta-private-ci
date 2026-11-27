@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/589c0a6dd85b/reproduce_stdin_source_admission.py", line 21, in <module>
+    result=call()
+           ^^^^^^
+  File "/workspace/scratch/589c0a6dd85b/reproduce_stdin_source_admission.py", line 16, in <lambda>
+    ('unified-formatter-source-admission',lambda:original.extract_original(types.SimpleNamespace(output=D/'aeb-original-source',args=types.SimpleNamespace(original_root=ROOT),report={},repo=ROOT)))]
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/589c0a6dd85b/codex-hia-deps/hia/tests/unified_diff_oracle/original.py", line 10, in extract_original
+    assert subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}']) == (context.repo / relative).read_bytes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

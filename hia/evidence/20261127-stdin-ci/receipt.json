@@ -1,0 +1,88 @@
+{
+  "schema": "codex.hia.stdin.ci-diagnostics.v1",
+  "head": "57c0f3c0c7b64c7c0015ebf1c6c127a4f52da643",
+  "tree": "0129d8842a98f86befe932dcb7ee276a9a372ffd",
+  "native_run": 45960650034,
+  "native_job": 140377397862,
+  "official_cancellation": "The job has exceeded the maximum execution time of 1h0m0s",
+  "native_returned_log": {
+    "http_body_download_returncode": 0,
+    "body_bytes": 2114956,
+    "body_sha256": "61b52be8df20ea0defadb01a427927bc7b9ab0d8a0289194b9b41380e5ef3422",
+    "first_line": "2026-11-27T07:45:26.6472476Z Current runner version: '2.338.2'",
+    "last_nonempty_line": "2026-11-27T08:39:03.0508662Z     |                                                     ^^^^^",
+    "lines": 17778,
+    "whole_job_log_complete": false,
+    "limitation": "The server-returned body ends before the three failed steps. Its successful download does not establish the failed-step causes."
+  },
+  "observed_failed_steps": [
+    {
+      "number": 88,
+      "name": "complete original file-update owner"
+    },
+    {
+      "number": 89,
+      "name": "complete original filesystem-effect owner"
+    },
+    {
+      "number": 95,
+      "name": "complete original unified formatter APIs"
+    }
+  ],
+  "source_admission_diagnostic": "Local unchanged admission functions reject exact current workspace Cargo.toml against both immutable originals. This is a separate source-level reproduction, not a substituted CI receipt.",
+  "workflow_change": "Move both complete exec test commands to their independent job and preserve owner diagnostic artifacts immediately after the three comparison gates.",
+  "all_job_timeout_minutes": 60,
+  "original_exec_commands_and_conditions_identical": true,
+  "gate_pass_claims_added": false,
+  "whole_product_qualified": false,
+  "platform_qualified": false,
+  "files": [
+    {
+      "path": "native-annotations.json",
+      "bytes": 340,
+      "sha256": "c6af95e7ba1980572ac416077bfd738488ecd599ebf906e1bf76993e7d624e89"
+    },
+    {
+      "path": "native-check.json",
+      "bytes": 3719,
+      "sha256": "61c58410d71e954a600a34d897137a2a837a3bf7035ac488a30d1f5854f5246e"
+    },
+    {
+      "path": "native-job-metadata-full.json",
+      "bytes": 53988,
+      "sha256": "3fcb2f8f240005c18fd20b426fd7a4525e5a3ca638eae6a066c819aa4579814d"
+    },
+    {
+      "path": "workflow-distribution-validation.json",
+      "bytes": 738,
+      "sha256": "acd97c8940e2245e0200d6b28b735c0f94bac34f4993832682eaac2899cff14e"
+    },
+    {
+      "path": "source-admission-before-v1/receipt.json",
+      "bytes": 4183,
+      "sha256": "40dbadcad8b95ab5a68e4d43721c5e9550102c5dc638081f6934794a7cd220ce"
+    },
+    {
+      "path": "source-admission-before-v1/a201-original-source-manifest.json",
+      "bytes": 33807,
+      "sha256": "643c45d16256978c168239e1529a220daac004219b367786ed532262681cbcb7"
+    },
+    {
+      "path": "source-admission-before-v1/shared-file-update-and-effects-source-admission.stderr",
+      "bytes": 794,
+      "sha256": "dedcde66bd249bc7b5a472320b5a8f2203cfaa76a83a6906869072f7b1b0e845"
+    },
+    {
+      "path": "source-admission-before-v1/unified-formatter-source-admission.stderr",
+      "bytes": 1068,
+      "sha256": "5e322f6762948d80962764608ee097cf511ad01f8413d3be2bedc53c3074163a"
+    },
+    {
+      "path": "native-job-server-returned-body.log.gz",
+      "bytes": 341633,
+      "sha256": "3bbd0860c95e3162e1420f72e7ea4e5d858c65cf2ac722aa7e8e2ea4e9105348",
+      "uncompressed_bytes": 2114956,
+      "uncompressed_sha256": "61b52be8df20ea0defadb01a427927bc7b9ab0d8a0289194b9b41380e5ef3422"
+    }
+  ]
+}

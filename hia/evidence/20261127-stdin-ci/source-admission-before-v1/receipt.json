@@ -1,0 +1,97 @@
+{
+  "schema": "codex.hia.stdin.ci-source-admission-diagnostic.v1",
+  "producer": {
+    "commit": "57c0f3c0c7b64c7c0015ebf1c6c127a4f52da643",
+    "tree": "0129d8842a98f86befe932dcb7ee276a9a372ffd"
+  },
+  "scope": "Local execution of the unchanged source-admission functions against full exact historical Git objects; not a CI job receipt or native/runtime qualification.",
+  "original_a201_snapshot_files": 121,
+  "original_a201_object_tree_verified": true,
+  "observations": [
+    {
+      "name": "shared-file-update-and-effects-source-admission",
+      "rejected": true,
+      "exception": "RuntimeError",
+      "message": "original dependency/type declaration changed: codex-rs/Cargo.toml",
+      "stderr": {
+        "path": "/workspace/scratch/589c0a6dd85b/codex-hia-stdin-ci-57c0/source-admission-before-v1/shared-file-update-and-effects-source-admission.stderr",
+        "bytes": 794,
+        "sha256": "dedcde66bd249bc7b5a472320b5a8f2203cfaa76a83a6906869072f7b1b0e845"
+      },
+      "seconds": 0.04062306199921295
+    },
+    {
+      "name": "unified-formatter-source-admission",
+      "rejected": true,
+      "exception": "AssertionError",
+      "message": "",
+      "stderr": {
+        "path": "/workspace/scratch/589c0a6dd85b/codex-hia-stdin-ci-57c0/source-admission-before-v1/unified-formatter-source-admission.stderr",
+        "bytes": 1068,
+        "sha256": "5e322f6762948d80962764608ee097cf511ad01f8413d3be2bedc53c3074163a"
+      },
+      "seconds": 0.008342371998878662
+    }
+  ],
+  "dependencies": {
+    "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095": {
+      "stat": " codex-rs/Cargo.lock | 96 ++++++++++++++++++++++++++++++++++++++---------------\n codex-rs/Cargo.toml |  2 +-\n 2 files changed, 70 insertions(+), 28 deletions(-)\n",
+      "files": [
+        {
+          "path": "codex-rs/Cargo.toml",
+          "original_bytes": 22551,
+          "actual_bytes": 22552,
+          "original_sha256": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
+          "actual_sha256": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809",
+          "equal": false
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "original_bytes": 422290,
+          "actual_bytes": 423429,
+          "original_sha256": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
+          "actual_sha256": "d96a8a7246c3db8f76ef94ad035f60d0caf97a6e9c91445bde149236b79da7da",
+          "equal": false
+        },
+        {
+          "path": "codex-rs/apply-patch/Cargo.toml",
+          "original_bytes": 954,
+          "actual_bytes": 954,
+          "original_sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
+          "actual_sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
+          "equal": true
+        }
+      ]
+    },
+    "aeb88f596b83186456caac577080bcb2f253ad32": {
+      "stat": " codex-rs/Cargo.lock | 96 ++++++++++++++++++++++++++++++++++++++---------------\n codex-rs/Cargo.toml |  2 +-\n 2 files changed, 70 insertions(+), 28 deletions(-)\n",
+      "files": [
+        {
+          "path": "codex-rs/Cargo.toml",
+          "original_bytes": 22551,
+          "actual_bytes": 22552,
+          "original_sha256": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
+          "actual_sha256": "e31fffbf552d18aa1a8ed433ddff1db10f82ba8c80190b20036e309bf6fca809",
+          "equal": false
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "original_bytes": 422290,
+          "actual_bytes": 423429,
+          "original_sha256": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
+          "actual_sha256": "d96a8a7246c3db8f76ef94ad035f60d0caf97a6e9c91445bde149236b79da7da",
+          "equal": false
+        },
+        {
+          "path": "codex-rs/apply-patch/Cargo.toml",
+          "original_bytes": 954,
+          "actual_bytes": 954,
+          "original_sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
+          "actual_sha256": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
+          "equal": true
+        }
+      ]
+    }
+  },
+  "whole_product_qualified": false
+}
