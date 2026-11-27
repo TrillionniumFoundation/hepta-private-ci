@@ -142,11 +142,15 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
 fn ordinary_evaluation_binds_materialized_parameter_bytes_to_recorded_use()
 -> Result<(), Box<dyn std::error::Error>> {
     use crate::coupled_field_admission::CoupledFieldCandidateBindingV1;
-    use codex_hepta_learning_artifacts::{
-        ArtifactEvent, ArtifactKind, ArtifactManifest, ArtifactRegistry, CreateOnlyArtifactFile,
-        PinnedCandidateSpec, load_pinned_candidate, write_candidate_payload,
-        write_registry_snapshot,
-    };
+    use codex_hepta_learning_artifacts::ArtifactEvent;
+    use codex_hepta_learning_artifacts::ArtifactKind;
+    use codex_hepta_learning_artifacts::ArtifactManifest;
+    use codex_hepta_learning_artifacts::ArtifactRegistry;
+    use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
+    use codex_hepta_learning_artifacts::PinnedCandidateSpec;
+    use codex_hepta_learning_artifacts::load_pinned_candidate;
+    use codex_hepta_learning_artifacts::write_candidate_payload;
+    use codex_hepta_learning_artifacts::write_registry_snapshot;
     use codex_hepta_types::Generation;
     use std::fs::File;
 
