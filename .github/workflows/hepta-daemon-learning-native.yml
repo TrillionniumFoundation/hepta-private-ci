@@ -77,6 +77,7 @@ jobs:
           sys.path.insert(0, str(repo / "scripts"))
           from hepta_ci_exec import execute_logged
           from hepta_ci_junit import collect
+          from hepta_daemon_learning_format import RUST_OWNERS
           from hepta_c_observer_coverage import assess_retained_original_observer_coverage
 
           parents = [
@@ -152,6 +153,10 @@ jobs:
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
                       "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",
                       "-p", "codex-hepta-neuron", "-p", "codex-hepta-learning-ledger"]
+          maintenance_packages = [argument for owner in RUST_OWNERS
+                                  for argument in ("-p", "codex-" + Path(owner).name)]
+          if packages != maintenance_packages or "codex-rs/hepta-neuron/" not in RUST_OWNERS:
+              raise RuntimeError("daemon Rust owners must match native packages and include hepta-neuron")
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--package", "codex-cli",
                      "--output-dir", str(records / "helpers")]
