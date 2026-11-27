@@ -1,0 +1,88 @@
+{
+  "schema": "codex.hia.windows-federation-actual-ci.v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "candidate": "15ce2c14345c8f72bb3f3db58c229f156a10be9c",
+  "workflow": {
+    "id": 46006708541,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46006708541",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-27T13:23:34Z",
+    "updated_at": "2026-11-27T13:28:44Z",
+    "definition": ".github/workflows/codex-hia-windows-federation.yml"
+  },
+  "jobs": [
+    {
+      "id": 140531575559,
+      "name": "Original Windows federation and memory extension tests",
+      "status": "completed",
+      "conclusion": "success",
+      "run_id": 46006708541,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Run the complete original memory extension unit suite",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Preserve Bazel execution evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13
+        }
+      ]
+    }
+  ],
+  "original_target": "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+  "test_cache_disabled": true,
+  "actual_original_target_result": "PASSED in 37.4s",
+  "executed_targets": 1,
+  "failed_targets": 0,
+  "skipped_targets": 0,
+  "full_bazel_matrix_qualified": false
+}

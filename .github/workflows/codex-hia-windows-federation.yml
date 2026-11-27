@@ -1,0 +1,60 @@
+name: Codex HIA Windows federation workspace
+
+on:
+  push:
+    branches:
+      - codex/hia-windows-federation-workspace-20261127-2ac5
+    paths:
+      - codex-rs/ext/hepta-memory/**
+      - .github/workflows/codex-hia-windows-federation.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-federation:
+    name: Original Windows federation and memory extension tests
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run the complete original memory extension unit suite
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --nocache_test_results \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            -- \
+            //codex-rs/ext/hepta-memory:hepta-memory-unit-tests
+      - name: Preserve Bazel execution evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-federation-original-tests
+          path: ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: warn
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

@@ -1,0 +1,24 @@
+{
+  "run_id": 45995830040,
+  "job_id": 140494869187,
+  "head": "124646c2baa78fd82b949b18a3423e26fd80383d",
+  "path": "/tmp/hia-common-first-matrix-logs-2ac5/140494869187-narrow.log",
+  "bytes": 608632,
+  "sha256": "d5dc855018cd3668a54270c2d4fc2750fdb1cd52e7ece44a111d9f56f2a3015d",
+  "gzip_path": "/tmp/hia-common-first-matrix-logs-2ac5/140494869187-narrow.log.gz",
+  "gzip_bytes": 86911,
+  "gzip_sha256": "84f6b0ba333c935eb95e58029f0ee97f79339f3bd1f99a9430cc2e7e64d84470",
+  "scope": "One original Windows Bazel shard; not the complete matrix",
+  "wrapper_smoke_passed": true,
+  "wrapper_smoke_tests": 6,
+  "shard_passed": false,
+  "full_matrix_qualified": false,
+  "raw_log_gzip": "shard1.log.gz",
+  "failed_targets": [
+    "//codex-rs/ext/hepta-memory:hepta-memory-unit-tests",
+    "//codex-rs/utils/path-utils:path-utils-unit-tests"
+  ],
+  "flaky_targets": [
+    "//codex-rs/core:core-unit-tests"
+  ]
+}
