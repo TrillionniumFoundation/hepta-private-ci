@@ -1,0 +1,940 @@
+{
+  "id": 140663028496,
+  "run_id": 46045325725,
+  "workflow_name": "Codex HIA native components",
+  "head_branch": "codex/hia-matrix-cipher-codegen-20261127-2ac5",
+  "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/46045325725",
+  "run_attempt": 1,
+  "node_id": "CR_kwDOTrgxoM8AAAAgwCt7EA",
+  "head_sha": "3b9f69f612c18d04f00e63ea77d9a04f5aa08371",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/140663028496",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46045325725/job/140663028496",
+  "status": "completed",
+  "conclusion": "cancelled",
+  "created_at": "2026-11-27T17:53:37Z",
+  "started_at": "2026-11-27T18:24:51Z",
+  "completed_at": "2026-11-27T19:28:38Z",
+  "name": "native-components",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-27T18:24:52Z",
+      "completed_at": "2026-11-27T18:24:54Z"
+    },
+    {
+      "name": "Check out Codex",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-27T18:24:54Z",
+      "completed_at": "2026-11-27T18:25:01Z"
+    },
+    {
+      "name": "Check out pinned HIA compiler",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-27T18:25:01Z",
+      "completed_at": "2026-11-27T18:25:03Z"
+    },
+    {
+      "name": "Prepare Rust oracle and production caller compiler",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-27T18:25:03Z",
+      "completed_at": "2026-11-27T18:25:11Z"
+    },
+    {
+      "name": "Verify standalone Rust formatter editions and source stability",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-27T18:25:11Z",
+      "completed_at": "2026-11-27T18:25:14Z"
+    },
+    {
+      "name": "Rebuild compiler generations and native components",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-27T18:25:14Z",
+      "completed_at": "2026-11-27T18:25:36Z"
+    },
+    {
+      "name": "Configure exact unified formatter compiler receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-27T18:25:36Z",
+      "completed_at": "2026-11-27T18:25:36Z"
+    },
+    {
+      "name": "Verify complete unified formatter ABI and original components",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-27T18:25:36Z",
+      "completed_at": "2026-11-27T18:26:30Z"
+    },
+    {
+      "name": "Verify unified formatter source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9,
+      "started_at": "2026-11-27T18:26:30Z",
+      "completed_at": "2026-11-27T18:26:31Z"
+    },
+    {
+      "name": "Verify template parsing and atomic no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 10,
+      "started_at": "2026-11-27T18:26:31Z",
+      "completed_at": "2026-11-27T18:26:35Z"
+    },
+    {
+      "name": "Verify template parser source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11,
+      "started_at": "2026-11-27T18:26:35Z",
+      "completed_at": "2026-11-27T18:26:36Z"
+    },
+    {
+      "name": "Verify template rendering and atomic no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12,
+      "started_at": "2026-11-27T18:26:36Z",
+      "completed_at": "2026-11-27T18:26:40Z"
+    },
+    {
+      "name": "Verify template renderer source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13,
+      "started_at": "2026-11-27T18:26:40Z",
+      "completed_at": "2026-11-27T18:26:44Z"
+    },
+    {
+      "name": "Verify UUID byte matching and atomic no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14,
+      "started_at": "2026-11-27T18:26:44Z",
+      "completed_at": "2026-11-27T18:26:45Z"
+    },
+    {
+      "name": "Verify UUID source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15,
+      "started_at": "2026-11-27T18:26:45Z",
+      "completed_at": "2026-11-27T18:26:46Z"
+    },
+    {
+      "name": "Verify standalone continuation and no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16,
+      "started_at": "2026-11-27T18:26:46Z",
+      "completed_at": "2026-11-27T18:26:46Z"
+    },
+    {
+      "name": "Verify standalone source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17,
+      "started_at": "2026-11-27T18:26:46Z",
+      "completed_at": "2026-11-27T18:26:48Z"
+    },
+    {
+      "name": "Verify application continuation and no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 18,
+      "started_at": "2026-11-27T18:26:48Z",
+      "completed_at": "2026-11-27T18:26:48Z"
+    },
+    {
+      "name": "Verify application source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 19,
+      "started_at": "2026-11-27T18:26:48Z",
+      "completed_at": "2026-11-27T18:26:49Z"
+    },
+    {
+      "name": "Verify summary continuation and no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 20,
+      "started_at": "2026-11-27T18:26:49Z",
+      "completed_at": "2026-11-27T18:26:50Z"
+    },
+    {
+      "name": "Verify summary source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 21,
+      "started_at": "2026-11-27T18:26:50Z",
+      "completed_at": "2026-11-27T18:26:51Z"
+    },
+    {
+      "name": "Verify patch-effect frames and committed-state contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 22,
+      "started_at": "2026-11-27T18:26:51Z",
+      "completed_at": "2026-11-27T18:26:51Z"
+    },
+    {
+      "name": "Verify patch-effect source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 23,
+      "started_at": "2026-11-27T18:26:51Z",
+      "completed_at": "2026-11-27T18:26:53Z"
+    },
+    {
+      "name": "Verify file-update frame and no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 24,
+      "started_at": "2026-11-27T18:26:53Z",
+      "completed_at": "2026-11-27T18:26:53Z"
+    },
+    {
+      "name": "Verify file-update source and archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 25,
+      "started_at": "2026-11-27T18:26:53Z",
+      "completed_at": "2026-11-27T18:26:55Z"
+    },
+    {
+      "name": "Verify pinned word-memory language contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 26,
+      "started_at": "2026-11-27T18:26:55Z",
+      "completed_at": "2026-11-27T18:26:57Z"
+    },
+    {
+      "name": "Verify Cargo build receipts and reject stale artifacts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 27,
+      "started_at": "2026-11-27T18:26:57Z",
+      "completed_at": "2026-11-27T18:26:58Z"
+    },
+    {
+      "name": "Compare HIA search with original Rust implementation",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 28,
+      "started_at": "2026-11-27T18:26:58Z",
+      "completed_at": "2026-11-27T18:26:59Z"
+    },
+    {
+      "name": "Verify typed scalar admission and unchanged Cargo receipt checks",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 29,
+      "started_at": "2026-11-27T18:26:59Z",
+      "completed_at": "2026-11-27T18:27:00Z"
+    },
+    {
+      "name": "Compare HIA UTF-8 boundaries with Rust and Core VM",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 30,
+      "started_at": "2026-11-27T18:27:00Z",
+      "completed_at": "2026-11-27T18:27:01Z"
+    },
+    {
+      "name": "Test statically linked native patch caller and large inputs",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 31,
+      "started_at": "2026-11-27T18:27:01Z",
+      "completed_at": "2026-11-27T18:27:05Z"
+    },
+    {
+      "name": "Compare native SourceFile with the complete original Rust owner",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 32,
+      "started_at": "2026-11-27T18:27:05Z",
+      "completed_at": "2026-11-27T18:27:08Z"
+    },
+    {
+      "name": "Verify SourceFile frame and no-write contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 33,
+      "started_at": "2026-11-27T18:27:08Z",
+      "completed_at": "2026-11-27T18:27:09Z"
+    },
+    {
+      "name": "Verify SourceFile archive and source admission",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 34,
+      "started_at": "2026-11-27T18:27:09Z",
+      "completed_at": "2026-11-27T18:27:10Z"
+    },
+    {
+      "name": "Compare native batch and streaming parsers with the complete original Rust owner",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 35,
+      "started_at": "2026-11-27T18:27:10Z",
+      "completed_at": "2026-11-27T18:27:55Z"
+    },
+    {
+      "name": "Verify actual parser host dependencies and reject incomplete receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 36,
+      "started_at": "2026-11-27T18:27:55Z",
+      "completed_at": "2026-11-27T18:28:23Z"
+    },
+    {
+      "name": "Verify parser framing and committed-error-state contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 37,
+      "started_at": "2026-11-27T18:28:23Z",
+      "completed_at": "2026-11-27T18:28:24Z"
+    },
+    {
+      "name": "Verify parser archive and source admission",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 38,
+      "started_at": "2026-11-27T18:28:24Z",
+      "completed_at": "2026-11-27T18:28:25Z"
+    },
+    {
+      "name": "Verify streaming output line counts and atomic ABI errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 39,
+      "started_at": "2026-11-27T18:28:25Z",
+      "completed_at": "2026-11-27T18:28:25Z"
+    },
+    {
+      "name": "Verify output-item budget literal frames and atomic ABI errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 40,
+      "started_at": "2026-11-27T18:28:25Z",
+      "completed_at": "2026-11-27T18:28:25Z"
+    },
+    {
+      "name": "Verify environment display literal frames and bounded native streams",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 41,
+      "started_at": "2026-11-27T18:28:25Z",
+      "completed_at": "2026-11-27T18:28:25Z"
+    },
+    {
+      "name": "Verify citation stream literal frames and atomic ABI errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 42,
+      "started_at": "2026-11-27T18:28:25Z",
+      "completed_at": "2026-11-27T18:28:26Z"
+    },
+    {
+      "name": "Verify proposed plan literal frames and atomic ABI errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 43,
+      "started_at": "2026-11-27T18:28:26Z",
+      "completed_at": "2026-11-27T18:28:43Z"
+    },
+    {
+      "name": "Verify fuzzy match literal states and atomic ABI errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 44,
+      "started_at": "2026-11-27T18:28:43Z",
+      "completed_at": "2026-11-27T18:28:43Z"
+    },
+    {
+      "name": "Verify raw UTF-8 classification and atomic ABI errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 45,
+      "started_at": "2026-11-27T18:28:43Z",
+      "completed_at": "2026-11-27T18:28:44Z"
+    },
+    {
+      "name": "Verify generic inline tag decisions and atomic ABI errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 46,
+      "started_at": "2026-11-27T18:28:44Z",
+      "completed_at": "2026-11-27T18:28:44Z"
+    },
+    {
+      "name": "Verify native stdin prompt decoder against the default caller",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 47,
+      "started_at": "2026-11-27T18:28:44Z",
+      "completed_at": "2026-11-27T18:28:45Z"
+    },
+    {
+      "name": "Test statically linked native string caller and allocation behavior",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 48,
+      "started_at": "2026-11-27T18:28:45Z",
+      "completed_at": "2026-11-27T18:28:45Z"
+    },
+    {
+      "name": "Compare native metric sanitizer with the original Rust caller",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 49,
+      "started_at": "2026-11-27T18:28:45Z",
+      "completed_at": "2026-11-27T18:28:49Z"
+    },
+    {
+      "name": "Verify metric sanitizer streaming state and buffer contract",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 50,
+      "started_at": "2026-11-27T18:28:49Z",
+      "completed_at": "2026-11-27T18:28:49Z"
+    },
+    {
+      "name": "Compare native markdown location formatting with original Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 51,
+      "started_at": "2026-11-27T18:28:49Z",
+      "completed_at": "2026-11-27T18:28:55Z"
+    },
+    {
+      "name": "Verify markdown location streaming and error contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 52,
+      "started_at": "2026-11-27T18:28:55Z",
+      "completed_at": "2026-11-27T18:28:55Z"
+    },
+    {
+      "name": "Install pinned repository test runners",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 53,
+      "started_at": "2026-11-27T18:28:55Z",
+      "completed_at": "2026-11-27T18:29:09Z"
+    },
+    {
+      "name": "Test all four production crates with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 54,
+      "started_at": "2026-11-27T18:29:09Z",
+      "completed_at": "2026-11-27T18:33:18Z"
+    },
+    {
+      "name": "Test environment display public oracles with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 55,
+      "started_at": "2026-11-27T18:33:18Z",
+      "completed_at": "2026-11-27T18:34:37Z"
+    },
+    {
+      "name": "Test environment display public oracles with default Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 56,
+      "started_at": "2026-11-27T18:34:37Z",
+      "completed_at": "2026-11-27T18:34:39Z"
+    },
+    {
+      "name": "Test citation and proposed plan public oracles with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 57,
+      "started_at": "2026-11-27T18:34:39Z",
+      "completed_at": "2026-11-27T18:34:42Z"
+    },
+    {
+      "name": "Test citation and proposed plan public oracles with default Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 58,
+      "started_at": "2026-11-27T18:34:42Z",
+      "completed_at": "2026-11-27T18:34:43Z"
+    },
+    {
+      "name": "Lint citation and proposed plan owner with native and default features",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 59,
+      "started_at": "2026-11-27T18:34:43Z",
+      "completed_at": "2026-11-27T18:34:47Z"
+    },
+    {
+      "name": "Test fuzzy match public and decoder oracles with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 60,
+      "started_at": "2026-11-27T18:34:47Z",
+      "completed_at": "2026-11-27T18:34:52Z"
+    },
+    {
+      "name": "Test fuzzy match original public oracles with default Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 61,
+      "started_at": "2026-11-27T18:34:52Z",
+      "completed_at": "2026-11-27T18:34:53Z"
+    },
+    {
+      "name": "Lint fuzzy match owner with native and default features",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 62,
+      "started_at": "2026-11-27T18:34:53Z",
+      "completed_at": "2026-11-27T18:34:56Z"
+    },
+    {
+      "name": "Test existing fuzzy ranking and highlight callers with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 63,
+      "started_at": "2026-11-27T18:34:56Z",
+      "completed_at": "2026-11-27T18:42:15Z"
+    },
+    {
+      "name": "Test existing fuzzy ranking and highlight callers with default Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 64,
+      "started_at": "2026-11-27T18:42:15Z",
+      "completed_at": "2026-11-27T18:45:57Z"
+    },
+    {
+      "name": "Compare actual native and original ASCII JSON callers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 65,
+      "started_at": "2026-11-27T18:45:57Z",
+      "completed_at": "2026-11-27T18:46:08Z"
+    },
+    {
+      "name": "Verify ASCII JSON window and error contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 66,
+      "started_at": "2026-11-27T18:46:08Z",
+      "completed_at": "2026-11-27T18:46:09Z"
+    },
+    {
+      "name": "Compare native truncation APIs with the original Rust source",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 67,
+      "started_at": "2026-11-27T18:46:09Z",
+      "completed_at": "2026-11-27T18:46:10Z"
+    },
+    {
+      "name": "Verify truncation UTF-8, budgets and buffer contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 68,
+      "started_at": "2026-11-27T18:46:10Z",
+      "completed_at": "2026-11-27T18:46:13Z"
+    },
+    {
+      "name": "Test consumers of native truncation and token budgets",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 69,
+      "started_at": "2026-11-27T18:46:13Z",
+      "completed_at": "2026-11-27T18:46:53Z"
+    },
+    {
+      "name": "Test existing Core output-item callers with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 70,
+      "started_at": "2026-11-27T18:46:53Z",
+      "completed_at": "2026-11-27T18:51:52Z"
+    },
+    {
+      "name": "Test existing Core output-item callers with default Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 71,
+      "started_at": "2026-11-27T18:51:52Z",
+      "completed_at": "2026-11-27T18:55:04Z"
+    },
+    {
+      "name": "Test existing Core citation and proposed plan consumers with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 72,
+      "started_at": "2026-11-27T18:55:04Z",
+      "completed_at": "2026-11-27T18:55:05Z"
+    },
+    {
+      "name": "Test existing Core citation and proposed plan consumers with default Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 73,
+      "started_at": "2026-11-27T18:55:05Z",
+      "completed_at": "2026-11-27T18:55:06Z"
+    },
+    {
+      "name": "Verify native scalar token arithmetic and invalid-mode traps",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 74,
+      "started_at": "2026-11-27T18:55:06Z",
+      "completed_at": "2026-11-27T18:55:06Z"
+    },
+    {
+      "name": "Verify installed HIA apply_patch executable",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 75,
+      "started_at": "2026-11-27T18:55:06Z",
+      "completed_at": "2026-11-27T18:55:50Z"
+    },
+    {
+      "name": "Provision system bubblewrap for real sandbox owner tests",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 76,
+      "started_at": "2026-11-27T18:55:50Z",
+      "completed_at": "2026-11-27T18:56:01Z"
+    },
+    {
+      "name": "Test full Codex owners with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 77,
+      "started_at": "2026-11-27T18:56:01Z",
+      "completed_at": "2026-11-27T19:02:52Z"
+    },
+    {
+      "name": "Test native template owner and all direct consumers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 78,
+      "started_at": "2026-11-27T19:02:52Z",
+      "completed_at": "2026-11-27T19:06:06Z"
+    },
+    {
+      "name": "Test default template owner and all direct consumers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 79,
+      "started_at": "2026-11-27T19:06:06Z",
+      "completed_at": "2026-11-27T19:07:45Z"
+    },
+    {
+      "name": "Verify installed full Codex executable",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 80,
+      "started_at": "2026-11-27T19:07:45Z",
+      "completed_at": "2026-11-27T19:16:30Z"
+    },
+    {
+      "name": "Verify default callers and truncation consumers require no HIA artifacts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 81,
+      "started_at": "2026-11-27T19:16:30Z",
+      "completed_at": "2026-11-27T19:16:56Z"
+    },
+    {
+      "name": "Compare native execution policy matching with original Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 82,
+      "started_at": "2026-11-27T19:16:56Z",
+      "completed_at": "2026-11-27T19:16:57Z"
+    },
+    {
+      "name": "Verify scalar count admission and closed object profile",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 83,
+      "started_at": "2026-11-27T19:16:57Z",
+      "completed_at": "2026-11-27T19:16:57Z"
+    },
+    {
+      "name": "Verify short-command matching requires no frame allocation",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 84,
+      "started_at": "2026-11-27T19:16:57Z",
+      "completed_at": "2026-11-27T19:16:58Z"
+    },
+    {
+      "name": "Verify prefix matching buffer admission and atomic errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 85,
+      "started_at": "2026-11-27T19:16:58Z",
+      "completed_at": "2026-11-27T19:16:58Z"
+    },
+    {
+      "name": "Verify complete policy summary ABI and atomic errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 86,
+      "started_at": "2026-11-27T19:16:58Z",
+      "completed_at": "2026-11-27T19:16:59Z"
+    },
+    {
+      "name": "Compare complete policy reduction with original public Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 87,
+      "started_at": "2026-11-27T19:16:59Z",
+      "completed_at": "2026-11-27T19:17:42Z"
+    },
+    {
+      "name": "Verify complete network domain ABI and atomic errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 88,
+      "started_at": "2026-11-27T19:17:42Z",
+      "completed_at": "2026-11-27T19:17:43Z"
+    },
+    {
+      "name": "Compare complete network domain compilation with original public Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 89,
+      "started_at": "2026-11-27T19:17:43Z",
+      "completed_at": "2026-11-27T19:17:51Z"
+    },
+    {
+      "name": "Verify complete allowed-prefix ABI and atomic errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 90,
+      "started_at": "2026-11-27T19:17:51Z",
+      "completed_at": "2026-11-27T19:17:52Z"
+    },
+    {
+      "name": "Compare complete allowed prefixes with original public Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 91,
+      "started_at": "2026-11-27T19:17:52Z",
+      "completed_at": "2026-11-27T19:18:02Z"
+    },
+    {
+      "name": "Verify complete command dispatcher continuation ABI",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 92,
+      "started_at": "2026-11-27T19:18:02Z",
+      "completed_at": "2026-11-27T19:18:05Z"
+    },
+    {
+      "name": "Compare complete command dispatch with original public Rust",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 93,
+      "started_at": "2026-11-27T19:18:05Z",
+      "completed_at": "2026-11-27T19:18:20Z"
+    },
+    {
+      "name": "Verify complete network-host ABI and atomic errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 94,
+      "started_at": "2026-11-27T19:18:20Z",
+      "completed_at": "2026-11-27T19:18:21Z"
+    },
+    {
+      "name": "Compare network-host normalization with original Rust (two baselines)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 95,
+      "started_at": "2026-11-27T19:18:21Z",
+      "completed_at": "2026-11-27T19:18:40Z"
+    },
+    {
+      "name": "Verify installed execution policy command",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 96,
+      "started_at": "2026-11-27T19:18:40Z",
+      "completed_at": "2026-11-27T19:18:47Z"
+    },
+    {
+      "name": "Compare actual native and original UUID callers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 97,
+      "started_at": "2026-11-27T19:18:47Z",
+      "completed_at": "2026-11-27T19:18:56Z"
+    },
+    {
+      "name": "Verify UUID window progress and error contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 98,
+      "started_at": "2026-11-27T19:18:56Z",
+      "completed_at": "2026-11-27T19:18:56Z"
+    },
+    {
+      "name": "Compare complete native and original template parsers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 99,
+      "started_at": "2026-11-27T19:18:56Z",
+      "completed_at": "2026-11-27T19:19:15Z"
+    },
+    {
+      "name": "Verify template parser window and error contracts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 100,
+      "started_at": "2026-11-27T19:19:15Z",
+      "completed_at": "2026-11-27T19:19:15Z"
+    },
+    {
+      "name": "Compare native and original template renderers",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 101,
+      "started_at": "2026-11-27T19:19:15Z",
+      "completed_at": "2026-11-27T19:20:39Z"
+    },
+    {
+      "name": "Compare native template collection and public API behavior",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 102,
+      "started_at": "2026-11-27T19:20:39Z",
+      "completed_at": "2026-11-27T19:20:42Z"
+    },
+    {
+      "name": "Verify template index bounds, ordering and atomic errors",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 103,
+      "started_at": "2026-11-27T19:20:42Z",
+      "completed_at": "2026-11-27T19:20:51Z"
+    },
+    {
+      "name": "Test actual agent execution policy integration with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 104,
+      "started_at": "2026-11-27T19:20:51Z",
+      "completed_at": "2026-11-27T19:24:29Z"
+    },
+    {
+      "name": "Test actual Core network domain consumer with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 105,
+      "started_at": "2026-11-27T19:24:29Z",
+      "completed_at": "2026-11-27T19:24:32Z"
+    },
+    {
+      "name": "Test actual protocol allowed-prefix consumer with HIA enabled",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 106,
+      "started_at": "2026-11-27T19:24:32Z",
+      "completed_at": "2026-11-27T19:24:51Z"
+    },
+    {
+      "name": "Verify added Index and legacy raw-only archive receipts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 107,
+      "started_at": "2026-11-27T19:24:51Z",
+      "completed_at": "2026-11-27T19:24:59Z"
+    },
+    {
+      "name": "Run strict native and default owner lint",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 108,
+      "started_at": "2026-11-27T19:24:59Z",
+      "completed_at": "2026-11-27T19:27:34Z"
+    },
+    {
+      "name": "Run scoped native owner fixes without source drift",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 109,
+      "started_at": "2026-11-27T19:27:34Z",
+      "completed_at": "2026-11-27T19:28:11Z"
+    },
+    {
+      "name": "Fix native string and template owners with actual compiler evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 110,
+      "started_at": "2026-11-27T19:28:11Z",
+      "completed_at": "2026-11-27T19:28:22Z"
+    },
+    {
+      "name": "Upload original build and test results",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 111,
+      "started_at": "2026-11-27T19:28:22Z",
+      "completed_at": "2026-11-27T19:28:32Z"
+    },
+    {
+      "name": "Post Check out pinned HIA compiler",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 221,
+      "started_at": "2026-11-27T19:28:32Z",
+      "completed_at": "2026-11-27T19:28:32Z"
+    },
+    {
+      "name": "Post Check out Codex",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 222,
+      "started_at": "2026-11-27T19:28:32Z",
+      "completed_at": "2026-11-27T19:28:32Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 223,
+      "started_at": "2026-11-27T19:28:32Z",
+      "completed_at": "2026-11-27T19:28:32Z"
+    }
+  ],
+  "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/140663028496",
+  "labels": [
+    "ubuntu-24.04"
+  ],
+  "runner_id": 1000380058,
+  "runner_name": "GitHub Actions 1000380058",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions"
+}
