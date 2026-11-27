@@ -42,6 +42,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use core_test_support::responses;
 use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server_with_first_headers_gate_and_request_observer;
 use core_test_support::streaming_sse::start_streaming_sse_server_with_request_observer;
 use serde_json::Value;
 use tokio::sync::oneshot;
@@ -605,9 +606,14 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
     let (a_first_release, a_first_gate) = oneshot::channel();
     let (b_first_release, b_first_gate) = oneshot::channel();
     let capture_a = Arc::clone(&model_a_state);
-    let (model_a, _) = start_streaming_sse_server_with_request_observer(
+    // Even response headers can emit a provider event and revoke recovery.
+    // Keep A before that boundary; B still holds only its terminal SSE chunk.
+    let (model_a, _) = start_streaming_sse_server_with_first_headers_gate_and_request_observer(
         vec![
-            gated_sse("agent-a-killed-response", a_first_gate),
+            vec![StreamingSseChunk {
+                gate: None,
+                body: final_sse("agent-a-killed-response"),
+            }],
             vec![StreamingSseChunk {
                 gate: None,
                 body: final_sse("agent-a-recovered-response"),
@@ -617,6 +623,7 @@ async fn killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_s
                 body: final_sse("agent-a-queued-response"),
             }],
         ],
+        a_first_gate,
         Arc::new(move |body| capture_a.record_request_body(body).map(|_| ())),
     )
     .await;

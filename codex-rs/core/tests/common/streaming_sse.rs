@@ -99,6 +99,17 @@ pub async fn start_streaming_sse_server_with_request_observer(
     .await
 }
 
+/// Records the first request before holding all of its response headers and SSE.
+/// Uses the existing observer failure and owned connection-task cleanup rules.
+pub async fn start_streaming_sse_server_with_first_headers_gate_and_request_observer(
+    responses: Vec<Vec<StreamingSseChunk>>,
+    first_headers_gate: oneshot::Receiver<()>,
+    request_observer: StreamingSseRequestObserver,
+) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    start_streaming_sse_server_inner(responses, Some(first_headers_gate), Some(request_observer))
+        .await
+}
+
 async fn start_streaming_sse_server_inner(
     responses: Vec<Vec<StreamingSseChunk>>,
     first_headers_gate: Option<oneshot::Receiver<()>>,
