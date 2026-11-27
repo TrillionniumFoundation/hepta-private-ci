@@ -26,11 +26,17 @@ codex_rust_crate(
 # Compile the local writer qualification separately from the default product
 # library. These unit fixtures need only temporary registry and SQLite state;
 # they do not start Agentd, an App Server, or a provider process.
+# rules_rust does not expand Cargo feature relationships for explicit targets.
+_COGNITIVE_WRITE_QUALIFICATION_FEATURES = [
+    "production-cognitive-write",
+    "qualification-cognitive-write",
+]
+
 rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_WRITE_QUALIFICATION_FEATURES,
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
@@ -41,7 +47,7 @@ rust_library(
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_WRITE_QUALIFICATION_FEATURES,
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
@@ -73,7 +79,7 @@ rust_binary(
     name = "hepta-agentd-cognitive-product-qualification-bin",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_WRITE_QUALIFICATION_FEATURES,
     crate_name = "codex_hepta_agentd",
     crate_root = "src/main.rs",
     edition = "2024",
@@ -93,7 +99,7 @@ rust_binary(
 rust_test(
     name = "hepta-agentd-cognitive-product-qualification-test-bin",
     srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = _COGNITIVE_WRITE_QUALIFICATION_FEATURES,
     crate_name = "cognitive_product_e2e",
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),
