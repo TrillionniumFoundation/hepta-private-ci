@@ -15,10 +15,14 @@ async fn controller_capture_outlives_caller_scope_without_leaking_to_other_contr
     assert_eq!(current(), None);
 
     let mini_controller = mini
-        .scope(async { inherit_for_controller(async { current() }) })
+        .scope(std::future::poll_fn(|_| {
+            std::task::Poll::Ready(inherit_for_controller(async { current() }))
+        }))
         .await;
     let other_controller = other
-        .scope(async { inherit_for_controller(async { current() }) })
+        .scope(std::future::poll_fn(|_| {
+            std::task::Poll::Ready(inherit_for_controller(async { current() }))
+        }))
         .await;
     assert_eq!(current(), None);
     let default_controller = inherit_for_controller(async { current() });

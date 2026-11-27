@@ -1152,7 +1152,7 @@ async fn remote_control_handle_enable_disable_stops_and_restarts_connections() {
     let (transport_event_tx, _transport_event_rx) =
         mpsc::channel::<TransportEvent>(CHANNEL_CAPACITY);
     let shutdown_token = CancellationToken::new();
-    let (remote_task, remote_handle) = start_remote_control(
+    let startup = start_remote_control(
         RemoteControlStartConfig {
             remote_control_url,
             installation_id: TEST_INSTALLATION_ID.to_string(),
@@ -1164,9 +1164,16 @@ async fn remote_control_handle_enable_disable_stops_and_restarts_connections() {
         shutdown_token.clone(),
         /*app_server_client_name_rx*/ None,
         RemoteControlStartupMode::EnabledEphemeral,
+    );
+    // Keep hardware discovery outside this connection lifecycle fixture.
+    let host_device_fixture = host_device::fixture::HostDeviceKindFixture::from_profile(
+        br#"{"SPHardwareDataType":[{"machine_name":"Mac mini"}]}"#,
     )
-    .await
-    .expect("remote control should start");
+    .expect("fixed host device profile should parse");
+    let (remote_task, remote_handle) = host_device_fixture
+        .scope(startup)
+        .await
+        .expect("remote control should start");
     let mut status_rx = remote_handle.status_receiver();
 
     let enroll_request = accept_http_request(&listener).await;

@@ -660,7 +660,20 @@ async fn timed_out_guardian_network_review_uses_timeout_outcome_without_user_fal
         AskForApproval::OnRequest,
     )
     .await?;
-    wait_for_response_request(&pending_guardian).await;
+    // ResponseMock records attempts before the route-specific matcher runs.
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        loop {
+            if pending_guardian.requests().iter().any(|request| {
+                request.body_json()["client_metadata"]["x-openai-subagent"].as_str()
+                    == Some("guardian")
+            }) {
+                return;
+            }
+            tokio::time::sleep(Duration::from_millis(/*millis*/ 10)).await;
+        }
+    })
+    .await
+    .context("timed out waiting for Guardian Responses API request")?;
     tokio::time::pause();
     tokio::time::advance(Duration::from_secs(91)).await;
     tokio::time::resume();
