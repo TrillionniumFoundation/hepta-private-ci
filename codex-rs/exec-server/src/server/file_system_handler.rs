@@ -1,7 +1,9 @@
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
+use codex_exec_server_protocol::CapabilityRootDiscoverRequest;
 use codex_exec_server_protocol::JSONRPCErrorError;
 use codex_protocol::config_types::WindowsSandboxLevel;
+use futures::StreamExt;
 
 use crate::CapabilityRootsDiscoverParams;
 use crate::CapabilityRootsDiscoverResponse;
@@ -13,6 +15,10 @@ use crate::GetMetadataOptions;
 use crate::ReadFileOptions;
 use crate::RemoveOptions;
 use crate::WriteFileOptions;
+use crate::capability_discovery::CapabilityDiscoveryError;
+use crate::capability_discovery::MAX_CONCURRENT_ROOTS;
+use crate::capability_discovery::MAX_ROOTS_PER_REQUEST;
+use crate::capability_discovery::discover_root;
 use crate::file_read::FileReadHandleManager;
 use crate::file_system_error::map_fs_error;
 use crate::local_file_system::LocalFileSystem;
@@ -74,6 +80,13 @@ impl FileSystemHandler {
         &self,
         params: CapabilityRootsDiscoverParams,
     ) -> Result<CapabilityRootsDiscoverResponse, JSONRPCErrorError> {
+        let can_use_whole_helper = |root: &CapabilityRootDiscoverRequest| {
+            root.sandbox.as_ref().is_some_and(|sandbox| {
+                sandbox.should_run_in_sandbox()
+                    && (!cfg!(target_os = "windows")
+                        || sandbox.windows_sandbox_level != WindowsSandboxLevel::Disabled)
+            })
+        };
         let sandbox = params
             .roots
             .first()
@@ -108,6 +121,59 @@ impl FileSystemHandler {
                     tracing::warn!(%error, "batched capability discovery failed; retrying roots separately");
                 }
             }
+        } else if params.roots.iter().any(can_use_whole_helper) {
+            if params.roots.len() > MAX_ROOTS_PER_REQUEST {
+                return Err(invalid_request(
+                    CapabilityDiscoveryError::TooManyRoots.to_string(),
+                ));
+            }
+            // Keep separate policies and the original root order. A helper owns
+            // one complete root scan, with the old per-operation path as fallback.
+            let roots = futures::stream::iter(params.roots)
+                .map(|root| async move {
+                    if let Some(sandbox) = root
+                        .sandbox
+                        .as_ref()
+                        .filter(|_| can_use_whole_helper(&root))
+                    {
+                        let mut helper_root = root.clone();
+                        helper_root.sandbox = None;
+                        let result = match self.file_system.sandboxed() {
+                            Ok(file_system) => {
+                                file_system
+                                    .discover_capability_roots(
+                                        CapabilityRootsDiscoverParams {
+                                            roots: vec![helper_root],
+                                        },
+                                        sandbox,
+                                    )
+                                    .await
+                            }
+                            Err(error) => Err(error),
+                        };
+                        match result {
+                            Ok(response) => {
+                                let mut discoveries = response.roots.into_iter();
+                                if let Some(discovery) = discoveries.next()
+                                    && discoveries.next().is_none()
+                                    && discovery.id == root.id
+                                    && discovery.path == root.path
+                                {
+                                    return discovery;
+                                }
+                                tracing::warn!("single-root capability helper returned mismatched roots; retrying root separately");
+                            }
+                            Err(error) => {
+                                tracing::warn!(%error, "single-root capability discovery failed; retrying root separately");
+                            }
+                        }
+                    }
+                    discover_root(&self.file_system, root).await
+                })
+                .buffered(MAX_CONCURRENT_ROOTS)
+                .collect()
+                .await;
+            return Ok(CapabilityRootsDiscoverResponse { roots });
         }
 
         crate::discover_capability_roots(&self.file_system, params)

@@ -24,7 +24,7 @@ const MAX_DIRECTORIES_PER_ROOT: usize = 2_000;
 const MAX_ENTRIES_PER_ROOT: usize = 20_000;
 const MAX_FILE_BYTES: usize = 1024 * 1024;
 const MAX_BUNDLE_BYTES_PER_ROOT: usize = 16 * 1024 * 1024;
-const MAX_CONCURRENT_ROOTS: usize = 8;
+pub(crate) const MAX_CONCURRENT_ROOTS: usize = 8;
 const SKILL_FILE_NAME: &str = "SKILL.md";
 const SKILL_METADATA_PATH: &str = "agents/openai.yaml";
 const DEFAULT_MCP_CONFIG_PATH: &str = ".mcp.json";
@@ -60,7 +60,7 @@ pub async fn discover_capability_roots(
     Ok(CapabilityRootsDiscoverResponse { roots })
 }
 
-async fn discover_root(
+pub(crate) async fn discover_root(
     file_system: &dyn ExecutorFileSystem,
     request: CapabilityRootDiscoverRequest,
 ) -> CapabilityRootDiscovery {
