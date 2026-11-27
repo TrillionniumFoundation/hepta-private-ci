@@ -1,0 +1,8 @@
+{
+ "id":"HCSN-secondary-width-and-calibration-diagnosis-c889-20261127",
+ "status":"Prospective intervention plan on already observed historical office days, conditional mechanism replication only.",
+ "scopes":"First reload all three archived .873 N32 weights into published BoundaryControlHCSN, new zero feedback with matched law, and dual feedback with no retraining. Second cross two widths, zero/dual, historical/new seed blocks. Every optimizer opportunity and control matches original published reference for all fits. Seal all weights before final rescoring. Examine data class imbalance, BA, AUC, probability ranges and calibration. Original archived sample IDs and probabilities must match.",
+ "old_seeds":[601,1601,2601],"new_seeds":[7717,17717,27717],"widths":[32,8],"arms":["zero","dual"],
+ "checkpoints":[0,8,16,32,64,96,128],"updates":128,"batch":12,
+ "fixed":"8 real time frames, fixed original dev/train/test split, raw six inputs, dt=.25, slow clock at 2, cached uniformized physical solver, Adam .003, clip2, final-step cross entropy/classification, min dev Brier. N32 original classifier has 16 senders /16 receivers and 80 receiver features. N8 has 4/4 and 20 receiver features; differing parameter count/capacity is part of the intervention."
+}

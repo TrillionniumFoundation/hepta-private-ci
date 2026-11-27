@@ -1,0 +1,28 @@
+{
+  "data_files": {
+    "fsdd.zip": "beaca4fb849cad13103b2cffba913b3d7fdb5f15222da4ddd07187b3c38a757a",
+    "arabic.zip": "3c8c83404289c49631605421830872be337d92d887e61798385aacbe9423010d"
+  },
+  "fsdd_commit": "26eb9aaf76e81b692f806f9140c2d2777410d7a1",
+  "arabic_source": "https://archive.ics.uci.edu/static/public/195/spoken+arabic+digit.zip",
+  "source_code": "4b413300cca16aa3b2892e613035e2ad9cff7cfecff3c6653d946bcccf55c8a3",
+  "parts": {
+    "train": {
+      "sha256": "dcfb1ca107246a515a9a44416f2f21a1d53dd992e91348ee1a5e534f6e72d526",
+      "english": 300,
+      "arabic": 440
+    },
+    "dev": {
+      "sha256": "c009c7e5566033ba2231c0f9d8544715232273cb602ec1319ce5f728444e1f03",
+      "english": 100,
+      "arabic": 220
+    },
+    "test": {
+      "sha256": "fc19abf51a302a59700b84b507e4be276002ff8c7dbcab554f68097776c40bbb",
+      "english": 1000,
+      "arabic": 2200
+    }
+  },
+  "cross_split_exclusions": [],
+  "wall_s": 1.413332772001013
+}

@@ -1,0 +1,640 @@
+{
+  "all_direct_primary": false,
+  "all_models": 15,
+  "all_replacement_gates": false,
+  "execution_note": "cold_stages includes process imports after timer start at module start, not OS startup; initial non-BP fits various overlap, final BP fits serial within study and official cold tests serial within study, with concurrent unrelated research on host. External process wall is recorded when available. Prior training and official evaluation are historical costs from the source archives; data acquisition and preprocessing are shared.",
+  "observations_per_family": {
+    "new_english": 1000,
+    "old_arabic": 2200
+  },
+  "official_arabic_keep_labels_match_history_all_parents": true,
+  "paired": [
+    {
+      "bp_primary": false,
+      "cold_bp_over_direct": 3.5155165814364615,
+      "direct_minus_bp_new_accuracy": 0.018000000000000016,
+      "direct_minus_bp_old_accuracy": -0.0031818181818181746,
+      "direct_primary": true,
+      "seed": 107
+    },
+    {
+      "bp_primary": true,
+      "cold_bp_over_direct": 2.7467652635948205,
+      "direct_minus_bp_new_accuracy": -0.014999999999999986,
+      "direct_minus_bp_old_accuracy": 0.013636363636363558,
+      "direct_primary": false,
+      "seed": 211
+    },
+    {
+      "bp_primary": true,
+      "cold_bp_over_direct": 2.1534718790666787,
+      "direct_minus_bp_new_accuracy": -0.06,
+      "direct_minus_bp_old_accuracy": 0.002272727272727315,
+      "direct_primary": false,
+      "seed": 431
+    }
+  ],
+  "rows": [
+    {
+      "ar": {
+        "acc": 0.8459090909090909,
+        "brier": 0.7748955150401085,
+        "correct": 1861,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.0,
+        "theo": 0.0
+      },
+      "choice": "keep",
+      "cold_eval_s": 31.265394648999063,
+      "cold_stages_s": 36.80802707899784,
+      "combined_cold_including_historical_parent_s": 91.29476938899097,
+      "delta_norm": 0.0,
+      "eng": {
+        "acc": 0.208,
+        "brier": 0.8846642980792313,
+        "correct": 208,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 32.536889168000926,
+      "fit_external_process_wall_s": 6.7917898100022285,
+      "fit_s": 5.5426324299987755,
+      "historical_arabic_max_score_error": 3.845617175102234e-05,
+      "historical_parent_official_test_s": 5.360775622997608,
+      "historical_parent_train_s": 49.125966686995525,
+      "method": "keep",
+      "primary_gate": false,
+      "scope_changed": [],
+      "seed": 107
+    },
+    {
+      "ar": {
+        "acc": 0.8381818181818181,
+        "brier": 0.8036048048236102,
+        "correct": 1844,
+        "delta_acc": -0.007727272727272728,
+        "forget_count": 54,
+        "gain_count": 37,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.016,
+        "theo": 0.024
+      },
+      "choice": "scale0.5",
+      "cold_eval_s": 23.485580747001222,
+      "cold_stages_s": 43.461978481002006,
+      "combined_cold_including_historical_parent_s": 97.94872079099514,
+      "delta_norm": 0.9645158168208768,
+      "eng": {
+        "acc": 0.228,
+        "brier": 0.8849364927455068,
+        "correct": 228,
+        "delta_acc": 0.02,
+        "forget_count": 17,
+        "gain_count": 37,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 24.020430672000657,
+      "fit_external_process_wall_s": null,
+      "fit_s": 19.976397734000784,
+      "historical_parent_official_test_s": 5.360775622997608,
+      "historical_parent_train_s": 49.125966686995525,
+      "method": "direct",
+      "primary_gate": true,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 107
+    },
+    {
+      "ar": {
+        "acc": 0.8431818181818181,
+        "brier": 0.783510203763546,
+        "correct": 1855,
+        "delta_acc": -0.0027272727272727275,
+        "forget_count": 15,
+        "gain_count": 9,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.01,
+        "theo": -0.004
+      },
+      "choice": "scale0.125",
+      "cold_eval_s": 16.83662310699947,
+      "cold_stages_s": 28.633567918001063,
+      "combined_cold_including_historical_parent_s": 83.1203102279942,
+      "delta_norm": 0.24814338764923935,
+      "eng": {
+        "acc": 0.211,
+        "brier": 0.8857044901381063,
+        "correct": 211,
+        "delta_acc": 0.003,
+        "forget_count": 8,
+        "gain_count": 11,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 17.84359199100072,
+      "fit_external_process_wall_s": 12.377968467000755,
+      "fit_s": 11.796944811001595,
+      "historical_parent_official_test_s": 5.360775622997608,
+      "historical_parent_train_s": 49.125966686995525,
+      "method": "wronglabel",
+      "primary_gate": false,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 107
+    },
+    {
+      "ar": {
+        "acc": 0.8313636363636364,
+        "brier": 0.8097594579524734,
+        "correct": 1829,
+        "delta_acc": -0.014545454545454545,
+        "forget_count": 70,
+        "gain_count": 38,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": -0.004,
+        "theo": 0.03
+      },
+      "choice": "scale0.5",
+      "cold_eval_s": 26.51610591899953,
+      "cold_stages_s": 37.959558809001464,
+      "combined_cold_including_historical_parent_s": 92.4463011189946,
+      "delta_norm": 0.974706912904252,
+      "eng": {
+        "acc": 0.221,
+        "brier": 0.8879480507812874,
+        "correct": 221,
+        "delta_acc": 0.013,
+        "forget_count": 28,
+        "gain_count": 41,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 27.1563092710021,
+      "fit_external_process_wall_s": 11.966574878002575,
+      "fit_s": 11.443452890001936,
+      "historical_parent_official_test_s": 5.360775622997608,
+      "historical_parent_train_s": 49.125966686995525,
+      "method": "unconditional",
+      "primary_gate": false,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 107
+    },
+    {
+      "ar": {
+        "acc": 0.8413636363636363,
+        "brier": 0.7807727204226256,
+        "correct": 1851,
+        "delta_acc": -0.004545454545454545,
+        "forget_count": 36,
+        "gain_count": 26,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.002,
+        "theo": 0.002
+      },
+      "choice": "lr0.002_steps12",
+      "cold_eval_s": 22.01852284800043,
+      "cold_stages_s": 152.79130601199722,
+      "combined_cold_including_historical_parent_s": 207.27804832199035,
+      "delta_norm": 0.18727332461768062,
+      "eng": {
+        "acc": 0.21,
+        "brier": 0.8843163091388175,
+        "correct": 210,
+        "delta_acc": 0.002,
+        "forget_count": 16,
+        "gain_count": 18,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 22.68492748999779,
+      "fit_external_process_wall_s": 132.04760694799916,
+      "fit_s": 130.7727831639968,
+      "historical_parent_official_test_s": 5.360775622997608,
+      "historical_parent_train_s": 49.125966686995525,
+      "method": "bp",
+      "primary_gate": false,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 107
+    },
+    {
+      "ar": {
+        "acc": 0.8118181818181818,
+        "brier": 0.7859605248126083,
+        "correct": 1786,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.0,
+        "theo": 0.0
+      },
+      "choice": "keep",
+      "cold_eval_s": 18.322912625000754,
+      "cold_stages_s": 23.15130745800343,
+      "combined_cold_including_historical_parent_s": 43.90184616400438,
+      "delta_norm": 0.0,
+      "eng": {
+        "acc": 0.194,
+        "brier": 0.8843141791553351,
+        "correct": 194,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 19.067276024998137,
+      "fit_external_process_wall_s": 6.348432904000219,
+      "fit_s": 4.828394833002676,
+      "historical_arabic_max_score_error": 5.2794814109802246e-05,
+      "historical_parent_official_test_s": 5.32422708300146,
+      "historical_parent_train_s": 15.426311622999492,
+      "method": "keep",
+      "primary_gate": false,
+      "scope_changed": [],
+      "seed": 211
+    },
+    {
+      "ar": {
+        "acc": 0.8186363636363636,
+        "brier": 0.8108541380349251,
+        "correct": 1801,
+        "delta_acc": 0.006818181818181818,
+        "forget_count": 50,
+        "gain_count": 65,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.004,
+        "theo": 0.008
+      },
+      "choice": "scale0.5",
+      "cold_eval_s": 22.079824967000604,
+      "cold_stages_s": 45.624167711001064,
+      "combined_cold_including_historical_parent_s": 66.37470641700202,
+      "delta_norm": 0.9388339395308642,
+      "eng": {
+        "acc": 0.2,
+        "brier": 0.8863719198190302,
+        "correct": 200,
+        "delta_acc": 0.006,
+        "forget_count": 23,
+        "gain_count": 29,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 23.343622236003284,
+      "fit_external_process_wall_s": 25.579811478997726,
+      "fit_s": 23.54434274400046,
+      "historical_parent_official_test_s": 5.32422708300146,
+      "historical_parent_train_s": 15.426311622999492,
+      "method": "direct",
+      "primary_gate": false,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 211
+    },
+    {
+      "ar": {
+        "acc": 0.8118181818181818,
+        "brier": 0.7859605248126083,
+        "correct": 1786,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.0,
+        "theo": 0.0
+      },
+      "choice": "keep",
+      "cold_eval_s": 23.755533285002457,
+      "cold_stages_s": 50.09558237400415,
+      "combined_cold_including_historical_parent_s": 70.8461210800051,
+      "delta_norm": 0.0,
+      "eng": {
+        "acc": 0.194,
+        "brier": 0.8843141791553351,
+        "correct": 194,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 24.351521454998874,
+      "fit_external_process_wall_s": 28.466433389003214,
+      "fit_s": 26.340049089001695,
+      "historical_parent_official_test_s": 5.32422708300146,
+      "historical_parent_train_s": 15.426311622999492,
+      "method": "wronglabel",
+      "primary_gate": false,
+      "scope_changed": [],
+      "seed": 211
+    },
+    {
+      "ar": {
+        "acc": 0.8172727272727273,
+        "brier": 0.7921187815431064,
+        "correct": 1798,
+        "delta_acc": 0.005454545454545455,
+        "forget_count": 6,
+        "gain_count": 18,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.004,
+        "theo": -0.006
+      },
+      "choice": "scale0.125",
+      "cold_eval_s": 21.199715926002682,
+      "cold_stages_s": 56.083330959001614,
+      "combined_cold_including_historical_parent_s": 76.83386966500257,
+      "delta_norm": 0.2379488842155493,
+      "eng": {
+        "acc": 0.193,
+        "brier": 0.885172162835502,
+        "correct": 193,
+        "delta_acc": -0.001,
+        "forget_count": 4,
+        "gain_count": 3,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 22.734152657001687,
+      "fit_external_process_wall_s": 37.03492591500253,
+      "fit_s": 34.88361503299893,
+      "historical_parent_official_test_s": 5.32422708300146,
+      "historical_parent_train_s": 15.426311622999492,
+      "method": "unconditional",
+      "primary_gate": false,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 211
+    },
+    {
+      "ar": {
+        "acc": 0.805,
+        "brier": 0.7913707953383681,
+        "correct": 1771,
+        "delta_acc": -0.006818181818181818,
+        "forget_count": 35,
+        "gain_count": 20,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.014,
+        "theo": 0.028
+      },
+      "choice": "lr0.002_steps12",
+      "cold_eval_s": 27.903285530002904,
+      "cold_stages_s": 125.31887904900213,
+      "combined_cold_including_historical_parent_s": 146.0694177550031,
+      "delta_norm": 0.18720006302801404,
+      "eng": {
+        "acc": 0.215,
+        "brier": 0.8840538884431202,
+        "correct": 215,
+        "delta_acc": 0.021,
+        "forget_count": 9,
+        "gain_count": 30,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 29.125414284000726,
+      "fit_external_process_wall_s": 98.9007892189984,
+      "fit_s": 97.41559351899923,
+      "historical_parent_official_test_s": 5.32422708300146,
+      "historical_parent_train_s": 15.426311622999492,
+      "method": "bp",
+      "primary_gate": true,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 211
+    },
+    {
+      "ar": {
+        "acc": 0.8486363636363636,
+        "brier": 0.7773617028320313,
+        "correct": 1867,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.0,
+        "theo": 0.0
+      },
+      "choice": "keep",
+      "cold_eval_s": 29.846813879001274,
+      "cold_stages_s": 40.45362412100076,
+      "combined_cold_including_historical_parent_s": 59.77186845300457,
+      "delta_norm": 0.0,
+      "eng": {
+        "acc": 0.156,
+        "brier": 0.887797180441414,
+        "correct": 156,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 30.438163030998112,
+      "fit_external_process_wall_s": 13.086540177999268,
+      "fit_s": 10.606810241999483,
+      "historical_arabic_max_score_error": 4.7184526920318604e-05,
+      "historical_parent_official_test_s": 5.250879931998497,
+      "historical_parent_train_s": 14.067364400005317,
+      "method": "keep",
+      "primary_gate": false,
+      "scope_changed": [],
+      "seed": 431
+    },
+    {
+      "ar": {
+        "acc": 0.8486363636363636,
+        "brier": 0.7773617028320313,
+        "correct": 1867,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.0,
+        "theo": 0.0
+      },
+      "choice": "keep",
+      "cold_eval_s": 29.862037672999577,
+      "cold_stages_s": 55.46383726299973,
+      "combined_cold_including_historical_parent_s": 74.78208159500355,
+      "delta_norm": 0.0,
+      "eng": {
+        "acc": 0.156,
+        "brier": 0.887797180441414,
+        "correct": 156,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 30.98805584299771,
+      "fit_external_process_wall_s": 27.08260355799939,
+      "fit_s": 25.601799590000155,
+      "historical_parent_official_test_s": 5.250879931998497,
+      "historical_parent_train_s": 14.067364400005317,
+      "method": "direct",
+      "primary_gate": false,
+      "scope_changed": [],
+      "seed": 431
+    },
+    {
+      "ar": {
+        "acc": 0.8418181818181818,
+        "brier": 0.7953348430027217,
+        "correct": 1852,
+        "delta_acc": -0.006818181818181818,
+        "forget_count": 40,
+        "gain_count": 25,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.002,
+        "theo": -0.004
+      },
+      "choice": "scale0.25",
+      "cold_eval_s": 27.265574475000903,
+      "cold_stages_s": 52.99433390299964,
+      "combined_cold_including_historical_parent_s": 72.31257823500346,
+      "delta_norm": 0.4775022976827957,
+      "eng": {
+        "acc": 0.155,
+        "brier": 0.8895815988973708,
+        "correct": 155,
+        "delta_acc": -0.001,
+        "forget_count": 11,
+        "gain_count": 10,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 27.726391837000847,
+      "fit_external_process_wall_s": 26.85716221199982,
+      "fit_s": 25.72875942799874,
+      "historical_parent_official_test_s": 5.250879931998497,
+      "historical_parent_train_s": 14.067364400005317,
+      "method": "wronglabel",
+      "primary_gate": false,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 431
+    },
+    {
+      "ar": {
+        "acc": 0.8486363636363636,
+        "brier": 0.7773617028320313,
+        "correct": 1867,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.0,
+        "theo": 0.0
+      },
+      "choice": "keep",
+      "cold_eval_s": 13.664354197000648,
+      "cold_stages_s": 34.8192693609999,
+      "combined_cold_including_historical_parent_s": 54.13751369300371,
+      "delta_norm": 0.0,
+      "eng": {
+        "acc": 0.156,
+        "brier": 0.887797180441414,
+        "correct": 156,
+        "delta_acc": 0.0,
+        "forget_count": 0,
+        "gain_count": 0,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 14.28622299700146,
+      "fit_external_process_wall_s": 22.395489456001087,
+      "fit_s": 21.15491516399925,
+      "historical_parent_official_test_s": 5.250879931998497,
+      "historical_parent_train_s": 14.067364400005317,
+      "method": "unconditional",
+      "primary_gate": false,
+      "scope_changed": [],
+      "seed": 431
+    },
+    {
+      "ar": {
+        "acc": 0.8463636363636363,
+        "brier": 0.7952919614315941,
+        "correct": 1862,
+        "delta_acc": -0.0022727272727272726,
+        "forget_count": 61,
+        "gain_count": 56,
+        "n": 2200
+      },
+      "by_speaker": {
+        "nicolas": 0.044,
+        "theo": 0.076
+      },
+      "choice": "lr0.002_steps48",
+      "cold_eval_s": 18.836378096999397,
+      "cold_stages_s": 119.43981385100051,
+      "combined_cold_including_historical_parent_s": 138.75805818300432,
+      "delta_norm": 0.559227476606041,
+      "eng": {
+        "acc": 0.216,
+        "brier": 0.8824220212325001,
+        "correct": 216,
+        "delta_acc": 0.06,
+        "forget_count": 12,
+        "gain_count": 72,
+        "n": 1000
+      },
+      "evaluate_external_process_wall_s": 19.289787320998585,
+      "fit_external_process_wall_s": 101.7398757339979,
+      "fit_s": 100.60343575400111,
+      "historical_parent_official_test_s": 5.250879931998497,
+      "historical_parent_train_s": 14.067364400005317,
+      "method": "bp",
+      "primary_gate": true,
+      "scope_changed": [
+        "input_drive.weight",
+        "input_drive.bias"
+      ],
+      "seed": 431
+    }
+  ],
+  "strict_preservation_site_only": true
+}

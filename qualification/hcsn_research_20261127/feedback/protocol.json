@@ -1,0 +1,20 @@
+{
+  "id": "HCSN-centered-boundary-dual-feedback-20261127-v1",
+  "upstream": "8b538954e3db0763b9eb24b6159d17b80f286f26",
+  "tasks": ["office", "beijing"],
+  "arms": ["zero","restore","risk","dual","plain","gru","lif","attention"],
+  "seeds": [7717, 17717, 27717],
+  "width": 8,
+  "baseline_width": 8,
+  "updates": 128,
+  "batch": 12,
+  "pairing": "New paired RNG seeds, same objective, data, 128 gradient steps and dev checkpoint opportunities. Physical network parameters and initial states are identical across the four gains.",
+  "checkpoints": [0, 32, 64, 96, 128],
+  "optimizer": "Adam lr .003, global grad norm clip 2; minimize classification cross entropy. First lowest development Brier chooses checkpoint.",
+  "physics": "Exact frozen #7149 generator, QVI boundary, uniformization, first-hit risk, mark transport, moving-boundary remap, and receiver readout. Four gain pairs (restore,risk)=(0,0),(.6,0),(0,.6),(.6,.6). Only previous raw boundary minus fixed nominal is delivered at lag one, unsigned and signed flow masked. Existing accumulated slow-control frame, old-law active-distribution reversion and previous first-hit risk. Gains affect next drift only. Look at mass and explicit force diagnostics.",
+  "ordinary": "plain centered delayed tanh population preserving sender/receiver separation and same slow control. Published GRU/LIF/causal attention accept matched six-feature inputs, equal count width, same objective. Parameters and total process time measured; conventional baselines have distinct topology/capacity.",
+  "office": "Exact UCI original source #7149 load_data, same future test days already public; a paired mechanism replication, not a new building.",
+  "beijing": "UCI 501 official source. Train 6 stations 2013-03-01 to 2015-03-01 exclusive; validation 2 disjoint stations in following year; confirmation 4 disjoint stations the final year. See datasets.py. Day at midnight, eight complete hourly frames, future label PM2.5 at hour 13 >75, six deterministic valid days per month/site, features fixed before fitting. No test station or test year contributes to normalization or checkpoint selection.",
+  "replay": "Seal every selected model and fit log together before first test call. Compute original and boundary-silenced outputs and save every id, group, label and probability. New Beijing official test is opened once for the full frozen roster. Failed slots kept. Do not tune at test.",
+  "threshold": "Positive externally useful dual advantage requires on each task mean dual minus each of zero, restore, risk, plain, GRU, LIF and attention >= .02 balanced accuracy and Brier <= comparator, with nonnegative mean by held-out observed source accuracy against zero. Report numbers and counts even when threshold fails. Four physical arms' interaction contrast dual-restore-risk+zero is descriptive. Fixed time superior claims require additional matched-wall study. Sites/dates are independent units for descriptive paired resampling; seeds are not additional sources."
+}

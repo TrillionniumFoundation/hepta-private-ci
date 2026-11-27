@@ -1,0 +1,211 @@
+{
+  "stage": "first",
+  "archive_number": 10,
+  "archives": [
+    {
+      "file": "bundle-000.zip",
+      "sha256": "0e06b992cd63afa7391884759216bcf66e068e0aab527ed50cf4f86c27fbf8e8",
+      "size": 314369,
+      "members": [
+        "107/bp/fit.json",
+        "107/bp/predictions.npz",
+        "107/bp/selected.pt",
+        "107/bp/test.json",
+        "107/bp/weights.npz",
+        "107/direct/fit.json",
+        "107/direct/predictions.npz"
+      ]
+    },
+    {
+      "file": "bundle-001.zip",
+      "sha256": "faa3c6ee60ff2bbc4dc28544120ef39148603902ea3db19f9671920f17a42f0c",
+      "size": 239731,
+      "members": [
+        "107/direct/selected.pt",
+        "107/direct/test.json",
+        "107/direct/weights.npz",
+        "107/keep/fit.json",
+        "107/keep/predictions.npz",
+        "107/keep/selected.pt",
+        "107/keep/test.json",
+        "107/keep/weights.npz",
+        "107/unconditional/fit.json"
+      ]
+    },
+    {
+      "file": "bundle-002.zip",
+      "sha256": "2219830a2ea5b334275cb616cf8336a29ac1bbfabdd2a804819b003489f652e7",
+      "size": 315957,
+      "members": [
+        "107/unconditional/predictions.npz",
+        "107/unconditional/selected.pt",
+        "107/unconditional/test.json",
+        "107/unconditional/weights.npz",
+        "107/wronglabel/fit.json",
+        "107/wronglabel/predictions.npz"
+      ]
+    },
+    {
+      "file": "bundle-003.zip",
+      "sha256": "4e5e29349f78db37bcdcc308cb6cb69d555774bde9aafca1f71c9680e6a7e040",
+      "size": 244650,
+      "members": [
+        "107/wronglabel/selected.pt",
+        "107/wronglabel/test.json",
+        "107/wronglabel/weights.npz",
+        "211/bp/fit.json",
+        "211/bp/predictions.npz",
+        "211/bp/selected.pt",
+        "211/bp/test.json",
+        "211/bp/weights.npz",
+        "211/direct/fit.json"
+      ]
+    },
+    {
+      "file": "bundle-004.zip",
+      "sha256": "425809f7a2511d6b10d41398c3a129183ab37ef07f9ef05c379558ad4b6ecd49",
+      "size": 315393,
+      "members": [
+        "211/direct/predictions.npz",
+        "211/direct/selected.pt",
+        "211/direct/test.json",
+        "211/direct/weights.npz",
+        "211/keep/fit.json",
+        "211/keep/predictions.npz"
+      ]
+    },
+    {
+      "file": "bundle-005.zip",
+      "sha256": "0342ae03b9dbb613da61a93f6e693ad4954074f9d956427da60c0cbe9217028b",
+      "size": 239769,
+      "members": [
+        "211/keep/selected.pt",
+        "211/keep/test.json",
+        "211/keep/weights.npz",
+        "211/unconditional/fit.json",
+        "211/unconditional/predictions.npz",
+        "211/unconditional/selected.pt",
+        "211/unconditional/test.json",
+        "211/unconditional/weights.npz",
+        "211/wronglabel/fit.json"
+      ]
+    },
+    {
+      "file": "bundle-006.zip",
+      "sha256": "7693c30c948d121bc9a7064cfeb1665f2f40aec02f51869030e75cad57e8d49e",
+      "size": 315941,
+      "members": [
+        "211/wronglabel/predictions.npz",
+        "211/wronglabel/selected.pt",
+        "211/wronglabel/test.json",
+        "211/wronglabel/weights.npz",
+        "431/bp/fit.json",
+        "431/bp/predictions.npz"
+      ]
+    },
+    {
+      "file": "bundle-007.zip",
+      "sha256": "6242c22f582ac83685bb530e2fa108f243ec0be90bcdf7fd434af14780e87ec4",
+      "size": 244483,
+      "members": [
+        "431/bp/selected.pt",
+        "431/bp/test.json",
+        "431/bp/weights.npz",
+        "431/direct/fit.json",
+        "431/direct/predictions.npz",
+        "431/direct/selected.pt",
+        "431/direct/test.json",
+        "431/direct/weights.npz",
+        "431/keep/fit.json"
+      ]
+    },
+    {
+      "file": "bundle-008.zip",
+      "sha256": "e5c3632b985ccc28310453c99eb118b2e587c133f7ef72a7637a9e37091c1cdd",
+      "size": 358391,
+      "members": [
+        "431/keep/predictions.npz",
+        "431/keep/selected.pt",
+        "431/keep/test.json",
+        "431/keep/weights.npz",
+        "431/unconditional/fit.json",
+        "431/unconditional/predictions.npz",
+        "431/unconditional/selected.pt",
+        "431/unconditional/test.json"
+      ]
+    },
+    {
+      "file": "bundle-009.zip",
+      "sha256": "f51c551895bf286da691c11603815f00fbc4833469d43027be29994867e4f0d3",
+      "size": 213380,
+      "members": [
+        "431/unconditional/weights.npz",
+        "431/wronglabel/fit.json",
+        "431/wronglabel/predictions.npz",
+        "431/wronglabel/selected.pt",
+        "431/wronglabel/test.json",
+        "431/wronglabel/weights.npz",
+        "logs/eval-107-bp.json",
+        "logs/eval-107-bp.txt",
+        "logs/eval-107-direct.json",
+        "logs/eval-107-direct.txt",
+        "logs/eval-107-keep.json",
+        "logs/eval-107-keep.txt",
+        "logs/eval-107-unconditional.json",
+        "logs/eval-107-unconditional.txt",
+        "logs/eval-107-wronglabel.json",
+        "logs/eval-107-wronglabel.txt",
+        "logs/eval-211-bp.json",
+        "logs/eval-211-bp.txt",
+        "logs/eval-211-direct.json",
+        "logs/eval-211-direct.txt",
+        "logs/eval-211-keep.json",
+        "logs/eval-211-keep.txt",
+        "logs/eval-211-unconditional.json",
+        "logs/eval-211-unconditional.txt",
+        "logs/eval-211-wronglabel.json",
+        "logs/eval-211-wronglabel.txt",
+        "logs/eval-431-bp.json",
+        "logs/eval-431-bp.txt",
+        "logs/eval-431-direct.json",
+        "logs/eval-431-direct.txt",
+        "logs/eval-431-keep.json",
+        "logs/eval-431-keep.txt",
+        "logs/eval-431-unconditional.json",
+        "logs/eval-431-unconditional.txt",
+        "logs/eval-431-wronglabel.json",
+        "logs/eval-431-wronglabel.txt",
+        "logs/fit-107-bp.json",
+        "logs/fit-107-bp.txt",
+        "logs/fit-107-keep.json",
+        "logs/fit-107-keep.txt",
+        "logs/fit-107-unconditional.json",
+        "logs/fit-107-unconditional.txt",
+        "logs/fit-107-wronglabel.json",
+        "logs/fit-107-wronglabel.txt",
+        "logs/fit-211-bp.json",
+        "logs/fit-211-bp.txt",
+        "logs/fit-211-direct.json",
+        "logs/fit-211-direct.txt",
+        "logs/fit-211-keep.json",
+        "logs/fit-211-keep.txt",
+        "logs/fit-211-unconditional.json",
+        "logs/fit-211-unconditional.txt",
+        "logs/fit-211-wronglabel.json",
+        "logs/fit-211-wronglabel.txt",
+        "logs/fit-431-bp.json",
+        "logs/fit-431-bp.txt",
+        "logs/fit-431-direct.json",
+        "logs/fit-431-direct.txt",
+        "logs/fit-431-keep.json",
+        "logs/fit-431-keep.txt",
+        "logs/fit-431-unconditional.json",
+        "logs/fit-431-unconditional.txt",
+        "logs/fit-431-wronglabel.json",
+        "logs/fit-431-wronglabel.txt"
+      ]
+    }
+  ],
+  "result_sha256": "bf53db9cefe9ddd2be9de343df9b109847d59b2bd6b025b38ed5c4ad4adc38b3",
+  "sealed_models": 15
+}

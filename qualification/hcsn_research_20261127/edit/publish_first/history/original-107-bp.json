@@ -1,0 +1,103 @@
+{
+  "candidate_weights_sha256": "634a7678892f6de8fcabb2800ca3c49ac2b95efbd96fcb702bda4abb130f004b",
+  "candidates": {
+    "keep": {
+      "dev": {
+        "ar": {
+          "acc": 0.8681818181818182,
+          "brier": 0.7722242618964821,
+          "n": 220
+        },
+        "eng": {
+          "acc": 0.12,
+          "brier": 0.8993761712506945,
+          "n": 100
+        }
+      },
+      "dw": 0.0
+    },
+    "lr0.002_steps12": {
+      "dev": {
+        "ar": {
+          "acc": 0.8772727272727273,
+          "brier": 0.7796244797393197,
+          "n": 220
+        },
+        "eng": {
+          "acc": 0.12,
+          "brier": 0.897690256859259,
+          "n": 100
+        }
+      },
+      "dw": 0.18727331612466264
+    },
+    "lr0.002_steps48": {
+      "dev": {
+        "ar": {
+          "acc": 0.8227272727272728,
+          "brier": 0.7989804840134995,
+          "n": 220
+        },
+        "eng": {
+          "acc": 0.2,
+          "brier": 0.8911534503157702,
+          "n": 100
+        }
+      },
+      "dw": 0.5450809343313872
+    },
+    "lr0.01_steps12": {
+      "dev": {
+        "ar": {
+          "acc": 0.7863636363636364,
+          "brier": 0.8062561423141725,
+          "n": 220
+        },
+        "eng": {
+          "acc": 0.24,
+          "brier": 0.8903899021221829,
+          "n": 100
+        }
+      },
+      "dw": 0.8048131346445355
+    },
+    "lr0.01_steps48": {
+      "dev": {
+        "ar": {
+          "acc": 0.6409090909090909,
+          "brier": 0.8328857433275563,
+          "n": 220
+        },
+        "eng": {
+          "acc": 0.39,
+          "brier": 0.8722956853253973,
+          "n": 100
+        }
+      },
+      "dw": 1.51831406296297
+    }
+  },
+  "changed_other_tensors": [],
+  "code": "d6b1014a218f72fd561819899c0607ef5b107cca26befd5268e29f7e3dad606d",
+  "details": {},
+  "method": "bp",
+  "old_constraints_pass": [
+    "keep",
+    "lr0.002_steps12"
+  ],
+  "physical_map_delta_norm": 0.18727331612466264,
+  "protocol": "346108ef737ac71b9ad2ce38f990481246f6bd2ccd055fea0f21f9269006ceff",
+  "root": "8b538954e3db0763b9eb24b6159d17b80f286f26",
+  "runtime": "2.15.0+cpu",
+  "seed": 107,
+  "selected": "lr0.002_steps12",
+  "selected_sha256": "4e5deb0948823b7f82e7dc5fd6a85acbb2052e20459ce2553f2eaabde4e09c19",
+  "source_parent_sha256": "105c1ff4336564e40c234db8a97861e725c60aaf8f6dab6ea90a2b4d5d119e87",
+  "time_s": {
+    "cold_total_to_save": 49.80559330300093,
+    "dev_and_serialize": 6.5001139380001405,
+    "fit_search": 41.33468848899793
+  },
+  "upstream_zip_sha256": "6e28f1b516ba5cb302d0c889d30d682ae7eae4d5aa310b22f82d1b76e0e3a8ea",
+  "writable_parameters": 224
+}
