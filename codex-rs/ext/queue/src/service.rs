@@ -1,3 +1,6 @@
+#[path = "idle_dispatch.rs"]
+mod idle_dispatch;
+
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::path::Path;
@@ -10,17 +13,12 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_core::CodexThread;
-use codex_core::IdleWorkPriority;
 use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
 use codex_core::TurnInputRequest;
 use codex_extension_api::ExtensionEventSink;
-use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ThreadIdleCause;
-use codex_extension_api::ThreadIdleInput;
-use codex_extension_api::ThreadLifecycleContributor;
-use codex_extension_api::ThreadResumeInput;
 use codex_history::RolloutItem;
 use codex_history::RolloutLine;
 use codex_protocol::ThreadId;
@@ -132,6 +130,7 @@ pub struct QueuedItemService {
     dispatch_locks: Arc<StdMutex<HashMap<ThreadId, Weak<Mutex<()>>>>>,
     resumed_threads: Arc<StdMutex<HashSet<ThreadId>>>,
     dispatch_owner_id: String,
+    idle_dispatches: Arc<idle_dispatch::IdleDispatchRegistry>,
 }
 
 struct OwnedDispatchRequest {
@@ -163,6 +162,7 @@ impl QueuedItemService {
             dispatch_locks: Arc::new(StdMutex::new(HashMap::new())),
             resumed_threads: Arc::new(StdMutex::new(HashSet::new())),
             dispatch_owner_id: Uuid::now_v7().to_string(),
+            idle_dispatches: Arc::default(),
         }
     }
 
@@ -1080,8 +1080,17 @@ impl QueuedItemService {
         Ok(())
     }
 
-    async fn dispatch_idle_notification(&self, thread_id: ThreadId, thread: &CodexThread) {
+    async fn dispatch_idle_notification(&self, thread_id: ThreadId, thread: Arc<CodexThread>) {
         let _guard = self.dispatch_guard(thread_id).await;
+        let Some(manager) = self.thread_manager.upgrade() else {
+            return;
+        };
+        let Ok(loaded_thread) = manager.get_thread(thread_id).await else {
+            return;
+        };
+        if !Arc::ptr_eq(&thread, &loaded_thread) {
+            return;
+        }
         // A deferred wake may outlive the status that caused its callback.
         // In particular, it must not resume a subsequently interrupted thread.
         if matches!(
@@ -1093,19 +1102,16 @@ impl QueuedItemService {
         ) {
             return;
         }
-        if let Err(error) = self.dispatch_if_idle(thread_id).await {
+        if let Err(error) = self.dispatch_if_idle(thread_id, thread).await {
             tracing::warn!(%thread_id, %error, "failed to dispatch queued user input");
         }
     }
 
-    async fn dispatch_if_idle(&self, thread_id: ThreadId) -> Result<(), QueueServiceError> {
-        let Some(manager) = self.thread_manager.upgrade() else {
-            return Ok(());
-        };
-        let Ok(thread) = manager.get_thread(thread_id).await else {
-            return Ok(());
-        };
-
+    async fn dispatch_if_idle(
+        &self,
+        thread_id: ThreadId,
+        thread: Arc<CodexThread>,
+    ) -> Result<(), QueueServiceError> {
         loop {
             let Some(record) = self
                 .queue
@@ -1337,62 +1343,6 @@ async fn prepare_queued_user_input(mut input: TurnInput) -> Result<TurnInput, Qu
     .await
     .map_err(|error| QueueServiceError::InvalidAttachment(std::io::Error::other(error)))?
     .map_err(QueueServiceError::InvalidAttachment)
-}
-
-impl<C> ThreadLifecycleContributor<C> for QueuedItemService
-where
-    C: Send + Sync + 'static,
-{
-    fn on_thread_resume<'a>(&'a self, input: ThreadResumeInput<'a>) -> ExtensionFuture<'a, ()> {
-        Box::pin(async move {
-            if let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) {
-                self.resumed_threads
-                    .lock()
-                    .unwrap_or_else(std::sync::PoisonError::into_inner)
-                    .insert(thread_id);
-            }
-        })
-    }
-
-    fn on_thread_idle<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
-        Box::pin(async move {
-            if input.cause == ThreadIdleCause::Interrupted {
-                return;
-            }
-            let Ok(thread_id) = ThreadId::from_string(input.thread_store.level_id()) else {
-                tracing::warn!(
-                    level_id = input.thread_store.level_id(),
-                    "queue extension received an invalid thread id"
-                );
-                return;
-            };
-            let Some(manager) = self.thread_manager.upgrade() else {
-                return;
-            };
-            let Ok(thread) = manager.get_thread(thread_id).await else {
-                return;
-            };
-            if let Some(completion) = thread.pending_admission_fence_completion() {
-                // The callback's terminalizer cannot retire its fence until
-                // this callback returns. Keep the wake alive independently,
-                // then use ordinary admission after that exact cleanup ends.
-                let service = self.clone();
-                let dispatch_thread = Arc::clone(&thread);
-                if let Err(error) =
-                    thread.defer_idle_work(IdleWorkPriority::QueuedInput, completion, async move {
-                        service
-                            .dispatch_idle_notification(thread_id, dispatch_thread.as_ref())
-                            .await;
-                    })
-                {
-                    tracing::warn!(%thread_id, %error, "could not defer queued idle work");
-                }
-                return;
-            }
-            self.dispatch_idle_notification(thread_id, thread.as_ref())
-                .await;
-        })
-    }
 }
 
 fn queued_item_from_record(

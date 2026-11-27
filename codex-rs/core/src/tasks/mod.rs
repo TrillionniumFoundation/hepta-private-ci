@@ -1,3 +1,4 @@
+mod cleanup;
 mod compact;
 mod idle_work;
 mod lifecycle;
