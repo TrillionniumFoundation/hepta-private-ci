@@ -1,0 +1,244 @@
+{
+  "schema": "hcsn-integrated-blocker-readback-v1",
+  "source": "5bfecec9351bd68e41b4d1096ec6fd3177b856dc",
+  "prospective_merge": "c6b7d7731fced95af19e093c7630a7f6df747173",
+  "repair": "67fd5a87a268c14f31584e3712c2001bd17a7fd3",
+  "repair_branch": "repair/hcsn-n256-provider-frozen-lf-20261127",
+  "repair_scope": "exactly one trailing LF on each of README.md, __init__.py, test_provider.py; unchanged original verifier and 13 other frozen objects; independent branch only",
+  "native_status": {
+    "at_unix_ms": 1795743206344,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a21aa2c65d-ffbe-4d7a",
+    "launch_nonce": "5088cf7ced1c931abd749d9dc6b188ca",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 6190,
+        "stored": 6190
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native": {
+    "root": "/home/qian-qi/.cache/hcsn-provider-67fd5a87-4pyconkv",
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "files": [
+      {
+        "path": ".github/workflows/hcsn-currentstate-n256-uniformization-provider-intent.yml",
+        "bytes": 1100,
+        "git_blob": "c578ee045a0d7ed8cb8f5d46ba641b28a7d9f053",
+        "sha256": "1bf43f8008458f3e3a589202ea140d6361ea5f52fc1ea72b23235eaf06c57b13",
+        "expected": "1bf43f8008458f3e3a589202ea140d6361ea5f52fc1ea72b23235eaf06c57b13"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_provider_intent/README.md",
+        "bytes": 2729,
+        "git_blob": "b1089779313b850f2e993b847bdc3de5095b8f61",
+        "sha256": "f6b8b0ee37bd596cd1bcda12ff89fc12940280b24eef284664dbd642d922e573",
+        "expected": "f6b8b0ee37bd596cd1bcda12ff89fc12940280b24eef284664dbd642d922e573"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_provider_intent/REQUEST.json",
+        "bytes": 1525,
+        "git_blob": "23638b82b4415d716667ceee91435cf1a8738583",
+        "sha256": "72cf751d50a43311cc5079e8fe35a5137eafa0f7fed6a0b1a0fcafec40a8b275",
+        "expected": "72cf751d50a43311cc5079e8fe35a5137eafa0f7fed6a0b1a0fcafec40a8b275"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_provider_intent/__init__.py",
+        "bytes": 87,
+        "git_blob": "29137f85e3355dc3ea3db0120e05bd9fbb714871",
+        "sha256": "df5a8bc65a23df18c9f30f1778ed6539de2f43567997472213560036a65c061b",
+        "expected": "df5a8bc65a23df18c9f30f1778ed6539de2f43567997472213560036a65c061b"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_provider_intent/provider.py",
+        "bytes": 13409,
+        "git_blob": "3bb97dfa90c2a9886c75e9e29e95f0a544325fdc",
+        "sha256": "602dcedd5827a35fbee81b51687a8e8bc3f4038f519a308eef3e884d088e2be2",
+        "expected": "602dcedd5827a35fbee81b51687a8e8bc3f4038f519a308eef3e884d088e2be2"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_provider_intent/test_provider.py",
+        "bytes": 4723,
+        "git_blob": "96f99dcc70046621423fc0eb068bf0ba1a5d4658",
+        "sha256": "299d7ec6b3a730b276fde18f9b56d8a4e3ba9f16bc18975331e75283529dc307",
+        "expected": "299d7ec6b3a730b276fde18f9b56d8a4e3ba9f16bc18975331e75283529dc307"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_contract/REQUEST.json",
+        "bytes": 1062,
+        "git_blob": "171db1c7bdfed02ae63b4a207712bdf628a1d75b",
+        "sha256": "f17c8e718686ce34cb984457facf3eae3b921824ec17bdfec3f39313d2314a90",
+        "expected": "f17c8e718686ce34cb984457facf3eae3b921824ec17bdfec3f39313d2314a90"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_contract/SOURCE_FREEZE.json",
+        "bytes": 1654,
+        "git_blob": "5e41acf64e617bfcbe110bac077ae8a35796b28f",
+        "sha256": "988bac11a1806fc797eb5b562c1b4b3ad63dd9a9861628ac29fefc1e4e31768f",
+        "expected": "988bac11a1806fc797eb5b562c1b4b3ad63dd9a9861628ac29fefc1e4e31768f"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_contract/stiffness_review.py",
+        "bytes": 10108,
+        "git_blob": "56052c389748fa6e3c4c0fda8d7711ecc543f34d",
+        "sha256": "4ead22435bc776a2266d0d051281b4a6960c5714888d930a64ca63e721ae8041",
+        "expected": "4ead22435bc776a2266d0d051281b4a6960c5714888d930a64ca63e721ae8041"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_exact_generator_review/generator_review.py",
+        "bytes": 6716,
+        "git_blob": "535a674f31c89c44c749570719e3df9e040719ef",
+        "sha256": "0beb616f348826e26591e60a4029b37b34091e257fbc5dd4c002409657c0e266",
+        "expected": "0beb616f348826e26591e60a4029b37b34091e257fbc5dd4c002409657c0e266"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_exact_generator_review/REQUEST.json",
+        "bytes": 1094,
+        "git_blob": "0d80089c126aec8b86146801a7a9af60a8a6a1e4",
+        "sha256": "e6af46b63a700a794997e7a620bb972bb2accd5ea032ffd8ba6c4c74ffb41908",
+        "expected": "e6af46b63a700a794997e7a620bb972bb2accd5ea032ffd8ba6c4c74ffb41908"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/EVENTS.jsonl",
+        "bytes": 8343,
+        "git_blob": "42b011732613db78fa1c9196729695a58b8abe86",
+        "sha256": "e84d6ca273236341f6bd138bff9c199758fb8cf4ed43a0550ca3e77ff8076d0a",
+        "expected": "e84d6ca273236341f6bd138bff9c199758fb8cf4ed43a0550ca3e77ff8076d0a"
+      },
+      {
+        "path": "qualification/hcsn_n256_new_export/evidence/attempt001/METADATA.json",
+        "bytes": 20804,
+        "git_blob": "d1c077014c0d4320c98801400c4a1e62935872a4",
+        "sha256": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6",
+        "expected": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6"
+      },
+      {
+        "path": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json",
+        "bytes": 185773,
+        "git_blob": "82270ebf05220287aa44a1b84dc2509b56a4f42d",
+        "sha256": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c",
+        "expected": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c"
+      },
+      {
+        "path": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json",
+        "bytes": 3459,
+        "git_blob": "a01cbf1dda163e5e79654fd12ac98b223244f274",
+        "sha256": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548",
+        "expected": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548"
+      },
+      {
+        "path": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64",
+        "bytes": 16897,
+        "git_blob": "b2b426223f216fea1dd06f63c3db397e43d3c332",
+        "sha256": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb",
+        "expected": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb"
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_provider_intent/verify_source.py",
+        "bytes": 5687,
+        "git_blob": "b9a43aead2c53dc86df30ade027a547b8b322048",
+        "sha256": "af4fb0a283c446e19e940d71c038e55e92c73f60465c07cb98f14ff1c5dc2554",
+        "expected": null
+      },
+      {
+        "path": "qualification/hcsn_currentstate_n256_uniformization_provider_intent/SOURCE_FREEZE.json",
+        "bytes": 1779,
+        "git_blob": "aebf740a84a94abb8a2d7eea137afda321640f68",
+        "sha256": "27ad5b29b87c9bfae91b812b23e4b9fe191ae4f649c96fed43fe5f24ba1543e3",
+        "expected": null
+      }
+    ],
+    "original": {
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "exact source/input mismatch: qualification/hcsn_currentstate_n256_uniformization_provider_intent/README.md\n"
+    },
+    "repaired": {
+      "returncode": 0,
+      "stdout": "PASS_CURRENTSTATE_N256_UNIFORMIZATION_PROVIDER_SOURCE\n",
+      "stderr": ""
+    },
+    "frozen_matches": 16,
+    "git_blobs": 18,
+    "new_model_calls": 0,
+    "new_n256_provider_calls": 0,
+    "new_optimizer_calls": 0
+  },
+  "prior_probe": {
+    "id": "1a21aa14f5c-ffbe-4d71",
+    "exit": 124,
+    "stdout": "python Python 3.14.4\n",
+    "no_model_calls": true
+  },
+  "transfer": {
+    "bytes": 386582,
+    "sha256": "a9565a3159cbeacd2d86c53ffab87b5b95c09c5df0739762bd2c2f2027cf3322"
+  },
+  "hosted_job_log_excerpts": {
+    "140243103481": {
+      "characters": 24677,
+      "lines": [
+        "2026-11-27T01:10:42.1880096Z HEAD is now at c6b7d773 Merge 5bfecec9351bd68e41b4d1096ec6fd3177b856dc into 732e934ba496d90fbe042b8d41d479ef901643e5",
+        "2026-11-27T01:10:42.8137902Z Ran 5 tests in 0.005s",
+        "2026-11-27T01:10:43.6926663Z Ran 5 tests in 0.004s",
+        "2026-11-27T01:10:43.8312854Z exact source/input mismatch: qualification/hcsn_currentstate_n256_uniformization_provider_intent/README.md"
+      ]
+    },
+    "140243108626": {
+      "characters": 79224,
+      "lines": [
+        "2026-11-27T01:09:34.9402348Z Ran 40 tests in 0.980s",
+        "2026-11-27T01:13:02.8116056Z error: 'rustfmt' is not installed for the toolchain '1.95.0-x86_64-unknown-linux-gnu'.",
+        "2026-11-27T01:13:02.8313881Z error: recipe `fmt` failed on line 51 with exit code 1"
+      ]
+    },
+    "140243099419": {
+      "characters": 41185,
+      "lines": [
+        "2026-11-27T01:06:07.3850743Z {\"actors\": 8, \"actual_calls\": {\"adam_updates\": 9, \"adjoints\": 13, \"forwards\": 13}, \"calls_status\": \"EXACT_FOR_ALL_STARTED_ACTORS\", \"checks\": 46, \"error\": null, \"observed_calls_only\": {\"adam_updates\": 9, \"adjoints\": 13, \"forwards\": 13}, \"status\": \"PASS\", \"unknown_actor_costs\": []}"
+      ]
+    },
+    "140243108467": {
+      "characters": 26915,
+      "lines": [
+        "2026-11-27T01:09:15.0818467Z {\"all_closed\": false, \"model_executions\": 0, \"panels\": [{\"failures\": 0, \"intervals\": 256, \"max_non_cancelling_error\": 1.5874908044083096e-05, \"positions\": 14336}, {\"failures\": 0, \"intervals\": 512, \"max_non_cancelling_error\": 4.009592859123869e-06, \"positions\": 14336}], \"status\": \"passed_retained_arithmetic\"}"
+      ]
+    }
+  },
+  "workflow_first_page": {
+    "n": 100,
+    "counts": {
+      "in_progress": 5,
+      "skipped": 16,
+      "success": 58,
+      "failure": 21
+    }
+  },
+  "main_integration": "HOLD",
+  "all_closed": false
+}
