@@ -466,14 +466,23 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     // This is a physical Agentd/App Server integration test: a real
     // source-built Codex CLI is required for hidden exec-server helpers.
     // Never substitute the Rust test harness for the Codex executable.
-    let codex_executable = std::env::var_os("HEPTA_COGNITIVE_TEST_CODEX_EXE")
-        .ok_or("real source-built Codex executable path is not configured")?;
+    let codex_executable = if let Some(path) = std::env::var_os("HEPTA_COGNITIVE_TEST_CODEX_EXE") {
+        std::path::PathBuf::from(path)
+    } else if codex_utils_cargo_bin::runfiles_available() {
+        let binary_name = format!("codex{}", std::env::consts::EXE_SUFFIX);
+        codex_utils_cargo_bin::resolve_bazel_runfile(
+            Some("codex-rs/cli"),
+            std::path::Path::new(&binary_name),
+        )?
+    } else {
+        return Err("real source-built Codex executable path is not configured".into());
+    };
     let host = CognitiveTestHost::start(
         root,
         agent_id,
         MODEL,
         &format!("{}/v1", server.uri()),
-        std::path::Path::new(&codex_executable),
+        &codex_executable,
     )
     .await?;
     let _accepted_memory = host
