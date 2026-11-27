@@ -213,12 +213,14 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
     drop(old);
     trace_pair_stage(b"paired-stage five_pairs supervisor_drop_complete\n");
     trace_pair_stage(b"paired-stage five_pairs recover_begin\n");
-    let (recovered, report) = Supervisor::recover(
+    let recovery_result = Supervisor::recover(
         fixture.registry.clone(),
         UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
         test_config(),
         Instant::now(),
-    )?;
+    );
+    trace_pair_stage(b"paired-stage five_pairs recover_returned\n");
+    let (recovered, report) = recovery_result?;
     assert!(report.faults.is_empty(), "recovery faults: {report:?}");
     trace_pair_stage(b"paired-stage five_pairs recover_complete\n");
     fixture.supervisor = Some(recovered);
@@ -271,17 +273,21 @@ impl PairFleet {
             .prefix("hsup-pairs-")
             .tempdir_in("/tmp")?;
         let root = HeptaFleetRoot::parse(temp.path().join("fleet"))?;
+        trace_pair_stage(b"paired-stage fixture registry_init_begin\n");
         let registry = FleetRegistry::initialize(root.clone())?;
+        trace_pair_stage(b"paired-stage fixture registry_init_complete\n");
         let mut agents = Vec::new();
         for (index, value) in IDS.iter().take(count).enumerate() {
             let workspace = temp.path().join(format!("workspace-{index}"));
             std::fs::create_dir(&workspace)?;
             let agent_id = AgentId::parse(*value)?;
+            trace_pair_stage(b"paired-stage fixture register_begin\n");
             registry.register(AgentManifest::new(
                 agent_id.clone(),
                 WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
                 ResourceBudget::local_default(),
             )?)?;
+            trace_pair_stage(b"paired-stage fixture register_complete\n");
             agents.push(agent_id);
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
@@ -294,6 +300,7 @@ impl PairFleet {
             "--ignored".to_string(),
             "--nocapture".to_string(),
         ];
+        trace_pair_stage(b"paired-stage fixture install_release_begin\n");
         registry.install_release_bundle(
             release_id.clone(),
             &fixture_binary,
@@ -301,16 +308,24 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        trace_pair_stage(b"paired-stage fixture install_release_complete\n");
         for agent_id in &agents {
+            trace_pair_stage(b"paired-stage fixture allow_release_begin\n");
             registry.allow_release(agent_id, &release_id)?;
+            trace_pair_stage(b"paired-stage fixture allow_release_complete\n");
+            trace_pair_stage(b"paired-stage fixture write_binding_begin\n");
             write_binding(&registry, agent_id)?;
+            trace_pair_stage(b"paired-stage fixture write_binding_complete\n");
         }
-        let (supervisor, report) = Supervisor::recover(
+        trace_pair_stage(b"paired-stage fixture initial_recover_begin\n");
+        let initial_recovery_result = Supervisor::recover(
             registry.clone(),
             UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
             test_config(),
             Instant::now(),
-        )?;
+        );
+        trace_pair_stage(b"paired-stage fixture initial_recover_returned\n");
+        let (supervisor, report) = initial_recovery_result?;
         assert!(report.faults.is_empty());
         Ok(Self {
             _temp: temp,
