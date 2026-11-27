@@ -178,6 +178,7 @@ stream_max_retries = 0
             environment_websocket,
             harness_websocket,
             captured_relay_frames,
+            Arc::default(),
         )
         .await
     });
