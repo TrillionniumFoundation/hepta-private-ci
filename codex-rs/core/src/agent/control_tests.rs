@@ -212,6 +212,50 @@ impl AgentControlHarness {
         (new_thread.thread_id, new_thread.thread)
     }
 
+    async fn spawn_tree_resume_child(
+        &self,
+        parent: &CodexThread,
+        role: &str,
+        message: &str,
+    ) -> CodexResult<ThreadId> {
+        // Tree shutdown/resume tests persist their own history marker. Keep the
+        // real spawn/registry path without starting an unrelated model turn
+        // that the fixture would immediately need to abort.
+        let source = thread_spawn_source(
+            parent.session.thread_id,
+            &parent.session_source,
+            next_thread_spawn_depth(&parent.session_source),
+            Some(role),
+            Some(role.to_string()),
+        )
+        .expect("tree fixture child source");
+        let recipient = source.get_agent_path().expect("tree fixture child path");
+        let author = parent
+            .session_source
+            .get_agent_path()
+            .unwrap_or_else(AgentPath::root);
+        let child = self
+            .control
+            .spawn_agent_with_communication(
+                self.config.clone(),
+                InterAgentCommunication::new(
+                    author,
+                    recipient,
+                    Vec::new(),
+                    message.to_string(),
+                    /*trigger_turn*/ false,
+                ),
+                AgentCommunicationContext::new(
+                    AgentCommunicationKind::Spawn,
+                    parent.session.thread_id,
+                ),
+                Some(source),
+                SpawnAgentOptions::default(),
+            )
+            .await?;
+        Ok(child.thread_id)
+    }
+
     async fn start_paginated_thread(&self) -> (ThreadId, Arc<CodexThread>) {
         let new_thread = self
             .manager
@@ -3997,44 +4041,21 @@ async fn list_agent_subtree_thread_ids_finds_live_descendants_of_unloaded_root()
 #[tokio::test]
 async fn shutdown_agent_tree_closes_live_descendants() {
     let harness = AgentControlHarness::new().await;
-    let (parent_thread_id, _parent_thread) = harness.start_thread().await;
+    let (parent_thread_id, parent_thread) = harness.start_thread().await;
 
     let child_thread_id = harness
-        .control
-        .spawn_agent(
-            harness.config.clone(),
-            text_input("hello child"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: Some("explorer".to_string()),
-            })),
-        )
+        .spawn_tree_resume_child(&parent_thread, "explorer", "hello child")
         .await
         .expect("child spawn should succeed");
-    let grandchild_thread_id = harness
-        .control
-        .spawn_agent(
-            harness.config.clone(),
-            text_input("hello grandchild"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id: child_thread_id,
-                depth: 2,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: Some("worker".to_string()),
-            })),
-        )
-        .await
-        .expect("grandchild spawn should succeed");
-
     let child_thread = harness
         .manager
         .get_thread(child_thread_id)
         .await
         .expect("child thread should exist");
+    let grandchild_thread_id = harness
+        .spawn_tree_resume_child(&child_thread, "worker", "hello grandchild")
+        .await
+        .expect("grandchild spawn should succeed");
     let grandchild_thread = harness
         .manager
         .get_thread(grandchild_thread_id)
@@ -4590,41 +4611,18 @@ async fn resume_agent_from_rollout_skips_descendants_when_parent_resume_fails() 
     let (parent_thread_id, parent_thread) = harness.start_thread().await;
 
     let child_thread_id = harness
-        .control
-        .spawn_agent(
-            harness.config.clone(),
-            text_input("hello child"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: Some("explorer".to_string()),
-            })),
-        )
+        .spawn_tree_resume_child(&parent_thread, "explorer", "hello child")
         .await
         .expect("child spawn should succeed");
-    let grandchild_thread_id = harness
-        .control
-        .spawn_agent(
-            harness.config.clone(),
-            text_input("hello grandchild"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id: child_thread_id,
-                depth: 2,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: Some("worker".to_string()),
-            })),
-        )
-        .await
-        .expect("grandchild spawn should succeed");
-
     let child_thread = harness
         .manager
         .get_thread(child_thread_id)
         .await
         .expect("child thread should exist");
+    let grandchild_thread_id = harness
+        .spawn_tree_resume_child(&child_thread, "worker", "hello grandchild")
+        .await
+        .expect("grandchild spawn should succeed");
     let grandchild_thread = harness
         .manager
         .get_thread(grandchild_thread_id)
