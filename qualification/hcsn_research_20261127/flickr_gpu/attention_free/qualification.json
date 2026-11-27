@@ -1,0 +1,63 @@
+{
+  "arms": {
+    "attention_sdpa": {
+      "gradient_norm": 1.8428760766983032,
+      "initial": "a468983acf9e4c7bb1223141eb86227112b54e412dc40b1e0a326a9be2af8190",
+      "max_prefix_difference": 0.0,
+      "nonzero_mixer_gradient_L1": 32.239368572831154,
+      "params": 342656,
+      "upper_wire_weight_gradient_L1": null,
+      "upstream_mark_intervention": null
+    },
+    "diagonal_ssm": {
+      "gradient_norm": 1.8446491956710815,
+      "initial": "add8f51aa754f69bca4c099187d8b26c04918a472861ce5fd1e8011cc2b28b8c",
+      "max_prefix_difference": 0.0,
+      "nonzero_mixer_gradient_L1": 29.49919563252479,
+      "params": 327648,
+      "upper_wire_weight_gradient_L1": null,
+      "upstream_mark_intervention": null
+    },
+    "hcsn": {
+      "gradient_norm": 2.3862950801849365,
+      "initial": "f1091c85db26a8f42005b1d524cc2368ac0203a751fca0187985d7982cbae4db",
+      "max_prefix_difference": 0.0,
+      "nonzero_mixer_gradient_L1": 21.010511663742363,
+      "params": 327760,
+      "upper_wire_weight_gradient_L1": 0.019437434151768684,
+      "upstream_mark_intervention": 0.22791361808776855
+    },
+    "lif": {
+      "gradient_norm": 2.950831174850464,
+      "initial": "380565c9c1233eea92d86367b9330f3fd45c9c5b43ce94a85e792afdf1a48bcf",
+      "max_prefix_difference": 0.0,
+      "nonzero_mixer_gradient_L1": 23.666367512196302,
+      "params": 327760,
+      "upper_wire_weight_gradient_L1": null,
+      "upstream_mark_intervention": null
+    },
+    "no_wire": {
+      "gradient_norm": 2.3861942291259766,
+      "initial": "f1091c85db26a8f42005b1d524cc2368ac0203a751fca0187985d7982cbae4db",
+      "max_prefix_difference": 0.0,
+      "nonzero_mixer_gradient_L1": 21.041272807866335,
+      "params": 327760,
+      "upper_wire_weight_gradient_L1": 0.0,
+      "upstream_mark_intervention": 0.0
+    },
+    "smooth": {
+      "gradient_norm": 2.1931283473968506,
+      "initial": "f1091c85db26a8f42005b1d524cc2368ac0203a751fca0187985d7982cbae4db",
+      "max_prefix_difference": 0.0,
+      "nonzero_mixer_gradient_L1": 21.715889079496264,
+      "params": 327760,
+      "upper_wire_weight_gradient_L1": null,
+      "upstream_mark_intervention": null
+    }
+  },
+  "device": "cpu",
+  "original_model": "5469f9af3e39d418b8b5445632519c6bda62fdf3b256c44ff8bf88227853a948",
+  "qualification": "f721a5379e402bd98b258def1e95109e7bdc5d250137c16050f1c3c77ef90802",
+  "shared_common_initial": "f72b033253914218780641886cb153d49ee75b4174803cb2c9428019391ff37b",
+  "torch": "2.13.0+rocm10.0.0"
+}
