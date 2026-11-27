@@ -108,8 +108,13 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
     def run_wrapper(
         self, *args: str
     ) -> tuple[subprocess.CompletedProcess[str], list[list[str]]]:
+        # Supply targets as shell words, like the workflow. Git for Windows
+        # can collapse a bare //... passed through the native argv boundary.
+        invocation = self.root / "invoke-wrapper.sh"
+        words = shlex.join([(SCRIPTS / "run-bazel-ci.sh").as_posix(), *args])
+        invocation.write_bytes(f"source {words}\n".encode("utf-8"))
         result = subprocess.run(
-            [self.bash, str(SCRIPTS / "run-bazel-ci.sh"), *args],
+            [self.bash, invocation.as_posix()],
             env=self.env,
             check=False,
             capture_output=True,
