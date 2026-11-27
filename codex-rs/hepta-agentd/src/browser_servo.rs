@@ -1025,8 +1025,10 @@ mod tests {
             .to_string();
 
         let authority = harness.authority.clone();
+        let (started_tx, started_rx) = mpsc::sync_channel(0);
         let (revoked_tx, revoked_rx) = mpsc::channel();
         let revoke = thread::spawn(move || {
+            started_tx.send(()).expect("revocation worker started");
             let result = authority.update_revocations(FinalUseRevocations {
                 authority_epoch: 7,
                 revision: 2,
@@ -1034,6 +1036,9 @@ mod tests {
             });
             revoked_tx.send(result).expect("revocation result");
         });
+        started_rx
+            .recv_timeout(Duration::from_secs(10))
+            .expect("revocation worker started");
         assert!(matches!(
             revoked_rx.recv_timeout(Duration::from_millis(50)),
             Err(mpsc::RecvTimeoutError::Timeout)
@@ -1052,6 +1057,13 @@ mod tests {
                 }),
             ))
             .expect("dispatch boundary");
+        // The durable update must complete while the browser response is still pending.
+        revoked_rx
+            .recv_timeout(Duration::from_secs(10))
+            .expect("revocation completed after the dispatch boundary")
+            .expect("revocation succeeded");
+        revoke.join().expect("revocation thread");
+
         harness
             .inbound
             .send(inbound_frame(
@@ -1067,11 +1079,6 @@ mod tests {
 
         let result = call.join().expect("call thread").expect("Browser result");
         assert_eq!(result["status"], "indeterminate");
-        revoked_rx
-            .recv_timeout(Duration::from_secs(1))
-            .expect("revocation unblocked")
-            .expect("revocation succeeded");
-        revoke.join().expect("revocation thread");
     }
 
     #[test]
