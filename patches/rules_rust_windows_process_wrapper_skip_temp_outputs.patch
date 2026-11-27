@@ -1,15 +1,60 @@
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,12 @@ fn consolidate_dependency_search_paths(
+@@ -146,6 +146,16 @@
+     }
+
+     Ok((dependency_paths, filtered_args))
++}
++
++#[cfg(any(windows, test))]
++fn transient_dependency_output(file_name_lower: &str) -> bool {
++    file_name_lower.contains(".tmp")
++        || file_name_lower.ends_with(".rcgu.o")
++        || file_name_lower
++            .split_once(".lib.temp-archive-")
++            .and_then(|(_, suffix)| suffix.strip_suffix(".a"))
++            .is_some_and(|hash| !hash.is_empty() && hash.bytes().all(|byte| byte.is_ascii_hexdigit()))
+ }
+
+ #[cfg(windows)]
+@@ -213,6 +223,12 @@
              let file_name_lower = file_name
                  .to_string_lossy()
                  .to_ascii_lowercase();
-+            if file_name_lower.contains(".tmp") || file_name_lower.ends_with(".rcgu.o") {
-+                // Native Windows Rust link actions can leave transient `*.exe.tmp*` and
-+                // per-codegen-unit `*.rcgu.o` outputs next to the final binary.
-+                // Those are not stable linker search-path inputs.
++            if transient_dependency_output(&file_name_lower) {
++                // Native Windows rustc may remove its temporary linker archive
++                // between read_dir() and the copy fallback. It is not a stable
++                // dependency, unlike the resulting .lib or ordinary .a inputs.
 +                continue;
 +            }
              if !seen.insert(file_name_lower) {
                  continue;
              }
+@@ -418,6 +434,27 @@
+
+     fn parse_json(json_str: &str) -> Result<JsonValue, String> {
+         json_str.parse::<JsonValue>().map_err(|e| e.to_string())
++    }
++
++    #[test]
++    fn test_transient_dependency_output() {
++        for transient in [
++            "cli-sandbox_cloud_config-test.lib.temp-archive-024e863.a",
++            "helper.exe.tmp0",
++            "application.1.rcgu.o",
++        ] {
++            assert!(transient_dependency_output(transient), "{}", transient);
++        }
++
++        for stable in [
++            "cli-sandbox_cloud_config-test.lib",
++            "library.a",
++            "library.dll",
++            "library.lib.temp-archive-definitive.a",
++            "library.lib.temp-archive-.a",
++        ] {
++            assert!(!transient_dependency_output(stable), "{}", stable);
++        }
+     }
+
+     #[test]
