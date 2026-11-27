@@ -76,6 +76,8 @@ SOURCE_CONTROL_NAMES = (
     "test_conformance_fixture.OriginalCandidateIdentityTests.test_current_job_rejects_ambiguity_and_wrong_attempt",
     "test_conformance_fixture.OriginalCandidateIdentityTests.test_original_build_prerequisite_cannot_be_pending_or_failed",
     "test_conformance_fixture.OriginalCandidateIdentityTests.test_identity_api_retains_partial_failure_bytes",
+    "test_conformance_fixture.OriginalCandidateIdentityTests.test_current_execution_queued_run_requires_active_original_job_and_step",
+    "test_conformance_fixture.OriginalCandidateIdentityTests.test_current_execution_rejects_run_identity_and_terminal_states",
 )
 
 
@@ -558,8 +560,8 @@ def verify_receipt(
 # Source/event/binary binding is independent of conformance result assertions.
 HEPTA_REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 HEPTA_PARENT = {
-    "head": "dd17dd2f16fc7a5923d2a970c8267e40fa5aa06b",
-    "tree": "920c44a8f0234ef909fc9089fe9c202c16e63ddb",
+    "head": "c4e55200f120d3afe9741364f091085ed1a27458",
+    "tree": "22ae104f62c4f8d8cee35a020d9f4c45a3059011",
 }
 HEPTA_CHANGED_PATHS = (
     "scripts/mcp_conformance/README.md",
@@ -983,10 +985,15 @@ def current_execution(manifest, root, output, deadline, stage):
         and run.get("run_attempt") == attempt
         and run.get("head_sha") == head
         and run.get("head_branch") == branch
-        and run.get("event") == event_name
-        and run.get("status") == "in_progress"
+        and run.get("event") == event_name,
+        "provider original run identity differs",
+    )
+    # Aggregate state does not prove execution. The original SDK job and current
+    # step must still be proved active below before this function returns identity.
+    require(
+        run.get("status") in ("queued", "in_progress")
         and run.get("conclusion") is None,
-        "provider original run differs or is terminal",
+        "provider original run is terminal or has an unsupported state",
     )
     require(
         run.get("repository", {}).get("full_name") == HEPTA_REPOSITORY

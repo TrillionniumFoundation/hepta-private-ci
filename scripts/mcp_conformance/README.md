@@ -20,8 +20,8 @@ after Root activates its source manifest. That job explicitly checks out the
 event's source head and retains the provider's event SHA separately. For a pull
 request, the source has the pinned accepted parent, and the actual event merge
 must have the same tree and exactly the parent/source parents. This successor
-uses the original C2 candidate as its parent. A complete Git tree reconstruction
-checks all source leaves and the exact four changed paths.
+uses the actual binary-bound C2 candidate #7184 as its parent. A complete Git tree
+reconstruction checks all source leaves and the exact four changed paths.
 
 The existing Bazel step records the source before and after its original build,
 then hashes both the original Bazel outputs and the staged Codex/code-mode-host
@@ -29,6 +29,13 @@ siblings. The later fixture and SDK consumers require the authenticated provider
 record for that same run, first attempt, job, runner and current step, including
 successful completion of the original build step. Environment values select
 provider records; they are not accepted as standalone run or binary evidence.
+
+The aggregate workflow may be `queued` while its original SDK job is already
+executing. The aggregate states `queued` and `in_progress` are admissible only
+with a null conclusion and the same complete run identity checks. Either state
+must still pass the unique active SDK job, runner, current-step, source, merge
+and full-tree checks before an execution identity is returned. Terminal or
+unknown aggregate states remain rejected; this adds no API retry or deadline.
 
 Source maps retain their 512 MiB total limit. Each original or staged binary has
 a separate 1 GiB limit and is hashed in at most 1 MiB chunks. The original
@@ -38,7 +45,10 @@ observation. A larger binary does not increase the source-tree allowance.
 
 The original C2 SDK job failed after Bazel succeeded, before fixture preparation
 or SDK tests began. This successor requires separate Root admission; it does
-not reset that original clock or claim the unlaunched tests passed.
+not reset that original clock or claim the unlaunched tests passed. Candidate
+#7184 then failed at its before-build identity boundary because its aggregate
+workflow was still `queued`. Its original failure, API response and costs remain
+retained. This correction requires a new Root admission for a new candidate.
 
 Inside that original workflow, fixture preparation uses:
 
@@ -52,7 +62,7 @@ The preparation command rejects an inactive manifest. It checks the exact upstre
 commit and all 263 source leaves, applies only the reviewed four-path patch,
 checks all 264 resulting leaves, installs the original npm lock with
 `npm ci --ignore-scripts --no-audit --no-fund`, runs the original twelve local
-Python controls plus nine candidate-identity/failure-retention controls and the
+Python controls plus eleven candidate-identity/failure-retention controls and the
 eight upstream component controls, and builds the CLI. Its receipt retains the
 original commands, output, controls, source maps, lock and built CLI/chunk hashes.
 Fixture preparation and both SDK consumers recheck the current source and actual
@@ -163,7 +173,7 @@ The SDK caller job and reusable SDK job grant only `contents: read` and
 `actions: read`. The job's token is used to read its current provider records;
 there is no PAT or additional write permission. A missing, ambiguous, stale,
 failed or cancelled prerequisite cannot be treated as successful identity proof.
-The twenty-one local Python controls and eight upstream startup/sideband controls
+The twenty-three local Python controls and eight upstream startup/sideband controls
 have separate exact names and results. The broader pytest entry point above
 remains distinct from that focused control roster.
 

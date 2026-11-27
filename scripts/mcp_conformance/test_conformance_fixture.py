@@ -197,6 +197,220 @@ class OriginalCandidateIdentityTests(unittest.TestCase):
             ],
         }
 
+    def provider_run(self, status="queued"):
+        identity = self.identity()
+        return {
+            "id": identity["run_id"],
+            "run_attempt": identity["run_attempt"],
+            "head_sha": identity["source_head"],
+            "head_branch": "current-candidate",
+            "event": identity["event_name"],
+            "status": status,
+            "conclusion": None,
+            "repository": {"full_name": fixture.HEPTA_REPOSITORY},
+            "path": ".github/workflows/blocking-ci.yml",
+            "workflow_id": identity["workflow_id"],
+            "pull_requests": [
+                {
+                    "number": identity["pr_number"],
+                    "head": {"sha": identity["source_head"]},
+                    "base": {"sha": fixture.HEPTA_PARENT["head"]},
+                }
+            ],
+            "referenced_workflows": [
+                {
+                    "path": fixture.HEPTA_REPOSITORY
+                    + "/.github/workflows/sdk.yml@"
+                    + identity["event_sha"],
+                    "sha": identity["event_sha"],
+                }
+            ],
+        }
+
+    def observe_current_execution(self, run, jobs, stage=fixture.TEST_STEP):
+        identity = self.identity()
+        repository = {"full_name": fixture.HEPTA_REPOSITORY}
+        event = {
+            "repository": repository,
+            "number": identity["pr_number"],
+            "pull_request": {
+                "head": {
+                    "sha": identity["source_head"],
+                    "ref": "current-candidate",
+                    "repo": repository,
+                },
+                "base": {"sha": fixture.HEPTA_PARENT["head"], "repo": repository},
+            },
+        }
+        responses = {
+            "run": run,
+            "jobs-1": {"total_count": len(jobs), "jobs": jobs},
+            "source-commit": {
+                "sha": identity["source_head"],
+                "parents": [{"sha": fixture.HEPTA_PARENT["head"]}],
+                "tree": {"sha": identity["source_tree"]},
+            },
+            "actual-event-merge": {
+                "sha": identity["event_sha"],
+                "parents": [
+                    {"sha": fixture.HEPTA_PARENT["head"]},
+                    {"sha": identity["source_head"]},
+                ],
+                "tree": {"sha": identity["source_tree"]},
+            },
+        }
+        publication = {
+            "parent": dict(fixture.HEPTA_PARENT),
+            "source_paths": list(fixture.HEPTA_CHANGED_PATHS),
+            "requires_actual_parent": True,
+            "root_must_bind_final_candidate": True,
+        }
+        api = mock.Mock()
+        api.rows = []
+        api.get.side_effect = lambda suffix, label: copy.deepcopy(responses[label])
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory).resolve()
+            root = temporary / "source"
+            (root / ".git").mkdir(parents=True)
+            (root / ".git" / "HEAD").write_text(
+                identity["source_head"] + "\n", encoding="utf-8"
+            )
+            event_path = temporary / "event.json"
+            event_path.write_text(json.dumps(event), encoding="utf-8")
+            output = temporary / "identity"
+            output.mkdir()
+            environment = {
+                "GITHUB_WORKSPACE": str(root),
+                "GITHUB_EVENT_PATH": str(event_path),
+                "GITHUB_REPOSITORY": fixture.HEPTA_REPOSITORY,
+                "GITHUB_RUN_ID": str(identity["run_id"]),
+                "GITHUB_RUN_ATTEMPT": str(identity["run_attempt"]),
+                "GITHUB_EVENT_NAME": identity["event_name"],
+                "GITHUB_SHA": identity["event_sha"],
+                "HEPTA_C2_SOURCE_HEAD": identity["source_head"],
+                "GITHUB_JOB": "sdks",
+                "RUNNER_NAME": identity["runner_name"],
+                "GITHUB_WORKFLOW_SHA": identity["workflow_definition_sha"],
+            }
+            with mock.patch.dict(os.environ, environment):
+                with mock.patch.object(fixture, "IdentityAPI", return_value=api):
+                    observed, observed_api = fixture.current_execution(
+                        {"publication": publication},
+                        root,
+                        output,
+                        time.monotonic() + 2,
+                        stage,
+                    )
+            self.assertIs(observed_api, api)
+            self.assertEqual(
+                [call.args[1] for call in api.get.call_args_list],
+                ["run", "jobs-1", "source-commit", "actual-event-merge"],
+            )
+            context = json.loads((output / "context.json").read_text(encoding="utf-8"))
+            self.assertEqual(context["identity"], observed)
+            self.assertEqual(context["actual_step"], stage)
+            return observed
+
+    def test_current_execution_queued_run_requires_active_original_job_and_step(self):
+        stages = (fixture.BUILD_STEP, fixture.FIXTURE_STEP, fixture.TEST_STEP)
+        for state in ("queued", "in_progress"):
+            for current, stage in enumerate(stages):
+                with self.subTest(state=state, stage=stage):
+                    job = self.job()
+                    for index, step in enumerate(job["steps"]):
+                        step["status"] = (
+                            "completed"
+                            if index < current
+                            else "in_progress"
+                            if index == current
+                            else "queued"
+                        )
+                        step["conclusion"] = "success" if index < current else None
+                    queued_sibling = {
+                        "id": 203,
+                        "name": "other queued job",
+                        "status": "queued",
+                        "conclusion": None,
+                        "runner_name": None,
+                    }
+                    self.assertEqual(
+                        self.observe_current_execution(
+                            self.provider_run(state), [job, queued_sibling], stage
+                        ),
+                        self.identity(),
+                    )
+        cases = {}
+        cases["missing-job"] = []
+        cases["ambiguous-job"] = [self.job(), dict(self.job(), id=203)]
+        for field, value in (
+            ("run_id", 102),
+            ("run_attempt", 2),
+            ("head_sha", "d" * 40),
+            ("runner_name", "other-runner"),
+            ("status", "queued"),
+            ("conclusion", "failure"),
+        ):
+            cases["wrong-job-" + field] = [dict(self.job(), **{field: value})]
+        for name in (
+            "nonactive-step",
+            "duplicate-step",
+            "failed-build",
+            "pending-fixture",
+        ):
+            job = self.job()
+            if name == "nonactive-step":
+                job["steps"][2]["status"] = "queued"
+            elif name == "duplicate-step":
+                job["steps"].append(copy.deepcopy(job["steps"][2]))
+            elif name == "failed-build":
+                job["steps"][0]["conclusion"] = "failure"
+            else:
+                job["steps"][1].update(status="in_progress", conclusion=None)
+            cases[name] = [job]
+        for name, jobs in cases.items():
+            with self.subTest(rejection=name):
+                with self.assertRaises(ValueError):
+                    self.observe_current_execution(self.provider_run(), jobs)
+
+    def test_current_execution_rejects_run_identity_and_terminal_states(self):
+        for field, value in (
+            ("id", 102),
+            ("run_attempt", 2),
+            ("head_sha", "d" * 40),
+            ("head_branch", "other-candidate"),
+            ("event", "push"),
+        ):
+            with self.subTest(field=field):
+                run = self.provider_run()
+                run[field] = value
+                with self.assertRaisesRegex(ValueError, "original run identity"):
+                    self.observe_current_execution(run, [self.job()])
+        for status in (
+            "completed",
+            "waiting",
+            "requested",
+            "pending",
+            "cancelled",
+            "unknown",
+            None,
+        ):
+            with self.subTest(status=status):
+                with self.assertRaisesRegex(
+                    ValueError, "terminal or has an unsupported state"
+                ):
+                    self.observe_current_execution(
+                        self.provider_run(status), [self.job()]
+                    )
+        for status in ("queued", "in_progress"):
+            for conclusion in ("success", "failure", "cancelled", "skipped"):
+                with self.subTest(status=status, conclusion=conclusion):
+                    run = self.provider_run(status)
+                    run["conclusion"] = conclusion
+                    with self.assertRaisesRegex(
+                        ValueError, "terminal or has an unsupported state"
+                    ):
+                        self.observe_current_execution(run, [self.job()])
+
     def test_same_head_old_run_attempt_and_job_are_rejected(self):
         identity = self.identity()
         source = {
