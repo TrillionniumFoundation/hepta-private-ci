@@ -1,5 +1,6 @@
 """Direct versus marginal initialization on identical differentiable He–Xiong towers."""
 import argparse
+import os
 from pathlib import Path
 import time
 import json
@@ -131,6 +132,9 @@ def confirm():
             intervals[label]={"estimate":float(dlt.mean()),"paired95":np.quantile(a0,[.025,.975]).tolist()}
     atomic(ROOT/"warm"/"results.json",{"scores":scores,"paired":intervals,"rank_sha":sha(p),"seal_sha":sha(ROOT/'warm'/'seal.json')})
 if __name__=="__main__":
+    if (ROOT/"warm_affinity.txt").exists():
+        cpu=int((ROOT/"warm_affinity.txt").read_text().strip())
+        os.sched_setaffinity(0,{cpu})
     p=argparse.ArgumentParser();p.add_argument("action",choices=['fit','seal','confirm']);p.add_argument("kind",nargs="?");p.add_argument("seed",nargs="?",type=int);a=p.parse_args()
     if a.action=='fit':run(a.kind,a.seed)
     elif a.action=='seal':seal()
