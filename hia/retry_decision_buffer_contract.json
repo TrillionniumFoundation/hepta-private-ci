@@ -1,0 +1,35 @@
+{
+  "schema": "codex.hia.retry-decision-buffer.v1",
+  "module": "retry_decision",
+  "source_path": "hia/retry_decision.hepta",
+  "source_sha256": "f7a7cff8875291b7d58f254d8dcf35c8438b1076fb1db63250fa10e403641a2b",
+  "source_bytes": 6389,
+  "compiler_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+  "core_schema": "hepta.hia.program.v9",
+  "entry_profile": "borrowed-buffers-u32-v1",
+  "request_bytes": 64,
+  "request_words": [
+    "version 1",
+    "attempt u64",
+    "max_attempts u64",
+    "retry_429 bool 0/1",
+    "retry_5xx bool 0/1",
+    "retry_transport bool 0/1",
+    "error kind: Http 0, Timeout 1, Connection 2, Network 3, Build/RetryLimit 4",
+    "status: original Http StatusCode 100..999, otherwise zero"
+  ],
+  "output_bytes": 16,
+  "output_words": [
+    "retry 0/1",
+    "next attempt; zero when stopping"
+  ],
+  "success_return": 16,
+  "invalid_return": 4294967295,
+  "short_output_return": 4294967294,
+  "workspace_bytes": 0,
+  "effects": "Output capacity is checked before any input read. Structural invalid and short calls preserve all buffers. Success writes exactly output[0..16], preserving request, empty workspace and output tail.",
+  "public_domain": "All original bool policies, all u64 attempt/max_attempts, all original TransportError variants and every valid http::StatusCode including 600..999. Opaque payloads are never read or copied into native input.",
+  "hia_owns": "Attempt-limit stop, original 429/500..599/transport decisions and checked next-attempt progression.",
+  "rust_retains": "Original request construction, Future/response/error objects, backoff including random sampling and overflow policy, trace macro and sleep order. No new bounds or Send requirement; cancellation and callback semantics remain host effects.",
+  "scope": "Linux x86-64 GNU opt-in retry control unit. Full HTTP/TLS/auth/SSE/WebSocket/provider/tool lifecycle and other platforms remain separate."
+}

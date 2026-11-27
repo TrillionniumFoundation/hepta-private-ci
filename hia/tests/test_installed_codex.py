@@ -56,6 +56,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_command_dispatch",
     "codex_hia_network_host",
     "codex_hia_fuzzy_match",
+    "codex_hia_retry_decision",
 )
 
 

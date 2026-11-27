@@ -19,6 +19,12 @@ pub struct RetryOn {
 }
 
 impl RetryOn {
+    #[cfg(feature = "hia-native")]
+    pub fn should_retry(&self, err: &TransportError, attempt: u64, max_attempts: u64) -> bool {
+        crate::hia_native_retry::next_attempt(self, err, attempt, max_attempts).is_some()
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn should_retry(&self, err: &TransportError, attempt: u64, max_attempts: u64) -> bool {
         if attempt >= max_attempts {
             return false;
@@ -77,6 +83,40 @@ macro_rules! record_retry {
     }};
 }
 
+#[cfg(feature = "hia-native")]
+pub async fn run_with_retry<T, F, Fut>(
+    policy: RetryPolicy,
+    mut make_req: impl FnMut() -> Request,
+    op: F,
+) -> Result<T, TransportError>
+where
+    F: Fn(Request, u64) -> Fut,
+    Fut: Future<Output = Result<T, TransportError>>,
+{
+    let mut attempt = 0;
+    loop {
+        let req = make_req();
+        match op(req, attempt).await {
+            Ok(resp) => return Ok(resp),
+            Err(err) => {
+                let Some(retry_attempt) = crate::hia_native_retry::next_attempt(
+                    &policy.retry_on,
+                    &err,
+                    attempt,
+                    policy.max_attempts,
+                ) else {
+                    return Err(err);
+                };
+                let delay = backoff(policy.base_delay, retry_attempt);
+                crate::record_retry!(retry_attempt, delay, RetryOperation::HttpRequest);
+                tokio::time::sleep(delay).await;
+                attempt = retry_attempt;
+            }
+        }
+    }
+}
+
+#[cfg(not(feature = "hia-native"))]
 pub async fn run_with_retry<T, F, Fut>(
     policy: RetryPolicy,
     mut make_req: impl FnMut() -> Request,

@@ -1,0 +1,132 @@
+{
+  "added_control": "dropping_during_backoff_does_not_construct_a_retry",
+  "commands": [
+    {
+      "argv": [
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/tools/dotslash",
+        "--version"
+      ],
+      "elapsed_ns": 1662542,
+      "exit": 0,
+      "label": "dotslash-version",
+      "stderr": "dotslash-version.stderr",
+      "stdout": "dotslash-version.stdout"
+    },
+    {
+      "argv": [
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/tools/just",
+        "fmt"
+      ],
+      "elapsed_ns": 214146275,
+      "exit": 0,
+      "label": "fmt",
+      "stderr": "fmt.stderr",
+      "stdout": "fmt.stdout"
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "5c07ad6792d73357f3678a27874d0565a479d474:codex-rs/codex-api/tests/clients.rs"
+      ],
+      "elapsed_ns": 3706402,
+      "exit": 0,
+      "label": "original-clients",
+      "stderr": "original-clients.stderr",
+      "stdout": "original-clients.stdout"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "HEAD"
+      ],
+      "elapsed_ns": 15694197,
+      "exit": 0,
+      "label": "whitespace",
+      "stderr": "whitespace.stderr",
+      "stdout": "whitespace.stdout"
+    }
+  ],
+  "dotslash": {
+    "archive_sha256": "4c75c6eb7890ae35993b962073f6d9bbe78b42b81a5691303ad70f63bfbf7196",
+    "binary_bytes": 1773296,
+    "binary_sha256": "2d7880483256edf24e1c8b3e903ca174a723e70d945ffb1a16363c51cb271018",
+    "url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-linux-musl.x86_64.v0.5.9.tar.gz",
+    "version": "DotSlash 0.5.9"
+  },
+  "finished_ns": 1795800095211280338,
+  "native16_search": {
+    "errors": [],
+    "examined_json": 16690,
+    "matches": [
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/final-readonly-binding-result-v7.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/publication16-root-git-verification.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex-command-dispatch-private-sync-b762fa3f20ed-v1-9f0b.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex-command-dispatch-canonical-raw-b762fa3f20ed-v1-9f0b.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/published-owner16-consumer-b762fa3f20ed.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/root-immutable-link-bundle-review-v1.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/observations-v3-files.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/freeze-link-inputs-v3.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/owner16-consumer-link-inputs-v3/link-proof.json",
+      "/home/qq/codex-hia-work/9f0b-command-dispatch-source-qualification-20261115/codex/hia/verification.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-publication-recovery-20261115/downloaded-raw-verification-v2.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-publication-recovery-20261115/actual-supplement-v2.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-publication-recovery-20261115/codex-network-host-source-publication-sync-74d1c0ebeced-v2-9f0b.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-publication-recovery-20261115/codex-network-host-source-publication-acquire-74d1c0ebeced-v2-9f0b.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-publication-recovery-20261115/known-loss-set.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-publication-recovery-20261115/historical-failed-inspector.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-publication-recovery-20261115/codex-network-host-source-publication-sync-74d1c0ebeced-v2-9f0b-preimages/verification.json",
+      "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/history/owner17-74d1c0eb/verification.json",
+      "/home/qq/codex-hia-work/codex-utf8-owner-20261126-d0d2/retry-codex/hia/history/owner17-74d1c0eb/verification.json",
+      "/home/qq/codex-hia-work/codex-utf8-owner-20261126-d0d2/codex/hia/history/owner17-74d1c0eb/verification.json",
+      "/home/qq/codex-hia-work/codex-utf8-owner-20261126-d0d2/inline-codex/hia/history/owner17-74d1c0eb/verification.json",
+      "/home/qq/codex-hia-work/auto11-20261123-7049-lock-projection/codex/hia/history/owner17-74d1c0eb/verification.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/codex/hia/verification.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/network-host-preservation-supplement-v2/report.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/inputs/config.approved.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/network-host-public-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/native-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/admission-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/public-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/raw-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/owner-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/final_maintenance-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/export-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/inputs/private-sync-report.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/inputs/config.approved.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/inputs/remote-ready17.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/network-host-preservation-observation-v1/report.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/native-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/strict16-admission-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/admission-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/public-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/raw-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/initial_format-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/evidence_archive-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/formatter-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/setup-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/preflight-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/owner-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/final_maintenance-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/export-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/consumer_bundle-v1.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/strict16-admission-fixtures/wrong-commit-descriptor.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/strict16-admission-fixtures/partial-tree-descriptor.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/strict16-admission-fixtures/wrong-compiled-source-descriptor.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/strict16-admission-fixtures/bad-hash-descriptor.json",
+      "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/evidence/strict16-admission-fixtures/unpublished-descriptor.json",
+      "/home/qq/codex-hia-work/codex-hia-chrono-manifest-20261123/hia/history/owner17-74d1c0eb/verification.json"
+    ],
+    "max_depth": 5,
+    "root": "/home/qq/codex-hia-work",
+    "time_budget_exceeded": false
+  },
+  "native_input_pins_unchanged": true,
+  "owner_after_sha256": "54f799c1fc2f622cfac97ce84b95a1b2ff16428740b81e86d2be7260b8bbc73c",
+  "owner_before_sha256": "8c81122169ef2f158202570fc4ecd560a3f761e258f1ed5336b05368d1cb3966",
+  "schema": "codex.hia.native38.environment-repair.v1",
+  "started_ns": 1795800079447477413,
+  "state": "fmt_passed"
+}
