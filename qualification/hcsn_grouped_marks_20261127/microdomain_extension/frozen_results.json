@@ -1,0 +1,84 @@
+{
+  "array_sha256": "cc23aac8ea6ecf8cb97ee990593c909e6431a2a3c1a16cf0421e84db0afab1c9",
+  "captions": 1280,
+  "device": "cpu",
+  "elapsed_seconds": 14.519936715252697,
+  "images": 256,
+  "per_model": {
+    "17011_1": {
+      "conditioning_gain": 0.09348971395913427,
+      "nll": 2.9428573307197534
+    },
+    "17011_2": {
+      "conditioning_gain": 0.09378233113713984,
+      "nll": 2.942558237637288
+    },
+    "17011_4": {
+      "conditioning_gain": 0.09410825088299367,
+      "nll": 2.9423145941855706
+    },
+    "24203_1": {
+      "conditioning_gain": 0.07988481795904276,
+      "nll": 2.950414336450719
+    },
+    "24203_2": {
+      "conditioning_gain": 0.07994644948401729,
+      "nll": 2.9510381866188196
+    },
+    "24203_4": {
+      "conditioning_gain": 0.07971512047486412,
+      "nll": 2.9519140569462
+    },
+    "39827_1": {
+      "conditioning_gain": 0.07211371557677158,
+      "nll": 2.934765163658348
+    },
+    "39827_2": {
+      "conditioning_gain": 0.07269123386463132,
+      "nll": 2.934595518339356
+    },
+    "39827_4": {
+      "conditioning_gain": 0.07322730201447468,
+      "nll": 2.9343570563810526
+    }
+  },
+  "scope": "previously used Flickr validation corpus, 256 images excluded from the original 128-image selection subset; frozen weights",
+  "source": "3a87cbd7cc7e2bf7acaa4730ac3ed78ef9e4b63f64a21b802cdbd954a0d6ef6b",
+  "summary": {
+    "1": {
+      "conditioning_gain": 0.08182941583164954,
+      "minus_n1": 0.0,
+      "nll": 2.9426789436096072,
+      "paired_image_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "2": {
+      "conditioning_gain": 0.08214000482859614,
+      "minus_n1": 5.170392221438055e-05,
+      "nll": 2.942730647531821,
+      "paired_image_95": [
+        -0.0002828228761598046,
+        0.00039185092851593424
+      ]
+    },
+    "4": {
+      "conditioning_gain": 0.08235022445744415,
+      "minus_n1": 0.00018295889466751427,
+      "nll": 2.942861902504274,
+      "paired_image_95": [
+        -0.00048447979391126936,
+        0.000893889520869362
+      ]
+    }
+  },
+  "threads": 1,
+  "tokens": 16412,
+  "torch": "2.13.0+rocm10.0.0",
+  "weights": {
+    "17011": "2adbb5ada20af413a0755964e8400714935a9adf2a6a6eb3b345286c220e3e0b",
+    "24203": "5c842b33ff4ca43e6d0c1b9c48412aa01b72d856b488e520aae56301e43a7c8b",
+    "39827": "b3770234a6cbbb1718e9883425e73fc6fb2db7e56865717bb0b3b9fed0592339"
+  }
+}
