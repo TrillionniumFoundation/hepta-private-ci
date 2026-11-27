@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-27 UTC：Continuous adjoint 精确源码集合核验与 t0 原生读回
+
+- #6799 head 20d3a3c0353171132ac79527dcb092af1c26d821 仍未合并 draft。该 head 首屏100 workflow 50 success/17 failure/11 skipped/1 cancelled/2 pending/5 queued/14 in_progress，非全分页终局。
+- [Continuous adjoint 原 job140320037497](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45942598468/job/140320037497) 实际 checkout 精确 head，安装依赖成功，预提交 SHA256 字典相等断言拒绝，真实 bounded Torch probe 未执行。ROG 两次原生只读作业对十个 Git 对象复算 SHA1/SHA256，10/10 Git blob 身份、7/10 冻结摘要；三处不匹配为 workflow(4419B)、spatial_generator.py(6021B)、joint_dde/model.py(14671B)，均非补一末尾 LF 可修复。在历史 guard evidence 1b69247fb4249f5fc3a623c6e471bee5bde8a553 取得后二者 5920B/12626B 原件，ROG 独立复算 SHA1 与原冻结 SHA256 均相符。workflow 在两个登记 guard refs 读取404，未证实原件缺失于全仓。原数学实现及当前产品不得被旧文件全局回退；应恢复完整原执行视图并保留当前生产源，核实历史预算后才允许原 probe。无新模型/优化器调用，未改原 guard，仍 HOLD。
+- [N256 authentic t0 原 job140320038285](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45942598793/job/140320038285) 原冻结8文件，普通/-O 各4/4；23,581B capsule，独立冷进程2656/2656坐标一致（2600状态+56包），serializer 1 次，dynamic/provider/matrix exponential/torch/optimizer 0；原状态 PASS_INDEPENDENT_COLD_BYTES_HOLD，不是动态准入。[saved continuation](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45942596318/job/140320031123) 570标量（510 eligible/60 null），6对直接原字节，新候选/参考/expm调用0，HOLD_NO_GO。[signed interval](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45942596281/job/140320031017) 原静态门通过；[fixed dense sweep](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45942596663/job/140320031926) 原文件摘要断言仍红。
+- [十源及两份原件独立原生回执和 CI 记录](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a66468ab60d9c7cb7aaf277bf353683da596d3b1/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/continuous-adjoint-source-census-20d3-20261127.json) 已提交并全文回读一致。全仓 HOLD；未抢写产品集成、未重派已消耗实验、未改变安全或科学判据及500ms门，未合并红门。
+
+
 ## 2026-11-27 05:12 UTC 后：N256 FP64 rounding v2 冻结源独立原生修补
 
 - #6799 实际观察 head [20d3a3c0](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/20d3a3c0353171132ac79527dcb092af1c26d821)，相对 dac002 ahead26/behind0，仍未合并 draft；#7016/#7021/#7032/#7052 均为原未合并草案。首屏100条工作流 14 success/4 failure/11 skipped/1 cancelled/53 queued/6 pending/11 in_progress，非全分页终局。
