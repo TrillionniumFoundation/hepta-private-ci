@@ -10,10 +10,14 @@ async fn historical_pool(displaced: bool) -> (SqlitePool, TempDir) {
     // Use the same audited connection shim as the durable automation owner;
     // in-memory PoolOptions::connect bypasses its connection policy.
     let home = tempfile::tempdir().expect("isolated historical SQLite home");
-    let sqlite_home = AbsolutePathBuf::try_from(home.path().to_path_buf())
-        .expect("absolute historical SQLite home");
+    let canonical_home = home
+        .path()
+        .canonicalize()
+        .expect("canonical historical SQLite home");
+    let sqlite_home =
+        AbsolutePathBuf::try_from(canonical_home.clone()).expect("absolute historical SQLite home");
     let pool = SqliteConfig::new_for_testing(sqlite_home)
-        .open_durable_evidence_pool(&home.path().join("historical.sqlite3"))
+        .open_durable_evidence_pool(&canonical_home.join("historical.sqlite3"))
         .await
         .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
@@ -136,6 +140,7 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
+    let root = root.canonicalize().expect("canonical owner directory");
     let (pool, _history_home) = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
