@@ -12,6 +12,7 @@ use std::time::Instant;
 
 use anyhow::Context;
 use anyhow::Result;
+use bytes::Bytes;
 use codex_api::AuthProvider;
 use codex_exec_server::ExecServerClient;
 use codex_exec_server::NoiseChannelIdentity;
@@ -183,7 +184,7 @@ impl std::fmt::Debug for RelayProgress {
 
 pub(crate) struct RelayConnection {
     pub(crate) client: ExecServerClient,
-    captured_frames: Arc<Mutex<Vec<Vec<u8>>>>,
+    captured_frames: Arc<Mutex<Vec<Bytes>>>,
     progress: Arc<RelayProgress>,
     relay_task: AbortOnDropHandle<Result<()>>,
 }
@@ -205,7 +206,7 @@ impl std::fmt::Debug for RelayConnection {
                     .iter()
                     .rev()
                     .take(MAX_SAMPLED_FRAMES)
-                    .map(Vec::len)
+                    .map(Bytes::len)
                     .fold(/*init*/ 0usize, usize::saturating_add);
                 state
                     .field("capture", &"ready")
@@ -358,7 +359,7 @@ pub(crate) async fn registered_executor_public_key(
 pub(crate) async fn proxy_relay_frames(
     mut environment: WebSocketStream<TcpStream>,
     mut harness: WebSocketStream<TcpStream>,
-    captured_frames: Arc<Mutex<Vec<Vec<u8>>>>,
+    captured_frames: Arc<Mutex<Vec<Bytes>>>,
     progress: Arc<RelayProgress>,
 ) -> Result<()> {
     loop {
@@ -394,22 +395,23 @@ pub(crate) async fn proxy_relay_frames(
     Ok(())
 }
 
-fn capture_binary_frame(captured_frames: &Mutex<Vec<Vec<u8>>>, message: &Message) {
+fn capture_binary_frame(captured_frames: &Mutex<Vec<Bytes>>, message: &Message) {
     if let Message::Binary(bytes) = message {
+        // Retain each complete immutable frame without copying its payload.
         captured_frames
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .push(bytes.to_vec());
+            .push(bytes.clone());
     }
 }
 
-pub(crate) fn assert_relay_data_is_encrypted(captured_frames: &Mutex<Vec<Vec<u8>>>) -> Result<()> {
+pub(crate) fn assert_relay_data_is_encrypted(captured_frames: &Mutex<Vec<Bytes>>) -> Result<()> {
     let captured_frames = captured_frames
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
     let mut data_frames = 0;
     for encoded in captured_frames.iter() {
-        let frame = RelayMessageFrame::decode(encoded.as_slice())?;
+        let frame = RelayMessageFrame::decode(encoded.as_ref())?;
         let Some(relay_message_frame::Body::Data(data)) = frame.body else {
             continue;
         };
