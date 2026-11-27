@@ -72,6 +72,9 @@ def inventory(repo, refs, output):
                b'html',b'r',b'ps1',b'sql',b'bzl',b'bazel'}
     ids = sorted(set().union(*(by_ext[k] for k in text)))
     primary_ids = set().union(*(by_ext[k] for k in primary))
+    with (output/'all_blobs.tsv').open('wb') as f:
+        for sha,example in sorted(examples.items()):
+            f.write(sha+b'\t'+example+b'\n')
     with (output/'files.tsv').open('wb') as f:
         for sha in ids:
             f.write(b'\t'.join([sha,b'1' if sha in primary_ids else b'0',examples[sha]])+b'\n')
