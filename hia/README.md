@@ -21,8 +21,15 @@ installed stdin checks.
 Current evidence is recorded in
 [verification.json](verification.json#stdin_utf8_consumer): fresh native37 with
 identical B1/B2/B3 images, 25 raw UTF-8 cases and 200 calls, plus 67 default
-stream-parser and 158 default exec tests on macOS. Linux native Rust consumer
-and installed qualification remain pending. Whole-capability, default-release,
+stream-parser and 158 default exec tests on macOS. On Linux, the actual
+production decoder passes all 11 unit tests and 18 stdin cases in each selection,
+with the native symbol required only in the HIA binary; the complete native
+stream-parser package passes 87 tests with no skips. The tested tree is
+`55663ab8e80b5caf32da71eb557a2140b2a8597c`, preserved by source commit
+`cad201d43ff0bb7495a72f496a859a16474b2af0`. Strict scoped Clippy fix and formatting
+then pass on macOS, changing only line wrapping in one new test assertion;
+production Rust bytes are unchanged and tests are not repeated after formatting.
+The full native exec package, installed CLI, whole-capability, default-release,
 platform, performance and retirement gates remain open.
 
 ## Prior source follow-up: guarded inline head/tail equality

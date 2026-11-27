@@ -1,0 +1,97 @@
+{
+  "schema": "codex.hia.stdin-fix-format.v1",
+  "passed": true,
+  "commands": [
+    {
+      "name": "fix",
+      "command": [
+        "just",
+        "--set",
+        "python",
+        "/opt/homebrew/bin/python3.14",
+        "fix",
+        "-p",
+        "codex-utils-stream-parser",
+        "-p",
+        "codex-exec",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 111.211149125,
+      "log": "/Users/qianqi/work/hia-codex-macos-20261127-589c/stdin-fix-format-20261127/fix.log",
+      "log_sha256": "514a8e6c39cb64e5faa8c9a308bf2fcac4930361d8d3c55a46c187cae5307402"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "just",
+        "--set",
+        "python",
+        "/opt/homebrew/bin/python3.14",
+        "fmt"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.5417183750000021,
+      "log": "/Users/qianqi/work/hia-codex-macos-20261127-589c/stdin-fix-format-20261127/fmt.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "native_test_tree": "55663ab8e80b5caf32da71eb557a2140b2a8597c",
+  "tests_repeated_after_fix_or_fmt": false,
+  "whole_codex_rewritten": false,
+  "source_tree_before": "bbb68827e95fc395a6d7fe997069e480e1b0fe22",
+  "source_inputs_before": {
+    ".github/workflows/codex-hia-native.yml": "b7f2dde4011e66768a07b21500ad11899903e490dcc4e0fcab5f718cb2c0b4ff",
+    "codex-rs/Cargo.lock": "d96a8a7246c3db8f76ef94ad035f60d0caf97a6e9c91445bde149236b79da7da",
+    "codex-rs/cli/Cargo.toml": "779f9ad1d356e564e9f9fb50da3531a44332ff6801a39e37d9d4fc41ef94f771",
+    "codex-rs/exec/Cargo.toml": "5fcf6641121e90fa818b55004a02a2d31eab71bd6e2f3ca5b9f4ff86b8c44d32",
+    "codex-rs/exec/src/lib.rs": "90cf904b1fd3b36942f958d38789507c5b43d7e72de7def8232a159597967f3d",
+    "codex-rs/exec/src/lib_tests.rs": "be09e19ab0a8f1928906fc4a603798d97c166258c7e5b4b9821816361f3725b9",
+    "codex-rs/exec/src/prompt_decode.rs": "7e3b5cbad512747661258bc1807602f25977a95983ec431b444e8cad74663a68",
+    "codex-rs/exec/src/prompt_decode_tests.rs": "c2caad2ba45f80ec5cd197a8eb805a67956f43f8e98445055d8fbbbe47702c06",
+    "codex-rs/exec/tests/suite/prompt_stdin.rs": "f97e8ddfb9f75509b51a368466b63faf173d0062ec3d996b4bb305d76265c168",
+    "codex-rs/utils/stream-parser/src/hia_native_utf8_stream.rs": "8c54138540b2f93aac900f1e04f399ad2d5ab43d7134275ad5123e36bcd9921f",
+    "codex-rs/utils/stream-parser/src/lib.rs": "e641570369e1bc32bef4f044e0d25428d4dd2f17946115f30bdae97ae72ae4e1",
+    "codex-rs/utils/stream-parser/src/utf8_stream.rs": "c89814640371bcdb4d5a2a10158ecd358fcc285e70785012531613f0598fda96",
+    "codex-rs/utils/stream-parser/src/utf8_validation.rs": "196dead823d6ff1776a582ea0f6298baf76b36cf7b6cf5d7440180c8028b22b4",
+    "codex-rs/utils/stream-parser/src/utf8_validation_tests.rs": "0521dcb021ddada34e8c38fe479ca7c01ddbd51264f26619667374590b15b559",
+    "hia/README.md": "083ce294a2eab87c4dd7f6a04930441d470fc5a23bd04147cf486cd26fcc05a6",
+    "hia/joint_module_roles.json": "f630b7775e79e907773fd4031d11ac78932b7f4d107d2d318dc54f4ab2b161c7",
+    "hia/migration.json": "0d604bb889e8a76e86382e9c27afa0578e4835a05d2bd898623eddc27a47b7d6",
+    "hia/tests/test_installed_codex.py": "04e715955875c23a3eba766a160625eb83b6602dcab3569fd75c7144d1b895ab",
+    "hia/tests/test_native_prompt_decode_caller.py": "c42d96a30c6616e8157cba134e1402c282bfa2070b00261c3ba3bfec6d0505e0",
+    "hia/verification.json": "a8d13040b8475aca64dab5f910c08d5c0129ac771f4d020146fcfafe376862ae"
+  },
+  "formatter_python": "/opt/homebrew/bin/python3.14",
+  "source_inputs_after": {
+    ".github/workflows/codex-hia-native.yml": "b7f2dde4011e66768a07b21500ad11899903e490dcc4e0fcab5f718cb2c0b4ff",
+    "codex-rs/Cargo.lock": "d96a8a7246c3db8f76ef94ad035f60d0caf97a6e9c91445bde149236b79da7da",
+    "codex-rs/cli/Cargo.toml": "779f9ad1d356e564e9f9fb50da3531a44332ff6801a39e37d9d4fc41ef94f771",
+    "codex-rs/exec/Cargo.toml": "5fcf6641121e90fa818b55004a02a2d31eab71bd6e2f3ca5b9f4ff86b8c44d32",
+    "codex-rs/exec/src/lib.rs": "90cf904b1fd3b36942f958d38789507c5b43d7e72de7def8232a159597967f3d",
+    "codex-rs/exec/src/lib_tests.rs": "be09e19ab0a8f1928906fc4a603798d97c166258c7e5b4b9821816361f3725b9",
+    "codex-rs/exec/src/prompt_decode.rs": "7e3b5cbad512747661258bc1807602f25977a95983ec431b444e8cad74663a68",
+    "codex-rs/exec/src/prompt_decode_tests.rs": "c2caad2ba45f80ec5cd197a8eb805a67956f43f8e98445055d8fbbbe47702c06",
+    "codex-rs/exec/tests/suite/prompt_stdin.rs": "5351207d2d20ad30c996559b049683fac64c360fca2a8727435cf3412d4a96b2",
+    "codex-rs/utils/stream-parser/src/hia_native_utf8_stream.rs": "8c54138540b2f93aac900f1e04f399ad2d5ab43d7134275ad5123e36bcd9921f",
+    "codex-rs/utils/stream-parser/src/lib.rs": "e641570369e1bc32bef4f044e0d25428d4dd2f17946115f30bdae97ae72ae4e1",
+    "codex-rs/utils/stream-parser/src/utf8_stream.rs": "c89814640371bcdb4d5a2a10158ecd358fcc285e70785012531613f0598fda96",
+    "codex-rs/utils/stream-parser/src/utf8_validation.rs": "196dead823d6ff1776a582ea0f6298baf76b36cf7b6cf5d7440180c8028b22b4",
+    "codex-rs/utils/stream-parser/src/utf8_validation_tests.rs": "0521dcb021ddada34e8c38fe479ca7c01ddbd51264f26619667374590b15b559",
+    "hia/README.md": "083ce294a2eab87c4dd7f6a04930441d470fc5a23bd04147cf486cd26fcc05a6",
+    "hia/joint_module_roles.json": "f630b7775e79e907773fd4031d11ac78932b7f4d107d2d318dc54f4ab2b161c7",
+    "hia/migration.json": "0d604bb889e8a76e86382e9c27afa0578e4835a05d2bd898623eddc27a47b7d6",
+    "hia/tests/test_installed_codex.py": "04e715955875c23a3eba766a160625eb83b6602dcab3569fd75c7144d1b895ab",
+    "hia/tests/test_native_prompt_decode_caller.py": "c42d96a30c6616e8157cba134e1402c282bfa2070b00261c3ba3bfec6d0505e0",
+    "hia/verification.json": "a8d13040b8475aca64dab5f910c08d5c0129ac771f4d020146fcfafe376862ae"
+  },
+  "format_patch": {
+    "path": "/Users/qianqi/work/hia-codex-macos-20261127-589c/stdin-fix-format-20261127/changes.patch",
+    "sha256": "eafb2e43f025fbb71970feb5ef0918a41a860682ba9b36599c7dad44ca266295",
+    "bytes": 680
+  },
+  "diff_stat": "codex-rs/exec/tests/suite/prompt_stdin.rs | 7 ++++---\n 1 file changed, 4 insertions(+), 3 deletions(-)"
+}

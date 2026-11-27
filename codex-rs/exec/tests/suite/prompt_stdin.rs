@@ -193,9 +193,10 @@ async fn exec_decodes_unicode_stdin_after_a_utf8_bom() -> anyhow::Result<()> {
         .success();
 
     let request = response_mock.single_request();
-    assert!(request.has_message_with_input_texts("user", |texts| {
-        texts == ["é汉🦀\n".to_string()]
-    }));
+    assert!(
+        request
+            .has_message_with_input_texts("user", |texts| { texts == ["é汉🦀\n".to_string()] })
+    );
     Ok(())
 }
 

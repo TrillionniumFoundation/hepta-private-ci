@@ -1,0 +1,128 @@
+{
+  "schema": "codex.hia.stdin-native-gates.v1",
+  "passed": true,
+  "source_head": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+  "expected_tree": "55663ab8e80b5caf32da71eb557a2140b2a8597c",
+  "commands": [
+    {
+      "name": "fetch-candidate",
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "codex/hia-union29-20261116-a90d"
+      ],
+      "cwd": "/home/qian-qi/work/hia-codex-deps-20261127-589c/src",
+      "returncode": 0,
+      "elapsed_seconds": 3.8744738600071287,
+      "log": "/home/qian-qi/work/hia-codex-deps-20261127-589c/stdin-native-gates-20261127/fetch-candidate.log",
+      "log_sha256": "5e4da7d73143e8c17f40dd11b90c6cdbc1a5457329bd57d2bd101e29218ea641"
+    },
+    {
+      "name": "native-prompt-caller",
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qian-qi/work/hia-codex-deps-20261127-589c/src/hia/tests/test_native_prompt_decode_caller.py",
+        "--library-dir",
+        "/home/qian-qi/work/hia-codex-deps-20261127-589c/codex-hia-stdin-native37-final",
+        "--rustc",
+        "/home/qian-qi/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+        "--report",
+        "/home/qian-qi/work/hia-codex-deps-20261127-589c/stdin-native-gates-20261127/native-prompt-caller.json"
+      ],
+      "cwd": "/home/qian-qi/work/hia-codex-deps-20261127-589c/src",
+      "returncode": 0,
+      "elapsed_seconds": 5.220696306001628,
+      "log": "/home/qian-qi/work/hia-codex-deps-20261127-589c/stdin-native-gates-20261127/native-prompt-caller.log",
+      "log_sha256": "c0cdb4e965e2d8d5065a74b4f1437c1aa969c7344044b5d69f2e71f04fde4446"
+    },
+    {
+      "name": "native-stream-parser",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-utils-stream-parser",
+        "--features",
+        "codex-utils-stream-parser/hia-native",
+        "--locked"
+      ],
+      "cwd": "/home/qian-qi/work/hia-codex-deps-20261127-589c/src/codex-rs",
+      "returncode": 0,
+      "elapsed_seconds": 7.942659434003872,
+      "log": "/home/qian-qi/work/hia-codex-deps-20261127-589c/stdin-native-gates-20261127/native-stream-parser.log",
+      "log_sha256": "72b9593f1d223d8c263877327a9b85e3b990e506f907c57e09fc0e4fefcb910f"
+    }
+  ],
+  "installed_cli_qualified": false,
+  "whole_codex_rewritten": false,
+  "previous_head": "a59ab22f8455ec62ebbd04167f2b8cc067a511f4",
+  "source_tree": "55663ab8e80b5caf32da71eb557a2140b2a8597c",
+  "source_inputs": {
+    ".github/workflows/codex-hia-native.yml": "b7f2dde4011e66768a07b21500ad11899903e490dcc4e0fcab5f718cb2c0b4ff",
+    "codex-rs/Cargo.lock": "d96a8a7246c3db8f76ef94ad035f60d0caf97a6e9c91445bde149236b79da7da",
+    "codex-rs/cli/Cargo.toml": "779f9ad1d356e564e9f9fb50da3531a44332ff6801a39e37d9d4fc41ef94f771",
+    "codex-rs/exec/Cargo.toml": "5fcf6641121e90fa818b55004a02a2d31eab71bd6e2f3ca5b9f4ff86b8c44d32",
+    "codex-rs/exec/src/lib.rs": "90cf904b1fd3b36942f958d38789507c5b43d7e72de7def8232a159597967f3d",
+    "codex-rs/exec/src/lib_tests.rs": "be09e19ab0a8f1928906fc4a603798d97c166258c7e5b4b9821816361f3725b9",
+    "codex-rs/exec/src/prompt_decode.rs": "7e3b5cbad512747661258bc1807602f25977a95983ec431b444e8cad74663a68",
+    "codex-rs/exec/src/prompt_decode_tests.rs": "c2caad2ba45f80ec5cd197a8eb805a67956f43f8e98445055d8fbbbe47702c06",
+    "codex-rs/exec/tests/suite/prompt_stdin.rs": "f97e8ddfb9f75509b51a368466b63faf173d0062ec3d996b4bb305d76265c168",
+    "codex-rs/utils/stream-parser/src/hia_native_utf8_stream.rs": "8c54138540b2f93aac900f1e04f399ad2d5ab43d7134275ad5123e36bcd9921f",
+    "codex-rs/utils/stream-parser/src/lib.rs": "e641570369e1bc32bef4f044e0d25428d4dd2f17946115f30bdae97ae72ae4e1",
+    "codex-rs/utils/stream-parser/src/utf8_stream.rs": "c89814640371bcdb4d5a2a10158ecd358fcc285e70785012531613f0598fda96",
+    "codex-rs/utils/stream-parser/src/utf8_validation.rs": "196dead823d6ff1776a582ea0f6298baf76b36cf7b6cf5d7440180c8028b22b4",
+    "codex-rs/utils/stream-parser/src/utf8_validation_tests.rs": "0521dcb021ddada34e8c38fe479ca7c01ddbd51264f26619667374590b15b559",
+    "hia/README.md": "083ce294a2eab87c4dd7f6a04930441d470fc5a23bd04147cf486cd26fcc05a6",
+    "hia/evidence/20261127-merged-helper-cleanup/README.md": "cafca67ed701df8bf19c6b4aa7434d6b7712bd3183b2598982addd0ccd7137e6",
+    "hia/evidence/20261127-merged-helper-cleanup/codex-atomic-cas-cleanup-receipt.json": "388ee4461fe95530e68c86924cfe1316eceb57901f6bdd2996944f33ee9a48e2",
+    "hia/evidence/20261127-merged-helper-cleanup/merged-helper-cleanup-20261127-589c.json": "32df5d6aa8ceb385bffcd90d9234d1feeaad5fce701abf7aea836b3f1e5555a2",
+    "hia/evidence/20261127-merged-helper-cleanup/merged-helper-cleanup-retry.log": "c8611d1052b5a021051e6cb83fd34d65238e38323e41d4da59b7d1f79c623b0d",
+    "hia/joint_module_roles.json": "f630b7775e79e907773fd4031d11ac78932b7f4d107d2d318dc54f4ab2b161c7",
+    "hia/migration.json": "0d604bb889e8a76e86382e9c27afa0578e4835a05d2bd898623eddc27a47b7d6",
+    "hia/tests/test_installed_codex.py": "04e715955875c23a3eba766a160625eb83b6602dcab3569fd75c7144d1b895ab",
+    "hia/tests/test_native_prompt_decode_caller.py": "c42d96a30c6616e8157cba134e1402c282bfa2070b00261c3ba3bfec6d0505e0",
+    "hia/verification.json": "a8d13040b8475aca64dab5f910c08d5c0129ac771f4d020146fcfafe376862ae"
+  },
+  "caller_report": {
+    "path": "/home/qian-qi/work/hia-codex-deps-20261127-589c/stdin-native-gates-20261127/native-prompt-caller.json",
+    "sha256": "3ec22fc9c0ceaf20226a38b31b490bc34c1669304a842688fda62ef5039c2d78"
+  },
+  "caller": {
+    "passed": true,
+    "production_unit_tests": {
+      "reference": 11,
+      "native": 11
+    },
+    "error": null,
+    "native_build": {
+      "schema": "codex.hia.native-build.v1",
+      "profile": "full-native37",
+      "module_count": 37,
+      "compiler_generations_verified": [
+        "B1",
+        "B2",
+        "B3"
+      ],
+      "full29_manifest_verified": false,
+      "full30_manifest_verified": false,
+      "full31_manifest_verified": false,
+      "full32_manifest_verified": false,
+      "full33_manifest_verified": false,
+      "full34_manifest_verified": false,
+      "full35_manifest_verified": false,
+      "full36_manifest_verified": false,
+      "full37_manifest_verified": true,
+      "scope": "Existing native-selfhost report, all 37 module artifacts and three fixed-point image identities; no compilation performed by this raw gate."
+    },
+    "stdin_cases": 18
+  },
+  "stream_summary": [
+    "     Summary [   0.488s] 87 tests run: 87 passed, 0 skipped"
+  ],
+  "source_inputs_unchanged": true,
+  "source_tree_after": "55663ab8e80b5caf32da71eb557a2140b2a8597c",
+  "unstaged_diff": ""
+}
