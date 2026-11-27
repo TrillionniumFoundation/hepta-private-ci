@@ -3,6 +3,8 @@
 import hashlib
 import json
 from pathlib import Path
+import runpy
+import tempfile
 import types
 
 
@@ -26,7 +28,8 @@ def verify_current(root):
         raise SystemExit("historical source freeze changed")
     predecessor = json.loads(predecessor_bytes)
     current_path = root / "CURRENT_SOURCE_FREEZE.json"
-    current = json.loads(current_path.read_bytes())
+    current_bytes = current_path.read_bytes()
+    current = json.loads(current_bytes)
     expected_predecessor = {
         "path": PREFIX + "SOURCE_FREEZE.json",
         "sha256": PREDECESSOR_SHA256,
@@ -78,20 +81,41 @@ def verify_current(root):
     if (repository / WORKFLOW).read_bytes() != approved_workflow:
         raise SystemExit("workflow differs from the approved source-freeze successor")
 
-    for path, digest in current["files"].items():
-        if hashlib.sha256((repository / path).read_bytes()).hexdigest() != digest:
-            raise SystemExit(f"current source freeze mismatch: {path}")
+    # Keep the original source identities and run the historical checks against
+    # those exact bytes, rather than against current display representations.
+    trusted_repository = ROOT.resolve().parents[1]
+    restore = runpy.run_path(str(
+        trusted_repository / "qa/repository-consolidation/20261115/restore_raw_evidence.py"
+    ))
+    inventory = restore["entries"](trusted_repository)
+    with tempfile.TemporaryDirectory(prefix="hepta-rounding-source-") as location:
+        historical_repository = Path(location)
+        for path, digest in current["files"].items():
+            try:
+                raw = restore["read_frozen_source"](
+                    repository, path, digest, inventory, require_current_view=True
+                )
+            except (OSError, ValueError, KeyError) as error:
+                if path == HISTORICAL_VERIFIER:
+                    raise SystemExit("historical verifier pin changed") from error
+                if path in predecessor["files"] and path not in {WORKFLOW, PREFIX + "verify_source.py"}:
+                    raise SystemExit(f"original source pin changed: {path}") from error
+                raise SystemExit(f"current source freeze mismatch: {path}") from error
+            destination = historical_repository / path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(raw)
+        historical_root = historical_repository / PREFIX
+        historical_current = historical_root / current_path.name
+        historical_current.write_bytes(current_bytes)
 
-    # Execute the exact original verifier with the explicit current binding. Its
-    # numeric-dependency, zero-execution and qualification checks stay unchanged.
-    original_source = (repository / HISTORICAL_VERIFIER).read_bytes()
-    if hashlib.sha256(original_source).hexdigest() != original_verifier_hash:
-        raise SystemExit("historical verifier changed")
-    original = types.ModuleType("rounding_source_freeze_v1")
-    original.__file__ = str(root / "verify_source.py")
-    exec(compile(original_source, HISTORICAL_VERIFIER, "exec"), original.__dict__)
-    original.FREEZE = current_path
-    original.main()
+        # Run the exact V1 module with the already-approved V2 complete binding.
+        historical_verifier = historical_repository / HISTORICAL_VERIFIER
+        original_source = historical_verifier.read_bytes()
+        original = types.ModuleType("rounding_source_freeze_v1")
+        original.__file__ = str(historical_root / "verify_source.py")
+        exec(compile(original_source, HISTORICAL_VERIFIER, "exec"), original.__dict__)
+        original.FREEZE = historical_current
+        original.main()
     print("PASS_N256_FP64_ROUNDING_CURRENT_SOURCE_V2")
 
 

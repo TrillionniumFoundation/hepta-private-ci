@@ -131,4 +131,3 @@ def exact_rational_to_fp64_hex(numerator, denominator, *, negative_zero=False):
         inexact=inexact,
     )
     return output_hex, certificate
-

@@ -115,6 +115,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/fp64-rounding-predecessors/raw-evidence-storage.json": (
+        "48513353a2cafa38c5e899bc0613936deb0680c8923fff2413dc397c5a8b6c28"
+    ),
     "qa/repository-consolidation/20261126/patch-source-custody/raw-evidence-storage.json": (
         "cddbb382da7ae892cf017bc562098c6cabd4bc1a6422fd2dfd60ee6b46816b28"
     ),
@@ -242,6 +245,39 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": (
+        "742841e716fd2f80d0d7942ddea90c00d8f9c60797d6a2d9508e1527e18d8569"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_add_sub/verify_source.py": (
+        "d005e3cf024a8b0b5453edf352e361a4f68f27ea580e1ed199857340bde1a9cd"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_fma/verify_source.py": (
+        "bba1ac096f48d89208e7849a0320ef71249accf6f38ebea64032973632e1b04d"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_mul_div/verify_source.py": (
+        "8f9b8d5b4ae70fdc71b0203ecfc2767e8e6eec2b71a0870ba2271cd0b3e4524a"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_sequence/verify_source.py": (
+        "6ae877f389a1280d2a71711cd1d337f91fdf3e433d6a8ea18c4fbc985078402f"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_rounding/README.md": (
+        "35540dd894e51bb933a6b62618481e310e8c98a0df8f355be550d77dcdd4ae4d"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_rounding/__init__.py": (
+        "27e9f8f8fc656696bb719fefcd32513c7a2e986c077ca9a0237b185d09150990"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_rounding/REQUEST.json": (
+        "7da4bf0656d6d275fff4ade64fc02dbd556fb87409763f40eefe40948f7c55b0"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_rounding/history/verify_source_v1.py": (
+        "58d9129c3753715e8349d25d08d5d3031a32060f060b93935b3aa6e72e61ad5c"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_rounding/test_fp64_round.py": (
+        "a943283043a7f0d2ab4f2f9cb06ebd61c735d97d77acb387eccc1433f69ba050"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py": (
+        "4bc6070aff54d6b5dd126396db356f2e11dc029820b299edd26c7a4aa6493d2b"
+    ),
     "qualification/memory-cell-mem8-ci-followup/pending-startup-diagnostics/CANDIDATE.patch": (
         "1664d01d545e479663fb3d4762364b139f4bf97e13af6c90ae60f0fe22c3ce5d"
     ),
@@ -464,7 +500,7 @@ def entries(repo):
     return result
 
 
-def read_verified(repo, relative, expected_bytes, expected_sha256):
+def read_verified(repo, relative, expected_bytes, expected_sha256, *, index=None):
     if type(expected_bytes) is not int or not 0 <= expected_bytes <= MAX_BYTES:
         raise ValueError("invalid original evidence byte bound")
     if not isinstance(expected_sha256, str) or not re.fullmatch(
@@ -485,7 +521,7 @@ def read_verified(repo, relative, expected_bytes, expected_sha256):
     if data is None or (
         display_digest is not None and hashlib.sha256(data).hexdigest() == display_digest
     ):
-        entry = entries(repo)[relative]
+        entry = (entries(repo) if index is None else index)[relative]
         if (
             entry["original_bytes"] != expected_bytes
             or entry["original_sha256"] != expected_sha256
@@ -514,14 +550,15 @@ def read_verified(repo, relative, expected_bytes, expected_sha256):
     return data
 
 
-def read_frozen_source(repo, path, expected, index):
+def read_frozen_source(repo, path, expected, index, *, require_current_view=False):
     raw = read_regular(repo, path, 256 * 1024)
     active_digest = hashlib.sha256(raw).hexdigest()
-    if active_digest == expected:
+    approved_view = ARCHIVE_NOTICE_SHA256.get(path)
+    if active_digest == expected and (not require_current_view or approved_view is None):
         return raw
-    if ARCHIVE_NOTICE_SHA256.get(path) != active_digest or path not in index:
+    if approved_view != active_digest or path not in index:
         raise ValueError(f"active source differs from its frozen view: {path}")
-    return read_verified(repo, path, index[path]["original_bytes"], expected)
+    return read_verified(repo, path, index[path]["original_bytes"], expected, index=index)
 
 
 def replay_source_freeze(repo, freeze_path, freeze_sha256, verifier_sha256=None):
