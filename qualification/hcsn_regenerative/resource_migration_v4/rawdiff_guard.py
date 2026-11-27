@@ -507,4 +507,3 @@ def add_prospective_pins(plan, source_root):
     for name in amendment()["additional_source_paths"]:
         require(name not in plan["source_pins"], "V4 control overwrites original source pin")
         plan["source_pins"][name] = digest(raw(Path(source_root) / safe_relative(name)))
-

@@ -115,6 +115,12 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261127/historical-caller-source-views/raw-evidence-storage.json": (
+        "8cf0829b64c4f1314ae57ea08d80dfa0fdc7f9ce557bd8f73e74d982c8cbf577"
+    ),
+    "qa/repository-consolidation/20261127/hcsn-resource-proof-sources/raw-evidence-storage.json": (
+        "0244ad7127ac1d2743fc931f413acb3e6a33ae736e755620ff24c7e665f680f6"
+    ),
     "qa/repository-consolidation/20261127/n256-uniformization-source-chain/raw-evidence-storage.json": (
         "c9e71b773a7f8fe6afabda331005212782d209ec0eb8e6bebe55f41041b9fb19"
     ),
@@ -254,6 +260,24 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/cell-p0-converged-20261110-f7c0/caller-cb/run_full_scan.py": (
+        "fac64af4bf5a4ac00bfc36af9f0762c71324cd7b27c4851714d90d9c8455a841"
+    ),
+    "qualification/ordinary-owner-assembly-20261111/protected-packet-6654eb9d/replay.py": (
+        "1c2e6397304f954c55fc48e5ace62b048a29fb1d7e359123c329df16392cf604"
+    ),
+    "qualification/hcsn_regenerative/resource_migration_v3/rawdiff_guard.py": (
+        "3db7fc4592c5f671e145810a4d67a0611f46f59f2872525a3d2778caec4df5b4"
+    ),
+    "qualification/hcsn_regenerative/resource_migration_v3/test_resource_migration.py": (
+        "f5a479729b2e0684a19295ac6d0ee2c2a88cb5a5c09d98f522daaef769b24d73"
+    ),
+    "qualification/hcsn_regenerative/resource_migration_v4/rawdiff_guard.py": (
+        "ee6a4dc769db3034d5d8a22c091f2e38cab93889a1942edd5005502dc8e47c33"
+    ),
+    "qualification/hcsn_regenerative/resource_migration_v4/test_resource_migration.py": (
+        "59426e60039e274bab90b0073acf7c7d942cc54a8c3c69f7b93ef05568d9ef41"
+    ),
     "qualification/hcsn_currentstate_n256_uniformization_independence_review/REQUEST.json": (
         "3fc75817c42e7bb68f100562964051a68ba05f2f07e1e1bf59435eb01873ca8b"
     ),

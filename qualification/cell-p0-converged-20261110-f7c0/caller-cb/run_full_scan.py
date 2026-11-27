@@ -103,4 +103,3 @@ invocation.update({"status":"COMPLETED","exit_code":code,"ended_at_utc":ended})
 save("INVOCATION.json",invocation)
 emit({k:v for k,v in execution.items() if k not in ["before","after","command"]})
 raise SystemExit(0 if execution["qualified_exact_source_caller_scan"] else 1)
-

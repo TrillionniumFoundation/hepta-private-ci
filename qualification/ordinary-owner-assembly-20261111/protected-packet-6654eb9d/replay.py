@@ -130,4 +130,3 @@ print(json.dumps({key:result[key] for key in (
     "satisfied_rows","failed_rows","uncovered_rows","elapsed_seconds","failures"
 )},indent=2),flush=True)
 raise SystemExit(1 if failures else 0)
-
