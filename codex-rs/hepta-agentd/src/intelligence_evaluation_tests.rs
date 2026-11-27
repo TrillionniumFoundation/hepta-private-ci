@@ -324,16 +324,19 @@ fn session(binding: &AgentdEvaluationBindingV1, now: u64) -> AgentdEvaluationSes
         },
         trust: Arc::new(trust),
         signed,
+        original_record_digest: None,
+        coupled_field_owner: None,
     }
 }
 
 #[test]
 fn signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust() {
     let binding = binding();
-    let receipt = session(&binding, 1_000)
+    let (receipt, readback) = session(&binding, 1_000)
         .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
         .unwrap();
     assert!(!receipt.is_zero());
+    assert!(readback.is_none());
 }
 
 #[test]
@@ -398,3 +401,21 @@ fn evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted() {
             .is_err()
     );
 }
+
+#[test]
+fn field_evaluation_refuses_a_valid_signed_task_without_the_parameter_owner() {
+    let binding = AgentdEvaluationBindingV1 {
+        selected_candidate_id: id("candidate:field:probe"),
+        ..binding()
+    };
+    let result =
+        session(&binding, 1_000).evaluate(&input(&binding), &binding.selected_candidate_id, 1_000);
+    assert!(matches!(
+        result,
+        Err(AgentdIntelligenceEvaluationError::Binding)
+    ));
+}
+
+#[cfg(unix)]
+#[path = "intelligence_coupled_field_tests.rs"]
+pub(in crate::intelligence_product) mod coupled;

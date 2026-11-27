@@ -13,6 +13,23 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
     }
 }
 
+// Concurrent subprocess tests can briefly inherit a just-released file lock until exec.
+// Cold-reopen fixtures retry only the store's explicit lock-contention result.
+pub(super) fn recover_after_release<T, E: PartialEq>(
+    busy: E,
+    mut recover: impl FnMut() -> Result<T, E>,
+) -> Result<T, E> {
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+    loop {
+        match recover() {
+            Err(error) if error == busy && std::time::Instant::now() < deadline => {
+                std::thread::sleep(std::time::Duration::from_millis(1));
+            }
+            result => return result,
+        }
+    }
+}
+
 fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }

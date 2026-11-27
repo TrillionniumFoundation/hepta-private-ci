@@ -418,7 +418,8 @@ fn signed_context(
 }
 
 #[test]
-fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
+fn product_runner_binds_estimator_receipts_and_persists_signed_decision()
+-> Result<(), Box<dyn std::error::Error>> {
     let mut fixture = fixture();
     let frozen = match freeze_product_evaluation_plan_v1(
         fixture.cross_fold.clone(),
@@ -431,6 +432,7 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
         Err(error) => panic!("freeze product plan: {error}"),
     };
     let store = MemoryCas::default();
+    let recovery_store = store.clone();
     let owner = match FencedFinalHoldoutOwnerV1::initialize(
         store,
         digest("holdout-binding"),
@@ -519,6 +521,58 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     let mut tampered = temporal.clone();
     tampered.metrics[0].candidate.lower = FixedQ32::ZERO;
     assert!(runner.qualification_bundle(&tampered, &context).is_err());
+
+    let successor = FencedFinalHoldoutOwnerV1::recover(
+        recovery_store,
+        digest("holdout-binding"),
+        HoldoutWriterFenceV1 {
+            owner_id: id("evaluation-owner"),
+            generation: 2,
+            lease_digest: digest("lease-2"),
+        },
+    )?;
+    assert!(matches!(
+        runner.qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &verifier,
+            50,
+            &mut sink,
+        ),
+        Err(ProductEvaluationError::Holdout(
+            FencedHoldoutError::Conflict
+        ))
+    ));
+    assert_eq!(sink.persisted.len(), 1);
+    let successor = ProductEvaluationRunnerV1::new(successor);
+    assert_eq!(successor.qualification_bundle(&temporal, &context)?, bundle);
+
+    let other = FencedFinalHoldoutOwnerV1::initialize(
+        MemoryCas::default(),
+        digest("another holdout store"),
+        HoldoutWriterFenceV1 {
+            owner_id: id("evaluation-owner"),
+            generation: 1,
+            lease_digest: digest("lease-1"),
+        },
+    )?;
+    let mut other = ProductEvaluationRunnerV1::new(other);
+    let mut fresh = self::fixture();
+    let other_temporal = other.evaluate_temporal_comparison(
+        &frozen,
+        &fresh.candidate_plan,
+        &fresh.baseline_plan,
+        &mut fresh.provider,
+    )?;
+    assert_eq!(other_temporal.holdout, temporal.holdout);
+    assert!(matches!(
+        other.qualification_bundle(&temporal, &context),
+        Err(ProductEvaluationError::Binding("holdout store binding"))
+    ));
+    other.qualification_bundle(&other_temporal, &context)?;
+    Ok(())
 }
 
 #[test]

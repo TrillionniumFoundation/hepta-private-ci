@@ -6,7 +6,17 @@ fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
-    let mut value = fixture();
+    sign_fixture_for(fixture(), "action.read")
+}
+
+fn sign_fixture_for(
+    mut value: Fixture,
+    candidate: &str,
+) -> (
+    Fixture,
+    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+) {
+    let selected = id(candidate);
     let key = SigningKey::from_bytes(&[47; 32]);
     for owner in &mut value.owners {
         if owner.owner_id.as_str() == "learning.eval" {
@@ -32,7 +42,7 @@ fn signed_fixture() -> (
         snapshot_digest: value.request.snapshot.digest(),
         context_receipt_digest: context.context_digest,
         candidate_set_digest: legal.candidate_set_digest,
-        selected_candidate_id: id("action.read"),
+        selected_candidate_id: selected,
     };
     let (trust, signed) = evidence_fixture(&binding, wall_clock_ms().expect("clock"));
     value.inputs.signed_evaluation = Some(signed);
@@ -108,3 +118,7 @@ async fn signed_input_cannot_install_host_trust_or_change_actual_context() {
         ))
     ));
 }
+
+#[cfg(unix)]
+#[path = "intelligence_canonical_runtime_tests.rs"]
+mod canonical_runtime;

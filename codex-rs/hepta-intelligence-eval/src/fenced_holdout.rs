@@ -8,6 +8,7 @@
 
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Mutex;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -168,7 +169,7 @@ impl HoldoutFenceIssuerV1 {
 }
 
 pub struct FencedFinalHoldoutOwnerV1<S> {
-    store: S,
+    store: Mutex<S>,
     binding: Digest32,
     fence: HoldoutWriterFenceV1,
     journal: FinalHoldoutJournalV1,
@@ -195,7 +196,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         let record = FinalHoldoutCasRecordV1::new(binding, fence.clone(), journal.snapshot())?;
         apply_cas(&mut store, binding, None, &record)?;
         Ok(Self {
-            store,
+            store: Mutex::new(store),
             binding,
             fence,
             journal,
@@ -235,7 +236,7 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         };
 
         Ok(Self {
-            store,
+            store: Mutex::new(store),
             binding,
             fence,
             journal,
@@ -262,6 +263,8 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
 
         match self
             .store
+            .get_mut()
+            .map_err(|_| FencedHoldoutError::Poisoned)?
             .compare_and_swap(self.binding, Some(self.state_digest), &next)
         {
             Ok(()) => {
@@ -279,6 +282,69 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
                 Err(FencedHoldoutError::Indeterminate)
             }
         }
+    }
+
+    #[must_use]
+    pub(crate) fn binding(&self) -> Digest32 {
+        self.binding
+    }
+
+    /// Resolve a receipt against the fenced store without consuming data or
+    /// acquiring a newer fence. Historical uses survive monotonic journal growth.
+    pub fn verify_recorded_use(
+        &self,
+        plan: &CrossFoldPlanReceiptV1,
+        receipt: &FinalHoldoutJournalReceiptV1,
+    ) -> Result<(), FencedHoldoutError> {
+        if self.poisoned {
+            return Err(FencedHoldoutError::Poisoned);
+        }
+        let current = self
+            .store
+            .lock()
+            .map_err(|_| FencedHoldoutError::Poisoned)?
+            .load(self.binding)?
+            .ok_or(FencedHoldoutError::Missing)?;
+        current.validate(self.binding)?;
+        if current.state_digest != self.state_digest || current.fence != self.fence {
+            return Err(FencedHoldoutError::Conflict);
+        }
+        // The local journal was constructed by confirmed CAS or complete replay.
+        // Check the loaded history as well as its compact head/count commitment.
+        if current.journal.records != self.journal.records()
+            || current.journal.head_digest != self.journal.head_digest()
+        {
+            return Err(FencedHoldoutError::Corrupt);
+        }
+        let index = receipt
+            .sequence
+            .checked_sub(1)
+            .and_then(|index| usize::try_from(index).ok())
+            .ok_or(FencedHoldoutError::Binding)?;
+        let suffix = current
+            .journal
+            .records
+            .get(index..)
+            .ok_or(FencedHoldoutError::Binding)?;
+        let record = suffix.first().ok_or(FencedHoldoutError::Binding)?;
+        let head_matches = match receipt.disposition {
+            crate::HoldoutUseDispositionV1::Recorded => receipt.head_digest == record.record_digest,
+            crate::HoldoutUseDispositionV1::IdempotentReplay => suffix
+                .iter()
+                .any(|row| row.record_digest == receipt.head_digest),
+        };
+        if record.plan != *plan
+            || record.record_digest != receipt.record_digest
+            || receipt.disposition != receipt.use_receipt.disposition
+            || receipt.authority.grants_any()
+            || !head_matches
+            || !receipt
+                .use_receipt
+                .matches_recorded(plan, &record.use_receipt)
+        {
+            return Err(FencedHoldoutError::Binding);
+        }
+        Ok(())
     }
 
     #[must_use]
@@ -307,12 +373,14 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
 
     #[must_use]
     pub fn is_poisoned(&self) -> bool {
-        self.poisoned
+        self.poisoned || self.store.is_poisoned()
     }
 
     #[must_use]
     pub fn into_store(self) -> S {
         self.store
+            .into_inner()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 }
 

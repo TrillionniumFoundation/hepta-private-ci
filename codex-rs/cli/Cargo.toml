@@ -27,8 +27,8 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-utils-time = { workspace = true }
 anyhow = { workspace = true }
-chrono = { workspace = true }
 clap = { workspace = true, features = ["derive", "env"] }
 clap_complete = { workspace = true }
 codex-app-server = { workspace = true }

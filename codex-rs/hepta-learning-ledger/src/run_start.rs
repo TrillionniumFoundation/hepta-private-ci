@@ -103,6 +103,16 @@ pub struct RunStartRecordV1 {
     pub objective_function_v1_bytes: Vec<u8>,
 }
 
+impl RunStartRecordV1 {
+    /// Digest of the validated v2 publication bytes used by the durable journal.
+    /// A consumer can bind its own signed evidence to the complete original
+    /// record without implementing another serialization of the snapshot.
+    pub fn durable_record_digest_v1(&self) -> Result<Digest32, RunStartStoreError> {
+        validate_record(self)?;
+        Ok(Digest32::of_bytes(&encode_record(self)))
+    }
+}
+
 /// Durable hard-conflict outcome for an authenticated objective admission.
 ///
 /// Conflict receipts do not create a runtime snapshot. They still consume the

@@ -483,6 +483,18 @@ pub struct HoldoutUseReceiptV1 {
     receipt_seal: Digest32,
 }
 
+impl HoldoutUseReceiptV1 {
+    /// Rebuild the exact recorded or replay receipt from the owner's retained entry.
+    pub(crate) fn matches_recorded(&self, plan: &CrossFoldPlanReceiptV1, recorded: &Self) -> bool {
+        self == &holdout_use_receipt(
+            &HoldoutBindingV1::from_plan(plan),
+            self.disposition,
+            recorded.registry_digest,
+            recorded.use_digest,
+        )
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct HoldoutBindingV1 {
     holdout_digest: Digest32,

@@ -57,6 +57,16 @@ impl TempFile {
         }
     }
 
+    fn recover(
+        &self,
+        binding: Digest32,
+        minimum: Option<FinalHoldoutCasAnchorV1>,
+    ) -> Result<LockedFileFinalHoldoutCasStoreV1, LockedFileCasErrorV1> {
+        crate::tests::recover_after_release(LockedFileCasErrorV1::Busy, || {
+            LockedFileFinalHoldoutCasStoreV1::recover(self.open(), binding, minimum)
+        })
+    }
+
     fn open(&self) -> File {
         match OpenOptions::new().read(true).write(true).open(&self.path) {
             Ok(file) => file,
@@ -145,6 +155,38 @@ fn owner(
 }
 
 #[test]
+fn recorded_use_is_read_only_after_growth_replay_and_file_reopen()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = TempFile::new();
+    let binding = digest("binding");
+    let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), binding)?;
+    let mut first = owner(store, None);
+    let a = plan("verify-plan-a");
+    let b = plan("verify-plan-b");
+    let recorded = first.consume(&a)?;
+    first.consume(&b)?;
+    let replay = first.consume(&a)?;
+    let minimum = first.anchor();
+    drop(first);
+
+    let store = temp.recover(binding, Some(minimum))?;
+    let successor = owner(store, Some(minimum));
+    let fence = successor.fence().clone();
+    let successor_anchor = successor.anchor();
+    drop(successor);
+    let before = fs::read(&temp.path)?;
+    let store = temp.recover(binding, Some(successor_anchor))?;
+    let recovered = FencedFinalHoldoutOwnerV1::recover(store, binding, fence)?;
+    recovered.verify_recorded_use(&a, &recorded)?;
+    recovered.verify_recorded_use(&a, &replay)?;
+    assert!(recovered.verify_recorded_use(&b, &recorded).is_err());
+    assert_eq!(recovered.anchor().record_count, 2);
+    drop(recovered);
+    assert_eq!(fs::read(&temp.path)?, before);
+    Ok(())
+}
+
+#[test]
 fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
     let temp = TempFile::new();
     let store = match LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding")) {
@@ -160,11 +202,7 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
         Ok(value) => value,
         Err(error) => panic!("read backup: {error}"),
     };
-    let store = match LockedFileFinalHoldoutCasStoreV1::recover(
-        temp.open(),
-        digest("binding"),
-        Some(first_anchor),
-    ) {
+    let store = match temp.recover(digest("binding"), Some(first_anchor)) {
         Ok(value) => value,
         Err(error) => panic!("recover store: {error}"),
     };
@@ -181,8 +219,7 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
         panic!("restore backup: {error}");
     }
     assert_eq!(
-        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(committed),)
-            .err(),
+        temp.recover(digest("binding"), Some(committed)).err(),
         Some(LockedFileCasErrorV1::Rollback)
     );
 }
@@ -190,15 +227,20 @@ fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
 #[test]
 fn child_process_observes_lock_then_recovers_after_owner_exit() {
     if let Ok(path) = std::env::var("HEPTA_FENCED_CAS_CHILD") {
-        let file = match OpenOptions::new().read(true).write(true).open(path) {
-            Ok(file) => file,
-            Err(error) => panic!("child open: {error}"),
+        let recover = || {
+            let file = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&path)
+                .unwrap_or_else(|error| panic!("child open: {error}"));
+            LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), None)
         };
-        let result = LockedFileFinalHoldoutCasStoreV1::recover(file, digest("binding"), None);
         let expect_busy = std::env::var("HEPTA_FENCED_CAS_EXPECT_BUSY").is_ok();
         if expect_busy {
-            assert_eq!(result.err(), Some(LockedFileCasErrorV1::Busy));
-        } else if let Err(error) = result {
+            assert_eq!(recover().err(), Some(LockedFileCasErrorV1::Busy));
+        } else if let Err(error) =
+            crate::tests::recover_after_release(LockedFileCasErrorV1::Busy, recover)
+        {
             panic!("child failover recovery: {error}");
         }
         return;
@@ -257,7 +299,8 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
     let pre_minimum =
         fs::read(&temp.path).unwrap_or_else(|error| panic!("read pre-minimum backup: {error}"));
 
-    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
+    let store = temp
+        .recover(digest("binding"), None)
         .unwrap_or_else(|error| panic!("recover store: {error}"));
     let mut canonical = FencedFinalHoldoutOwnerV1::recover(store, digest("binding"), fence.clone())
         .unwrap_or_else(|error| panic!("recover canonical owner: {error}"));
@@ -270,7 +313,8 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
 
     fs::write(&temp.path, pre_minimum)
         .unwrap_or_else(|error| panic!("restore pre-minimum backup: {error}"));
-    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
+    let store = temp
+        .recover(digest("binding"), None)
         .unwrap_or_else(|error| panic!("recover divergent base: {error}"));
     let mut divergent = FencedFinalHoldoutOwnerV1::recover(store, digest("binding"), fence)
         .unwrap_or_else(|error| panic!("recover divergent owner: {error}"));
@@ -284,8 +328,7 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
     drop(store);
 
     assert_eq!(
-        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), Some(retained),)
-            .err(),
+        temp.recover(digest("binding"), Some(retained)).err(),
         Some(LockedFileCasErrorV1::Rollback)
     );
 }

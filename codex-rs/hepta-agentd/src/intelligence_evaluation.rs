@@ -3,6 +3,9 @@
 //! These are in-process host inputs, not a new wire protocol or trust issuer.
 //! The host supplies already activated learning trust; request data never does.
 
+use super::AgentdCoupledFieldReadbackV1;
+use super::VerifiedUse;
+use super::coupled_field::CoupledReadback;
 use std::error::Error as StdError;
 use std::fmt;
 use std::sync::Arc;
@@ -74,11 +77,35 @@ pub fn intelligence_evaluation_binding_payload_v1(
     Ok(bytes)
 }
 
+/// The ordinary evaluator signs this envelope to identify one exact current
+/// parameter qualification for one run. A generic evidence signature cannot
+/// identify which persisted qualification or registry view was used.
+pub fn intelligence_coupled_field_use_payload_v1(
+    binding: &AgentdEvaluationBindingV1,
+    evidence: &SignedEvaluationEvidenceV1,
+    readback: &AgentdCoupledFieldReadbackV1,
+    original_record_digest: Digest32,
+) -> Result<Vec<u8>, AgentdIntelligenceEvaluationError> {
+    if original_record_digest.is_zero()
+        || binding.selected_candidate_id != readback.binding.candidate_id
+    {
+        return Err(AgentdIntelligenceEvaluationError::Binding);
+    }
+    let ordinary = intelligence_evaluation_binding_payload_v1(binding, evidence)?;
+    let mut payload = b"hepta.agentd.coupled-parameter-use.v1\0".to_vec();
+    payload.extend_from_slice(Digest32::of_bytes(&ordinary).as_array());
+    payload.extend_from_slice(original_record_digest.as_array());
+    readback.extend_receipt(&mut payload);
+    Ok(payload)
+}
+
 pub(super) struct AgentdEvaluationSessionV1 {
     pub run_id: StableId,
     pub current_owner: CurrentOwnerStateV1,
     pub trust: Arc<ActivatedLearningTrustV1>,
     pub signed: AgentdSignedEvaluationV1,
+    pub original_record_digest: Option<Digest32>,
+    pub coupled_field_owner: Option<Arc<dyn CoupledReadback>>,
 }
 
 impl AgentdEvaluationSessionV1 {
@@ -87,7 +114,7 @@ impl AgentdEvaluationSessionV1 {
         input: &CanonicalPortInputV1,
         candidate: &StableId,
         now: u64,
-    ) -> Result<Digest32, AgentdIntelligenceEvaluationError> {
+    ) -> Result<(Digest32, Option<VerifiedUse>), AgentdIntelligenceEvaluationError> {
         if input.run_id != self.run_id
             || input.stage != CanonicalStageV1::EvaluationAdmitted
             || self.current_owner.owner_id.as_str() != "learning.eval"
@@ -105,22 +132,7 @@ impl AgentdEvaluationSessionV1 {
             candidate_set_digest: input.candidate_set_digest,
             selected_candidate_id: candidate.clone(),
         };
-        let payload = intelligence_evaluation_binding_payload_v1(&binding, &self.signed.evidence)?;
-        let verified = self
-            .trust
-            .verifier()
-            .verify(
-                LearningEvidenceRoleV1::Evaluator,
-                &self.signed.use_attestation,
-                &payload,
-                now,
-            )
-            .map_err(AgentdIntelligenceEvaluationError::Evidence)?;
-        if verified.principal() != &self.signed.bundle.evaluator
-            || verified.principal().signing_key_digest != self.current_owner.key_digest
-        {
-            return Err(AgentdIntelligenceEvaluationError::Binding);
-        }
+        let expected_evaluator = self.signed.bundle.evaluator.clone();
         let result = decide_with_signed_evidence_v2(
             self.signed.bundle,
             self.signed.roles,
@@ -135,12 +147,47 @@ impl AgentdEvaluationSessionV1 {
         {
             return Err(AgentdIntelligenceEvaluationError::Ineligible);
         }
+        let readback = if candidate.as_str().starts_with("candidate:field:") {
+            let owner = self
+                .coupled_field_owner
+                .ok_or(AgentdIntelligenceEvaluationError::Binding)?;
+            Some(owner.read(&result, self.trust.verifier(), now)?)
+        } else {
+            None
+        };
+        let payload = match &readback {
+            Some(qualified) => intelligence_coupled_field_use_payload_v1(
+                &binding,
+                &self.signed.evidence,
+                qualified,
+                self.original_record_digest
+                    .ok_or(AgentdIntelligenceEvaluationError::Binding)?,
+            )?,
+            None => intelligence_evaluation_binding_payload_v1(&binding, &self.signed.evidence)?,
+        };
+        let verified = self
+            .trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &self.signed.use_attestation,
+                &payload,
+                now,
+            )
+            .map_err(AgentdIntelligenceEvaluationError::Evidence)?;
+        if verified.principal() != &expected_evaluator
+            || verified.principal().signing_key_digest != self.current_owner.key_digest
+        {
+            return Err(AgentdIntelligenceEvaluationError::Binding);
+        }
         let mut receipt = b"hepta.agentd.evaluation-consumption.v1\0".to_vec();
         receipt.extend_from_slice(Digest32::of_bytes(&payload).as_array());
         receipt.extend_from_slice(result.authentication_digest.as_array());
         receipt.extend_from_slice(self.trust.distribution_digest().as_array());
         receipt.extend_from_slice(&self.signed.use_attestation.signature);
-        Ok(Digest32::of_bytes(&receipt))
+        let verified = readback
+            .map(|value| VerifiedUse::new(&binding, value, &payload, &self.signed.use_attestation));
+        Ok((Digest32::of_bytes(&receipt), verified))
     }
 }
 

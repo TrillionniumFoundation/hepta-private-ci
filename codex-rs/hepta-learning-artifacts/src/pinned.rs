@@ -292,3 +292,7 @@ impl RevalidatingCandidate {
 #[cfg(test)]
 #[path = "pinned_tests.rs"]
 mod tests;
+
+#[path = "pinned_family.rs"]
+mod family;
+pub use family::ParameterFamilyGuardV1;

@@ -226,6 +226,7 @@ pub trait ProductQualificationEvidenceSinkV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductTemporalEvaluationReceiptV1 {
+    holdout_binding: Digest32,
     pub holdout: FinalHoldoutJournalReceiptV1,
     pub product_plan: ProductFrozenEvaluationPlanV1,
     pub candidate: TemporalEvaluationReceipt,
@@ -301,6 +302,9 @@ pub enum ProductTimingEvidenceV1<'a> {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ProductQualificationReceiptV1 {
+    holdout_binding: Digest32,
+    frozen_plan: CrossFoldPlanReceiptV1,
+    holdout: FinalHoldoutJournalReceiptV1,
     pub temporal_execution_digest: Digest32,
     pub candidate_id: StableId,
     pub evaluator: AuthenticatedPrincipalV1,
@@ -319,6 +323,13 @@ pub struct ProductQualificationReceiptV1 {
 impl ProductQualificationReceiptV1 {
     pub fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
         if self.temporal_execution_digest.is_zero()
+            || self.holdout_binding.is_zero()
+            || self.frozen_plan.plan_id != self.decision.decision.evaluation_id
+            || self.frozen_plan.candidate_id != self.candidate_id
+            || self.frozen_plan.baseline_id != self.decision.decision.baseline_id
+            || self.frozen_plan.objective_digest != self.objective_digest
+            || self.frozen_plan.dataset_digest != self.dataset_digest
+            || self.frozen_plan.claim_scope != self.claim_scope
             || self.objective_digest.is_zero()
             || self.dataset_digest.is_zero()
             || self.publication_digest.is_zero()
@@ -361,6 +372,21 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
     #[must_use]
     pub fn holdout_anchor(&self) -> crate::FinalHoldoutCasAnchorV1 {
         self.holdout.anchor()
+    }
+
+    /// Resolve a previously published qualification against this holdout owner.
+    /// A recovered owner may read earlier uses on its verified history.
+    pub fn verified_qualification_use<'a>(
+        &self,
+        qualification: &'a ProductQualificationReceiptV1,
+    ) -> Result<&'a crate::HoldoutUseReceiptV1, ProductEvaluationError> {
+        qualification.validate_integrity()?;
+        if qualification.holdout_binding != self.holdout.binding() {
+            return Err(ProductEvaluationError::Binding("holdout store binding"));
+        }
+        self.holdout
+            .verify_recorded_use(&qualification.frozen_plan, &qualification.holdout)?;
+        Ok(&qualification.holdout.use_receipt)
     }
 
     pub fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>(
@@ -426,6 +452,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             confidence_receipt_digest,
         );
         let mut receipt = ProductTemporalEvaluationReceiptV1 {
+            holdout_binding: self.holdout.binding(),
             holdout,
             product_plan: product_plan.clone(),
             candidate,
@@ -451,6 +478,11 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
     ) -> Result<IndependentEvaluationBundleV1, ProductEvaluationError> {
         temporal.validate_integrity()?;
         let frozen = &temporal.product_plan.frozen_plan;
+        if temporal.holdout_binding != self.holdout.binding() {
+            return Err(ProductEvaluationError::Binding("holdout store binding"));
+        }
+        self.holdout
+            .verify_recorded_use(frozen, &temporal.holdout)?;
         Ok(IndependentEvaluationBundleV1 {
             evaluation_id: frozen.plan_id.clone(),
             candidate_id: frozen.candidate_id.clone(),
@@ -526,6 +558,9 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             return Err(ProductEvaluationError::Integrity("publication digest"));
         }
         let mut receipt = ProductQualificationReceiptV1 {
+            holdout_binding: temporal.holdout_binding,
+            frozen_plan: temporal.product_plan.frozen_plan.clone(),
+            holdout: temporal.holdout.clone(),
             temporal_execution_digest: temporal.execution_digest,
             candidate_id,
             evaluator,
@@ -574,7 +609,11 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
 }
 
 fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v2".to_vec();
+    bytes.extend_from_slice(receipt.holdout_binding.as_array());
+    bytes.extend_from_slice(receipt.frozen_plan.plan_digest.as_array());
+    bytes.extend_from_slice(receipt.holdout.record_digest.as_array());
+    bytes.extend_from_slice(receipt.holdout.use_receipt.use_digest.as_array());
     bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
     bytes.extend_from_slice(receipt.evidence_digest.as_array());
     Digest32::of_bytes(&bytes)
@@ -774,8 +813,10 @@ fn execution_digest(
 fn product_evaluation_seal(
     receipt: &ProductTemporalEvaluationReceiptV1,
 ) -> Result<Digest32, ProductEvaluationError> {
-    let mut bytes = b"hepta.intelligence-eval.product-evaluation-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-evaluation-receipt.v2".to_vec();
     for digest in [
+        receipt.holdout_binding,
+        receipt.holdout.head_digest,
         receipt.holdout.record_digest,
         receipt.product_plan.frozen_plan.plan_digest,
         receipt.candidate.evidence_digest,
@@ -787,6 +828,11 @@ fn product_evaluation_seal(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    bytes.extend_from_slice(&receipt.holdout.sequence.to_be_bytes());
+    bytes.push(match receipt.holdout.disposition {
+        crate::HoldoutUseDispositionV1::Recorded => 0,
+        crate::HoldoutUseDispositionV1::IdempotentReplay => 1,
+    });
     for metric in &receipt.metrics {
         push_metric(&mut bytes, metric);
     }
