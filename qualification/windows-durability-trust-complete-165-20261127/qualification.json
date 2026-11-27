@@ -1,0 +1,28 @@
+{
+  "tested_source": "165516b637fff71cddbbf62295c0bf7c70c09a05",
+  "evidence_parent": "5766f10e806dfaaae2538aeef7db2719cb734494",
+  "source_identical_to_tested": true,
+  "run": 46040504856,
+  "job": 140646717244,
+  "conclusion": "success",
+  "targets": {
+    "//codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test": 0.5,
+    "//codex-rs/hepta-contracts:hepta-contracts-unit-tests": 107.2,
+    "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests": 2.7,
+    "//codex-rs/hepta-shadow-qualification:hepta-shadow-qualification-tests": 0.6
+  },
+  "targets_executed": 4,
+  "targets_passed": 4,
+  "flaky": 0,
+  "retries": 0,
+  "raw_bytes": 401029,
+  "raw_sha256": "7560102e62019e9d2e2df445364a316d702a2156d09cdf80ded408f85cc95a3a",
+  "artifact": {
+    "artifact_id": 15221299393,
+    "bytes": 3645011,
+    "sha256": "75e9687f4a426ffe8568ec4914b9717b5ecaefc6e908cc0fd272eebc4311d8e5",
+    "crc_ok": true
+  },
+  "full_matrix_qualified": false,
+  "original_failure_retained": "qualification/windows-openssh-programdata-20261127/original-win4-job140636121051.log.gz"
+}
