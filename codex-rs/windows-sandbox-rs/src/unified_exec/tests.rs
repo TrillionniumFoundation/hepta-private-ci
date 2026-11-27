@@ -6,6 +6,10 @@ mod acl_setup_tests;
 #[path = "delete_permission_tests.rs"]
 mod delete_permission_tests;
 
+#[path = "../../../exec-server/tests/support/windows_elevated_fixture.rs"]
+mod hosted_elevated_fixture;
+
+use self::hosted_elevated_fixture::AuthorizedReadOnlySandboxFixture;
 use super::WindowsSandboxSessionRequest;
 use super::spawn_windows_sandbox_session_elevated_for_permission_profile;
 use super::spawn_windows_sandbox_session_for_level;
@@ -23,6 +27,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_pty::ProcessDriver;
 use codex_utils_pty::ProcessSignal;
 use pretty_assertions::assert_eq;
+use rand::RngCore;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::OpenOptions;
@@ -55,11 +60,27 @@ use windows_sys::Win32::System::Threading::WaitForSingleObject;
 
 static TEST_HOME_COUNTER: AtomicU64 = AtomicU64::new(0);
 static LEGACY_PROCESS_TEST_LOCK: Mutex<()> = Mutex::new(());
+static ELEVATED_PROCESS_TEST_LOCK: Mutex<()> = Mutex::new(());
 
 fn legacy_process_test_guard() -> MutexGuard<'static, ()> {
     LEGACY_PROCESS_TEST_LOCK
         .lock()
         .expect("legacy Windows sandbox process test lock poisoned")
+}
+
+fn elevated_process_test_guard() -> MutexGuard<'static, ()> {
+    ELEVATED_PROCESS_TEST_LOCK
+        .lock()
+        .expect("elevated Windows sandbox process test lock poisoned")
+}
+
+fn authorized_elevated_fixture() -> AuthorizedReadOnlySandboxFixture {
+    let mut root_id = [0u8; 16];
+    rand::rngs::OsRng
+        .try_fill_bytes(&mut root_id)
+        .expect("generate unique elevated fixture directory ID");
+    AuthorizedReadOnlySandboxFixture::new(root_id)
+        .expect("create explicitly authorized hosted Windows fixture")
 }
 
 fn current_thread_runtime() -> tokio::runtime::Runtime {
@@ -268,15 +289,16 @@ fn restricted_token_rejects_managed_network_before_spawn() {
 }
 
 #[test]
-fn legacy_non_tty_cmd_emits_output() {
-    let _guard = legacy_process_test_guard();
+fn elevated_non_tty_cmd_emits_output() {
+    let fixture = authorized_elevated_fixture();
+    let _guard = elevated_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("legacy-non-tty-cmd");
+        let cwd = fixture.path().to_path_buf();
+        let codex_home = TempDir::new().expect("create owned elevated sandbox home");
         println!("cmd codex_home={}", codex_home.path().display());
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
@@ -287,7 +309,12 @@ fn legacy_non_tty_cmd_emits_output() {
             ],
             cwd.as_path(),
             HashMap::new(),
+            /*proxy_enforced*/ false,
+            /*network_proxy_restricting_sid*/ None,
             Some(5_000),
+            /*read_roots_override*/ None,
+            /*read_roots_include_platform_defaults*/ true,
+            /*write_roots_override*/ None,
             &[],
             &[],
             /*tty*/ false,
@@ -295,7 +322,7 @@ fn legacy_non_tty_cmd_emits_output() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect("spawn legacy non-tty cmd session");
+        .expect("spawn elevated non-tty cmd session");
         println!("cmd spawn returned");
         let (stdout, exit_code) =
             collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10)).await;
@@ -303,16 +330,21 @@ fn legacy_non_tty_cmd_emits_output() {
         let stdout = String::from_utf8_lossy(&stdout);
         assert_eq!(exit_code, 0, "stdout={stdout:?}");
         assert!(stdout.contains("LEGACY-NONTTY-CMD"), "stdout={stdout:?}");
+        codex_home
+            .close()
+            .expect("remove owned elevated sandbox home");
+        fixture.close().expect("remove owned elevated fixture");
     });
 }
 
 #[test]
 fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
-    let _guard = legacy_process_test_guard();
+    let fixture = authorized_elevated_fixture();
+    let _guard = elevated_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("elevated-non-tty-cmd");
+        let cwd = fixture.path().to_path_buf();
+        let codex_home = TempDir::new().expect("create owned elevated sandbox home");
         let permission_profile = PermissionProfile::workspace_write();
         let env_map = HashMap::from([(
             "CODEX_ELEVATED_TEST".to_string(),
@@ -349,6 +381,10 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
         let stdout = String::from_utf8_lossy(&stdout);
         assert_eq!(exit_code, 23, "stdout={stdout:?}");
         assert!(stdout.contains("ELEVATED-ENV-OK"), "stdout={stdout:?}");
+        codex_home
+            .close()
+            .expect("remove owned elevated sandbox home");
+        fixture.close().expect("remove owned elevated fixture");
     });
 }
 
@@ -682,13 +718,12 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
 }
 
 #[test]
-fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
-    let _guard = legacy_process_test_guard();
+fn elevated_workspace_write_delete_is_limited_to_writable_roots() {
+    let test_root = authorized_elevated_fixture();
+    let _guard = elevated_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        // Keep writable roots out of USERPROFILE exclusions such as AppData.
-        let test_root = TempDir::new_in(sandbox_cwd()).expect("create legacy delete test root");
-        let codex_home = sandbox_home("legacy-delete-writable-roots");
+        let codex_home = TempDir::new().expect("create owned elevated sandbox home");
         let workspace = test_root.path().join("workspace");
         let temp_root = test_root.path().join("temp");
         let tmp_root = test_root.path().join("tmp");
@@ -707,6 +742,16 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         fs::write(&temp_file, "temp").expect("seed TEMP file");
         fs::write(&tmp_file, "tmp").expect("seed TMP file");
         fs::write(&outside_file, "outside").expect("seed outside file");
+        assert_eq!(
+            fs::read_to_string(&outside_file).expect("read exact outside host control"),
+            "outside"
+        );
+        fs::remove_file(&outside_file).expect("host can delete exact outside file");
+        assert!(!outside_file.exists());
+        fs::write(&outside_file, "outside").expect("restore exact outside file");
+        fs::remove_dir(&protected_git_dir).expect("host can delete exact protected directory");
+        assert!(!protected_git_dir.exists());
+        fs::create_dir(&protected_git_dir).expect("restore exact protected directory");
 
         let script = workspace.join("delete-fixtures.cmd");
         fs::write(
@@ -754,7 +799,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         ]);
 
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
             &permission_profile,
             workspace_roots_for(workspace.as_path()).as_slice(),
             codex_home.path(),
@@ -766,7 +811,12 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             ],
             workspace.as_path(),
             env_map,
+            /*proxy_enforced*/ false,
+            /*network_proxy_restricting_sid*/ None,
             /*timeout_ms*/ Some(5_000),
+            /*read_roots_override*/ None,
+            /*read_roots_include_platform_defaults*/ true,
+            /*write_roots_override*/ None,
             &[],
             &[],
             /*tty*/ false,
@@ -774,32 +824,11 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect("spawn legacy delete session");
+        .expect("spawn elevated delete session");
         let (stdout, exit_code) =
             collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
                 .await;
         let stdout = String::from_utf8_lossy(&stdout);
-        let diagnostics = crate::token::delete_diagnostics::observe_legacy(
-            codex_home.path(),
-            &workspace,
-            &[&workspace, &temp_root, &tmp_root],
-            &[
-                ("workspace-dir", workspace.as_path()),
-                ("workspace-file", workspace_file.as_path()),
-                ("temp-dir", temp_root.as_path()),
-                ("temp-file", temp_file.as_path()),
-                ("tmp-dir", tmp_root.as_path()),
-                ("tmp-file", tmp_file.as_path()),
-                ("outside-dir", outside_root.as_path()),
-                ("outside-file", outside_file.as_path()),
-                ("protected-dir", protected_git_dir.as_path()),
-            ],
-        );
-        eprintln!(
-            "delete-native legacy-observation-complete={}",
-            diagnostics.is_ok()
-        );
-
         // Observe only these owned fixture objects after the original child has
         // completed. Preserve the original postcondition tuple and error checks.
         {
@@ -839,6 +868,10 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             "stdout={stdout:?}\n{}",
             sandbox_log(codex_home.path())
         );
+        codex_home
+            .close()
+            .expect("remove owned elevated sandbox home");
+        test_root.close().expect("remove owned elevated fixture");
     });
 }
 

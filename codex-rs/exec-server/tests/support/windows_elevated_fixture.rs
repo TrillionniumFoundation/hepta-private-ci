@@ -17,7 +17,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::path::Prefix;
 use std::ptr;
-use uuid::Uuid;
 use windows_sys::Win32::Foundation::BOOL;
 use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
 use windows_sys::Win32::Foundation::GetLastError;
@@ -45,7 +44,7 @@ pub(super) struct AuthorizedReadOnlySandboxFixture {
 }
 
 impl AuthorizedReadOnlySandboxFixture {
-    pub(super) fn new() -> Result<Self> {
+    pub(super) fn new(root_id: [u8; 16]) -> Result<Self> {
         let sids = require_hosted_elevated_authorization()?;
         let runner_temp =
             PathBuf::from(std::env::var_os("RUNNER_TEMP").context("RUNNER_TEMP is required")?);
@@ -59,7 +58,10 @@ impl AuthorizedReadOnlySandboxFixture {
             "RUNNER_TEMP must be on a local Windows volume"
         );
         ensure_same_directory(&runner_temp, parent_identity)?;
-        let root = runner_temp.join(format!("codex-elevated-fixture-{}", Uuid::new_v4()));
+        let root = runner_temp.join(format!(
+            "codex-elevated-fixture-{:032x}",
+            u128::from_be_bytes(root_id)
+        ));
         let workspace = root.join("workspace");
         create_private_directory(&root, &sids)?;
         // Ownership begins immediately after creation, including later validation errors.

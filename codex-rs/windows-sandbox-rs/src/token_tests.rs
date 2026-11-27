@@ -484,6 +484,21 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
     let host = DeleteMatrix::new(&fixture.path().join("host"))?;
     let restricted = DeleteMatrix::new(&fixture.path().join("restricted"))?;
     host.assert_same_acls(&restricted);
+    {
+        let mut observations = Vec::with_capacity(/*capacity*/ 12);
+        for (index, (file, directory)) in host.paths().enumerate() {
+            observations.push((format!("host-{index}-file"), file));
+            observations.push((format!("host-{index}-directory"), directory));
+            if let Some(parent) = file.parent() {
+                observations.push((format!("host-{index}-parent"), parent));
+            }
+        }
+        let borrowed = observations
+            .iter()
+            .map(|(label, path)| (label.as_str(), *path))
+            .collect::<Vec<_>>();
+        super::delete_diagnostics::observe_host(&borrowed);
+    }
     let host_errors: Vec<_> = host
         .paths()
         .map(|(file, directory)| {

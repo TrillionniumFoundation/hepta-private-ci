@@ -2,6 +2,8 @@
 #![allow(clippy::expect_used)]
 
 mod common;
+#[path = "support/windows_elevated_fixture.rs"]
+mod windows_elevated_fixture;
 
 #[path = "file_system/shared.rs"]
 mod shared;
@@ -10,6 +12,7 @@ mod support;
 
 use std::path::Path;
 use std::process::Command;
+use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::Result;
@@ -29,8 +32,8 @@ use uuid::Uuid;
 
 use crate::support::FileSystemImplementation;
 use crate::support::create_file_system_context;
-use crate::support::is_unsupported_restricted_token_host;
 use crate::support::workspace_write_sandbox;
+use crate::windows_elevated_fixture::AuthorizedReadOnlySandboxFixture;
 
 fn create_directory_junction(target: &Path, alias: &Path) -> Result<()> {
     let output = Command::new("cmd")
@@ -77,8 +80,8 @@ async fn file_system_sandboxed_canonicalize_resolves_directory_junction(
 async fn file_system_operations_can_reject_junctions_in_any_path_component(
     implementation: FileSystemImplementation,
 ) -> Result<()> {
+    let tmp = AuthorizedReadOnlySandboxFixture::new(*uuid::Uuid::new_v4().as_bytes())?;
     let context = create_file_system_context(implementation).await?;
-    let tmp = tempfile::TempDir::new()?;
     let real = tmp.path().join("real");
     std::fs::create_dir(&real)?;
     let existing = real.join("existing.txt");
@@ -222,9 +225,6 @@ async fn file_system_operations_can_reject_junctions_in_any_path_component(
         .file_system
         .read_file(&uri(&existing)?, no_follow_read, Some(&sandbox))
         .await;
-    if is_unsupported_restricted_token_host(&read_result) {
-        return Ok(());
-    }
     assert_eq!(read_result?, b"unchanged");
     assert!(
         context
@@ -286,6 +286,8 @@ async fn file_system_operations_can_reject_junctions_in_any_path_component(
     );
     assert!(removable.exists());
 
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 
@@ -343,14 +345,14 @@ async fn file_system_no_follow_operations_reject_named_pipes(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn file_system_remote_fs_helper_respects_windows_sandbox_write_policy() -> Result<()> {
+    let tmp = AuthorizedReadOnlySandboxFixture::new(*uuid::Uuid::new_v4().as_bytes())?;
     let context = create_file_system_context(FileSystemImplementation::Remote).await?;
-    let file_system = context.file_system;
-    let tmp = tempfile::TempDir::new()?;
+    let file_system = Arc::clone(&context.file_system);
     let readonly_dir = tmp.path().join("readonly");
     std::fs::create_dir_all(&readonly_dir)?;
 
     let mut sandbox = read_only_sandbox_for_cwd(readonly_dir.clone())?;
-    sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
 
     let readable_file = readonly_dir.join("readable.txt");
     std::fs::write(&readable_file, b"readable")?;
@@ -361,15 +363,13 @@ async fn file_system_remote_fs_helper_respects_windows_sandbox_write_policy() ->
             Some(&sandbox),
         )
         .await;
-    // Some local Windows hosts cannot create restricted tokens. Reaching that
-    // error still proves the remote fs helper went through the Windows sandbox
-    // launcher; before the wrapper fix this read would have run unsandboxed.
-    if is_unsupported_restricted_token_host(&read_result) {
-        return Ok(());
-    }
     assert_eq!(read_result?, b"readable");
 
     let blocked_file = readonly_dir.join("blocked.txt");
+    std::fs::write(&blocked_file, b"host-positive-control")?;
+    assert_eq!(std::fs::read(&blocked_file)?, b"host-positive-control");
+    std::fs::remove_file(&blocked_file)?;
+    assert!(!blocked_file.try_exists()?);
     let error = file_system
         .write_file(
             &PathUri::from_host_native_path(&blocked_file)?,
@@ -384,6 +384,9 @@ async fn file_system_remote_fs_helper_respects_windows_sandbox_write_policy() ->
         "sandboxed fs helper must not create blocked file after error: {error}"
     );
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 

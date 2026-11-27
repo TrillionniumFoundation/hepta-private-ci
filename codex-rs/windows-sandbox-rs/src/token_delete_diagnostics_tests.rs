@@ -22,6 +22,8 @@ use windows_sys::Win32::Storage::FileSystem::*;
 #[path = "token_access_check_diagnostics_tests.rs"]
 mod access_check;
 
+pub(crate) use access_check::observe_host;
+
 struct Impersonation;
 
 impl Impersonation {

@@ -55,4 +55,5 @@ codex_rust_crate(
         ":codex-command-runner",
         ":codex-windows-sandbox-setup",
     ],
+    unit_test_extra_srcs = ["//codex-rs/exec-server:tests/support/windows_elevated_fixture.rs"],
 )

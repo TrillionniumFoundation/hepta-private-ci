@@ -1183,7 +1183,9 @@ async fn assert_exec_process_write_then_read_without_tty(use_remote: bool) -> Re
 
 async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
     #[cfg(windows)]
-    let workspace = windows_elevated_fixture::AuthorizedReadOnlySandboxFixture::new()?;
+    let workspace = windows_elevated_fixture::AuthorizedReadOnlySandboxFixture::new(
+        *uuid::Uuid::new_v4().as_bytes(),
+    )?;
     #[cfg(not(windows))]
     let workspace = TempDir::new()?;
     // Authorization and owned-directory checks precede exec-server and Full setup.
