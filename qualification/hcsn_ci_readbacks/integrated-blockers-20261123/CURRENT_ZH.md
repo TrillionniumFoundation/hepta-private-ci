@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-27 UTC：N256 FP64 input bridge 归档原件独立原生核验
+
+- #6799 真实新 head [dac00247](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/dac002470799d1da06cdc51dc3601ca93005ca7e)，draft 未合并；与 a845 比较 ahead15/behind0。当前新源采用原冻结字节归档及隔离回放入口，非此前单纯补末尾 LF 的独立方案。原 [FP64 input bridge job140282342647](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45930685601/job/140282342647) 在精确 a845 checkout 的 README 冻结摘要处失败；同源 dense retained、split mesh 分别在冻结断言、专用 manifest 拒绝，保留历史红门。
+- 直接读取 dac002 新增的 n256-paired-source-seals index，独立 ROG Python3.14.4 原生从七个 gzip 原件及两个直接 Git 对象重建完整九文件冻结视图，共 25,271B。原 index 固定 SHA256、冻结清单固定 SHA256、每份下载 Git blob SHA1、七份 gzip 的存储 SHA256/长度及解压后的原 SHA256/Git blob/长度全部匹配；9/9 原冻结摘要匹配。实际执行归档中的原 verify_source.py，exit0，PASS_N256_UNIFORMIZATION_EXACT_FP64_INPUT_BRIDGE_SOURCE_ONLY；ROG job 1a21b21be2b-ffbe-4e7b 外层 exit0/stderr0/stdout3617B、output_complete/durable/terminal_publication_confirmed=true。此为独立只读原始视图验证，不是当前产品回放适配器或完整 CI 成功；未重复数值 fixture，新模型/优化器调用0，真实 N256/provider/资源/数值准入仍 HOLD。
+- 前一 a845 的首屏100条读取为57 success/10 failure/14 skipped/15 cancelled/3 queued/1 in_progress；新 dac002 首屏100条75 queued/16 pending/7 skipped/2 in_progress，均非全分页终局。当前产品适配器正在主线演进，未抢写或再次制作同类独立 LF 修补。未修改原冻结摘要、安全权限、科学判据或500ms门，未合并红门。
+- [完整原生逐文件独立复算及执行回执](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/29594a8c18118a6cfbd1a84f12156730519fd550/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/n256-fp64-bridge-archived-original-independent-dac002-20261127.json) 已实际提交并全文回读一致。全仓 HOLD；持续按新证据区分原始视图、产品集成和科学采用资格。
+
+
 ## 2026-11-27 UTC：N256 output interval 冻结源独立修补通过
 
 - #6799 实际新 head a845976041d14b4bc6a900aa4169c35abe30d903，draft 未合并；前一 5bfecec9 原首屏100工作流已终态 {"skipped":16,"success":61,"failure":22,"cancelled":1}（非全分页）。新 head 初读 0 条 PR workflow，不把无结果当通过。#7016/#7021/#7032/#7052 仍原 draft。原 blocking-ci 45918428289 首页30 job 已有 repo-checks Prettier、Linux GNU/musl、Windows shard1/2/4、macOS ARM/Intel 红门；cargo-deny 原成功仅限该旧候选。
