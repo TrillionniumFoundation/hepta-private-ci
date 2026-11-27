@@ -1,0 +1,18 @@
+{
+  "requested": "T4",
+  "request_id": "hcsn-fb27-c889-rt1",
+  "script_sha256": "020b141aad4191e07d990ddc367700bd0f8af043e90560ed0988b60131ef0ba0",
+  "source": "HeptaRuntime plan, execute, inspect and collect, same original request",
+  "reserved": "2026-11-27T05:31:04Z",
+  "provider_acknowledged": true,
+  "provider_terminal_state": "ERROR",
+  "collector_state": "COLLECTED",
+  "compute_succeeded": false,
+  "failed_check": "torch.cuda.is_available() returned False",
+  "error": "RuntimeError: GPU required",
+  "result_files": [],
+  "expected_artifact": "result.json",
+  "provider_stdout_sha256": "3320e8a86ce30e23539e2b387ea5db403f9e740191e35c2407514016a5aa5f85",
+  "resource_lease_until_after_collect": 0,
+  "interpretation": "This provider submission supplies no inference, fit, quality or accelerator timing. The separately verified AMD accelerator runs the identical offline source."
+}
