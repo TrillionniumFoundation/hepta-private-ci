@@ -1,0 +1,16 @@
+{
+ "request_id": "hcsn-ucm-causal-scale-20261127-e0bf-v1",
+ "accelerator": "T4",
+ "provider": "kaggle",
+ "gpu_eligibility_observed": "2026-11-27T22:42:04Z",
+ "dispatch_sha256": "0d289b4eaa8f1d7a68d371b54944e773c40d36cee36621f1a73e4dda765f853e",
+ "input_sha256": "1ae3e0349aa356273877fa3f717cfe325c14dad384525b06b66cbbc407409477",
+ "driver_timeout_s": 14400,
+ "per_fit_cap_s": 360,
+ "artifacts": [
+  "result.json",
+  "predictions.npz",
+  "seal.json"
+ ],
+ "account_policy": "single qualified provider identity frozen at plan; no automatic rotation"
+}

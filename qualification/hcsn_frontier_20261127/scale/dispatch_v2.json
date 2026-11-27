@@ -1,0 +1,17 @@
+{
+ "request_id": "hcsn-ucm-causal-scale-20261127-e0bf-v2",
+ "accelerator": "T4",
+ "provider": "kaggle",
+ "gpu_eligibility_observed": "2026-11-27T22:42:04Z",
+ "dispatch_sha256": "40dacfd435b5b8723ffdab24b120985ffcf5c56a7c4f735965552c3a450712d8",
+ "input_sha256": "1ae3e0349aa356273877fa3f717cfe325c14dad384525b06b66cbbc407409477",
+ "driver_timeout_s": 14400,
+ "per_fit_cap_s": 360,
+ "artifacts": [
+  "result.json",
+  "predictions.npz",
+  "seal.json"
+ ],
+ "account_policy": "single qualified provider identity frozen at plan; no automatic rotation",
+ "supersedes": "v1 planned but never executed; per-caption cold costs required after discovering high content duplication on development"
+}
