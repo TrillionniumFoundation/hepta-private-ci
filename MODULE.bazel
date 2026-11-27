@@ -173,8 +173,8 @@ rules_rust.patch(
         # Prefer Rust's direct linker for Windows/MSVC and keep hermetic
         # LLVM's non-.lib runtime artifacts compatible with it.
         "//patches:rules_rust_windows_msvc_direct_link_args.patch",
-        # Skip transient native-Windows linker outputs while consolidating
-        # dependency search paths.
+        # Skip native-Windows executable outputs and require readable libraries
+        # before consolidating dependency paths or starting a child process.
         "//patches:rules_rust_windows_process_wrapper_skip_temp_outputs.patch",
         # Spill the wrapper's build-script flags separately from rustc flags
         # so native Windows actions stay below CreateProcessW's argv limit.
