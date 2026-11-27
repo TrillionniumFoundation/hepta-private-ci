@@ -25,9 +25,18 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          # Qualification retains its historical evidence checks; development only reads the tested tree.
+          # Qualification retains its historical evidence checkout.
           fetch-depth: ${{ fromJSON(inputs.profile == 'development' && '1' || '0') }}
           persist-credentials: false
+      - name: Fetch exact pull request history for the changed-path check
+        if: inputs.profile == 'development' && github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/hepta_ci_history.py --full-history \
+            --commit "$BASE_SHA" --commit "$SOURCE_SHA" --commit "$GITHUB_SHA"
       - name: Validate branch policy
         shell: bash
         run: |
