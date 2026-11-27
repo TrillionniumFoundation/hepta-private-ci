@@ -55,6 +55,9 @@ mod linux;
 use linux::secure_open_unique_without_symlinks;
 #[cfg(target_os = "linux")]
 use linux::stable_file_path_from_raw_fd;
+#[cfg(target_os = "macos")]
+#[path = "local_file_system_macos.rs"]
+mod macos;
 
 const MAX_READ_FILE_BYTES: u64 = 512 * 1024 * 1024;
 
@@ -1436,9 +1439,19 @@ fn authorize_stable_file_path(
     let policy = permissions
         .materialize_project_roots_with_workspace_roots(&workspace_roots)
         .file_system_sandbox_policy();
-    let denied_by_pattern = ReadDenyMatcher::new(&policy, cwd.as_path())
-        .is_some_and(|matcher| matcher.is_read_denied(final_path));
-    if denied_by_pattern || !policy.can_read_path_with_cwd(final_path, cwd.as_path()) {
+    #[cfg(target_os = "linux")]
+    let path_candidates = [final_path];
+    #[cfg(target_os = "macos")]
+    let path_candidates = macos::authorized_read_path_candidates(final_path);
+    let denied = ReadDenyMatcher::new(&policy, cwd.as_path()).is_some_and(|matcher| {
+        path_candidates
+            .iter()
+            .any(|path| matcher.is_read_denied(path))
+    });
+    let allowed = path_candidates
+        .iter()
+        .any(|path| policy.can_read_path_with_cwd(path, cwd.as_path()));
+    if denied || !allowed {
         return Err(authorized_read_error(io::ErrorKind::PermissionDenied));
     }
     Ok(())
