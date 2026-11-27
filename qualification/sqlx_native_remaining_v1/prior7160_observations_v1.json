@@ -1,0 +1,485 @@
+{
+  "schema": "root-sqlx7160-prior-observation-reuse-v1",
+  "accepted_for_observation_reuse": true,
+  "reviewer": "root",
+  "execution_authorization": false,
+  "qualification": false,
+  "native_qualification": false,
+  "root_review_receipt": {
+    "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_REMAINING13_V2_FINAL_NATIVE_ROOT_REVIEW_V1.json",
+    "bytes": 11816,
+    "sha256": "4e64d247b3f48b18a259828ed9452d91d58da83adc793729f464915f3f830baf",
+    "git_blob": "e35497d70b529019491201b131c230a1dbc16b4e"
+  },
+  "original": {
+    "head": "df1a177bdc4f3b18466604cd6dcfb704e72acae9",
+    "run_id": 45920364435,
+    "run_attempt": 1,
+    "job_id": 140249367364,
+    "status": "FAIL",
+    "whole_job_debit_seconds": 442,
+    "phase_elapsed_seconds": {
+      "compile": 407.71834971800007,
+      "metadata": 7.438256973999998,
+      "native": 0,
+      "official_cargo": 1.8315954860000119,
+      "verification": 0.4603559159999264
+    },
+    "owner_seconds_after_result_io": 417.46794637899995,
+    "native_cases_executed": 0,
+    "explicit_chrono_positive_issued": false,
+    "prior_generation_debit_seconds": 334
+  },
+  "whole_original_archive_authenticated": false,
+  "original_targets_retained": false,
+  "source_continuity_parent": {
+    "head": "3ab4e1dc379be6f1a19a35c7ba17200eb93b8b48",
+    "tree": "9fd93745d55aa89b9a40f61c530fe9291bdced72"
+  },
+  "original_metadata_pin": {
+    "bytes": 940148,
+    "sha256": "9401c64a0132b148fab36acf0d5332c49639fd055014edf8e5a1cab0c563937b"
+  },
+  "original_result_pin": {
+    "bytes": 92446,
+    "sha256": "ff9bdb51d28de3a78895e621f5a757474b435264cc2a3dd5c1b1650e37bc96bf"
+  },
+  "original_terminal_pin": {
+    "bytes": 473,
+    "sha256": "c0816227884ba90f194f7d7307448496a40b8f0ef0fc275ac9e2b8085a1f473c"
+  },
+  "original_negative_command_pin": {
+    "bytes": 1827,
+    "sha256": "095782cb0dbe73df061eff9c25b0da55e362d6e29ff406baac89d80dae7af537"
+  },
+  "original_negative_raw_pin": {
+    "bytes": 720730,
+    "sha256": "a05e7eb2c5e7e260b7875fc387ce359ce1dca827fd8b57d1c47f6951fe6c3795"
+  },
+  "controls_root_observation_raw_utf8": "{\n  \"schema\": \"root-sqlx-footer-eight-controls-original-observation-v1\",\n  \"reviewer\": \"root\",\n  \"observed\": true,\n  \"semantic_controls_pass\": true,\n  \"bounded_scope_pass\": false,\n  \"bounded_scope_reason\": \"Original supervisor creation-to-terminal wall is 13.000 seconds, exceeding the admitted whole10 by3. The reported 1.944-second unittest interval does not replace outer cost; operation startup/publication overhead is not attributed to a narrower component without further original evidence.\",\n  \"source_and_raw_pins_unchanged\": true,\n  \"qualification\": false,\n  \"native_qualification\": false,\n  \"original_compiler_run_status\": \"FAIL\",\n  \"original_compiler_exit\": 101,\n  \"admission\": {\n    \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_FOOTER_CONTROLS_SOURCE_ONLY_V1/ROOT_FIRST_CONTROLS_ADMISSION.json\",\n    \"bytes\": 5524,\n    \"sha256\": \"dcc0e4a06ad8cce8e5c338d702b862dd45b9ec7aba8c1764a96311cc94f6808d\",\n    \"git_blob\": \"f01f7d0f72385d93684a81ad45af8a4bd0624bb4\"\n  },\n  \"original_request\": {\n    \"host\": \"main\",\n    \"executable\": \"/opt/homebrew/bin/python3\",\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_FOOTER_CONTROLS_SOURCE_ONLY_V1/test_sqlx_negative_footer_literal_v1.py\"\n    ],\n    \"cwd\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e\",\n    \"idempotency_key\": \"root-sqlx-footer-eight-controls-first-20261127-0235-7c9e-v1\",\n    \"timeout_seconds\": 5\n  },\n  \"original_start\": {\n    \"audit_recorded\": true,\n    \"job\": {\n      \"args\": [\n        \"-I\",\n        \"-B\",\n        \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_FOOTER_CONTROLS_SOURCE_ONLY_V1/test_sqlx_negative_footer_literal_v1.py\"\n      ],\n      \"created_unix_ms\": 1795746923971,\n      \"cwd\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e\",\n      \"env_keys\": [],\n      \"executable\": \"/opt/homebrew/bin/python3\",\n      \"execution_mode\": \"operator\",\n      \"host\": \"main\",\n      \"id\": \"1a21adb85c3-ffbe-4e03\",\n      \"idempotency_key\": \"root-sqlx-footer-eight-controls-first-20261127-0235-7c9e-v1\",\n      \"launch_error\": null,\n      \"launch_state\": \"launched\",\n      \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a21adb85c3-ffbe-4e03\",\n      \"request_digest\": \"cd0064cb5f760254bf0c03f009c5dcc4c2dff59467d2f97062c685222aa28322\",\n      \"request_fingerprint\": 14771917602417934000,\n      \"ssh_target\": \"hepta-mac-local\",\n      \"system_jobctl\": false,\n      \"unit\": \"hepta-runtime-job-1a21adb85c3-ffbe-4e03\"\n    },\n    \"launch\": {\n      \"backend\": \"detached\",\n      \"launcher_pid\": 3059,\n      \"ok\": true,\n      \"systemd_error\": \"systemd user units unavailable on this platform\",\n      \"unit\": \"hepta-runtime-job-1a21adb85c3-ffbe-4e03\"\n    },\n    \"local_record_pending\": false,\n    \"reused\": false\n  },\n  \"original_status\": {\n    \"at_unix_ms\": 1795746936971,\n    \"audit_recorded\": true,\n    \"automatic_retry\": false,\n    \"cancelled\": false,\n    \"exit_code\": 0,\n    \"job_id\": \"1a21adb85c3-ffbe-4e03\",\n    \"launch_nonce\": \"5ca4462052558f891e145ed24fac751d\",\n    \"log_bytes\": {\n      \"stderr\": {\n        \"seen\": 1328,\n        \"stored\": 1328\n      },\n      \"stdout\": {\n        \"seen\": 0,\n        \"stored\": 0\n      }\n    },\n    \"log_errors\": {\n      \"stderr\": null,\n      \"stdout\": null\n    },\n    \"log_synced\": {\n      \"stderr\": true,\n      \"stdout\": true\n    },\n    \"log_truncated\": {\n      \"stderr\": false,\n      \"stdout\": false\n    },\n    \"output_complete\": true,\n    \"output_durable\": true,\n    \"state\": \"succeeded\",\n    \"terminal_publication_confirmed\": true,\n    \"terminal_publication_protocol\": 1,\n    \"timed_out\": false\n  },\n  \"original_logs\": {\n    \"audit_recorded\": true,\n    \"job_id\": \"1a21adb85c3-ffbe-4e03\",\n    \"stderr\": {\n      \"eof\": true,\n      \"next_offset\": 1328,\n      \"offset\": 0,\n      \"size\": 1328,\n      \"text\": \"test_01_exact_original_ANSI_footer_and_diagnostic_are_accepted (__main__.NegativeFooterCandidateControls.test_01_exact_original_ANSI_footer_and_diagnostic_are_accepted) ... ok\\ntest_02_absent_footer_retains_the_existing_allowed_case (__main__.NegativeFooterCandidateControls.test_02_absent_footer_retains_the_existing_allowed_case) ... ok\\ntest_03_previous_all_backtick_footer_is_rejected (__main__.NegativeFooterCandidateControls.test_03_previous_all_backtick_footer_is_rejected) ... ok\\ntest_04_unrelated_binary_footer_is_rejected (__main__.NegativeFooterCandidateControls.test_04_unrelated_binary_footer_is_rejected) ... ok\\ntest_05_unrelated_package_footer_is_rejected (__main__.NegativeFooterCandidateControls.test_05_unrelated_package_footer_is_rejected) ... ok\\ntest_06_extra_unrelated_plain_error_is_rejected (__main__.NegativeFooterCandidateControls.test_06_extra_unrelated_plain_error_is_rejected) ... ok\\ntest_07_duplicate_expected_footer_is_rejected (__main__.NegativeFooterCandidateControls.test_07_duplicate_expected_footer_is_rejected) ... ok\\ntest_08_correct_footer_does_not_allow_a_different_compiler_code (__main__.NegativeFooterCandidateControls.test_08_correct_footer_does_not_allow_a_different_compiler_code) ... ok\\n\\n----------------------------------------------------------------------\\nRan 8 tests in 1.944s\\n\\nOK\\n\"\n    },\n    \"stdout\": {\n      \"eof\": true,\n      \"next_offset\": 0,\n      \"offset\": 0,\n      \"size\": 0,\n      \"text\": \"\"\n    }\n  },\n  \"expected_controls\": [\n    \"test_01_exact_original_ANSI_footer_and_diagnostic_are_accepted\",\n    \"test_02_absent_footer_retains_the_existing_allowed_case\",\n    \"test_03_previous_all_backtick_footer_is_rejected\",\n    \"test_04_unrelated_binary_footer_is_rejected\",\n    \"test_05_unrelated_package_footer_is_rejected\",\n    \"test_06_extra_unrelated_plain_error_is_rejected\",\n    \"test_07_duplicate_expected_footer_is_rejected\",\n    \"test_08_correct_footer_does_not_allow_a_different_compiler_code\"\n  ],\n  \"observed_controls\": [\n    \"test_01_exact_original_ANSI_footer_and_diagnostic_are_accepted\",\n    \"test_02_absent_footer_retains_the_existing_allowed_case\",\n    \"test_03_previous_all_backtick_footer_is_rejected\",\n    \"test_04_unrelated_binary_footer_is_rejected\",\n    \"test_05_unrelated_package_footer_is_rejected\",\n    \"test_06_extra_unrelated_plain_error_is_rejected\",\n    \"test_07_duplicate_expected_footer_is_rejected\",\n    \"test_08_correct_footer_does_not_allow_a_different_compiler_code\"\n  ],\n  \"source_checks\": {\n    \"pins\": {\n      \"before\": {\n        \"bytes\": 39974,\n        \"sha256\": \"19ceaaebbce0e08131c6d6b08c9660a94d6647482757777b39d6711ccf1a02a7\",\n        \"git_blob\": \"da58cb07f02f2af4902d5135ed200ab2d1d818e5\"\n      },\n      \"candidate\": {\n        \"bytes\": 39977,\n        \"sha256\": \"a8636cd8490a011ac1c39a603e637bf0d1bdb56c38b34843a676193efddae4ab\",\n        \"git_blob\": \"d0d2dd9b14004509ca893be3f9aa3b39d9c7da7d\"\n      },\n      \"controls\": {\n        \"bytes\": 7754,\n        \"sha256\": \"b0fc511b782f8c32d686806db4941b108ccf4952ff14d0e1db2d4d66c29b32bb\",\n        \"git_blob\": \"901dd9169796eb0a7f8dd4c1a62ff921b9673e96\"\n      },\n      \"record\": {\n        \"bytes\": 1827,\n        \"sha256\": \"095782cb0dbe73df061eff9c25b0da55e362d6e29ff406baac89d80dae7af537\",\n        \"git_blob\": \"afc39903c9bda619ce85c6e6e30c543b2ccfe59f\"\n      },\n      \"raw\": {\n        \"bytes\": 720730,\n        \"sha256\": \"a05e7eb2c5e7e260b7875fc387ce359ce1dca827fd8b57d1c47f6951fe6c3795\"\n      }\n    },\n    \"checks\": {\n      \"exact_only_new_two_quote_limit\": true,\n      \"raw_complete\": true,\n      \"raw_footer_occurrences\": 1,\n      \"diagnostic_code_occurrences\": 1,\n      \"original_failed101\": true,\n      \"record_raw_match\": true,\n      \"source_control_count\": 8,\n      \"full_candidate_source_matches_original_except_three_new_bytes\": true\n    }\n  },\n  \"raw_complete_read\": {\n    \"pin\": {\n      \"metadata\": {\n        \"acl_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"gid\": 20,\n        \"link_count\": 1,\n        \"metadata_platform\": \"darwin\",\n        \"mode\": 384,\n        \"uid\": 501,\n        \"xattr_names\": [],\n        \"xattr_sha256\": {}\n      },\n      \"mode\": 384,\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_ORIGINAL_NATIVE_EVIDENCE_V1/partial-members-v1/members/native/default-chrono-refusal.json.fc250c075c15471bbd8d46f4372b5ecb.log\",\n      \"sha256\": \"a05e7eb2c5e7e260b7875fc387ce359ce1dca827fd8b57d1c47f6951fe6c3795\",\n      \"size\": 720730,\n      \"version\": \"16777233:620609560:720730:1795743352506581608:1795743352506581608\"\n    },\n    \"rows\": [\n      {\n        \"offset\": 0,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"d9c7caa0748dd22d331f0d4a20feb90659fffb87d0963b90a6250f1cc4dd1dd5\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 65536,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"a9e0b6ac7a443481f0310986051ac8b31cd186c56a36b2bfde9c1620e528d9ef\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 131072,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"8908b6cae10a8fd19e96ea505fdf165ec5e7faa38d574103ddabab911d43a071\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 196608,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"5f98c869313bb9135773873e9a9b275eff39f9f0abad027849d247dd67a24c08\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 262144,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"54d4166cdad665980524132d104b005fbffa36255e37b3d2d4ffe5fe4ad660ce\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 327680,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"c83c4d887d5a742ffde3e1b653c53fd33659ad6c6c3a2fdcb7cae5665f8e3a3e\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 393216,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"2e16d47f6564fa028e7d02c15554c4d3aba6cc93dcd4c0958d3c03ad93ffca68\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 458752,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"ca1986f2e0fc1bbafba6df1b12f259d8bd5dd914cfc135d408837761ec2baf10\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 524288,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"d4877ad924ff93bffcfb5f48e6d1fadeba6c5b74d97d409fe66b65cb827179c4\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 589824,\n        \"bytes\": 65536,\n        \"chunk_sha256\": \"d47495acf61728c958867470d43e559a036d4b88b43067495c1331b2a96ce75c\",\n        \"eof\": false\n      },\n      {\n        \"offset\": 655360,\n        \"bytes\": 65370,\n        \"chunk_sha256\": \"b7d079e45a9c69023c30409b3641035b02fab22a5ee516b08474da1aaf1d233d\",\n        \"eof\": true\n      }\n    ]\n  },\n  \"after_pins\": {\n    \"source\": {\n      \"metadata\": {\n        \"acl_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"gid\": 20,\n        \"link_count\": 1,\n        \"metadata_platform\": \"darwin\",\n        \"mode\": 416,\n        \"uid\": 501,\n        \"xattr_names\": [],\n        \"xattr_sha256\": {}\n      },\n      \"mode\": 416,\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_FOOTER_CONTROLS_SOURCE_ONLY_V1/test_sqlx_negative_footer_literal_v1.py\",\n      \"sha256\": \"b0fc511b782f8c32d686806db4941b108ccf4952ff14d0e1db2d4d66c29b32bb\",\n      \"size\": 7754,\n      \"version\": \"16777233:620666270:7754:1795744423583894684:1795744423584028808\"\n    },\n    \"candidate\": {\n      \"metadata\": {\n        \"acl_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"gid\": 20,\n        \"link_count\": 1,\n        \"metadata_platform\": \"darwin\",\n        \"mode\": 416,\n        \"uid\": 501,\n        \"xattr_names\": [],\n        \"xattr_sha256\": {}\n      },\n      \"mode\": 416,\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_NEGATIVE_FOOTER_LITERAL_FIX_SOURCE_ONLY_V1/sources/scripts/run_sqlx_temporal_contract_v1.py\",\n      \"sha256\": \"a8636cd8490a011ac1c39a603e637bf0d1bdb56c38b34843a676193efddae4ab\",\n      \"size\": 39977,\n      \"version\": \"16777233:620650899:39977:1795743783075678968:1795743783075793300\"\n    },\n    \"original_command\": {\n      \"metadata\": {\n        \"acl_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"gid\": 20,\n        \"link_count\": 1,\n        \"metadata_platform\": \"darwin\",\n        \"mode\": 384,\n        \"uid\": 501,\n        \"xattr_names\": [],\n        \"xattr_sha256\": {}\n      },\n      \"mode\": 384,\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_ORIGINAL_NATIVE_EVIDENCE_V1/partial-members-v1/members/native/default-chrono-refusal.json\",\n      \"sha256\": \"095782cb0dbe73df061eff9c25b0da55e362d6e29ff406baac89d80dae7af537\",\n      \"size\": 1827,\n      \"version\": \"16777233:620609559:1827:1795743352505715869:1795743352505715869\"\n    },\n    \"original_full_raw\": {\n      \"metadata\": {\n        \"acl_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"gid\": 20,\n        \"link_count\": 1,\n        \"metadata_platform\": \"darwin\",\n        \"mode\": 384,\n        \"uid\": 501,\n        \"xattr_names\": [],\n        \"xattr_sha256\": {}\n      },\n      \"mode\": 384,\n      \"path\": \"/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_ORIGINAL_NATIVE_EVIDENCE_V1/partial-members-v1/members/native/default-chrono-refusal.json.fc250c075c15471bbd8d46f4372b5ecb.log\",\n      \"sha256\": \"a05e7eb2c5e7e260b7875fc387ce359ce1dca827fd8b57d1c47f6951fe6c3795\",\n      \"size\": 720730,\n      \"version\": \"16777233:620609560:720730:1795743352506581608:1795743352506581608\"\n    }\n  },\n  \"accounting\": {\n    \"observed_supervisor_wall_seconds\": 13,\n    \"reported_unittest_interval_seconds\": 1.944,\n    \"admitted_operation_timeout_seconds\": 5,\n    \"supervisor_timed_out\": false,\n    \"admitted_whole_seconds\": 10,\n    \"observed_excess_seconds\": 3,\n    \"total_cpu_seconds\": null,\n    \"original_SQLx_whole_seconds\": 3600,\n    \"original_CI_wall_seconds\": 442,\n    \"original_remaining_before_controls\": 3158,\n    \"remaining_after_actual_controls\": 3145,\n    \"original_proposed_continuation_total_ceiling\": 2865,\n    \"remaining_CI_ceiling_without_borrowing\": 2852,\n    \"unallocated_balance_unchanged\": 293,\n    \"conservative_verification_old_reserve\": 16.348339738,\n    \"new_controls_actual_charge\": 13,\n    \"new_final_verification_cap\": 90,\n    \"verification_maximum_sum\": 119.34833973799999,\n    \"original_verification_cap\": 120,\n    \"original_failure_or_budget_excess_not_relabelled\": true,\n    \"no_new_run_or_refund_or_borrow\": true\n  },\n  \"next\": \"Use only the observed parser semantics as narrow evidence; keep the local controls budget failure. Continue source work for genuinely unexecuted native scope with actual13 debited and future total deadline reduced to2852, retaining phase maxima and200 retention. Any consumer requiring an in-budget control receipt must refuse rather than rewrite this observation.\",\n  \"frozen\": {\n    \"E1_E6\": \"16/16\",\n    \"E6_remaining_seconds\": 1.9960488015785813,\n    \"added\": 0\n  }\n}\n",
+  "pre_dispatch": {
+    "parser_controls": {
+      "executed": true,
+      "accepted": true,
+      "accepted_is_semantics_only": true,
+      "semantic_status": "PASS",
+      "bounded_scope_status": "FAIL",
+      "original_process_count": 1,
+      "original_job_id": "1a21adb85c3-ffbe-4e03",
+      "terminal_exit_code": 0,
+      "terminal_confirmed": true,
+      "dual_EOF": true,
+      "retries": 0,
+      "whole_actual_seconds": 13,
+      "budget_debit_seconds": 13,
+      "admitted_whole_seconds": 10,
+      "excess_seconds": 3,
+      "reported_unittest_seconds": 1.944,
+      "result": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_FOOTER_EIGHT_CONTROLS_ROOT_ORIGINAL_OBSERVATION_V1.json",
+        "bytes": 14700,
+        "sha256": "946f86d38acb3678cf28c79d40350884f9c77db9a5938bef4c6d4c26e45a00ca",
+        "embedded_fields": [
+          "original_logs",
+          "observed_controls",
+          "source_checks",
+          "after_pins"
+        ]
+      },
+      "terminal": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_FOOTER_EIGHT_CONTROLS_ROOT_ORIGINAL_OBSERVATION_V1.json",
+        "bytes": 14700,
+        "sha256": "946f86d38acb3678cf28c79d40350884f9c77db9a5938bef4c6d4c26e45a00ca",
+        "embedded_field": "original_status"
+      },
+      "root_review_receipt": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_FOOTER_EIGHT_CONTROLS_ROOT_ORIGINAL_OBSERVATION_V1.json",
+        "bytes": 14700,
+        "sha256": "946f86d38acb3678cf28c79d40350884f9c77db9a5938bef4c6d4c26e45a00ca"
+      },
+      "control_source_pin": {
+        "bytes": 7754,
+        "sha256": "b0fc511b782f8c32d686806db4941b108ccf4952ff14d0e1db2d4d66c29b32bb"
+      },
+      "candidate_pin": {
+        "bytes": 39977,
+        "sha256": "a8636cd8490a011ac1c39a603e637bf0d1bdb56c38b34843a676193efddae4ab"
+      },
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "original_record_status": "failed",
+      "original_record_exit_code": 101,
+      "qualification": false,
+      "no_retry_refund_or_borrow": true
+    },
+    "metadata_binding": {
+      "executed": true,
+      "accepted": true,
+      "original_process_count": 1,
+      "terminal_exit_code": 0,
+      "terminal_confirmed": true,
+      "dual_EOF": true,
+      "retries": 0,
+      "whole_actual_seconds": 0.582,
+      "budget_debit_seconds": 0.582,
+      "aggregate_Root_and_CI_cap_seconds": 20,
+      "must_leave_positive_CI_data_and_version_check_seconds": true,
+      "result": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_REMAINING13_V2_DATA_BIND_SOURCE_ONLY_V1/observation/RESULT.json",
+        "bytes": 6421,
+        "sha256": "5dadcaaa17545d777e14b948decbde3d6fc96ef9de22076c79d35b876ab875c7",
+        "git_blob": "2b73a8001a0c7641483a53ce5328b2a3c079e92e"
+      },
+      "terminal": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_REMAINING13_V2_DATA_ORIGINAL_TERMINAL_ROOT_V1.json",
+        "bytes": 3673,
+        "sha256": "ba98f11adcf8c88f19e156fa9d098054ec91641629886db857b3f62d3f6486c9",
+        "git_blob": "cc726ec159e2f79f420a20f92a0927ae0c88822b"
+      },
+      "root_review_receipt": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_SQLX_REMAINING13_V2_DATA_ROOT_ACCEPTANCE_V1.json",
+        "bytes": 16048,
+        "sha256": "057eeee2563ccc2666c4decc3b90ada3bbbf27560170329197b57eca5e2181f5",
+        "git_blob": "a063ab9b7324b858811e9e64fa365177940398e6"
+      },
+      "metadata_commands": 0,
+      "native_commands": 0,
+      "source_parent": "3ab4e1dc379be6f1a19a35c7ba17200eb93b8b48",
+      "source_tree": "9fd93745d55aa89b9a40f61c530fe9291bdced72"
+    }
+  },
+  "original_observations": {
+    "status": "failed",
+    "first_error": "ValueError: the negative includes an unrelated Cargo failure",
+    "exit_code_before_final_io": 2,
+    "terminal_exit_code": 2,
+    "result_sha256": "ff9bdb51d28de3a78895e621f5a757474b435264cc2a3dd5c1b1650e37bc96bf",
+    "exact_original_scalar_positive": {
+      "record": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_ORIGINAL_NATIVE_EVIDENCE_V1/partial-members-v1/members/native/default-scalar-positive.json",
+        "bytes": 1813,
+        "sha256": "fd675340e9c0f7cb01fcb3ed92dde6df99e599f6065296d32576dc98e51f3418"
+      },
+      "status": "passed",
+      "exit_code": 0,
+      "source_head": "df1a177bdc4f3b18466604cd6dcfb704e72acae9",
+      "full_raw_log_independently_read_by_this_agent": false
+    },
+    "exact_original_negative": {
+      "record": {
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_ORIGINAL_NATIVE_EVIDENCE_V1/partial-members-v1/members/native/default-chrono-refusal.json",
+        "bytes": 1827,
+        "sha256": "095782cb0dbe73df061eff9c25b0da55e362d6e29ff406baac89d80dae7af537"
+      },
+      "status": "failed",
+      "command_exit_code": 101,
+      "Rust_refusal_is_expected": true,
+      "full_local_raw_log_read_bytes": 720730,
+      "one_E0277": true,
+      "target": "chrono_default_refusal",
+      "source_line": 7,
+      "exact_footer": "error: could not compile `sqlx-temporal-default-contract-v1` (bin \"chrono_default_refusal\") due to 1 previous error"
+    },
+    "exact_original_twelve_consumer_compile": {
+      "record_in_original_RESULT": {
+        "command": [
+          "cargo",
+          "+1.96.0",
+          "check",
+          "--locked",
+          "--all-targets",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-p",
+          "codex-cli",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-authbus",
+          "-p",
+          "codex-hepta-automation",
+          "-p",
+          "codex-hepta-evidence",
+          "-p",
+          "codex-hepta-matrix-store",
+          "-p",
+          "codex-hepta-memory",
+          "-p",
+          "codex-hepta-operations",
+          "-p",
+          "codex-hepta-runtime",
+          "-p",
+          "codex-hepta-shadow-qualification",
+          "-p",
+          "codex-state",
+          "-p",
+          "codex-thread-store"
+        ],
+        "name": "twelve-consumer-compile",
+        "owner_exit_code": 0,
+        "phase": "compile",
+        "record": "twelve-consumer-compile.json",
+        "record_sha256": "5605e54db5e7c419c2c3d134bfe1e6a55d1eeca6ce27cc7be1adaa52a7029f30",
+        "status": "passed"
+      },
+      "separate_original_owned_boundary": {
+        "command": [
+          "cargo",
+          "+1.96.0",
+          "check",
+          "--locked",
+          "--all-targets",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "-p",
+          "codex-cli",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-authbus",
+          "-p",
+          "codex-hepta-automation",
+          "-p",
+          "codex-hepta-evidence",
+          "-p",
+          "codex-hepta-matrix-store",
+          "-p",
+          "codex-hepta-memory",
+          "-p",
+          "codex-hepta-operations",
+          "-p",
+          "codex-hepta-runtime",
+          "-p",
+          "codex-hepta-shadow-qualification",
+          "-p",
+          "codex-state",
+          "-p",
+          "codex-thread-store"
+        ],
+        "direct_child_pid": 3318,
+        "direct_child_returncode": 0,
+        "finished_monotonic_seconds": 396.147127065,
+        "group_signals": [
+          {
+            "outcome": "sent",
+            "process_group": 3318,
+            "signal": 9
+          }
+        ],
+        "log": "/home/runner/work/_temp/sqlx-native-df1a177bdc4f3b18466604cd6dcfb704e72acae9-45920364435-1/evidence/native/twelve-consumer-compile.json.3152826a5f264ef3ae6f955589f09798.log",
+        "original_execution": {
+          "log_bytes": 91508,
+          "log_sha256": "09fad19b3a3ad89994eeb5e2747043d8400f9714d7fce53c1ac5a7106aae5570",
+          "observed_failed_tests": 0,
+          "observed_passed_tests": 0,
+          "output_limit_exceeded": false,
+          "returncode": 0,
+          "timed_out": false
+        },
+        "owned_group_signal_and_direct_child_reap_observed": true
+      },
+      "packages": [
+        "codex-cli",
+        "codex-hepta-agentd",
+        "codex-hepta-authbus",
+        "codex-hepta-automation",
+        "codex-hepta-evidence",
+        "codex-hepta-matrix-store",
+        "codex-hepta-memory",
+        "codex-hepta-operations",
+        "codex-hepta-runtime",
+        "codex-hepta-shadow-qualification",
+        "codex-state",
+        "codex-thread-store"
+      ],
+      "raw_record_and_raw_log_not_in_available_first_28_complete_members": true,
+      "observation_only_at_original_7160": true,
+      "not_native_execution": true
+    },
+    "original_graphs": {
+      "default": {
+        "chrono_dependency_retained": true,
+        "normalized_graph_sha256": "edbfd90a0bedbf357323b8dd919cd63128df139235060743a5b7bd6ea6e76a9e",
+        "package_count": 629,
+        "root_package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/qualification/sqlx_temporal_default_v1#sqlx-temporal-default-contract-v1@0.0.0",
+        "sqlx_chrono_opt_in": false
+      },
+      "compatibility": {
+        "chrono_dependency_retained": true,
+        "normalized_graph_sha256": "b0b1d8682a81f207f5c0f68c7e9962903e5e30fe411f2015d076aad67eb7cf9d",
+        "package_count": 629,
+        "root_package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/qualification/sqlx_temporal_explicit_chrono_v1#sqlx-temporal-explicit-chrono-contract-v1@0.0.0",
+        "sqlx_chrono_opt_in": true
+      }
+    },
+    "declared_targets_sha256": "8d096c7eb2baf7aa6f076da8ae95876adf72f88f9dfd7ab7b98d08aafe404253",
+    "original_commands": [
+      {
+        "name": "locate-cargo",
+        "phase": "official_cargo",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "locate-cargo.json",
+        "record_sha256": "1f3966d5b4c2748827cfb101fc467e102a6166cf1c42e75e5a28f7da79caca02"
+      },
+      {
+        "name": "locate-rustc",
+        "phase": "official_cargo",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "locate-rustc.json",
+        "record_sha256": "c703496ac8a1fc4c8a12532b82ef3557430f61a9be31b7cfd7adc3d66bf03e24"
+      },
+      {
+        "name": "original-cargo-version",
+        "phase": "official_cargo",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "original-cargo-version.json",
+        "record_sha256": "8d8ac054877ee7e7d9e7ec05c1a5f02e316f9f4ee26ad848bc95decc1983758f"
+      },
+      {
+        "name": "original-rustc-version",
+        "phase": "official_cargo",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "original-rustc-version.json",
+        "record_sha256": "3bd9422898691a820221c7db1ab1a057e4139a9771cbc2b6ba26c1dd6462f10f"
+      },
+      {
+        "name": "official-arm-cargo-download",
+        "phase": "official_cargo",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "official-arm-cargo-download.json",
+        "record_sha256": "a89aff915b7295324df0575ddbd6e3c7bffe775b9141d11544211b56415e900f"
+      },
+      {
+        "name": "official-arm-cargo-version",
+        "phase": "official_cargo",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "official-arm-cargo-version.json",
+        "record_sha256": "b5d394b57048c5892200237f9a80bffb516b6f020cb11fb468c4daaaf63f91d1"
+      },
+      {
+        "name": "nextest-version",
+        "phase": "metadata",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "nextest-version.json",
+        "record_sha256": "de2252ba6ea83e8faf9744d58ac5f1aff0ce490eab9094c0976bb70d761d7164"
+      },
+      {
+        "name": "just-version",
+        "phase": "metadata",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "just-version.json",
+        "record_sha256": "d3850a3481d368ef25ad743c271427e640676f361083e95b607e53414f531052"
+      },
+      {
+        "name": "consumer-target-roster",
+        "phase": "metadata",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "consumer-target-roster.json",
+        "record_sha256": "4d71baf1e837a57f2b8293e0c4f7566d01226ef6dcfc23af6781397cdab9d3f2"
+      },
+      {
+        "name": "default-graph",
+        "phase": "metadata",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "default-graph.json",
+        "record_sha256": "bc98293c94c19f73405fe37d5730841b26500a7947e5a1fd6e1e3e261142e9ad"
+      },
+      {
+        "name": "compatibility-graph",
+        "phase": "metadata",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "compatibility-graph.json",
+        "record_sha256": "573406c1b1c6ea8a4852cc381b55c5f15e419e298e240960ecb19da746c0eeba"
+      },
+      {
+        "name": "twelve-consumer-compile",
+        "phase": "compile",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "twelve-consumer-compile.json",
+        "record_sha256": "5605e54db5e7c419c2c3d134bfe1e6a55d1eeca6ce27cc7be1adaa52a7029f30"
+      },
+      {
+        "name": "default-scalar-positive",
+        "phase": "compile",
+        "status": "passed",
+        "owner_exit_code": 0,
+        "record": "default-scalar-positive.json",
+        "record_sha256": "fd675340e9c0f7cb01fcb3ed92dde6df99e599f6065296d32576dc98e51f3418"
+      },
+      {
+        "name": "default-chrono-refusal",
+        "phase": "compile",
+        "status": "failed",
+        "owner_exit_code": 101,
+        "record": "default-chrono-refusal.json",
+        "record_sha256": "095782cb0dbe73df061eff9c25b0da55e362d6e29ff406baac89d80dae7af537"
+      }
+    ],
+    "native_phase_elapsed_seconds": 0,
+    "native_cases_run": 0,
+    "explicit_chrono_positive_not_issued": true,
+    "native_twelve_not_issued": true,
+    "all_observed_owned_commands_reaped": true,
+    "original_source_before_after_same_clean_head": true,
+    "final_source_postcheck_errors": {},
+    "original_overall_FAIL_is_not_reclassified_as_PASS": true
+  },
+  "original_boundary_pin": {
+    "bytes": 16423,
+    "sha256": "ccae9df25008d74e67ac99b3c701333d7bee6f56259b2f75dfe6297efb07d44d"
+  },
+  "original_checkout_clocks": [
+    {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_ORIGINAL_NATIVE_EVIDENCE_V1/partial-members-v1/members/job-start.json",
+      "bytes": 184,
+      "sha256": "78decc48b2671e6dcafbd7b99102747e400ce61d827a7c61a90912f9cef522fc",
+      "value": {
+        "boot_id": "c8e26c34-3248-49cc-8bc5-5cfd7464ef23",
+        "head": "df1a177bdc4f3b18466604cd6dcfb704e72acae9",
+        "monotonic_seconds": 84.486834203,
+        "run_attempt": "1",
+        "run_id": "45920364435"
+      }
+    },
+    {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7160_SQLX_ORIGINAL_NATIVE_EVIDENCE_V1/partial-members-v1/members/checkout-end.json",
+      "bytes": 61,
+      "sha256": "981045e70b235b3797cb1b867c47b18995fb351e24591f6cdb9ca4897df35660",
+      "value": {
+        "run_id": "45920364435",
+        "monotonic_seconds": 93.150292035
+      }
+    }
+  ],
+  "budget_boundary": {
+    "original_cap_seconds": 3600,
+    "original_CI_whole_debit_seconds": 442,
+    "original_remaining_before_controls": 3158,
+    "controls_actual_debit": 13,
+    "remaining_after_controls": 3145,
+    "original_proposed_total_ceiling": 2865,
+    "new_CI_shared_ceiling_before_metadata_debit": 2852,
+    "unallocated_remaining_unchanged": 293,
+    "original_verification_observed_seconds": 0.4603559159999264,
+    "original_verification_conservative_ceiling_seconds": 16.348339738,
+    "conservative_ceiling_is_not_an_actual_phase_measurement": true,
+    "new_CI_verification_maximum": 90,
+    "cumulative_verification_maximum_including_actual_controls": 119.34833973799999,
+    "original_verification_maximum": 120,
+    "strict_in_budget_control_dependency_gate_satisfied": false
+  },
+  "activation_blockers": []
+}

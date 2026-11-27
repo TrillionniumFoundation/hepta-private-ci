@@ -620,7 +620,7 @@ def check_exact_refusal(record, raw, expected_package_id):
         + '" (bin "'
         + NEGATIVE_NAME
         + '") due to 1 previous error'
-    ).replace('"', "\x60")
+    ).replace('"', "\x60", 2)
     require(
         terminal_lines in ([], [terminal]),
         "the negative includes an unrelated Cargo failure",
