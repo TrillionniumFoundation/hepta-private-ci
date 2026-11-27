@@ -1,0 +1,5 @@
+# Accelerator allocation evidence
+
+The first submitted private UCM job requested a T4. Its original provider version was accepted and reached a terminal error; the original collected 1,953-byte log has SHA-256 b43c45b06a0166b8e7f156b634a804919f63a69427c5b9dbb2796743fa8708bc and reports that the CUDA availability check failed before model construction or scoring. There are zero benchmark observations in this run. A proposed alternate spelling for a follow-up request was rejected by the router before any effect. Source inspection confirms the router translates T4 to the provider's NvidiaTeslaT4 machine shape. The argument spelling is therefore not an established cause of the failure.
+
+Collect a minimal device-availability artifact on the same authorized provider identity before attempting to reuse GPU capacity. This separate diagnostic returns the CUDA version and device visibility, driver evidence when present and a real tensor calculation if CUDA is usable. Locally observing an eligible account or a platform's running state does not establish that the device was usable.
