@@ -1,5 +1,13 @@
 # Hepta 研究与集成核验
 
+## 2026-11-27 00:51 UTC 后：Common 历史托管实验消耗原件核实（禁止重复派发）
+
+- 找到精确冻结源 a12f564d5d15258f6ef5d64ceaa5966d2fd04f8f 的历史 [run43171918622/job131027015909](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43171918622/job/131027015909) 实际 success，重新读取原36655字符日志，确认9文件、136699B、artifact13922382806、原 ZIP SHA256 dae5db0e9d333c315bf176fbcde65083f140f6dc6a1d1b46468bec97c13c864b。独立获取 c440d2ba 保留的原 ZIP（Git blob fbbeaba746896baa3e08a2c8e2e09868c2ee968d），ROG 8段传输后原生只读审计 job1a21a7c8f0e-ffbe-4cec 实际退出0、stderr0、stdout2180B，output_complete/durable/terminal_publication_confirmed=true。重新计算原 ZIP SHA256、Git blob SHA1、ZIP CRC、9/9成员长度和 SHA256；从真实 SOURCE_BEFORE/AFTER、RESULT 与已隔离29文件冻结 manifest 逐键核验严格相同。原 TEST.stderr 45项无跳过，TEST.stdout 中121个训练观测逐步编号0..120、实际120更新、首尾与原报告完全相符；原相对 MSE .4790290513124848→3.5602012631380052e-6，占原2e-4目标1.7801%；reset .42→.6494962836801368；冷恢复报告7字段最大误差8.89715870422414e-11，原阈值4e-9，RESTORE.stderr 为空、起点.137、两 gzip 均可解码。未重新计算模型轨迹或冷恢复参考，新增模型/优化器调用0。**历史托管45/120消耗与保留原件验证闭合，原生历史 attempt001 仍 UNKNOWN（原启动和同键读回超时），禁止新键重派；当前产品 Common 冻结集成与完整科学资格仍 HOLD，不跨版本转移。**
+
+- #6799 实际最新观察 head 5bfecec9351bd68e41b4d1096ec6fd3177b856dc，草案未合并，首屏100条80 queued/16 skipped/4 pending；上一 b8ed02a3 首屏62 success/20 failure/13 skipped/2 in_progress/2 cancelled/1 queued，非全分页。最新 head 三个 precision policy 漂移对象仍是 65b58273039ef698b9c5e3a1a3ec0a3edf829f28、5a9e2a2ab4f1290e5ce802b688df1688593349c3、0fa943f0b77b9b590d8de42a40924ecc7d064bfc，独立修补36e49da6尚未纳入；不重派同一修补，不抢写主集成。#7016/#7021/#7032 仍为原草案。#7032 原 blocking-ci 两次已记录历史失败，不跨版本转移 cargo-deny/Windows shard 局部成功。
+
+- [原生只读回执与历史消耗不可变记录](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2fea575b789f670920d9b9b9f668235bd10b32d6/qualification/hcsn_ci_readbacks/integrated-blockers-20261123/common-hosted-original-consumption-20261127-0051Z.json) 已全文回读一致。全仓 HOLD；Windows 生产隔离、Agentd strict、Q24、N256 动态/资源、连续极限与跨来源科学资格仍开，未修改原冻结摘要、安全权限、500ms或合并红门。
+
 ## 2026-11-26 23:56 UTC 后：N256 precision policy 三处精确冻结字节修补与原生对照
 
 - 原 [job140198737217](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/45904766020/job/140198737217) normal/-O各5/5、compile success，原严格 gate 在 README.md 首个漂移退出1；merge checkout f3dc18b19ccdd01fdf55c56db7be67ab73bcb4de。独立从精确 f9d56c67 取得10项原冻结/父源，ECMAScript SHA256（abc标准向量校验）逐一计算得7/10；不是只修README，而是 README.md、__init__.py、test_precision_policy.py 各缺末尾一个LF（1566→1567、80→81、3399→3400），其余7项原摘要完全相符、SOURCE_FREEZE原映射与原 verifier 一致。
