@@ -12,7 +12,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from qualification.hcsn_closure_20261124.boundary_fix import BoundaryControlHCSN
-from qualification.hcsn_closure_20261124.baselines import SurrogateSpike, CausalTransformer
+from qualification.hcsn_closure_20261124.baselines import SurrogateSpike, CausalTransformer, BaselineState
 from qualification.hcsn_smallnet_20261124.model import ModelConfig
 
 ROOT = Path(__file__).resolve().parent
@@ -51,6 +51,12 @@ def standardized(train, other):
         ans.append((((x-avg)/sd.clamp_min(.01)).clamp(-5,5),g,i))
     return ans
 
+class FeatureAttention(CausalTransformer):
+    def initial_state(self,batch,initial_margin=None):
+        # The identity readout has no parameters; the input projection owns the same dtype and device.
+        empty=self.input.weight.new_zeros(batch,0,self.config.width)
+        return BaselineState((empty,empty.clone()),0)
+
 class Branch(nn.Module):
     def __init__(self,kind):
         super().__init__()
@@ -60,7 +66,7 @@ class Branch(nn.Module):
             self.core = BoundaryControlHCSN(c,channel='boundary_signed',control_mode='raw',boundary_mode='centered')
             self.core.readout = nn.Identity()
         elif kind == 'attention':
-            self.core = CausalTransformer(WIDTH)
+            self.core = FeatureAttention(WIDTH)
             self.core.input = nn.Linear(32,WIDTH)
             self.core.readout = nn.Identity()
         elif kind == 'gru':

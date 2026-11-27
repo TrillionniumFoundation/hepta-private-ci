@@ -37,7 +37,7 @@ def main():
             'update_seconds_mean':float(np.mean([fit['update_seconds'] for _,fit,_ in obs])),
             'ranks':{d:{k:float(np.mean([test['metrics'][d][k] for _,_,test in obs])) for k in ('r1','r5','r10','mrr')} for d in ('image_to_text','text_to_image')},
         }
-    best=sorted((a for a in arms if a!='physical'),key=lambda a:(-summary[a]['dev_bidir_r1'],a))[0]
+    best=sorted((a for a in arms if a not in ('physical','randomphysical')),key=lambda a:(-summary[a]['dev_bidir_r1'],a))[0]
     n=len(clusters[best][0])
     idx=np.random.default_rng(30117).integers(n,size=(2000,n))
     for a in arms:
