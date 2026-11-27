@@ -1,0 +1,8 @@
+<stdin>:359:18: property "runs_on" is not defined in object type {os: string; target: string} [expression]
+    |
+359 |     runs-on: ${{ matrix.runs_on || matrix.os }}
+    |                  ^~~~~~~~~~~~~~
+<stdin>:446:18: property "runs_on" is not defined in object type {os: string; target: string} [expression]
+    |
+446 |     runs-on: ${{ matrix.runs_on || matrix.os }}
+    |                  ^~~~~~~~~~~~~~

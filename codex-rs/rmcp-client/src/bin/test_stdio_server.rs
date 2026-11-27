@@ -54,6 +54,7 @@ const DYNAMIC_SERVER_METADATA_ENV: &str = "MCP_TEST_DYNAMIC_SERVER_METADATA";
 const INITIALIZE_BARRIER_FILE_ENV: &str = "MCP_TEST_INITIALIZE_BARRIER_FILE";
 const SERVER_INSTRUCTIONS_ENV: &str = "MCP_TEST_SERVER_INSTRUCTIONS";
 const THREAD_HINT_MARKER_FILE_ENV: &str = "MCP_TEST_THREAD_HINT_MARKER_FILE";
+const THREAD_HINT_MODEL_VISIBLE_ENV: &str = "MCP_TEST_THREAD_HINT_MODEL_VISIBLE";
 
 fn dynamic_server_process_label() -> Option<String> {
     std::env::var_os(DYNAMIC_SERVER_METADATA_ENV)
@@ -95,7 +96,15 @@ impl TestToolServer {
         );
         thread_hint_tool.annotations = Some(ToolAnnotations::new().read_only(true));
         let mut thread_hint_meta = MetaObject::new();
-        thread_hint_meta.insert("ui".to_string(), json!({ "visibility": [] }));
+        let thread_hint_visibility = if std::env::var_os(THREAD_HINT_MODEL_VISIBLE_ENV).is_some() {
+            vec!["model"]
+        } else {
+            Vec::new()
+        };
+        thread_hint_meta.insert(
+            "ui".to_string(),
+            json!({ "visibility": thread_hint_visibility }),
+        );
         thread_hint_tool.meta = Some(thread_hint_meta);
 
         #[expect(clippy::expect_used)]

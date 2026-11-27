@@ -171,6 +171,11 @@ pub(crate) async fn accept_websocket(
     let (socket, _peer_addr) = timeout(TEST_TIMEOUT, listener.accept())
         .await
         .with_context(|| format!("remote {role} should connect to fake rendezvous"))??;
+    // Match the production connectors: do not delay an individual relay record
+    // while waiting for more data to fill a TCP segment.
+    socket
+        .set_nodelay(/*nodelay*/ true)
+        .context("fake rendezvous should configure TCP_NODELAY")?;
     timeout(TEST_TIMEOUT, accept_async(socket))
         .await
         .with_context(|| format!("fake rendezvous should accept {role} websocket"))?

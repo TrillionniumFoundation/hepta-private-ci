@@ -33,6 +33,10 @@ use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::framing::frame_part;
 
+#[cfg(any(test, feature = "test-lease-clock"))]
+#[path = "local_lease_test_clock.rs"]
+mod test_clock;
+
 pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
 pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
 pub const LOCAL_LEASE_OUTBOX_EXTERNAL_EFFECTS: bool = false;
@@ -368,6 +372,8 @@ pub struct LocalLeaseOutbox {
     authority_epoch: Option<u64>,
     owner_epoch: Option<u64>,
     lease_expires_at_unix_seconds: Option<u64>,
+    #[cfg(any(test, feature = "test-lease-clock"))]
+    test_clock: Option<std::sync::Arc<std::sync::atomic::AtomicU64>>,
 }
 
 impl std::fmt::Debug for LocalLeaseOutbox {
@@ -846,7 +852,18 @@ impl LocalLeaseOutbox {
             authority_epoch: lease.authority_epoch,
             owner_epoch: lease.owner_epoch,
             lease_expires_at_unix_seconds: lease.lease_expires_at_unix_seconds,
+            #[cfg(any(test, feature = "test-lease-clock"))]
+            test_clock: None,
         })
+    }
+
+    fn current_unix_seconds(&self) -> Result<u64, LocalLeaseOutboxError> {
+        #[cfg(any(test, feature = "test-lease-clock"))]
+        if let Some(clock) = &self.test_clock {
+            return Ok(clock.load(std::sync::atomic::Ordering::SeqCst));
+        }
+        u64::try_from(now_unix_seconds()?)
+            .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))
     }
 
     pub fn lease_id(&self) -> &str {
@@ -1243,8 +1260,7 @@ impl LocalLeaseOutbox {
 
         let now = match now_override {
             Some(now) => now,
-            None => u64::try_from(now_unix_seconds()?)
-                .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?,
+            None => self.current_unix_seconds()?,
         };
         if now < persisted_binding.lease_expires_at_unix_seconds {
             return Err(LocalLeaseOutboxError::StaleFence(format!(
@@ -5030,8 +5046,7 @@ fn ensure_current_active(
 ) -> Result<(), LocalLeaseOutboxError> {
     ensure_current_identity(lease, handle)?;
     if let Some(expires_at) = lease.lease_expires_at_unix_seconds {
-        let now = u64::try_from(now_unix_seconds()?)
-            .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?;
+        let now = handle.current_unix_seconds()?;
         if now >= expires_at {
             return Err(LocalLeaseOutboxError::StaleFence(
                 "local lease has expired".to_string(),

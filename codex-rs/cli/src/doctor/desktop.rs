@@ -74,11 +74,7 @@ pub(super) async fn collect() -> Option<DesktopDiagnostics> {
     let directory = desktop_log_root(application.identity);
     let (running, handshake) = match &directory {
         Some(root) => inspect_desktop_session(
-            &root.join(
-                codex_utils_time::Timestamp::now()
-                    .format("%Y/%m/%d")
-                    .to_string(),
-            ),
+            &root.join(codex_utils_time::Timestamp::now().format("%Y/%m/%d")),
             |pid| platform::application_running(&application, pid),
         ),
         None => (false, stopped_desktop_check()),

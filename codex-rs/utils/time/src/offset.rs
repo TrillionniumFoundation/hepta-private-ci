@@ -21,8 +21,10 @@ pub struct OffsetTimestamp {
 
 impl OffsetTimestamp {
     pub(crate) fn system_local(instant: Timestamp) -> Self {
-        let mut result = Self::in_time_zone(instant, &jiff::tz::TimeZone::system())
-            .expect("validated timestamp and system time zone");
+        let mut result = match Self::in_time_zone(instant, &jiff::tz::TimeZone::system()) {
+            Ok(result) => result,
+            Err(error) => panic!("validated timestamp and system time zone: {error:?}"),
+        };
         result.system_local = true;
         result
     }

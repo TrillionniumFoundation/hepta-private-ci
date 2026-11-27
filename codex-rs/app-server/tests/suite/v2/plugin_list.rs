@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use std::sync::OnceLock;
 use std::time::Duration;
 
+use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
 use app_test_support::ChatGptAuthFixture;
@@ -2338,7 +2339,8 @@ async fn app_server_startup_refreshes_cached_remote_catalog_without_blocking_plu
     );
 
     wait_for_cached_remote_catalog_plugin_ids(codex_home.path(), &[refreshed_remote_plugin_id])
-        .await?;
+        .await
+        .context("startup refresh did not publish the new remote catalog")?;
     let request_id = app_server
         .send_plugin_list_request(PluginListParams {
             cwds: None,
@@ -4625,16 +4627,25 @@ async fn wait_for_cached_remote_catalog_plugin_ids(
         .map(str::to_string)
         .collect::<Vec<_>>();
     expected_plugin_ids.sort();
+    let mut last_observed_plugin_ids = None;
     timeout(DEFAULT_TIMEOUT, async {
         loop {
-            let plugin_ids = cached_remote_catalog_plugin_ids(codex_home)?;
-            if plugin_ids == expected_plugin_ids {
+            let plugin_ids = cached_remote_catalog_plugin_ids(codex_home)
+                .context("read the remote catalog cache while awaiting publication")?;
+            let matches = plugin_ids == expected_plugin_ids;
+            last_observed_plugin_ids = Some(plugin_ids);
+            if matches {
                 return Ok::<(), anyhow::Error>(());
             }
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
-    .await??;
+    .await
+    .with_context(|| {
+        format!(
+            "remote catalog publication timed out: expected {expected_plugin_ids:?}; last observed {last_observed_plugin_ids:?}"
+        )
+    })??;
     Ok(())
 }
 
@@ -4646,6 +4657,11 @@ fn cached_remote_catalog_plugin_ids(codex_home: &std::path::Path) -> Result<Vec<
     let mut plugin_ids = Vec::new();
     for entry in std::fs::read_dir(cache_dir)? {
         let path = entry?.path();
+        // The writer publishes a .json file by renaming a same-directory temporary file.
+        // A directory enumeration can observe that temporary name before it disappears.
+        if path.extension() != Some(std::ffi::OsStr::new("json")) {
+            continue;
+        }
         let cached_catalog: serde_json::Value = serde_json::from_slice(&std::fs::read(path)?)?;
         let Some(plugins) = cached_catalog["plugins"].as_array() else {
             continue;
@@ -4659,6 +4675,33 @@ fn cached_remote_catalog_plugin_ids(codex_home: &std::path::Path) -> Result<Vec<
     }
     plugin_ids.sort();
     Ok(plugin_ids)
+}
+
+#[test]
+fn cached_remote_catalog_reader_observes_only_published_json() -> Result<()> {
+    use std::io::Write;
+
+    let codex_home = TempDir::new()?;
+    let cache_dir = codex_home.path().join("cache/remote_plugin_catalog");
+    std::fs::create_dir_all(&cache_dir)?;
+    let published_path = cache_dir.join("0123456789abcdef.json");
+    std::fs::write(&published_path, r#"{"plugins":[{"id":"published"}]}"#)?;
+
+    let mut pending = tempfile::NamedTempFile::new_in(&cache_dir)?;
+    pending.write_all(br#"{"plugins":[{"id":"replacement"}]}"#)?;
+    assert_eq!(
+        cached_remote_catalog_plugin_ids(codex_home.path())?,
+        vec!["published".to_string()]
+    );
+
+    pending.persist(&published_path)?;
+    assert_eq!(
+        cached_remote_catalog_plugin_ids(codex_home.path())?,
+        vec!["replacement".to_string()]
+    );
+    std::fs::write(&published_path, "invalid committed json")?;
+    assert!(cached_remote_catalog_plugin_ids(codex_home.path()).is_err());
+    Ok(())
 }
 
 fn rewrite_cached_remote_catalog_fetched_at(

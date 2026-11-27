@@ -29,5 +29,8 @@ codex-git-utils = { workspace = true }
 pretty_assertions = { workspace = true }
 scopeguard = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
 [lints]
 workspace = true

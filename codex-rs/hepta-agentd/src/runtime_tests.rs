@@ -629,11 +629,14 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
+    // Setup writes several real lease, registry and H7 transactions before
+    // expiry is the behavior under test. A one-second, rounded-down deadline
+    // can expire during those writes on Windows.
     let expires_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("clock")
         .as_secs()
-        + 1;
+        + 10;
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",
@@ -744,10 +747,43 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     append_h7_trajectory_event_bound(&lease, &executor, &binding, &terminal)
         .await
         .expect("append H7 terminal");
+    lease
+        .verify_current()
+        .await
+        .expect("all H7 seed writes must finish under an active lease");
+    let mut expected = store
+        .inspect_local_lease_head(&attempt.lease_id)
+        .await
+        .expect("inspect active seeded head");
+    assert_eq!(expected.disposition, LocalLeaseHeadDisposition::Active);
+    let persisted_expiry = expected
+        .head
+        .as_ref()
+        .expect("seeded head exists")
+        .lease_expires_at_unix_seconds
+        .expect("seeded head has an explicit deadline");
     drop(binding);
     drop(executor);
+    let deadline = UNIX_EPOCH
+        .checked_add(Duration::from_secs(persisted_expiry))
+        .expect("seed deadline fits SystemTime");
+    if let Ok(remaining) = deadline.duration_since(SystemTime::now()) {
+        tokio::time::sleep(remaining).await;
+    }
+    assert!(
+        SystemTime::now() >= deadline,
+        "the actual lease deadline elapsed"
+    );
+    let verification = lease.verify_current().await;
+    assert!(
+        matches!(
+            &verification,
+            Err(codex_hepta_memory::LocalLeaseOutboxError::StaleFence(reason))
+                if reason == "local lease has expired"
+        ),
+        "expired lease must remain fenced: {verification:?}"
+    );
     drop(lease);
-    tokio::time::sleep(Duration::from_secs(2)).await;
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),
@@ -769,6 +805,11 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         inspected.disposition,
         LocalLeaseHeadDisposition::ExpiredActive,
         "registry-backed H7 quarantine must not mutate the active registry head"
+    );
+    expected.disposition = LocalLeaseHeadDisposition::ExpiredActive;
+    assert_eq!(
+        inspected, expected,
+        "quarantine preserves the exact lease head"
     );
 }
 

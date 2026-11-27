@@ -421,7 +421,7 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         MatrixdControlError::Invalid("matrixd control socket has no parent directory".to_string())
     })?;
     codex_uds::prepare_private_socket_directory(parent).await?;
-    match UnixStream::connect(socket_path).await {
+    let connection_error = match UnixStream::connect(socket_path).await {
         Ok(_) => {
             return Err(MatrixdControlError::Io(std::io::Error::new(
                 ErrorKind::AddrInUse,
@@ -431,10 +431,17 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
                 ),
             )));
         }
+        Err(error) => error,
+    };
+    // ConnectionRefused does not establish that a rendezvous file exists.
+    // Only an explicit no-follow NotFound permits a fresh bind.
+    match tokio::fs::symlink_metadata(socket_path).await {
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
+        Ok(_) if connection_error.kind() != ErrorKind::ConnectionRefused => {
+            return Err(connection_error.into());
+        }
+        Ok(_) => {}
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
         tokio::fs::remove_file(socket_path).await?;
@@ -530,10 +537,15 @@ pub enum MatrixdControlError {
 }
 
 #[cfg(test)]
+#[path = "control_socket_tests.rs"]
+mod socket_tests;
+
+#[cfg(test)]
 mod tests {
     use std::error::Error;
     use std::fs;
 
+    use super::*;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_matrix_protocol::PendingApproval;
     use codex_hepta_matrix_store::MatrixDurableConfig;
@@ -542,10 +554,6 @@ mod tests {
     use codex_hepta_paths::HeptaFleetRoot;
     use pretty_assertions::assert_eq;
     use tempfile::TempDir;
-    use tokio::io::AsyncBufReadExt;
-    use tokio::io::AsyncWriteExt;
-
-    use super::*;
 
     type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 
@@ -853,6 +861,50 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn health_tracks_real_task_state_on_every_platform() -> TestResult {
+        let temp = TempDir::new()?;
+        let fake = Arc::new(FakeTransport::default());
+        let (state, connections) = state(&temp, fake).await?;
+        let response = state
+            .response(MatrixdRequest {
+                schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
+                request_id: 41,
+                agent_id: agent_id()?,
+                fence: None,
+                method: MatrixdMethod::Health,
+            })
+            .await;
+        assert_eq!(response.release_id, "release-1");
+        assert!(matches!(
+            response.payload,
+            MatrixdPayload::Health(MatrixdHealth {
+                lifecycle: MatrixdLifecycle::Degraded,
+                agentd_connected: false,
+                matrix_sync_connected: false,
+                ..
+            })
+        ));
+        connections.set_agentd_connected(true);
+        connections.set_matrix_sync_connected(true);
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
+        connections.set_fenced();
+        assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
+        Ok(())
+    }
+
+    // Match the existing kernel peer-identity support in codex-uds. The
+    // unsupported-platform test below exercises the real server rejection.
+    #[cfg(any(
+        target_os = "linux",
+        target_os = "android",
+        target_os = "macos",
+        target_os = "ios",
+        target_os = "freebsd",
+        target_os = "openbsd",
+        target_os = "netbsd",
+        target_os = "dragonfly"
+    ))]
+    #[tokio::test]
     async fn health_tracks_real_task_state_and_owner_uds_serves_exact_identity() -> TestResult {
         // The product fleet root deliberately leaves Darwin `sun_path`
         // headroom. The SSD test harness uses a much deeper TMPDIR, so put
@@ -903,6 +955,64 @@ mod tests {
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
         cancel.cancel();
         task.await??;
+        Ok(())
+    }
+
+    #[cfg(not(any(
+        target_os = "linux",
+        target_os = "android",
+        target_os = "macos",
+        target_os = "ios",
+        target_os = "freebsd",
+        target_os = "openbsd",
+        target_os = "netbsd",
+        target_os = "dragonfly"
+    )))]
+    #[tokio::test]
+    async fn unavailable_peer_identity_rejects_before_response_or_mutation() -> TestResult {
+        let temp = TempDir::new()?;
+        let fake = Arc::new(FakeTransport::default());
+        let (state, _) = state(&temp, Arc::clone(&fake)).await?;
+        state
+            .store
+            .record_turn_started("thread-1", "turn-1", 10)
+            .await?;
+        let before = state.store.control_snapshot().await?;
+        let socket = temp.path().join("control");
+        let mut server = MatrixdControlServer::bind(
+            socket.clone(),
+            Arc::clone(&state),
+            CancellationToken::new(),
+        )
+        .await?;
+        let (accepted, mut client) =
+            tokio::try_join!(server.listener.accept(), UnixStream::connect(&socket))?;
+        let request = fenced_request(MatrixdMethod::CancelTurn {
+            thread_id: "thread-1".to_string(),
+            turn_id: "turn-1".to_string(),
+        })?;
+        let mut bytes = serde_json::to_vec(&request)?;
+        bytes.push(b'\n');
+        client.write_all(&bytes).await?;
+
+        // Observe the actual handler error, which run() intentionally does
+        // not turn into an unauthenticated control response.
+        let result = timeout(IO_TIMEOUT, serve_connection(accepted, Arc::clone(&state))).await?;
+        assert!(
+            matches!(&result, Err(MatrixdControlError::Io(error)) if error.kind() == ErrorKind::Unsupported),
+            "unexpected peer-identity result: {result:?}"
+        );
+        let mut response = Vec::new();
+        let read = timeout(IO_TIMEOUT, client.read_to_end(&mut response)).await?;
+        assert!(
+            matches!(&read, Ok(0))
+                || matches!(&read, Err(error) if error.kind() == ErrorKind::ConnectionReset),
+            "unexpected response after peer rejection: {read:?}"
+        );
+        assert!(response.is_empty());
+        assert!(fake.cancellations.lock().await.is_empty());
+        assert!(fake.resolutions.lock().await.is_empty());
+        assert_eq!(state.store.control_snapshot().await?, before);
         Ok(())
     }
 }

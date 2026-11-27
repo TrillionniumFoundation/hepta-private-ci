@@ -1,0 +1,138 @@
+{
+  "schema": "hepta.ci-control-runner-qualification.v1",
+  "observed_utc": "2026-11-24T18:50:46.713145+00:00",
+  "base_head": "804ac018433ff08dfd195e93eed936394baf5053",
+  "source_change": "exactly five runs-on values in four workflow files",
+  "source_inputs": [
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "jobs": [
+        "scope",
+        "required"
+      ],
+      "before_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f",
+      "after_sha256": "0dbd3023ab85929f4886f06dd8e5e4f1c6df745ef633f7edbadece9e8945ab19",
+      "all_other_yaml_values_identical": true
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "jobs": [
+        "required"
+      ],
+      "before_sha256": "5ae51b188989bbe6435cc0f5b62caffbc5da4b6fa2d855c2ed69afaaa8b53852",
+      "after_sha256": "b1d0c67599dbbccb0b0f34c92428591364ea9ab8a2f4ec8a9995d611fae90431",
+      "all_other_yaml_values_identical": true
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "jobs": [
+        "results"
+      ],
+      "before_sha256": "1013ed697ef8f1094165e38f92f87af9e3f7a85e05e67586e17984b1e8272395",
+      "after_sha256": "b4f1714763a1416dc43ccfc6df3e28d8d793e1358768f84d637165fb09a93c6c",
+      "all_other_yaml_values_identical": true
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "jobs": [
+        "test-windows"
+      ],
+      "before_sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e",
+      "after_sha256": "cbfcb4b57088d1f002560b0cec321673a1fc04ba3b88571e1ba70ef2069f395e",
+      "all_other_yaml_values_identical": true
+    }
+  ],
+  "required_names_conditions_needs_commands_timeouts_native_matrices_unchanged": true,
+  "existing_regression_tests": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "scripts.tests.test_hepta_ci_scope",
+      "scripts.tests.test_hepta_ci_dependencies",
+      "scripts.test_hepta_readiness_semantics",
+      "scripts.test_hepta_rust_ci_feedback"
+    ],
+    "exit": 0,
+    "tests": 78,
+    "log_sha256": "498c8bea2647e9e67fef0236c5994437b217163f729217bc9afc96c05ac624dd"
+  },
+  "actual_unmodified_fan_in_gate_cases": [
+    {
+      "name": "all_success",
+      "expected_exit": 0,
+      "observed_exit": 0,
+      "stdout": "All CI dependencies succeeded.\n",
+      "stderr": ""
+    },
+    {
+      "name": "scoped_skip",
+      "expected_exit": 0,
+      "observed_exit": 0,
+      "stdout": "All CI dependencies succeeded.\n",
+      "stderr": ""
+    },
+    {
+      "name": "unscoped_skip",
+      "expected_exit": 1,
+      "observed_exit": 1,
+      "stdout": "CI gate rejected: CI dependencies did not succeed: heavy: skipped\n",
+      "stderr": ""
+    },
+    {
+      "name": "failure_even_if_allowed",
+      "expected_exit": 1,
+      "observed_exit": 1,
+      "stdout": "CI gate rejected: CI dependencies did not succeed: heavy: failure\n",
+      "stderr": ""
+    },
+    {
+      "name": "cancelled_even_if_allowed",
+      "expected_exit": 1,
+      "observed_exit": 1,
+      "stdout": "CI gate rejected: CI dependencies did not succeed: heavy: cancelled\n",
+      "stderr": ""
+    },
+    {
+      "name": "absent_result",
+      "expected_exit": 1,
+      "observed_exit": 1,
+      "stdout": "CI gate rejected: invalid or absent CI result: scope\n",
+      "stderr": ""
+    },
+    {
+      "name": "empty_needs",
+      "expected_exit": 1,
+      "observed_exit": 1,
+      "stdout": "CI gate rejected: NEEDS must be a nonempty object\n",
+      "stderr": ""
+    }
+  ],
+  "actionlint": {
+    "version": "1.7.12",
+    "shellcheck_pyflakes": "disabled for both baseline and candidate",
+    "blocking_architecture_rust_exit": 0,
+    "bazel_baseline_exit": 1,
+    "bazel_candidate_exit": 1,
+    "baseline_and_candidate_diagnostics_byte_identical": true,
+    "new_diagnostics": 0,
+    "existing_diagnostics": 2,
+    "all_four_files_lint_green": false
+  },
+  "format": {
+    "command": "just fmt",
+    "exit": 0,
+    "result": "No changed files need formatting"
+  },
+  "live_runner_reference": {
+    "run_id": 45458388978,
+    "source_job_id": 138685866457,
+    "runner_label": "ubuntu-24.04-arm",
+    "runner_name": "GitHub Actions 1000271749",
+    "job_started_at": "2026-11-24T18:39:09Z",
+    "scope": "existing architecture lane actually started; this is not qualification of the five edited jobs"
+  },
+  "edited_jobs_executed_in_native_ci": false,
+  "github_queue_cause_established": false
+}

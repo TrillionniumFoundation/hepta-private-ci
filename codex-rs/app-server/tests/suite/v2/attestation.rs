@@ -9,6 +9,7 @@ use codex_app_server_protocol::AttestationGenerateResponse;
 use codex_app_server_protocol::ClientInfo;
 use codex_app_server_protocol::InitializeCapabilities;
 use codex_app_server_protocol::JSONRPCMessage;
+use codex_app_server_protocol::JSONRPCRequest;
 use codex_app_server_protocol::JSONRPCResponse;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerRequest;
@@ -94,12 +95,17 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
         bail!("expected initialize response, got {initialized:?}");
     };
 
+    let mut pump = AttestationPump::default();
     let thread_request_id = mcp
         .send_thread_start_request_with_auto_env(ThreadStartParams::default())
         .await?;
     let thread_response: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(thread_request_id)),
+        read_response_answering_attestation(
+            &mut mcp,
+            RequestId::Integer(thread_request_id),
+            &mut pump,
+        ),
     )
     .await??;
     let ThreadStartResponse { thread, .. } = to_response(thread_response)?;
@@ -117,40 +123,35 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
         .await?;
     let turn_response: JSONRPCResponse = timeout(
         DEFAULT_READ_TIMEOUT,
-        mcp.read_stream_until_response_message(RequestId::Integer(turn_request_id)),
+        read_response_answering_attestation(
+            &mut mcp,
+            RequestId::Integer(turn_request_id),
+            &mut pump,
+        ),
     )
     .await??;
     let _: TurnStartResponse = to_response(turn_response)?;
 
-    let mut attestation_requests = 0;
     timeout(DEFAULT_READ_TIMEOUT, async {
         loop {
+            if pump.turn_completed {
+                break Ok::<(), anyhow::Error>(());
+            }
             match mcp.read_next_message().await? {
                 JSONRPCMessage::Request(request) => {
-                    let request = ServerRequest::try_from(request)?;
-                    let ServerRequest::AttestationGenerate { request_id, .. } = request else {
-                        bail!("expected attestation/generate request, got {request:?}");
-                    };
-                    attestation_requests += 1;
-                    mcp.send_response(
-                        request_id,
-                        serde_json::to_value(AttestationGenerateResponse {
-                            token: ATTESTATION_HEADER.into(),
-                        })?,
-                    )
-                    .await?;
+                    answer_attestation_request(&mut mcp, request, &mut pump).await?;
                 }
                 JSONRPCMessage::Notification(notification)
                     if notification.method == "turn/completed" =>
                 {
-                    break Ok(());
+                    pump.turn_completed = true;
                 }
                 _ => {}
             }
         }
     })
     .await??;
-    assert!(attestation_requests > 0);
+    assert!(pump.attestation_requests > 0);
 
     assert!(
         websocket_server
@@ -165,6 +166,56 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
 
     websocket_server.shutdown().await;
     Ok(())
+}
+
+#[derive(Default)]
+struct AttestationPump {
+    attestation_requests: usize,
+    turn_completed: bool,
+}
+
+async fn read_response_answering_attestation(
+    mcp: &mut TestAppServer,
+    expected_id: RequestId,
+    pump: &mut AttestationPump,
+) -> Result<JSONRPCResponse> {
+    loop {
+        match mcp.read_next_message().await? {
+            JSONRPCMessage::Response(response) if response.id == expected_id => {
+                return Ok(response);
+            }
+            JSONRPCMessage::Request(request) => {
+                // Prewarm can request attestation before thread/start or turn/start replies.
+                // Answer immediately instead of buffering it past the provider's 100ms limit.
+                answer_attestation_request(mcp, request, pump).await?;
+            }
+            JSONRPCMessage::Notification(notification) => {
+                // The terminal notification may precede the turn/start response. Keep it
+                // across both response waits so the completion phase cannot discard it.
+                pump.turn_completed |= notification.method == "turn/completed";
+            }
+            message => bail!("expected response for {expected_id:?}, got {message:?}"),
+        }
+    }
+}
+
+async fn answer_attestation_request(
+    mcp: &mut TestAppServer,
+    request: JSONRPCRequest,
+    pump: &mut AttestationPump,
+) -> Result<()> {
+    let request = ServerRequest::try_from(request)?;
+    let ServerRequest::AttestationGenerate { request_id, .. } = request else {
+        bail!("expected attestation/generate request, got {request:?}");
+    };
+    pump.attestation_requests += 1;
+    mcp.send_response(
+        request_id,
+        serde_json::to_value(AttestationGenerateResponse {
+            token: ATTESTATION_HEADER.into(),
+        })?,
+    )
+    .await
 }
 
 fn create_chatgpt_websocket_config(codex_home: &Path, server_uri: &str) -> std::io::Result<()> {

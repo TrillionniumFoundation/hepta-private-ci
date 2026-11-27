@@ -180,8 +180,9 @@ jobs:
     needs: changed
     if: ${{ needs.changed.outputs.argument_comment_lint_package == 'true' }}
     env:
-      CARGO_DYLINT_VERSION: 5.0.0
-      DYLINT_LINK_VERSION: 5.0.0
+      CARGO_DYLINT_VERSION: 6.3.2
+      DYLINT_LINK_VERSION: 6.3.2
+      DYLINT_BUILD_TOOLCHAIN: 1.98.0
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -213,8 +214,11 @@ jobs:
         if: ${{ steps.cargo_dylint_cache.outputs.cache-hit != 'true' }}
         shell: bash
         run: |
-          cargo install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION"
-          cargo install --locked dylint-link --version "$DYLINT_LINK_VERSION"
+          # The CLI's published lock needs Rust >=1.97. Keep the compiler for
+          # the lint crate, generated driver and UI tests on its pinned nightly.
+          rustup toolchain install "$DYLINT_BUILD_TOOLCHAIN" --profile minimal --no-self-update
+          cargo +"$DYLINT_BUILD_TOOLCHAIN" install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION"
+          cargo +"$DYLINT_BUILD_TOOLCHAIN" install --locked dylint-link --version "$DYLINT_LINK_VERSION"
       - name: Check Python wrapper syntax
         run: python3 -m py_compile tools/argument-comment-lint/wrapper_common.py tools/argument-comment-lint/run.py tools/argument-comment-lint/run-prebuilt-linter.py tools/argument-comment-lint/test_wrapper_common.py
       - name: Test Python wrapper helpers
@@ -243,7 +247,7 @@ jobs:
         argument_comment_lint_package,
       ]
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Summarize
         shell: bash

@@ -11,9 +11,7 @@ impl CurrentTimeReminder {
     }
 
     pub(crate) fn formatted_time(&self) -> String {
-        self.current_time
-            .format("%Y-%m-%d %H:%M:%S UTC")
-            .to_string()
+        self.current_time.format("%Y-%m-%d %H:%M:%S UTC")
     }
 }
 

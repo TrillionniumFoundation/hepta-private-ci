@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -142,8 +143,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    drop(store);
+    let before_lease = store.recovery_anchor().await?;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -172,6 +172,24 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             Ok(())
         },
     );
+
+    // The trusted interrupted-writer cut includes its active lease. Acquiring
+    // the first lease is a durable mutation; reopening that exact lease must
+    // preserve the complete lease, event, outbox, and cognitive owner cut.
+    let interrupted_writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        /*generation*/ 1,
+    )
+    .await?;
+    let expected = interrupted_writer.recovery_anchor().await?;
+    assert_ne!(expected, before_lease);
+    // Drop the process-local writer lock without durably releasing the lease.
+    drop(interrupted_writer);
+    assert_eq!(store.recovery_anchor().await?, expected);
+    store.close().await;
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,

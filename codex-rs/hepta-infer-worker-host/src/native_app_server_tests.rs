@@ -425,16 +425,35 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        serde_json::json!({
+            "type": "response.output_text.delta",
+            "item_id": "msg-cognitive-worker",
+            "output_index": 0,
+            "content_index": 0,
+            "delta": "fresh context accepted",
+        }),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
+    #[cfg(target_os = "macos")]
+    let directory = tempfile::Builder::new().prefix("hiw-").tempdir_in("/tmp")?;
+    #[cfg(target_os = "macos")]
+    let root = directory.path().to_path_buf();
+    #[cfg(not(target_os = "macos"))]
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_utils_cargo_bin::cargo_bin("codex")?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -472,7 +491,11 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "the real streamed message must reach the worker: {:?}",
+        accepted.output,
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()

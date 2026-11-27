@@ -3240,6 +3240,8 @@ mod tests {
         let sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs());
         let logs_db_path = sqlite.logs_db_path();
         std::fs::write(&logs_db_path, "not a sqlite database")?;
+        let expected_database_path =
+            AbsolutePathBuf::try_from(std::fs::canonicalize(&logs_db_path)?)?;
         config.sqlite = sqlite;
 
         let err =
@@ -3252,7 +3254,10 @@ mod tests {
             .and_then(|err| err.downcast_ref::<LocalStateDbStartupError>())
             .expect("state db startup failure should retain its typed context");
 
-        assert_eq!(startup_error.database_path(), logs_db_path.as_path());
+        assert_eq!(
+            startup_error.database_path(),
+            expected_database_path.as_path()
+        );
         assert!(
             codex_state::sqlite_error_detail_is_corruption(startup_error.detail()),
             "startup error should preserve the SQLite corruption cause, got: {}",

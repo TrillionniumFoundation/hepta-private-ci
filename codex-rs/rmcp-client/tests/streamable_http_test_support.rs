@@ -9,6 +9,9 @@
 // otherwise depend on which test file compiled the module.
 #![allow(dead_code)]
 
+#[path = "streamable_http_test_support/http_observations.rs"]
+mod http_observations;
+
 use std::net::TcpListener;
 use std::path::PathBuf;
 use std::process::Stdio;
@@ -46,6 +49,9 @@ use tokio::net::TcpStream;
 use tokio::process::Child;
 use tokio::process::Command;
 use tokio::time::sleep;
+
+use http_observations::HttpObservations;
+use http_observations::ObservedHttpClient;
 
 const SESSION_POST_FAILURE_CONTROL_PATH: &str = "/test/control/session-post-failure";
 const INITIALIZE_POST_FAILURE_CONTROL_PATH: &str = "/test/control/initialize-post-failure";
@@ -86,6 +92,11 @@ pub(crate) async fn create_client_with_http_client(
     base_url: &str,
     http_client: Arc<dyn HttpClient>,
 ) -> anyhow::Result<RmcpClient> {
+    let observations = Arc::new(HttpObservations::default());
+    let http_client = Arc::new(ObservedHttpClient {
+        inner: http_client,
+        observations: Arc::clone(&observations),
+    });
     let client = RmcpClient::new_streamable_http_client(
         "test-streamable-http",
         &format!("{base_url}/mcp"),
@@ -97,9 +108,18 @@ pub(crate) async fn create_client_with_http_client(
         http_client,
         /*auth_provider*/ None,
     )
-    .await?;
+    .await
+    .with_context(|| {
+        format!(
+            "streamable HTTP fixture: construct client; non-atomic observation={observations:?}"
+        )
+    })?;
 
-    initialize_client(&client).await?;
+    initialize_client(&client).await.with_context(|| {
+        format!(
+            "streamable HTTP fixture: initialize client; non-atomic observation={observations:?}"
+        )
+    })?;
 
     Ok(client)
 }

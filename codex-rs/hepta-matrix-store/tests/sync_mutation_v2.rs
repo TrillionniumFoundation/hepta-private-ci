@@ -89,7 +89,7 @@ async fn open_hostile_fixture_pool(path: &Path) -> TestResult<SqlitePool> {
         .ok_or_else(|| std::io::Error::other("fixture parent missing"))?;
     let parent = AbsolutePathBuf::try_from(parent.to_path_buf())?;
     Ok(SqliteConfig::new_for_testing(parent)
-        .open_durable_evidence_pool(path)
+        .open_private_durable_evidence_pool(path)
         .await?)
 }
 

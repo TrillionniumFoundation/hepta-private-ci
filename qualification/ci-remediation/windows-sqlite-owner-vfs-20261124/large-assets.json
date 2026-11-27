@@ -1,0 +1,32 @@
+{
+  "policy": "Existing exact-path asset exception mechanism in scripts/check_blob_size.py. The 512000-byte limit, checker, and all other paths remain unchanged.",
+  "purpose": "Build the required SQLite native source and public header with the opt-in private-owner VFS. Keep the official complete amalgamation rather than splitting or omitting build inputs.",
+  "crate": "libsqlite3-sys",
+  "version": "0.39.1",
+  "source_archive_url": "https://static.crates.io/crates/libsqlite3-sys/libsqlite3-sys-0.39.1.crate",
+  "source_archive_sha256": "14a5f01b87b92705d07b433c06f96cbc764637d81a0bffb5734ce17cf0f9a2b3",
+  "upstream_commit": "fb7c711f4e988db149f43cac68f7865b25d0b10e",
+  "source_import_commit": "88d24f166e56ef8406678425ad30cb16736512db",
+  "authored_source_at_recording": "a98a20cef0b32f5796f491e8e0fc918320947a38",
+  "assets": [
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.c",
+      "upstream_bytes": 9582521,
+      "upstream_sha256": "0c657666d819f261cc4007526ad57e1669de9949df7a8ea847aa284a2bf0ee52",
+      "candidate_bytes": 9584648,
+      "candidate_sha256": "372f544235a150a0baf1feff2e1d01a454e2049e6406fb37efda37fdc3faa241",
+      "candidate_git_blob": "0c63ac295a48687633d11878cc61e192dc1dd05b",
+      "modification": "The separately reviewed opt-in Windows owner VFS patch adds bounded hooks to the official amalgamation. The original import remains a distinct commit."
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.h",
+      "upstream_bytes": 695729,
+      "upstream_sha256": "d6c84557261893439b341d2e6c35187ae3ea24fbfd843ad94616f72d89242b8c",
+      "candidate_bytes": 695729,
+      "candidate_sha256": "d6c84557261893439b341d2e6c35187ae3ea24fbfd843ad94616f72d89242b8c",
+      "candidate_git_blob": "30d431bc34ae21b25cb1906ca0b88cbb5d2b3ac2",
+      "modification": "Header retained byte-for-byte."
+    }
+  ],
+  "scope": "A source-size asset exception only. No advisory, license, authorization, or runtime security exception. Native behavior still requires execution."
+}

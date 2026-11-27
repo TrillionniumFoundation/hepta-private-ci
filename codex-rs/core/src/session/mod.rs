@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -3468,8 +3469,16 @@ impl Session {
         turn_context: &TurnContext,
         items: &[ResponseItem],
     ) {
+        let preparation_started = Instant::now();
+        tracing::trace!(phase = "prepare_begin", "conversation image phase");
         let (items, image_preparations) =
             self.prepare_conversation_items_for_history(turn_context, items);
+        tracing::trace!(
+            phase = "prepare_complete",
+            image_count = image_preparations.len(),
+            elapsed_ms = preparation_started.elapsed().as_secs_f64() * 1_000.0,
+            "conversation image phase"
+        );
         let items = items
             .into_owned()
             .into_iter()
@@ -3489,14 +3498,39 @@ impl Session {
             .iter()
             .map(|envelope| envelope.item.clone())
             .collect::<Vec<_>>();
+        let image_count = image_preparations.len();
+        let image_recording_started = (image_count > 0).then(Instant::now);
+        if image_recording_started.is_some() {
+            tracing::trace!(
+                phase = "state_lock_wait_begin",
+                image_count,
+                "conversation image phase"
+            );
+        }
         {
             let mut state = self.state.lock().await;
+            if let Some(started) = image_recording_started {
+                tracing::trace!(
+                    phase = "state_lock_acquired",
+                    image_count,
+                    elapsed_ms = started.elapsed().as_secs_f64() * 1_000.0,
+                    "conversation image phase"
+                );
+            }
             state
                 .current_time_reminder
                 .note_recorded_items(&response_items);
             state
                 .history
                 .record_annotated_items(&items, turn_context.model_info.truncation_policy.into());
+        }
+        if let Some(started) = image_recording_started {
+            tracing::trace!(
+                phase = "history_recorded",
+                image_count,
+                elapsed_ms = started.elapsed().as_secs_f64() * 1_000.0,
+                "conversation image phase"
+            );
         }
         for image in image_preparations {
             self.services
@@ -3518,6 +3552,14 @@ impl Session {
         }
         self.send_raw_response_items(turn_context, &response_items)
             .await;
+        if let Some(started) = image_recording_started {
+            tracing::trace!(
+                phase = "record_complete",
+                image_count,
+                elapsed_ms = started.elapsed().as_secs_f64() * 1_000.0,
+                "conversation image phase"
+            );
+        }
     }
 
     pub(crate) async fn record_step_world_state_if_changed(
@@ -4044,10 +4086,10 @@ impl Session {
                         "notes",
                         "thread_hint",
                         /*environment_id*/ None,
+                        /*arguments*/ None,
                         Some(serde_json::json!({
                             "threadId": self.thread_id().to_string(),
                         })),
-                        /*meta*/ None,
                         /*requested_timeout*/ None,
                         /*wait_for_server*/ false,
                     )

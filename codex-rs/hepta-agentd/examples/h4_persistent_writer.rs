@@ -42,6 +42,7 @@ use codex_hepta_memory::ProductionOutcomeReceipt;
 use codex_hepta_memory::ProductionQueuedReceipt;
 use codex_hepta_memory::ProductionRecoveryReceipt;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::SqlitePool;
@@ -370,7 +371,7 @@ async fn inspect_database(path: &Path, lease_id: &str) -> HarnessResult<DbEviden
         .busy_timeout(Duration::from_secs(5));
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
-        .connect_with(options)
+        .connect_with(SqliteConfig::with_private_creation_owner(options)?)
         .await?;
     let evidence = inspect_database_with_pool(&pool, path, lease_id).await;
     pool.close().await;

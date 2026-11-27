@@ -27,8 +27,8 @@ manual_rust_test_targets="$(
     --output=label \
     -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
 )"
-if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
-  # Non-Windows clippy jobs lint the native test binaries; the
+if [[ "${RUNNER_OS:-}" != "Windows" || $windows_cross_compile -eq 0 ]]; then
+  # Native clippy jobs on every platform lint the native test binaries; the
   # Windows-cross binaries exist only for the fast Windows test leg.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
 elif [[ $windows_cross_compile -eq 1 ]]; then
@@ -39,6 +39,13 @@ elif [[ $windows_cross_compile -eq 1 ]]; then
   # the Windows helpers and unit-test helpers, but do not pass the native-only
   # sharded integration helpers as explicit clippy targets.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-test-bin$' || true)"
+fi
+
+if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
+  # This explicit manual process suite uses UnixProcessDriver and Unix sockets.
+  # Match its existing Linux/macOS target_compatible_with contract; ordinary
+  # Agentd unit and write-qualification tests remain in the native roster.
+  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -Fvx -- '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin' || true)"
 fi
 
 printf '%s\n' \

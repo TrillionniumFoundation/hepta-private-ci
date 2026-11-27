@@ -14,13 +14,17 @@ use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
 use codex_extension_api::TurnAbortInput;
 use codex_extension_api::TurnLifecycleContributor;
+use codex_extension_api::TurnStopInput;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::protocol::TurnAbortReason;
 use pretty_assertions::assert_eq;
 use std::sync::Arc;
+use std::sync::OnceLock;
+use std::sync::Weak;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
+use std::task::Poll;
 use std::time::Duration;
 use tokio::sync::Notify;
 use tokio::time::timeout;
@@ -41,13 +45,10 @@ impl LifecycleGate {
     }
 }
 
-impl ThreadLifecycleContributor<Config> for LifecycleGate {
-    fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+impl TurnLifecycleContributor for LifecycleGate {
+    fn on_turn_stop<'a>(&'a self, _input: TurnStopInput<'a>) -> ExtensionFuture<'a, ()> {
         Box::pin(self.block_once())
     }
-}
-
-impl TurnLifecycleContributor for LifecycleGate {
     fn on_turn_abort<'a>(&'a self, _input: TurnAbortInput<'a>) -> ExtensionFuture<'a, ()> {
         Box::pin(self.block_once())
     }
@@ -95,10 +96,7 @@ async fn assert_terminal_readiness(end: TaskEnd) {
         seen: AtomicBool::new(false),
     });
     let mut extensions = ExtensionRegistryBuilder::<Config>::new();
-    match end {
-        TaskEnd::Complete => extensions.thread_lifecycle_contributor(gate.clone()),
-        TaskEnd::WaitForInterrupt => extensions.turn_lifecycle_contributor(gate.clone()),
-    };
+    extensions.turn_lifecycle_contributor(gate.clone());
     Arc::get_mut(&mut session)
         .expect("unique session owner")
         .services
@@ -120,7 +118,9 @@ async fn assert_terminal_readiness(end: TaskEnd) {
         .await
         .expect("terminal lifecycle reaches its deterministic barrier");
     assert!(session.has_pending_admission_fence());
-    assert!(store.calls().await.flush_thread >= 2);
+    if matches!(end, TaskEnd::WaitForInterrupt) {
+        assert!(store.calls().await.flush_thread >= 2);
+    }
     while let Ok(event) = events.try_recv() {
         assert!(
             !matches!(
@@ -156,6 +156,7 @@ async fn assert_terminal_readiness(end: TaskEnd) {
     })
     .await
     .expect("terminal event follows barrier release");
+    assert!(store.calls().await.flush_thread >= 2);
 
     // No polling or settling delay: receipt itself is the readiness boundary.
     assert!(!session.has_pending_admission_fence());
@@ -178,11 +179,107 @@ async fn assert_terminal_readiness(end: TaskEnd) {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn completion_waits_for_idle_cleanup_then_admits_settings_and_next_task() {
+async fn completion_waits_for_turn_cleanup_then_admits_settings_and_next_task() {
     assert_terminal_readiness(TaskEnd::Complete).await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn abort_waits_for_lifecycle_cleanup_then_admits_settings_and_next_task() {
     assert_terminal_readiness(TaskEnd::WaitForInterrupt).await;
+}
+
+struct IdleFollowup {
+    session: OnceLock<Weak<Session>>,
+    admitted: async_channel::Sender<bool>,
+    release: Notify,
+    seen: AtomicBool,
+}
+
+impl ThreadLifecycleContributor<Config> for IdleFollowup {
+    fn on_thread_idle<'a>(&'a self, _input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            if self.seen.swap(true, Ordering::SeqCst) {
+                return;
+            }
+            let session = self
+                .session
+                .get()
+                .and_then(Weak::upgrade)
+                .expect("live test session");
+            let next = session
+                .new_default_turn_with_sub_id("idle-followup".to_string())
+                .await;
+            let admitted = session
+                .spawn_task(next, Vec::new(), ProbeTask(TaskEnd::WaitForInterrupt))
+                .await
+                .is_ok();
+            self.admitted.send(admitted).await.expect("test receiver");
+            self.release.notified().await;
+        })
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn idle_callback_admits_followup_while_shutdown_retains_completion_owner() {
+    let (mut session, context, events) = make_session_and_context_with_rx().await;
+    attach_in_memory_thread_store(Arc::get_mut(&mut session).expect("unique session owner")).await;
+    let (admitted_tx, admitted_rx) = async_channel::bounded(1);
+    let followup = Arc::new(IdleFollowup {
+        session: OnceLock::new(),
+        admitted: admitted_tx,
+        release: Notify::new(),
+        seen: AtomicBool::new(false),
+    });
+    let mut extensions = ExtensionRegistryBuilder::<Config>::new();
+    extensions.thread_lifecycle_contributor(followup.clone());
+    Arc::get_mut(&mut session)
+        .expect("unique session owner")
+        .services
+        .extensions = Arc::new(extensions.build());
+    assert!(followup.session.set(Arc::downgrade(&session)).is_ok());
+    session
+        .spawn_task(
+            Arc::clone(&context),
+            Vec::new(),
+            ProbeTask(TaskEnd::Complete),
+        )
+        .await
+        .expect("initial task starts");
+    assert!(
+        timeout(Duration::from_secs(2), admitted_rx.recv())
+            .await
+            .expect("idle callback attempts the followup")
+            .expect("admission result"),
+        "idle consumers must be able to use ordinary admission without an owner exemption"
+    );
+    let mut terminal_seen = false;
+    while let Ok(event) = events.try_recv() {
+        if let EventMsg::TurnComplete(_) = event.msg {
+            assert_eq!(event.id, context.sub_id);
+            terminal_seen = true;
+        }
+    }
+    assert!(
+        terminal_seen,
+        "terminal delivery precedes the idle followup"
+    );
+    assert!(!session.has_pending_admission_fence());
+
+    session.begin_shutdown();
+    let mut drain = std::pin::pin!(
+        session.drain_task_terminalizations_for_shutdown_except(/*excluded_identity*/ None)
+    );
+    assert!(matches!(futures::poll!(drain.as_mut()), Poll::Pending));
+    followup.release.notify_one();
+    timeout(Duration::from_secs(2), drain)
+        .await
+        .expect("shutdown drains the callback after admission opened");
+    assert!(
+        session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("completion registry")
+            .is_empty()
+    );
+    session.abort_all_tasks(TurnAbortReason::Interrupted).await;
 }

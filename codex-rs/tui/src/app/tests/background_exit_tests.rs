@@ -150,9 +150,12 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
     let (mut app_server, mut tui) =
         prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
-    let started = app_server
-        .start_thread(app.chat_widget.config_ref())
-        .await?;
+    // This case executes a real command. The shared widget fixture uses a
+    // display-only project path that need not exist on the host.
+    let task_dir = tempfile::tempdir()?;
+    let mut task_config = app.chat_widget.config_ref().clone();
+    task_config.cwd = task_dir.path().abs();
+    let started = app_server.start_thread(&task_config).await?;
     let thread_id = started.session.thread_id;
     app.active_thread_id = Some(thread_id);
     app.chat_widget

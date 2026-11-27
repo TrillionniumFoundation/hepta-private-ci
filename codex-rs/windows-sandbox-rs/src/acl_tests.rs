@@ -11,6 +11,7 @@ use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::ACL_REVISION;
 use windows_sys::Win32::Security::AddAccessAllowedAceEx;
 use windows_sys::Win32::Security::AddAccessDeniedAceEx;
+use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
 use windows_sys::Win32::Security::InitializeAcl;
 use windows_sys::Win32::Security::NO_PROPAGATE_INHERIT_ACE;
@@ -18,6 +19,9 @@ use windows_sys::Win32::Storage::FileSystem::FILE_READ_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_EA;
 use windows_sys::Win32::Storage::FileSystem::SYNCHRONIZE;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
+
+const GENERIC_READ_MASK: u32 = 0x8000_0000;
+const GENERIC_WRITE_MASK: u32 = 0x4000_0000;
 
 struct NativeAcl(Vec<u32>);
 
@@ -79,7 +83,8 @@ fn complete_denies_compare_mapped_masks_and_require_every_right() -> Result<()> 
         let mut acl = NativeAcl::new()?;
         acl.deny(&sid, mask, inheritance)?;
         // SAFETY: both arguments point into live, initialized native objects.
-        let complete = unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) };
+        let complete =
+            unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyScope::DirectoryTree) };
         assert_eq!(complete, expected, "mask={mask:#x}");
     }
     Ok(())
@@ -102,7 +107,9 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
             acl.deny(&sid, kind.mask(), flags)?;
             // SAFETY: the ACL and SID are valid and retained for this query.
             assert!(
-                !unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) },
+                !unsafe {
+                    kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyScope::DirectoryTree)
+                },
                 "flags={flags:#x}",
             );
         }
@@ -123,8 +130,54 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
         }
         acl.deny(&sid, kind.mask(), inheritance)?;
         // SAFETY: the ACL and SID remain valid through the query.
-        assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyScope::DirectoryTree)
+        });
     }
+    Ok(())
+}
+
+#[test]
+fn object_denies_do_not_imply_a_recursive_directory_deny() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        let mut acl = NativeAcl::new()?;
+        acl.deny(&sid, kind.mask() & !FILE_DELETE_CHILD, /*flags*/ 0)?;
+        // SAFETY: both pointers refer to live native allocations in this scope.
+        let scopes = unsafe {
+            (
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyScope::ObjectOnly),
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyScope::DirectoryTree),
+            )
+        };
+        assert_eq!(scopes, (true, false));
+    }
+    Ok(())
+}
+
+#[test]
+fn native_file_and_directory_denies_are_idempotent() -> Result<()> {
+    let fixture = tempfile::tempdir()?;
+    let file = fixture.path().join("file.txt");
+    let directory = fixture.path().join("directory");
+    std::fs::write(&file, "unchanged")?;
+    std::fs::create_dir(&directory)?;
+    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    for path in [&file, &directory] {
+        // SAFETY: the validated synthetic SID and real fixture paths are live;
+        // this SID is not an identity of the current process.
+        let repairs = unsafe {
+            (
+                add_deny_write_ace(path, sid.as_ptr())?,
+                add_deny_write_ace(path, sid.as_ptr())?,
+                add_deny_read_ace(path, sid.as_ptr())?,
+                add_deny_read_ace(path, sid.as_ptr())?,
+            )
+        };
+        assert_eq!(repairs, (true, false, true, false), "{path:?}");
+    }
+    assert_eq!(std::fs::read_to_string(file)?, "unchanged");
+    assert_eq!(std::fs::read_dir(directory)?.count(), 0);
     Ok(())
 }
 
@@ -235,13 +288,15 @@ fn partial_read_deny_is_repaired_before_native_file_data_access() -> Result<()> 
 }
 
 #[test]
-fn deny_ace_update_failure_is_an_error() {
+fn deny_ace_update_failure_is_an_error() -> Result<()> {
     let path = std::path::Path::new(r"C:\world-writable");
-    let error = acl_api_result(path, "SetNamedSecurityInfoW", ERROR_ACCESS_DENIED)
-        .expect_err("access denied must not look like an already-present ACE");
+    let Err(error) = acl_api_result(path, "SetNamedSecurityInfoW", ERROR_ACCESS_DENIED) else {
+        anyhow::bail!("access denied must not look like an already-present ACE");
+    };
 
     assert_eq!(
         error.to_string(),
         r"SetNamedSecurityInfoW failed for C:\world-writable: 5"
     );
+    Ok(())
 }

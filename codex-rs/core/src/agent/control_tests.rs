@@ -14,6 +14,7 @@ use crate::context::ManagedDeveloperInstructions;
 use crate::context::MultiAgentRoleInstructions;
 use crate::context::SubagentNotification;
 use crate::init_state_db;
+use crate::tasks::recovery_diagnostics::RecoveryDiagnostics;
 use crate::thread_manager::StartThreadOptions;
 use crate::tools::handlers::multi_agents_common::thread_spawn_source;
 use assert_matches::assert_matches;
@@ -380,6 +381,41 @@ async fn wait_for_subagent_notification(parent_thread: &Arc<CodexThread>) -> boo
 }
 
 async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str) {
+    // Copy only an observed turn ID; never retain a task, execution guard, or
+    // authority across abort. A busy lock or absent ID remains inconclusive.
+    let (before_abort, observed_turn_id) = match thread.session.active_turn.try_lock() {
+        Ok(active) => (
+            "observed",
+            active
+                .as_ref()
+                .and_then(|active| {
+                    active
+                        .task
+                        .as_ref()
+                        .map(|task| &task.turn_context.sub_id)
+                        .or_else(|| {
+                            active
+                                .task_terminalization
+                                .as_ref()
+                                .map(|marker| &marker.turn_context.sub_id)
+                        })
+                        .or_else(|| {
+                            active
+                                .start_transition
+                                .as_ref()
+                                .map(|transition| &transition.turn_id)
+                        })
+                        .or_else(|| {
+                            active
+                                .start_reservation
+                                .as_ref()
+                                .map(|reservation| &reservation.turn_id)
+                        })
+                })
+                .cloned(),
+        ),
+        Err(_) => ("active_lock_busy", None),
+    };
     // These tests only need a durable resume fixture. Stop the child prompt
     // first so this marker records directly instead of waiting behind an
     // unrelated active turn.
@@ -387,6 +423,27 @@ async fn persist_thread_for_tree_resume(thread: &Arc<CodexThread>, message: &str
         .session
         .abort_all_tasks(TurnAbortReason::Interrupted)
         .await;
+    // An existing finish owner or start transition owns its cleanup, so the
+    // ordinary abort call can return before that owner's admission fence opens.
+    // This fixture must wait for readiness before injecting durable history.
+    timeout(Duration::from_secs(5), async {
+        while thread.session.has_pending_admission_fence() {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .unwrap_or_else(|error| {
+        // Register only after failure, then read once without waiting for
+        // locks. Empty reference IDs cannot establish same-turn attribution.
+        let diagnostics =
+            RecoveryDiagnostics::capture(thread, observed_turn_id.as_deref().unwrap_or(""));
+        let state = diagnostics.snapshot(thread);
+        panic!(
+            "aborted fixture turn should reopen admission: {error:?}; marker={message:?}; \
+             before_abort={before_abort}; observed_turn_id={observed_turn_id:?}; \
+             failure_snapshot={state}"
+        );
+    });
     thread
         .inject_response_items(vec![user_message(message)])
         .await
@@ -1599,40 +1656,70 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .flush_rollout()
         .await
         .expect("parent rollout should flush");
-    let child_thread_id = harness
-        .control
-        .spawn_agent_with_metadata(
-            child_config,
-            text_input("child task"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: None,
-            })),
-            SpawnAgentOptions {
-                fork_parent_spawn_call_id: Some(parent_spawn_call_id.clone()),
-                fork_mode: Some(SpawnAgentForkMode::FullHistory),
-                ..Default::default()
-            },
-        )
+    // Snapshot the completed fork before the original initial input can append
+    // first-turn context or advance the inherited reference baseline.
+    let delivery_hook = harness.manager.pause_next_startup_before_delivery();
+    let spawn_control = harness.control.clone();
+    let spawn_call_id = parent_spawn_call_id.clone();
+    let mut child_spawn = tokio::spawn(async move {
+        spawn_control
+            .spawn_agent_with_metadata(
+                child_config,
+                text_input("child task"),
+                Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
+                    parent_thread_id,
+                    depth: 1,
+                    agent_path: None,
+                    agent_nickname: None,
+                    agent_role: None,
+                })),
+                SpawnAgentOptions {
+                    fork_parent_spawn_call_id: Some(spawn_call_id),
+                    fork_mode: Some(SpawnAgentForkMode::FullHistory),
+                    ..Default::default()
+                },
+            )
+            .await
+    });
+    tokio::select! {
+        _ = delivery_hook.wait_until_entered() => {}
+        result = &mut child_spawn => {
+            delivery_hook.release();
+            panic!("forked spawn completed before the delivery hook: {result:?}");
+        }
+    }
+    let child_thread_ids = harness
+        .manager
+        .list_thread_ids()
         .await
-        .expect("forked spawn should succeed")
-        .thread_id;
-
+        .into_iter()
+        .filter(|thread_id| *thread_id != parent_thread_id)
+        .collect::<Vec<_>>();
+    let [child_thread_id] = child_thread_ids.as_slice() else {
+        delivery_hook.release();
+        panic!("expected one published child before delivery: {child_thread_ids:?}");
+    };
+    let child_thread_id = *child_thread_id;
     let child_thread = harness
         .manager
         .get_thread(child_thread_id)
         .await
         .expect("child thread should be registered");
+    let history = child_thread.session.clone_history().await;
+    let history_items = history.raw_items().cloned().collect::<Vec<_>>();
+    let child_reference_context_item = child_thread.session.reference_context_item().await;
+    delivery_hook.release();
+    let spawned_child_thread_id = child_spawn
+        .await
+        .expect("forked spawn task should complete")
+        .expect("forked spawn should succeed")
+        .thread_id;
+    assert_eq!(spawned_child_thread_id, child_thread_id);
     assert_ne!(child_thread_id, parent_thread_id);
     assert_eq!(
         child_thread.config_snapshot().await.history_mode,
         ThreadHistoryMode::Legacy
     );
-    let history = child_thread.session.clone_history().await;
-    let history_items = history.raw_items().cloned().collect::<Vec<_>>();
     let expected_final_answer = parent_thread
         .session
         .clone_history()
@@ -1699,7 +1786,7 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         "full-history forked child history should replace parent usage hints with the child subagent hint while filtering non-final assistant/tool chatter"
     );
     assert_eq!(
-        serde_json::to_value(child_thread.session.reference_context_item().await)
+        serde_json::to_value(child_reference_context_item)
             .expect("serialize child reference context item"),
         serde_json::to_value(Some(parent_reference_context_item))
             .expect("serialize expected reference context item"),

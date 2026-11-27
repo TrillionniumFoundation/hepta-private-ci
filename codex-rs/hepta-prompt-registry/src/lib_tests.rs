@@ -222,7 +222,7 @@ fn exhausted_revision_preserves_realizations_during_retirement_and_revocation() 
 
 #[test]
 fn governed_factor_relations_are_owner_bound_and_rebuildable() {
-    let mut registry = PromptRegistry::new(64).expect("registry");
+    let mut registry = PromptRegistry::new(64).must("registry");
     for (factor_id, proposer) in [("factor:a", "proposer:a"), ("factor:b", "proposer:b")] {
         registry
             .register_factor(PromptFactor {
@@ -236,14 +236,14 @@ fn governed_factor_relations_are_owner_bound_and_rebuildable() {
                 source: FactorSource::GovernedInternal,
                 lifecycle: Lifecycle::Draft,
             })
-            .expect("factor");
+            .must("factor");
         registry
             .admit_factor(
                 &id(factor_id),
                 &id("reviewer:independent"),
                 digest(b"admission"),
             )
-            .expect("admit");
+            .must("admit");
     }
     let relation = PromptFactorRelation {
         relation_id: id("relation:a:b:conflict"),
@@ -254,9 +254,9 @@ fn governed_factor_relations_are_owner_bound_and_rebuildable() {
     };
     registry
         .register_factor_relation(relation.clone())
-        .expect("relation");
+        .must("relation");
     let first = registry.factor_graph_source_v1();
-    first.validate().expect("valid factor graph source");
+    first.validate().must("valid factor graph source");
     assert_eq!(first.factors.len(), 2);
     assert_eq!(first.relations, vec![relation.clone()]);
     assert!(!first.authority.grants_any());
@@ -266,9 +266,9 @@ fn governed_factor_relations_are_owner_bound_and_rebuildable() {
         Ok(registry.receipt(MutationDisposition::Unchanged))
     );
 
-    registry.revoke_factor(&id("factor:b")).expect("revoke");
+    registry.revoke_factor(&id("factor:b")).must("revoke");
     let after_revoke = registry.factor_graph_source_v1();
-    after_revoke.validate().expect("valid post-revoke source");
+    after_revoke.validate().must("valid post-revoke source");
     assert_eq!(after_revoke.factors.len(), 1);
     assert!(after_revoke.relations.is_empty());
     assert_ne!(first.source_digest, after_revoke.source_digest);
@@ -276,7 +276,7 @@ fn governed_factor_relations_are_owner_bound_and_rebuildable() {
 
 #[test]
 fn factor_relation_requires_live_governed_canonical_endpoints() {
-    let mut registry = PromptRegistry::new(64).expect("registry");
+    let mut registry = PromptRegistry::new(64).must("registry");
     registry
         .register_factor(PromptFactor {
             factor_id: id("factor:a"),
@@ -289,14 +289,14 @@ fn factor_relation_requires_live_governed_canonical_endpoints() {
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
         })
-        .expect("factor");
+        .must("factor");
     registry
         .admit_factor(
             &id("factor:a"),
             &id("reviewer:independent"),
             digest(b"admission"),
         )
-        .expect("admit");
+        .must("admit");
     let missing = PromptFactorRelation {
         relation_id: id("relation:a:b"),
         left_factor_id: id("factor:a"),

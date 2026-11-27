@@ -214,17 +214,19 @@ impl FleetRegistry {
         staging_root: &Path,
         manifest: &AgentManifest,
     ) -> Result<(), FleetRegistryError> {
-        for name in [
-            "home",
-            "run",
-            "logs",
-            "releases",
-            "cognitive",
-            "matrix",
-            "automation",
-        ] {
+        for name in ["home", "run", "logs", "releases", "matrix", "automation"] {
             create_private_directory(&staging_root.join(name))?;
         }
+        // Cognitive's Windows owner validates a protected inheritable DACL.
+        // Provision that policy at creation, before the staged agent is
+        // published. FILE_CREATE preserves registration's no-adoption rule;
+        // broad pre-existing directories are never repaired into acceptance.
+        #[cfg(windows)]
+        codex_utils_path::windows_private::PrivateSqliteDirectory::create_new(
+            &staging_root.join("cognitive"),
+        )?;
+        #[cfg(not(windows))]
+        create_private_directory(&staging_root.join("cognitive"))?;
         let matrix_secrets_root = staging_root.join("matrix/secrets");
         create_private_directory(&matrix_secrets_root)?;
         write_new_file(

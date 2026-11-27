@@ -195,7 +195,30 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
-        File::open(&self.root).unwrap()
+        let mut options = OpenOptions::new();
+        options.read(true);
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+
+            const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+            const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+            // Supply the real write-capable directory barrier expected by the
+            // owner. The original flush and ledger assertions remain active.
+            options
+                .write(true)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT);
+        }
+        let directory = options.open(&self.root).unwrap();
+        let metadata = directory.metadata().unwrap();
+        assert!(metadata.is_dir());
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::MetadataExt;
+
+            assert_eq!(metadata.file_attributes() & 0x0400, 0);
+        }
+        directory
     }
 
     pub(super) fn writer(&self) -> LedgerWriter {

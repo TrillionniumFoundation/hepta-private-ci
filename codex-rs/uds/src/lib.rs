@@ -10,6 +10,9 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncWrite;
 use tokio::io::ReadBuf;
 
+#[cfg(windows)]
+mod windows_socket_path;
+
 /// Creates `socket_dir` if needed and restricts it to the current user where
 /// the platform exposes Unix permissions.
 pub async fn prepare_private_socket_directory(socket_dir: impl AsRef<Path>) -> IoResult<()> {
@@ -18,9 +21,9 @@ pub async fn prepare_private_socket_directory(socket_dir: impl AsRef<Path>) -> I
 
 /// Returns whether `socket_path` points at a stale Unix socket rendezvous path.
 ///
-/// On Unix this checks the file type. On Windows, `uds_windows` represents the
-/// rendezvous as a regular path, so existence is the only useful stale-path
-/// signal available.
+/// Checks the Unix socket file type or Windows AF_UNIX reparse tag without
+/// following the endpoint. This is a type check; callers must separately
+/// establish that no live listener owns the endpoint before removing it.
 pub async fn is_stale_socket_path(socket_path: impl AsRef<Path>) -> IoResult<bool> {
     platform::is_stale_socket_path(socket_path.as_ref()).await
 }
@@ -331,7 +334,8 @@ mod platform {
     }
 
     pub(super) async fn is_stale_socket_path(socket_path: &Path) -> IoResult<bool> {
-        tokio::fs::try_exists(socket_path).await
+        let socket_path = socket_path.to_path_buf();
+        spawn_blocking_io(move || super::windows_socket_path::is_socket(&socket_path)).await
     }
 
     async fn spawn_blocking_io<T>(

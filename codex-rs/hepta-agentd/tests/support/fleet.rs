@@ -51,6 +51,10 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        // Keep owned socket fixtures within Darwin sun_path even under a deep TMPDIR.
+        #[cfg(target_os = "macos")]
+        let temp = tempfile::Builder::new().prefix("haf-").tempdir_in("/tmp")?;
+        #[cfg(not(target_os = "macos"))]
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;

@@ -113,8 +113,7 @@ clock_source = "external"
     let current_date = codex_utils_time::Timestamp::from_parts(CURRENT_TIME_AT, 0)
         .expect("test timestamp should be valid")
         .to_local()
-        .format("%Y-%m-%d")
-        .to_string();
+        .format("%Y-%m-%d");
     assert!(request.message_input_texts("user").iter().any(|text| {
         text.contains("<environment_context>")
             && text.contains(&format!("<current_date>{current_date}</current_date>"))

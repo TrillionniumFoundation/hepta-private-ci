@@ -58,8 +58,9 @@ impl Fixture {
                 changed_at_ms: 1,
             })
             .await?;
-        // The normal shim opens this test's already initialized temporary DB.
-        // This precondition is fixture setup, not a path-based recovery guard.
+        // The inspection connection uses the initialized store's private VFS,
+        // including its shared-memory domain. This is fixture setup, not a
+        // path-based recovery guard.
         let path = store.path();
         assert!(fs::symlink_metadata(path)?.file_type().is_file());
         let parent = path
@@ -67,7 +68,7 @@ impl Fixture {
             .ok_or_else(|| std::io::Error::other("fixture parent missing"))?;
         let parent = AbsolutePathBuf::try_from(parent.to_path_buf())?;
         let pool = SqliteConfig::new_for_testing(parent)
-            .open_durable_evidence_pool(path)
+            .open_private_durable_evidence_pool(path)
             .await?;
         Ok(Self {
             _temp: temp,

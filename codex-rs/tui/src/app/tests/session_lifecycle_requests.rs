@@ -27,6 +27,7 @@ use codex_protocol::protocol::ItemCompletedEvent;
 use codex_protocol::protocol::ReviewTarget;
 use codex_protocol::user_input::UserInput as CoreUserInput;
 use codex_state::SqliteConfig;
+use color_eyre::eyre::WrapErr;
 use futures::SinkExt;
 use futures::StreamExt;
 use pretty_assertions::assert_eq;
@@ -965,7 +966,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     .await;
 
     let event = tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-        .await?
+        .await
+        .wrap_err("dynamic namespace list_threads completion")?
         .expect("dynamic tool completion event");
     let AppEvent::DynamicToolCallCompleted {
         request_id,
@@ -999,7 +1001,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
             tokio::task::yield_now().await;
         }
     })
-    .await?;
+    .await
+    .wrap_err("dynamic namespace list_threads response forwarding")?;
     assert_eq!(completed["success"], true);
 
     app.handle_app_server_event(
@@ -1021,7 +1024,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     .await;
     let AppEvent::DynamicToolCallCompleted { response, .. } =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic namespace set_thread_title completion")?
             .expect("dynamic mutation completion event")
     else {
         panic!("expected a dynamic mutation completion event")
@@ -1129,7 +1133,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     );
     let registration =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic namespace create_thread registration")?
             .expect("background task registration event");
     let AppEvent::DynamicToolThreadStarted {
         thread_id: created_thread_id,
@@ -1158,7 +1163,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     assert!(app_server.task_tools_available(created_thread_id));
     let AppEvent::DynamicToolCallCompleted { response, .. } =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic namespace create_thread completion")?
             .expect("background task creation completion")
     else {
         panic!("expected a background task completion event")
@@ -1217,7 +1223,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
         task_tools_available,
         registered,
     } = tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-        .await?
+        .await
+        .wrap_err("dynamic namespace send_message_to_thread registration")?
         .expect("follow-up task registration event")
     else {
         panic!("expected follow-up task registration before its next turn")
@@ -1236,7 +1243,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
     .await?;
     let AppEvent::DynamicToolCallCompleted { response, .. } =
         tokio::time::timeout(std::time::Duration::from_secs(/*secs*/ 5), events.recv())
-            .await?
+            .await
+            .wrap_err("dynamic namespace send_message_to_thread completion")?
             .expect("follow-up task completion")
     else {
         panic!("expected a follow-up task completion event")
@@ -1269,7 +1277,8 @@ async fn dynamic_tool_requests_ignore_other_namespaces_and_dispatch_tui_namespac
             tokio::task::yield_now().await;
         }
     })
-    .await?;
+    .await
+    .wrap_err("dynamic namespace cancellation response forwarding")?;
     assert_eq!(cancelled["success"], false);
     assert!(app.dynamic_tool_tasks.is_empty());
 

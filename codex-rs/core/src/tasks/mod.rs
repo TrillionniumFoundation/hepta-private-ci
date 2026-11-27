@@ -1,10 +1,13 @@
+mod abort_observation;
 mod compact;
 mod lifecycle;
+pub(crate) mod recovery_diagnostics;
 mod regular;
 mod review;
 mod terminal_event;
 mod user_shell;
 
+use self::abort_observation::TaskAbortStage;
 use self::terminal_event::TerminalEventOwner;
 
 use std::panic::AssertUnwindSafe;
@@ -185,6 +188,7 @@ pub(crate) struct TaskAbortHandoff {
     reason: TurnAbortReason,
     deferred_idle_cause: Option<ThreadIdleCause>,
     phase: TaskAbortHandoffPhase,
+    abort_stage: TaskAbortStage,
     failed_closed: bool,
     task_quiesced: bool,
     terminal_persistence_generation: Option<u64>,
@@ -1809,9 +1813,13 @@ impl Session {
         terminal_persistence_generation: Option<u64>,
     ) -> bool {
         let Some(seed) = recovery_seed else {
+            recovery_diagnostics::record(self, "live_seed_absent", || serde_json::json!({}));
             return false;
         };
         let Some(confirmation_generation) = seed.confirmation_generation else {
+            recovery_diagnostics::record(self, "live_confirmation_generation_absent", || {
+                serde_json::json!({})
+            });
             return false;
         };
         let persistence_proven = terminal_persistence_generation.is_some_and(|generation| {
@@ -1820,6 +1828,14 @@ impl Session {
                     == seed.persistence_failure_generation
         });
         if !task_quiesced || !persistence_proven {
+            recovery_diagnostics::record(self, "live_quiescence_or_persistence", || {
+                serde_json::json!({
+                    "task_quiesced": task_quiesced, "persistence_proven": persistence_proven,
+                    "terminal_generation": terminal_persistence_generation,
+                    "seed_failure_generation": seed.persistence_failure_generation,
+                    "current_failure_generation": self.rollout_persistence_failure_generation(),
+                })
+            });
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
             return false;
@@ -1829,12 +1845,21 @@ impl Session {
         // turn first, then recovery authority state.
         let active_turn = self.active_turn.lock().await;
         if active_turn.is_some() || self.turn_epoch.load(Ordering::Acquire) != seed.attach_epoch {
+            recovery_diagnostics::record(self, "live_active_or_epoch", || {
+                serde_json::json!({
+                    "active": active_turn.is_some(), "seed_epoch": seed.attach_epoch,
+                    "current_epoch": self.turn_epoch.load(Ordering::Acquire),
+                })
+            });
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
             return false;
         }
         if self.shutdown_started() {
+            recovery_diagnostics::record(self, "live_shutdown_before_confirmation", || {
+                serde_json::json!({})
+            });
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
@@ -1851,6 +1876,11 @@ impl Session {
             )
             .await
         {
+            recovery_diagnostics::record(
+                self,
+                "live_confirmation_failed",
+                || serde_json::json!({}),
+            );
             warn!("failed to confirm interrupted turn recovery: {err}");
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
@@ -1858,6 +1888,9 @@ impl Session {
             return false;
         }
         if self.shutdown_started() {
+            recovery_diagnostics::record(self, "live_shutdown_after_confirmation", || {
+                serde_json::json!({})
+            });
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
                 .await;
@@ -1874,6 +1907,16 @@ impl Session {
             || seed.authority.ready.load(Ordering::Acquire)
             || self.rollout_persistence_failure_generation() != seed.persistence_failure_generation;
         if authority_invalid {
+            recovery_diagnostics::record(self, "live_confirmed_authority_invalid", || {
+                serde_json::json!({
+                    "poisoned": state.poisoned, "state": format!("{:?}", state.durable_state),
+                    "generation": state.generation, "expected_generation": confirmation_generation,
+                    "ready": seed.authority.ready.load(Ordering::Acquire),
+                    "failure_generation_matches": self.rollout_persistence_failure_generation() == seed.persistence_failure_generation,
+                    "request_matches": state.request_fingerprint_sha256.as_deref() == Some(seed.request_fingerprint_sha256.as_str()),
+                    "replay_matches": state.replay.as_ref() == Some(&seed.replay),
+                })
+            });
             drop(state);
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
@@ -1881,6 +1924,9 @@ impl Session {
             return false;
         }
         if self.shutdown_started() {
+            recovery_diagnostics::record(self, "live_shutdown_before_publication", || {
+                serde_json::json!({})
+            });
             drop(state);
             drop(active_turn);
             self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
@@ -3518,11 +3564,6 @@ impl Session {
         .await;
         handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
         if let Some(completion) = cleared_completion.as_ref() {
-            self.emit_thread_idle_lifecycle_if_idle_for_terminalization(
-                idle_cause,
-                Some(&handoff.terminalization_identity),
-            )
-            .await;
             // Release task execution guards before announcing readiness.
             // The registry still fences admission if publication fails.
             handoff.task.take();
@@ -3541,6 +3582,12 @@ impl Session {
             }
             self.notify_parent_of_prepared_terminal_event(&turn_context, &terminal_event)
                 .await;
+            // Idle contributors admit follow-up turns through the ordinary
+            // start API. Publish readiness first so they do not lose their
+            // only wakeup to this owner's Closed admission fence. Keep the
+            // completion registered until every callback and mailbox wake
+            // finishes, so shutdown still joins the entire terminalizer.
+            self.emit_thread_idle_lifecycle_if_idle(idle_cause).await;
             self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
                 &handoff.terminalization_identity,
             ))
@@ -3698,6 +3745,7 @@ impl Session {
                 handoff.reason.clone(),
                 handoff.recovery_seed.clone(),
                 handoff.recovery_authority.clone(),
+                &mut handoff.abort_stage,
             )
             .await;
         handoff.task_quiesced = outcome.task_quiesced;
@@ -3905,6 +3953,7 @@ impl Session {
             reason: reason.clone(),
             deferred_idle_cause,
             phase: TaskAbortHandoffPhase::Claimed,
+            abort_stage: TaskAbortStage::NotEntered,
             failed_closed: false,
             task_quiesced: false,
             terminal_persistence_generation: None,
@@ -3978,12 +4027,14 @@ impl Session {
             _diagnostics_guard: ACTIVE_TURNS.track(),
             _timer: None,
         };
+        let mut abort_stage = TaskAbortStage::NotEntered;
         let abort_outcome = self
             .handle_task_abort(
                 &mut placeholder,
                 reason.clone(),
                 /*recovery_seed*/ None,
                 /*recovery_authority*/ None,
+                &mut abort_stage,
             )
             .await;
         drop(placeholder);
@@ -4287,6 +4338,7 @@ impl Session {
         reason: TurnAbortReason,
         recovery_seed: Option<RecoverySeed>,
         recovery_authority: Option<Arc<TurnRecoveryAuthority>>,
+        stage: &mut TaskAbortStage,
     ) -> TaskAbortOutcome {
         let sub_id = task.turn_context.sub_id.clone();
         // The caller already persisted Unready while holding the active-turn
@@ -4295,11 +4347,13 @@ impl Session {
         // session can be observed as idle.
         if task.cancellation_token.is_cancelled() {
             if let Some(authority) = recovery_authority.as_ref() {
+                *stage = TaskAbortStage::CancelledAuthority;
                 let mut state = authority.state.lock().await;
                 authority.ready.store(false, Ordering::Release);
                 state.ready_persistence_failure_generation = None;
                 state.poisoned = true;
             }
+            *stage = TaskAbortStage::AlreadyCancelled;
             return TaskAbortOutcome::default();
         }
 
@@ -4314,6 +4368,7 @@ impl Session {
                 .features
                 .enabled(Feature::CodeModeInterrupt)
         {
+            *stage = TaskAbortStage::CodeModeInterrupt;
             self.services
                 .code_mode_service
                 .interrupt_active_cells()
@@ -4324,6 +4379,7 @@ impl Session {
             .cancel_git_enrichment_task();
         let session_task = Arc::clone(&task.task);
 
+        *stage = TaskAbortStage::TaskNotification;
         let mut task_quiesced = select! {
             _ = task.done.notified() => {
                 true
@@ -4336,6 +4392,7 @@ impl Session {
 
         task.handle.abort();
         if !task_quiesced {
+            *stage = TaskAbortStage::TaskHandleQuiescence;
             task_quiesced = tokio::time::timeout(
                 Duration::from_millis(GRACEFULL_INTERRUPTION_TIMEOUT_MS),
                 async {
@@ -4348,6 +4405,7 @@ impl Session {
             .is_ok();
         }
 
+        *stage = TaskAbortStage::TaskAbortHook;
         session_task
             .abort(Arc::clone(self), Arc::clone(&task.turn_context))
             .await;
@@ -4360,6 +4418,7 @@ impl Session {
         // been revoked by the caller before entering this method, so this
         // barrier is now safe and preserves the normal abort durability
         // ordering: task output, interrupted marker, then TurnAborted.
+        *stage = TaskAbortStage::RolloutFlush;
         if let Err(err) = self.flush_rollout().await {
             warn!("failed to flush rollout before terminalizing aborted turn: {err}");
         }
@@ -4372,6 +4431,7 @@ impl Session {
                 ),
             )
         {
+            *stage = TaskAbortStage::InterruptedMarkerRecord;
             self.record_conversation_items(
                 task.turn_context.as_ref(),
                 std::slice::from_ref(&marker),
@@ -4379,16 +4439,19 @@ impl Session {
             .await;
             // Ensure the marker is durably visible before emitting TurnAborted: some clients
             // synchronously re-read the rollout on receipt of the abort event.
+            *stage = TaskAbortStage::InterruptedMarkerFlush;
             if let Err(err) = self.flush_rollout().await {
                 warn!("failed to flush interrupted-turn marker before emitting TurnAborted: {err}");
             }
         }
 
+        *stage = TaskAbortStage::StartedAtRead;
         let started_at = task
             .turn_context
             .turn_timing_state
             .started_at_unix_secs()
             .await;
+        *stage = TaskAbortStage::TimingProfile;
         let (completed_at, duration_ms, profile) = task
             .turn_context
             .turn_timing_state
@@ -4407,14 +4470,17 @@ impl Session {
             completed_at,
             duration_ms,
         });
+        *stage = TaskAbortStage::TerminalEventPersistence;
         let (terminal_event, terminal_persistence_generation) = self
             .persist_terminal_event_and_flush(task.turn_context.as_ref(), event)
             .await;
+        *stage = TaskAbortStage::GuardianCleanup;
         self.services
             .guardian_rejection_circuit_breaker
             .lock()
             .await
             .clear_turn(&task.turn_context.sub_id);
+        *stage = TaskAbortStage::Complete;
         TaskAbortOutcome {
             task_quiesced,
             terminal_persistence_generation,

@@ -2007,7 +2007,7 @@ fn paths_match(a: &Path, b: &Path) -> bool {
 #[cfg_attr(not(test), allow(dead_code))]
 fn parse_timestamp_str(ts: &str) -> Option<codex_utils_time::Timestamp> {
     codex_utils_time::OffsetTimestamp::parse_rfc3339(ts)
-        .map(|dt| dt.to_utc())
+        .map(codex_utils_time::OffsetTimestamp::to_utc)
         .ok()
 }
 
@@ -3413,7 +3413,7 @@ fn plural_time(value: i64, unit: &str) -> String {
 }
 
 fn format_timestamp(ts: codex_utils_time::Timestamp) -> String {
-    ts.format("%Y-%m-%d %H:%M:%S").to_string()
+    ts.format("%Y-%m-%d %H:%M:%S")
 }
 
 fn render_empty_state_line(state: &PickerState) -> Line<'static> {

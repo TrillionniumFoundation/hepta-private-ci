@@ -18,11 +18,19 @@ use std::sync::Arc;
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 
+#[cfg(windows)]
+#[path = "sqlite_recovery_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::RetainedObject;
+#[cfg(windows)]
+use windows::RetainedOptionalObject;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]
 use std::ffi::OsStr;
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 use std::fs::File;
 #[cfg(unix)]
 use std::fs::Metadata;
@@ -82,16 +90,19 @@ struct RecoveryGuardInner {
     database_path: PathBuf,
     #[cfg(unix)]
     parent: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(windows)]
+    parent: windows::RetainedParent,
+    #[cfg(any(unix, windows))]
     database: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     sidecars: [RetainedOptionalObject; 3],
 }
 
 impl SqliteConfig {
     /// Retain the parent, database, WAL, SHM, and rollback-journal identities.
     ///
-    /// Opening descriptors is read-only and uses `O_NOFOLLOW`; this operation
+    /// Opening descriptors is read-only and refuses redirection (`O_NOFOLLOW`
+    /// on Unix, `OBJ_DONT_REPARSE` and same-handle checks on Windows); it
     /// never creates, truncates, renames, chmods, checkpoints, or opens SQLite.
     pub fn bind_existing_recovery_database(
         &self,
@@ -168,7 +179,16 @@ impl ExistingSqliteRecoveryGuard {
         Ok(guard)
     }
 
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    fn bind(path: &Path) -> Result<Self, SqliteRecoveryError> {
+        let guard = Self {
+            inner: Arc::new(windows::bind(path)?),
+        };
+        guard.revalidate()?;
+        Ok(guard)
+    }
+
+    #[cfg(not(any(unix, windows)))]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let _ = database_path;
         Err(SqliteRecoveryError::Indeterminate)
@@ -188,7 +208,7 @@ impl ExistingSqliteRecoveryGuard {
         self.revalidate()
     }
 
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         self.inner.parent.revalidate()?;
         self.inner.database.revalidate()?;
@@ -198,7 +218,7 @@ impl ExistingSqliteRecoveryGuard {
         Ok(())
     }
 
-    #[cfg(not(unix))]
+    #[cfg(not(any(unix, windows)))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         Err(SqliteRecoveryError::Indeterminate)
     }
@@ -390,17 +410,45 @@ fn openat_read_only(parent: &File, file_name: &OsStr) -> Result<File, SqliteReco
     Ok(unsafe { File::from_raw_fd(descriptor) })
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn sqlite_sidecar_path(database_path: &Path, suffix: &str) -> PathBuf {
     let mut path = database_path.as_os_str().to_os_string();
     path.push(suffix);
     PathBuf::from(path)
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn indeterminate(_: std::io::Error) -> SqliteRecoveryError {
     SqliteRecoveryError::Indeterminate
 }
+
+#[cfg(unix)]
+fn read_exact_at(file: &File, bytes: &mut [u8]) -> std::io::Result<()> {
+    use std::os::unix::fs::FileExt;
+    file.read_exact_at(bytes, 0)
+}
+
+#[cfg(windows)]
+fn read_exact_at(file: &File, mut bytes: &mut [u8]) -> std::io::Result<()> {
+    use std::os::windows::fs::FileExt;
+    let mut offset = 0;
+    while !bytes.is_empty() {
+        match file.seek_read(bytes, offset) {
+            Ok(0) => return Err(std::io::ErrorKind::UnexpectedEof.into()),
+            Ok(length) => {
+                bytes = &mut bytes[length..];
+                offset += length as u64;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => {}
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(())
+}
+
+#[cfg(all(test, windows))]
+#[path = "sqlite_recovery_windows_tests.rs"]
+mod windows_tests;
 
 #[cfg(all(test, unix))]
 #[path = "sqlite_recovery_tests.rs"]

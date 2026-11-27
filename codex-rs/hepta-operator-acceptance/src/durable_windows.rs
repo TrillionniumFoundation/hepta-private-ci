@@ -16,6 +16,12 @@ pub(super) fn configure_open(options: &mut OpenOptions) {
     options.custom_flags(FILE_FLAG_OPEN_REPARSE_POINT);
 }
 
+pub(super) fn leaf_name(path: &Path) -> Result<&str, AcceptanceError> {
+    path.file_name()
+        .and_then(|name| name.to_str())
+        .ok_or_else(|| invalid("private sidecar filename is invalid"))
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub(super) struct FileSnapshot {
     attributes: u64,

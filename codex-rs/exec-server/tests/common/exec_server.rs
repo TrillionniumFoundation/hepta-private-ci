@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use std::process::Stdio;
 use std::time::Duration;
 
+#[cfg(windows)]
+use anyhow::Context;
 use anyhow::anyhow;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCNotification;
@@ -51,6 +53,8 @@ impl Drop for ExecServerHarness {
 pub(crate) struct TestCodexHelperPaths {
     pub(crate) codex_exe: PathBuf,
     pub(crate) codex_linux_sandbox_exe: Option<PathBuf>,
+    #[cfg(windows)]
+    _package: TempDir,
 }
 
 pub(crate) struct DisconnectableWebSocketProxy {
@@ -69,9 +73,28 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    #[cfg(windows)]
+    let (helper_binary, package) = {
+        // Bazel keeps helpers in distinct runfiles directories. Exercise the same
+        // packaged layout used by the production resolver for both local and RPC FS.
+        let package = TempDir::new()?;
+        let packaged_binary = package.path().join("codex-exec-server-tests.exe");
+        std::fs::copy(&helper_binary, &packaged_binary)
+            .context("stage the actual exec-server test binary")?;
+        let resources = package.path().join("codex-resources");
+        std::fs::create_dir(&resources)?;
+        for helper in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+            std::fs::copy(source, resources.join(format!("{helper}.exe")))
+                .with_context(|| format!("stage the actual {helper} fixture"))?;
+        }
+        (packaged_binary, package)
+    };
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
+        #[cfg(windows)]
+        _package: package,
     })
 }
 
@@ -205,25 +228,6 @@ impl ExecServerHarness {
 
     pub(crate) async fn next_event(&mut self) -> anyhow::Result<JSONRPCMessage> {
         self.next_event_with_timeout(EVENT_TIMEOUT).await
-    }
-
-    pub(crate) async fn wait_for_response(
-        &mut self,
-        request_id: &RequestId,
-    ) -> anyhow::Result<JSONRPCMessage> {
-        let event = self
-            .wait_for_event(|event| match event {
-                JSONRPCMessage::Response(response) => &response.id == request_id,
-                JSONRPCMessage::Error(error) => &error.id == request_id,
-                JSONRPCMessage::Request(_) | JSONRPCMessage::Notification(_) => false,
-            })
-            .await?;
-        if let JSONRPCMessage::Error(error) = &event {
-            return Err(anyhow!(
-                "exec-server request {request_id:?} returned an error: {error:?}"
-            ));
-        }
-        Ok(event)
     }
 
     pub(crate) async fn wait_for_event<F>(

@@ -14,6 +14,7 @@ use codex_protocol::protocol::McpStartupUpdateEvent;
 use codex_protocol::protocol::RawResponseItemEvent;
 use codex_protocol::protocol::TurnAbortReason;
 use codex_protocol::protocol::TurnAbortedEvent;
+use futures::FutureExt;
 use pretty_assertions::assert_eq;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
@@ -183,8 +184,16 @@ async fn forward_ops_preserves_submission_trace_context() {
 
 #[tokio::test]
 async fn run_codex_thread_interactive_respects_pre_cancelled_spawn() {
-    let (parent_session, parent_ctx, _rx_events) =
+    let (mut parent_session, parent_ctx, _rx_events) =
         crate::session::tests::make_session_and_context_with_rx().await;
+    let thread_starts = Arc::new(AtomicUsize::new(0));
+    let mut extensions = ExtensionRegistryBuilder::<Config>::new();
+    extensions
+        .thread_lifecycle_contributor(Arc::new(ThreadStartRecorder(Arc::clone(&thread_starts))));
+    Arc::get_mut(&mut parent_session)
+        .expect("parent session should be uniquely owned")
+        .services
+        .extensions = Arc::new(extensions.build());
     let mut config = parent_ctx.config.as_ref().clone();
     config.permissions.approval_policy = Constrained::allow_only(AskForApproval::Never);
     let cancel_token = CancellationToken::new();
@@ -210,9 +219,52 @@ async fn run_codex_thread_interactive_respects_pre_cancelled_spawn() {
     .await
     .expect("cancelled delegate spawn should not hang");
 
+    assert!(
+        matches!(
+            &result,
+            Err(err) if matches!(err.details(), CodexErrorDetails::TurnAborted)
+        ),
+        "pre-cancelled spawn must abort (returned_ok={}, error={:?})",
+        result.is_ok(),
+        result.as_ref().err().map(CodexErr::details)
+    );
+    assert_eq!(thread_starts.load(Ordering::SeqCst), 0);
+}
+
+#[tokio::test]
+async fn run_codex_thread_interactive_checks_approval_policy_before_pre_cancelled_spawn() {
+    let (parent_session, parent_ctx, _rx_events) =
+        crate::session::tests::make_session_and_context_with_rx().await;
+    let mut config = parent_ctx.config.as_ref().clone();
+    config.permissions.approval_policy = Constrained::allow_any(AskForApproval::OnRequest);
+    let cancel_token = CancellationToken::new();
+    cancel_token.cancel();
+    let parent_environments = parent_ctx.environments.clone();
+
+    let result = run_codex_thread_interactive(
+        config,
+        Arc::clone(&parent_session.services.auth_manager),
+        Arc::clone(&parent_session.services.models_manager),
+        parent_session,
+        parent_ctx,
+        parent_environments,
+        cancel_token,
+        SubAgentSource::Review,
+        /*initial_history*/ None,
+        crate::session::GitEnrichmentPolicy::Fresh,
+        codex_sandboxing::WindowsSandboxProxySettingsMode::Reconcile,
+    )
+    .now_or_never()
+    .expect("invalid delegate approval policy should be rejected on the first poll");
+
     assert!(matches!(
         result,
-        Err(err) if matches!(err.details(), CodexErrorDetails::TurnAborted)
+        Err(err)
+            if matches!(
+                err.details(),
+                CodexErrorDetails::InvalidRequest(message)
+                    if message == "Codex delegates require approval policy `never`"
+            )
     ));
 }
 

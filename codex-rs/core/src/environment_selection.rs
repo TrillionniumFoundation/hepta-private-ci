@@ -1229,6 +1229,12 @@ url = "ws://127.0.0.1:8765"
             .with_span_events(FmtSpan::NEW)
             .with_writer(MockWriter::new(buffer))
             .finish();
+        // tracing-core 0.1.36's single-dispatcher fast path uses the registering
+        // thread's subscriber. A sibling test without a subscriber can otherwise
+        // cache `never` for our shared callsites. Keep a second, uninstalled
+        // dispatcher alive so registration considers this test's subscriber too.
+        let _unsubscribed_dispatch =
+            tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
         let _subscriber_guard = tracing::subscriber::set_default(subscriber);
 
         let listener = TcpListener::bind("127.0.0.1:0")

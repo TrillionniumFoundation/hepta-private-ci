@@ -61,6 +61,31 @@ impl TestFleet {
 }
 
 #[test]
+#[cfg(windows)]
+fn registration_creates_a_cognitive_root_accepted_by_the_native_owner()
+-> Result<(), FleetRegistryError> {
+    use codex_utils_path::windows_private::Access;
+    use codex_utils_path::windows_private::PrivateSqliteDirectory;
+    use std::io::Write;
+
+    let fleet = TestFleet::new()?;
+    let manifest = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;
+    let record = fleet.registry.register(manifest)?;
+    // Validate the final published root, after the staging-directory rename.
+    let root = PrivateSqliteDirectory::open_writable(record.layout.cognitive_root())?;
+    let mut candidate = root.open("owner-fixture.sqlite3", Access::CreateNew)?;
+    candidate.write_all(b"explicit owner")?;
+    candidate.sync_all()?;
+    drop(candidate);
+    root.sync_all()?;
+    assert_eq!(
+        PrivateSqliteDirectory::inspect(record.layout.cognitive_root())?.snapshot()?,
+        root.snapshot()?
+    );
+    Ok(())
+}
+
+#[test]
 fn two_agents_reload_with_isolated_paths_and_generations() -> Result<(), FleetRegistryError> {
     let fleet = TestFleet::new()?;
     let first = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;

@@ -105,8 +105,12 @@ async fn cold_recovery_rejects_revision_change_and_forgetting_rollback() {
         .await,
         Err(CognitiveRecoveryError::AccessDenied(_))
     ));
-    let root = store.path().parent().expect("root");
-    std::fs::remove_dir_all(root).expect("remove source");
+    let root = store.path().parent().expect("root").to_path_buf();
+    // All current-cut and rollback assertions above run with the original
+    // owner alive. Release its no-delete-sharing directory guard only before
+    // deliberately removing the source for the revoked-before-I/O check.
+    drop(store);
+    std::fs::remove_dir_all(&root).expect("remove source");
     assert!(matches!(
         CognitiveStore::open_read_only_recovery(
             &layout(&temp, &owner),
@@ -136,14 +140,26 @@ async fn stable_inspection_metadata_cannot_authenticate_changed_content() {
         }
     }
     assert!(changed > 0);
-    let file = std::fs::OpenOptions::new()
+    let mut file = std::fs::OpenOptions::new()
+        .read(true)
         .write(true)
         .open(store.path())
         .expect("same inode");
-    std::os::unix::fs::FileExt::write_all_at(&file, &bytes, 0).expect("inplace same-size mutation");
+    #[cfg(windows)]
+    let directory = codex_utils_path::windows_private::PrivateSqliteDirectory::inspect(
+        store.path().parent().expect("root"),
+    )
+    .expect("private root");
+    #[cfg(windows)]
+    let identity = directory
+        .file_snapshot(&file)
+        .expect("retained file identity");
+    std::io::Write::write_all(&mut file, &bytes)
+        .expect("inplace same-size mutation from offset zero");
     file.set_times(std::fs::FileTimes::new().set_modified(metadata.modified().expect("mtime")))
         .expect("restore mtime");
     let after = std::fs::metadata(store.path()).expect("metadata");
+    #[cfg(unix)]
     assert_eq!(
         (
             metadata.ino(),
@@ -152,6 +168,15 @@ async fn stable_inspection_metadata_cannot_authenticate_changed_content() {
         ),
         (after.ino(), after.len(), after.modified().expect("mtime"))
     );
+    #[cfg(windows)]
+    {
+        assert!(identity.same_object(directory.file_snapshot(&file).expect("same file identity")));
+        assert_eq!(
+            (metadata.len(), metadata.modified().expect("mtime")),
+            (after.len(), after.modified().expect("mtime"))
+        );
+    }
+    drop(file);
     // The guard is acquired AFTER tampering, so even ctime is stable throughout
     // inspection. The independent full logical hash must catch the mutation.
     let before = capture_recovery_tree(store.path().parent().expect("root"));
@@ -193,13 +218,18 @@ async fn crash_reopen_refuses_pending_wal() {
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("independent witness");
     store.pool.close().await;
+    let fleet_root = temp.path().join("fleet");
+    #[cfg(unix)]
+    let fleet_root = fleet_root
+        .canonicalize()
+        .expect("canonical child fleet root");
     let status = std::process::Command::new(std::env::current_exe().expect("test binary"))
         .args([
             "--exact",
             "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
             "--nocapture",
         ])
-        .env(CHILD_ROOT, temp.path().join("fleet"))
+        .env(CHILD_ROOT, fleet_root)
         .status()
         .expect("child process");
     assert_eq!(status.code(), Some(73));

@@ -1,0 +1,257 @@
+{
+  "schema": "hepta.sqlite-factories-and-locks.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline": "804ac018433ff08dfd195e93eed936394baf5053",
+  "source_head_before_receipt": "bfab6ba19927a712183606bb462535b0cf2dca3b",
+  "scope": "Normal Linux workspace state index factory checks and full dependency audit. Windows fixture changes and exec end-to-end tests await normal CI.",
+  "source_inputs": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "git_blob": "1d8e04a510c6ec054c300fea2b67d50197322257",
+      "sha256": "0fbe405afd673918375e90f37a9a141666e1609400cdf52c8d6199c1d537192c"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_index_connection_tests.rs",
+      "git_blob": "ebdf363a57b7dd2bc03f79aeb1c73ad6e93e1f54",
+      "sha256": "bc3e48f5be408af25643f191e76c1c4feb48680b5168ae7ce02b81162511d15a"
+    },
+    {
+      "path": "codex-rs/exec/tests/suite/resume.rs",
+      "git_blob": "1f67eef29f4be41c0b3b1806942100549b956c89",
+      "sha256": "3ea70760acb4f426b73d3d895e278a4cf4f0694f2c0fed7cb1db35e61b59ac7d"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "git_blob": "861af846fb7f00cc0581ec8f1cec1388b4f937ca",
+      "sha256": "99ee9985168f6e75d1154edc28901e07ef000cfd80af6e5ab1dd206d6b4ab7af"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "git_blob": "bda2774c4afe6269ab20c4af290aa0a9c8e4d401",
+      "sha256": "295d10994d27413365b5e05d9d4d32db61ab21c43f9536ebde5ebcccdac61de3"
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.toml",
+      "git_blob": "1b00d573efecbe1e57c7f60fb754b4a277299c9b",
+      "sha256": "df1a7ca1bca706a94c9bc3b92dfa13d0964adf6369b05e213e13ca84389f5070"
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.lock",
+      "git_blob": "80dd7cee3e973637dde2871b5c3f09a9d4673c3e",
+      "sha256": "ac480773a1a3bd70e0b8a2b5597cc19c20aad53f42871d21bcff770bdc1c6dd2"
+    },
+    {
+      "path": "codex-rs/deny.toml",
+      "git_blob": "dc209721c79faf40578132e2205d3b273e8a46f4",
+      "sha256": "de3b77f8b4639bdd7fb188048b09757cb6dd06ae01ecb10998537424c3c240f0"
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/hepta_owner_vfs.c",
+      "git_blob": "aa94484b222717454ced1735e0be5726e85c7999",
+      "sha256": "b1bb456398c4ff52866885b0a0a6d1ef2737d40fdd43d4258580fbc3e6d4d9e8"
+    },
+    {
+      "path": "codex-rs/third_party/libsqlite3-sys-0.39.1/sqlite3/sqlite3.c",
+      "git_blob": "0c63ac295a48687633d11878cc61e192dc1dd05b",
+      "sha256": "372f544235a150a0baf1feff2e1d01a454e2049e6406fb37efda37fdc3faa241"
+    }
+  ],
+  "tests": {
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-state",
+      "--lib",
+      "--locked",
+      "-E",
+      "test(index_connection_tests::)"
+    ],
+    "attempts": [
+      {
+        "log": "state-index-tests.log",
+        "exit": 101,
+        "executed": 0,
+        "cause": "The new fixture initially used tempfile, which is not a dependency of codex-state."
+      },
+      {
+        "log": "state-index-tests-corrected.log",
+        "exit": 100,
+        "unique_run": 2,
+        "passed": 1,
+        "failed": 1,
+        "cause": "The journal-mode setup tried to leave WAL while the fixture pool remained open; SQLite returned code5. Two attempts of the same failing case are not two unique tests."
+      },
+      {
+        "log": "state-index-tests-final.log",
+        "exit": 0,
+        "unique_run": 2,
+        "passed": 2,
+        "failed": 0,
+        "outside_selector": 214,
+        "test_seconds": 0.009,
+        "cargo_build_seconds": 12.84
+      }
+    ],
+    "final_cases": [
+      "sqlite::index_connection_tests::existing_index_connection_does_not_create_a_missing_database",
+      "sqlite::index_connection_tests::existing_index_connection_preserves_journal_and_enforces_foreign_keys"
+    ]
+  },
+  "state_lints": [
+    {
+      "command": "just fix -p codex-state --lib --locked --offline",
+      "exit": 0,
+      "source_changes": false
+    },
+    {
+      "command": "just clippy -p codex-state --lib --locked --offline",
+      "exit": 0,
+      "source_changes": false,
+      "warnings_retained": "Dependency AsyncFd deprecation and protocol suggestions remain visible."
+    }
+  ],
+  "locks": {
+    "production_package_identities_unchanged": 1532,
+    "only_production_dependency_changes": [
+      "codex-hepta-fleet -> codex-utils-path",
+      "codex-hepta-operator-acceptance -> codex-utils-path",
+      "codex-hepta-shadow-qualification -> codex-utils-path"
+    ],
+    "external_packages_versions_sources_checksums_unchanged": true,
+    "dylint_version": "6.3.2",
+    "dylint_lock_toolchain": "nightly-2025-09-18 (rustc1.92.0-nightly)",
+    "dylint_metadata_locked_exit": 0,
+    "dylint_packages": 146,
+    "declared_msrv_above_1_92": [],
+    "bazel_version": "9.0.0",
+    "bazel_update_first_exit": 37,
+    "bazel_first_failure": "Embedded JDK did not trust the deployment platform CA.",
+    "bazel_trust_repair": "Exported the existing Python platform default trust roots into a task-local Java PKCS12 truststore; TLS validation and source checksums remain enabled.",
+    "bazel_update_final_exit": 0,
+    "bazel_lock_check_exit": 0,
+    "bazel_warnings_retained": [
+      "platforms declared1.0.0 resolved1.1.0",
+      "rules_cc declared0.2.18 resolved0.2.20",
+      "well-known libgit2-sys annotation suggestion"
+    ]
+  },
+  "cargo_deny": {
+    "version": "0.19.0",
+    "command": "cargo-deny --manifest-path codex-rs/Cargo.toml --locked --all-features --format json check --hide-inclusion-graph --show-stats",
+    "exit": 0,
+    "rustsec_database_commit": "10db6998b5d74ec438bcf0763125bd425a068a8f",
+    "unchanged_existing_exceptions": 9,
+    "summary": {
+      "advisories": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 18,
+        "warnings": 3
+      },
+      "bans": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 22,
+        "warnings": 116
+      },
+      "licenses": {
+        "errors": 0,
+        "helps": 1351,
+        "notes": 0,
+        "warnings": 1
+      },
+      "sources": {
+        "errors": 0,
+        "helps": 0,
+        "notes": 6,
+        "warnings": 1
+      }
+    }
+  },
+  "windows_observed_failures": {
+    "run": 45458387224,
+    "stale_generation_job": 138713957842,
+    "observation_job": 138713957821,
+    "actual_error": "Database(SqliteError { code: 4618, message: disk I/O error })",
+    "source_explanation": "A private store had an active shared-memory node; the stock inspection VFS selected a different pOwner, which winShmOpen explicitly rejects with SQLITE_IOERR_SHMOPEN. The C guard is unchanged.",
+    "fixed_private_inspection_calls": 17,
+    "copied_database_cases": [
+      "copied_database_cannot_cross_agent_owner_boundary",
+      "two_agents_never_share_stream_or_owner_database"
+    ],
+    "copied_database_limit": "The old assertions did not print the actual error. The new fixture initializes and closes a real private destination before replacing its full bytes, then preserves the exact AccessDenied assertion with error diagnostics. Its native outcome is pending."
+  },
+  "archive": {
+    "file": "logs.zip",
+    "bytes": 25994,
+    "sha256": "66d3345b5359ae399ccaf1a602ba6df62754590946223c383cdb74cc1d537d80",
+    "members": [
+      {
+        "name": "state-index-tests.log",
+        "bytes": 39121,
+        "sha256": "ef07bd4826bc24316e905649b11f4b9990f70f549c04c4b0e083d624497a110e"
+      },
+      {
+        "name": "state-index-tests-corrected.log",
+        "bytes": 13756,
+        "sha256": "59a3dc4823804d462521b4b3d183c6f2385064f30c4e644ed522a729681e299e"
+      },
+      {
+        "name": "state-index-tests-final.log",
+        "bytes": 11067,
+        "sha256": "1fc772856586ef678c8dd6befe3175aabaae3b043ed2bd0e1513df00598ade79"
+      },
+      {
+        "name": "state-index-fix.log",
+        "bytes": 17108,
+        "sha256": "eefd0fec50aa70003dd9b45df1b59a7d46b174e6970eb9ee666aa62c34bc9999"
+      },
+      {
+        "name": "state-index-clippy.log",
+        "bytes": 5123,
+        "sha256": "01f707467268deb3e74b33a0ba7be3a3213fdceffbc0a6d8188bb2ba1c62d526"
+      },
+      {
+        "name": "production-lock-update-shadow.log",
+        "bytes": 125,
+        "sha256": "5c6d1a397eff648fa9706dc68aa041b2ddfeb53120ebe40a1abee540fa65359b"
+      },
+      {
+        "name": "dylint-lock-update.log",
+        "bytes": 2100,
+        "sha256": "70f247925c23fb64041c54a7ed2c9cfb1346d3d93d7ccd18fd07bef9b80f6beb"
+      },
+      {
+        "name": "bazel-lock-update.log",
+        "bytes": 2699,
+        "sha256": "2fb5202cb965f73f02ab0c4a3bd517efcad9cd19c5d8b8e046abe95abf93e75b"
+      },
+      {
+        "name": "bazel-lock-update-platform-trust.log",
+        "bytes": 2127,
+        "sha256": "24a326853ed2b1b821c7b7adfcddc8155fbd28ad3dc4c6bf205f87275d2b2e75"
+      },
+      {
+        "name": "bazel-lock-update-shadow.log",
+        "bytes": 1427,
+        "sha256": "50c67ca039292be320b3ed2d87bc8d3aee1757fef8197e9f6a1beee601fc712d"
+      },
+      {
+        "name": "bazel-lock-check.log",
+        "bytes": 868,
+        "sha256": "12a116c74a2337d024e29af1dad0d0ff53db7202d363081b683310f6ee07cf52"
+      },
+      {
+        "name": "cargo-deny-resumed.stderr",
+        "bytes": 44032,
+        "sha256": "3c103d307d55edfdd6422f6ece3a8f219d4667459774428ec9ef43859c58648e"
+      }
+    ]
+  },
+  "limitations": [
+    "214 state tests were outside the explicit local selector.",
+    "No Windows native test, full exec resume suite, or full main CI is claimed by this local receipt.",
+    "The disabled path-based authoritative recovery factory, C policy-mixing refusal, cargo-deny configuration, assertions and timeouts were not weakened."
+  ]
+}

@@ -1,9 +1,11 @@
 use codex_core::TurnInputRequest;
+use codex_core::TurnInputSubmission;
 use codex_core::config::Config;
 use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ExtensionRegistryBuilder;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
+use codex_extension_api::ThreadStopInput;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::protocol::ThreadSettingsOverrides;
@@ -30,6 +32,8 @@ struct IdleBarrier {
     armed: AtomicBool,
     entered: Notify,
     release: Notify,
+    finished: AtomicBool,
+    stopped: AtomicBool,
 }
 
 impl ThreadLifecycleContributor<Config> for IdleBarrier {
@@ -38,7 +42,18 @@ impl ThreadLifecycleContributor<Config> for IdleBarrier {
             if self.armed.swap(false, Ordering::SeqCst) {
                 self.entered.notify_one();
                 self.release.notified().await;
+                self.finished.store(true, Ordering::SeqCst);
             }
+        })
+    }
+
+    fn on_thread_stop<'a>(&'a self, _input: ThreadStopInput<'a>) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            assert!(
+                self.finished.load(Ordering::SeqCst),
+                "shutdown must join the retained idle contributor before dropping thread state"
+            );
+            self.stopped.store(true, Ordering::SeqCst);
         })
     }
 }
@@ -60,25 +75,26 @@ async fn terminal_receipt_admits_public_settings_and_next_turn_after_idle_cleanu
     )
     .await;
     barrier.armed.store(true, Ordering::SeqCst);
-    test.codex
+    let first_submission = test
+        .codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: "first turn".to_string(),
             text_elements: Vec::new(),
         }]))
         .await?;
+    let TurnInputSubmission::Started {
+        turn_id: first_turn_id,
+    } = first_submission
+    else {
+        anyhow::bail!("first turn must be admitted as a new turn");
+    };
     timeout(Duration::from_secs(10), barrier.entered.notified()).await?;
 
-    // The lifecycle is held at a real extension boundary. All prior queued
-    // events can be read, but terminal receipt must not precede that cleanup.
-    while let Some(event) = test.codex.next_event().now_or_never() {
-        assert!(!matches!(
-            event?.msg,
-            EventMsg::TurnComplete(_) | EventMsg::TurnAborted(_)
-        ));
-    }
-    barrier.release.notify_one();
+    // Durable terminal cleanup has reopened normal admission before idle
+    // contributors run. Keep this callback blocked while exercising the
+    // public settings and next-turn APIs that those contributors may use.
     wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+        matches!(event, EventMsg::TurnComplete(completed) if completed.turn_id == first_turn_id)
     })
     .await;
     assert_eq!(first.requests().len(), 1);
@@ -100,17 +116,33 @@ async fn terminal_receipt_admits_public_settings_and_next_turn_after_idle_cleanu
         sse(vec![ev_response_created("second"), ev_completed("second")]),
     )
     .await;
-    test.codex
+    let second_submission = test
+        .codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: "second turn immediately after terminal".to_string(),
             text_elements: Vec::new(),
         }]))
         .await?;
+    let TurnInputSubmission::Started {
+        turn_id: second_turn_id,
+    } = second_submission
+    else {
+        anyhow::bail!("terminal receipt must admit a fresh turn while the idle callback is held");
+    };
+    assert_ne!(second_turn_id, first_turn_id);
     wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+        matches!(event, EventMsg::TurnComplete(completed) if completed.turn_id == second_turn_id)
     })
     .await;
     assert_eq!(second.requests().len(), 1);
-    test.codex.shutdown_and_wait().await?;
+    assert!(!barrier.finished.load(Ordering::SeqCst));
+    let shutdown = test.codex.shutdown_and_wait();
+    tokio::pin!(shutdown);
+    assert!(shutdown.as_mut().now_or_never().is_none());
+    assert!(!barrier.stopped.load(Ordering::SeqCst));
+    barrier.release.notify_one();
+    timeout(Duration::from_secs(10), shutdown).await??;
+    assert!(barrier.finished.load(Ordering::SeqCst));
+    assert!(barrier.stopped.load(Ordering::SeqCst));
     Ok(())
 }

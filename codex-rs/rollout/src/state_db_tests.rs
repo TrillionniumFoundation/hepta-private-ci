@@ -27,6 +27,54 @@ fn cursor_to_anchor_normalizes_timestamp_format() {
 }
 
 #[test]
+fn anchor_to_cursor_preserves_nanoseconds_leap_normalization_and_overflow_fallback() {
+    let thread_id = ThreadId::from_string("00000000-0000-0000-0000-000000000123")
+        .expect("thread id should parse");
+    for id in [None, Some(thread_id)] {
+        for (input, expected_timestamp) in [
+            ("1970-01-01T00:00:00Z", "1970-01-01T00:00:00Z"),
+            (
+                "1969-12-31T23:59:59.999999999Z",
+                "1969-12-31T23:59:59.999999999Z",
+            ),
+            ("1969-12-31T23:59:59.5Z", "1969-12-31T23:59:59.5Z"),
+            (
+                "2026-11-24T12:34:56.123456789Z",
+                "2026-11-24T12:34:56.123456789Z",
+            ),
+            ("2016-12-31T23:59:60.5Z", "2017-01-01T00:00:00.5Z"),
+            ("1969-12-31T23:59:60.5Z", "1970-01-01T00:00:00.5Z"),
+            (
+                "1677-09-21T00:12:43.145224192Z",
+                "1677-09-21T00:12:43.145224192Z",
+            ),
+            (
+                "2262-04-11T23:47:16.854775807Z",
+                "2262-04-11T23:47:16.854775807Z",
+            ),
+            ("1677-09-21T00:12:43.145224191Z", "1970-01-01T00:00:00Z"),
+            ("2262-04-11T23:47:16.854775808Z", "1970-01-01T00:00:00Z"),
+            ("+10000-01-01T00:00:00Z", "1970-01-01T00:00:00Z"),
+            ("-262143-01-01T00:00:00Z", "1970-01-01T00:00:00Z"),
+        ] {
+            let cursor = Cursor::from(codex_state::Anchor {
+                ts: input.parse().expect("persisted anchor timestamp"),
+                id,
+            });
+            let expected = match id {
+                Some(id) => format!("{expected_timestamp}|{id}"),
+                None => expected_timestamp.to_owned(),
+            };
+            assert_eq!(
+                serde_json::to_value(&cursor).expect("cursor should serialize"),
+                serde_json::Value::String(expected),
+                "anchor timestamp {input}",
+            );
+        }
+    }
+}
+
+#[test]
 fn cursor_to_anchor_preserves_recency_tie_breaker() {
     let id = ThreadId::from_string("00000000-0000-0000-0000-000000000123")
         .expect("thread id should parse");

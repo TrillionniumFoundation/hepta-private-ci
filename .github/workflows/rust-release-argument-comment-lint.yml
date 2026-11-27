@@ -29,8 +29,9 @@ jobs:
     runs-on: ${{ matrix.runs_on || matrix.runner }}
     timeout-minutes: 60
     env:
-      CARGO_DYLINT_VERSION: 5.0.0
-      DYLINT_LINK_VERSION: 5.0.0
+      CARGO_DYLINT_VERSION: 6.3.2
+      DYLINT_LINK_VERSION: 6.3.2
+      DYLINT_BUILD_TOOLCHAIN: 1.98.0
 
     strategy:
       fail-fast: false
@@ -70,17 +71,26 @@ jobs:
           persist-credentials: false
 
       - uses: dtolnay/rust-toolchain@3cfd829add0beb9cf7406e52147d74ad3db19d01 # 1.96.0
-        with:
-          toolchain: nightly-2025-09-18
-          targets: ${{ matrix.target }}
-          components: llvm-tools-preview, rustc-dev, rust-src
+      - name: Install nightly argument-comment-lint toolchain
+        shell: bash
+        run: |
+          rustup toolchain install nightly-2025-09-18 \
+            --profile minimal \
+            --target "${{ matrix.target }}" \
+            --component llvm-tools-preview \
+            --component rustc-dev \
+            --component rust-src \
+            --no-self-update
+          rustup default nightly-2025-09-18
 
       - name: Install tooling
         shell: bash
         run: |
           install_root="${RUNNER_TEMP}/argument-comment-lint-tools"
-          cargo install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION" --root "$install_root"
-          cargo install --locked dylint-link --version "$DYLINT_LINK_VERSION"
+          # Build host tooling separately; the linter still uses the pinned nightly.
+          rustup toolchain install "$DYLINT_BUILD_TOOLCHAIN" --profile minimal --no-self-update
+          cargo +"$DYLINT_BUILD_TOOLCHAIN" install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION" --root "$install_root"
+          cargo +"$DYLINT_BUILD_TOOLCHAIN" install --locked dylint-link --version "$DYLINT_LINK_VERSION"
           echo "INSTALL_ROOT=$install_root" >> "$GITHUB_ENV"
 
       - name: Cargo build

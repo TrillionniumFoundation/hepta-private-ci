@@ -97,7 +97,7 @@ impl InlineVisualizationContext {
         let thread_dir = match granted_thread_dirs.as_slice() {
             [thread_dir] => (*thread_dir).to_path_buf(),
             _ => visualizations_dir
-                .join(created_at.format("%Y/%m/%d").to_string())
+                .join(created_at.format("%Y/%m/%d"))
                 .join(&thread_id),
         };
         let artifact_thread_id = thread_dir.file_name()?.to_owned();

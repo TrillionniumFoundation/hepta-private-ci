@@ -1,0 +1,116 @@
+//! Explicit creation ownership for callers that already require private files.
+//!
+//! This does not authenticate a pathname, bind a writer fence, or replace the
+//! independent current-cut checks used by recovery. Generic SqliteConfig entry
+//! points continue to select the stock VFS.
+
+#![expect(
+    clippy::disallowed_methods,
+    reason = "this is the explicit private-owner branch of the centralized SQLite shim"
+)]
+
+use crate::SqliteConfig;
+use log::LevelFilter;
+use sqlx::ConnectOptions;
+use sqlx::Error;
+use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteAutoVacuum;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
+use std::path::Path;
+use std::time::Duration;
+
+impl SqliteConfig {
+    /// Select creation ownership for an already-private connection configuration.
+    ///
+    /// This changes only the Windows VFS selection, preserving the caller's
+    /// read-only, timeout, journal and other settings. It is an explicit opt-in,
+    /// not private-directory or recovery-identity validation. Registration errors
+    /// must propagate before a worker opens the database; Unix options are unchanged.
+    pub fn with_private_creation_owner(
+        options: SqliteConnectOptions,
+    ) -> Result<SqliteConnectOptions, Error> {
+        #[cfg(windows)]
+        {
+            let name = libsqlite3_sys::hepta_win32_owner_vfs_name().map_err(|code| {
+                Error::Protocol(format!(
+                    "private SQLite creation owner is unavailable: {code}"
+                ))
+            })?;
+            let name = name.to_str().map_err(|error| {
+                Error::Protocol(format!("invalid private SQLite VFS name: {error}"))
+            })?;
+            Ok(options.vfs(name))
+        }
+        #[cfg(not(windows))]
+        {
+            Ok(options)
+        }
+    }
+
+    /// Open a private writable database using the ordinary state-DB settings.
+    ///
+    /// The caller owns private-directory and pathname validation. On Windows
+    /// creation explicitly uses the effective TokenUser owner; failure never
+    /// falls back to the stock VFS. Unix behavior matches the existing opener.
+    pub async fn open_private_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(true)
+            .journal_mode(SqliteJournalMode::Wal)
+            .synchronous(SqliteSynchronous::Normal)
+            .auto_vacuum(SqliteAutoVacuum::Incremental)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(5)
+            .connect_with(Self::with_private_creation_owner(options)?)
+            .await
+    }
+
+    /// Open an existing private database with the matching VFS and read-only flags.
+    ///
+    /// The caller still validates the directory and source identity. SQLite may
+    /// need shared-memory coordination for a live WAL; this grants no database
+    /// writes and does not replace an immutable recovery-image boundary.
+    pub async fn open_private_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .read_only(true)
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(Self::with_private_creation_owner(options)?)
+            .await
+    }
+
+    /// Open an explicitly private evidence store with full synchronous durability.
+    ///
+    /// This adds creation ownership, not a current-cut or source-identity proof.
+    /// Recovery authorities must continue to use their existing independent
+    /// guards and reject unsupported identity-bound operations.
+    pub async fn open_private_durable_evidence_pool(
+        &self,
+        path: &Path,
+    ) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(true)
+            .journal_mode(SqliteJournalMode::Wal)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(5)
+            .connect_with(Self::with_private_creation_owner(options)?)
+            .await
+    }
+}
+
+#[cfg(all(test, windows))]
+#[path = "sqlite_private_owner_windows_tests.rs"]
+mod windows_tests;

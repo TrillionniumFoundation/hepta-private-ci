@@ -5,6 +5,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::PoisonError;
+use std::time::Instant;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -253,7 +254,18 @@ async fn bind_websocket_listener(
 }
 
 async fn run_websocket_listener(bind_address: SocketAddr) -> Result<()> {
+    let startup_started = Instant::now();
+    info!(
+        phase = "websocket_bind_begin",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
     let listener = bind_websocket_listener(bind_address).await?;
+    info!(
+        phase = "websocket_listener_bound",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
     let local_addr = listener
         .local_addr()
         .context("failed to read code-mode host websocket listen address")?;
@@ -266,6 +278,11 @@ async fn run_websocket_listener(bind_address: SocketAddr) -> Result<()> {
     io::stdout()
         .flush()
         .context("failed to publish code-mode host websocket listen address")?;
+    info!(
+        phase = "websocket_endpoint_published",
+        elapsed_ms = startup_started.elapsed().as_millis(),
+        "code-mode host startup phase"
+    );
 
     let router = Router::new()
         .route("/", any(websocket_upgrade_handler))

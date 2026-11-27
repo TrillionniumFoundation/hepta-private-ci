@@ -13,6 +13,7 @@ use codex_protocol::protocol::ThreadHistoryMode;
 pub use codex_state::LogEntry;
 use codex_state::SqliteConfig;
 use codex_state::ThreadMetadataBuilder;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path::normalize_for_path_comparison;
 use serde_json::Value;
 use std::path::Path;
@@ -289,6 +290,23 @@ pub fn normalize_cwd_for_state_db(cwd: &Path) -> PathBuf {
     normalize_for_path_comparison(cwd).unwrap_or_else(|_| cwd.to_path_buf())
 }
 
+async fn sqlite_matches_runtime(ctx: &codex_state::StateRuntime, requested: &SqliteConfig) -> bool {
+    if ctx.sqlite() == requested {
+        return true;
+    }
+    // Runtime initialization resolves its home before opening any database.
+    // A caller may retain the original spelling (for example /var on macOS).
+    // Resolve only that requested home and keep every query on the existing
+    // context; a missing or retargeted alias must not select another database.
+    let Ok(home) = tokio::fs::canonicalize(requested.home()).await else {
+        return false;
+    };
+    let Ok(home) = AbsolutePathBuf::try_from(home) else {
+        return false;
+    };
+    ctx.sqlite() == &SqliteConfig::from_sqlite_home(home)
+}
+
 /// List thread ids from SQLite for parity checks without rollout scanning.
 #[allow(clippy::too_many_arguments)]
 pub async fn list_thread_ids_db(
@@ -303,7 +321,7 @@ pub async fn list_thread_ids_db(
     stage: &str,
 ) -> Option<Vec<ThreadId>> {
     let ctx = context?;
-    if ctx.sqlite() != sqlite {
+    if !sqlite_matches_runtime(ctx, sqlite).await {
         warn!(
             "state db SQLite home mismatch: expected {}, got {}",
             sqlite.home().display(),
@@ -364,7 +382,7 @@ pub async fn list_threads_db(
     search_term: Option<&str>,
 ) -> Option<codex_state::ThreadsPage> {
     let ctx = context?;
-    if ctx.sqlite() != sqlite {
+    if !sqlite_matches_runtime(ctx, sqlite).await {
         warn!(
             "state db SQLite home mismatch: expected {}, got {}",
             sqlite.home().display(),
@@ -740,3 +758,7 @@ pub async fn touch_thread_updated_at(
 #[cfg(test)]
 #[path = "state_db_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "state_db_home_tests.rs"]
+mod home_tests;

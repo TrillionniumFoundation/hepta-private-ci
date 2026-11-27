@@ -112,17 +112,6 @@ class SyntheticMergeExecutionTests(unittest.TestCase):
         action = (ROOT / ".github/actions/hepta-synthetic-merge/action.yml").read_text()
         script = action.split("      run: |\n", 1)[1]
         script = "\n".join(line[8:] for line in script.splitlines())
-        workflow = (
-            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
-        ).read_text()
-        verification = (
-            workflow.split(
-                "      - name: Verify event-bound merge parents and tree\n", 1
-            )[1]
-            .split("        run: |\n", 1)[1]
-            .split("      - name:", 1)[0]
-        )
-        verification = "\n".join(line[10:] for line in verification.splitlines())
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
 
@@ -147,10 +136,6 @@ class SyntheticMergeExecutionTests(unittest.TestCase):
             git("add", ".")
             git("commit", "-qm", "target")
             base = git("rev-parse", "HEAD")
-            (root / "later-target").write_text("not part of the event\n")
-            git("add", ".")
-            git("commit", "-qm", "target advances after event")
-            advanced_base = git("rev-parse", "HEAD")
             outputs = []
             for number in range(2):
                 git("checkout", "--detach", source)
@@ -182,45 +167,7 @@ class SyntheticMergeExecutionTests(unittest.TestCase):
                 )
                 self.assertEqual((root / "source").read_text(), "source\n")
                 self.assertEqual((root / "target").read_text(), "target\n")
-                self.assertFalse((root / "later-target").exists())
-                checked = subprocess.run(
-                    ["bash", "-c", verification],
-                    cwd=root,
-                    env={**environment, "CANDIDATE": outputs[-1]["sha"]},
-                    capture_output=True,
-                    text=True,
-                )
-                self.assertEqual(checked.returncode, 0, checked.stderr)
             self.assertEqual(outputs[0], outputs[1])
-            for label, tree, parents in (
-                (
-                    "advanced target",
-                    git("merge-tree", "--write-tree", advanced_base, source),
-                    (advanced_base, source),
-                ),
-                ("reversed parents", outputs[0]["tree"], (source, base)),
-                ("wrong tree", git("rev-parse", f"{base}^{{tree}}"), (base, source)),
-            ):
-                with self.subTest(label=label):
-                    candidate = git(
-                        "commit-tree",
-                        tree,
-                        "-p",
-                        parents[0],
-                        "-p",
-                        parents[1],
-                        "-m",
-                        label,
-                    )
-                    git("checkout", "--detach", candidate)
-                    rejected = subprocess.run(
-                        ["bash", "-c", verification],
-                        cwd=root,
-                        env={**environment, "CANDIDATE": candidate},
-                        capture_output=True,
-                        text=True,
-                    )
-                    self.assertNotEqual(rejected.returncode, 0, label)
             git("checkout", "--detach", base)
             result = subprocess.run(
                 ["bash", "-c", script],

@@ -2160,6 +2160,112 @@ async fn deferred_executor_spawn_agent_inherits_ready_step_environments(
     )
     .await
     .context("thread startup should not wait for the remote environment")??;
+    if !multi_agent_v2 {
+        let parent_thread_id = test.session_configured.thread_id.to_string();
+        let original_responses = response_mock.clone();
+        Mock::given(method("POST"))
+            .and(path("/v1/responses"))
+            .and(move |request: &wiremock::Request| {
+                let Ok(body) = serde_json::from_slice::<Value>(&request.body) else {
+                    return false;
+                };
+                if body["client_metadata"]["thread_id"].as_str() != Some(parent_thread_id.as_str())
+                {
+                    return false;
+                }
+                let Some(previous_parent) = original_responses
+                    .requests()
+                    .iter()
+                    .rev()
+                    .map(ResponsesRequest::body_json)
+                    .find(|body| {
+                        body["client_metadata"]["thread_id"].as_str()
+                            == Some(parent_thread_id.as_str())
+                    })
+                else {
+                    return false;
+                };
+                let (Some(input), Some(previous)) = (
+                    body["input"].as_array(),
+                    previous_parent["input"].as_array(),
+                ) else {
+                    return false;
+                };
+                if input.len() != previous.len() + 2 || input[..previous.len()] != previous[..] {
+                    return false;
+                }
+                let Some(spawn) = previous.iter().find(|item| {
+                    item["type"] == "function_call"
+                        && item["call_id"].as_str() == Some(spawn_call_id)
+                }) else {
+                    return false;
+                };
+                if spawn["name"] != "spawn_agent"
+                    || spawn["namespace"] != "multi_agent_v1"
+                    || spawn["arguments"]
+                        .as_str()
+                        .and_then(|arguments| serde_json::from_str::<Value>(arguments).ok())
+                        != Some(json!({ "message": message }))
+                {
+                    return false;
+                }
+                let Some(output) = previous
+                    .iter()
+                    .find(|item| {
+                        item["type"] == "function_call_output"
+                            && item["call_id"].as_str() == Some(spawn_call_id)
+                    })
+                    .and_then(|item| item["output"].as_str())
+                    .and_then(|output| serde_json::from_str::<Value>(output).ok())
+                else {
+                    return false;
+                };
+                let Some(child_id) = output["agent_id"].as_str().filter(|id| !id.is_empty()) else {
+                    return false;
+                };
+                let completed = &input[previous.len()];
+                if completed["type"] != "message"
+                    || completed["role"] != "assistant"
+                    || completed["content"] != json!([{ "type": "output_text", "text": "done" }])
+                {
+                    return false;
+                }
+                let notification = &input[previous.len() + 1];
+                if notification["type"] != "message" || notification["role"] != "user" {
+                    return false;
+                }
+                let Some(content) = notification["content"].as_array() else {
+                    return false;
+                };
+                let [content] = content.as_slice() else {
+                    return false;
+                };
+                if content["type"] != "input_text" {
+                    return false;
+                }
+                content["text"]
+                    .as_str()
+                    .and_then(|text| text.strip_prefix("<subagent_notification>\n"))
+                    .and_then(|text| text.strip_suffix("\n</subagent_notification>"))
+                    .and_then(|text| serde_json::from_str::<Value>(text).ok())
+                    == Some(json!({ "agent_path": child_id, "status": { "completed": "done" } }))
+            })
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .insert_header("content-type", "text/event-stream")
+                    .set_body_string(sse(vec![
+                        ev_response_created("resp-spawn-notification"),
+                        ev_assistant_message("msg-spawn-notification", "noted"),
+                        ev_completed("resp-spawn-notification"),
+                    ])),
+            )
+            // Keep the original four-response sequence ahead of this optional follow-up.
+            .with_priority(/*p*/ 10)
+            .up_to_n_times(/*n*/ 1)
+            .expect(0..=1)
+            .mount(&server)
+            .await;
+    }
     let owner_active_profile = ActivePermissionProfile::new("owner-read-only");
     let owner_profile_workspace_root = test.config.cwd.join("owner-profile-root");
     let remote_selection = TurnEnvironmentSelection {

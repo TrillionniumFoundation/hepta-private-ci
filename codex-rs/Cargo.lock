@@ -2630,6 +2630,7 @@ dependencies = [
  "codex-protocol",
  "codex-utils-cargo-bin",
  "futures",
+ "libc",
  "pretty_assertions",
  "prost",
  "serde_json",
@@ -3067,6 +3068,7 @@ dependencies = [
  "codex-shell-command",
  "codex-test-binary-support",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-home-dir",
  "codex-utils-path-uri",
  "codex-utils-pty",
@@ -3641,6 +3643,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-paths",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "pretty_assertions",
  "serde",
@@ -3687,6 +3690,7 @@ dependencies = [
  "codex-hepta-infer-core",
  "codex-hepta-types",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "core_test_support",
  "ed25519-dalek 2.2.0",
  "libc",
@@ -3874,6 +3878,7 @@ dependencies = [
  "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "futures",
  "libc",
@@ -3989,6 +3994,7 @@ name = "codex-hepta-operator-acceptance"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "libc",
  "pretty_assertions",
@@ -4091,6 +4097,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-types",
  "codex-hepta-wire",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "libc",
  "pretty_assertions",
@@ -4121,6 +4128,7 @@ dependencies = [
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",
+ "codex-utils-cargo-bin",
  "constant_time_eq 0.3.1",
  "ed25519-dalek 2.2.0",
  "jsonschema",
@@ -5103,6 +5111,7 @@ dependencies = [
  "codex-history",
  "codex-protocol",
  "codex-utils-absolute-path",
+ "codex-utils-path",
  "codex-utils-time",
  "libc",
  "libsqlite3-sys",
@@ -5339,6 +5348,7 @@ dependencies = [
  "tokio",
  "tokio-util",
  "uds_windows",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5659,6 +5669,7 @@ dependencies = [
  "codex-otel",
  "codex-protocol",
  "codex-utils-absolute-path",
+ "codex-utils-cargo-bin",
  "codex-utils-pty",
  "codex-utils-string",
  "codex-utils-time",
@@ -5976,6 +5987,7 @@ dependencies = [
  "codex-exec-server",
  "codex-extension-api",
  "codex-features",
+ "codex-history",
  "codex-home",
  "codex-hooks",
  "codex-http-client",
@@ -10428,8 +10440,6 @@ dependencies = [
 [[package]]
 name = "libsqlite3-sys"
 version = "0.39.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14a5f01b87b92705d07b433c06f96cbc764637d81a0bffb5734ce17cf0f9a2b3"
 dependencies = [
  "cc",
  "pkg-config",
@@ -18807,7 +18817,3 @@ checksum = "410e9ecef634c709e3831c2cfdb8d9c32164fae1c67496d5b68fff728eec37fe"
 dependencies = [
  "zune-core 0.5.1",
 ]
-
-[[patch.unused]]
-name = "imbl"
-version = "6.1.0"

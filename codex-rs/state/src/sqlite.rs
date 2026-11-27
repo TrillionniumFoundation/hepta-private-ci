@@ -15,6 +15,7 @@ use log::LevelFilter;
 use sqlx::ConnectOptions;
 use sqlx::Connection;
 use sqlx::Error;
+use sqlx::SqliteConnection;
 use sqlx::SqlitePool;
 use sqlx::migrate::Migrator;
 use sqlx::sqlite::SqliteAutoVacuum;
@@ -145,6 +146,19 @@ impl SqliteConfig {
     /// Return the path to the primary state database.
     pub fn state_db_path(&self) -> PathBuf {
         STATE_DB.path(self.home())
+    }
+
+    /// Open the existing rebuildable state index without creating a database.
+    ///
+    /// This connection does not override the stored journal mode or default
+    /// timeout, and enables foreign keys. It accepts only this configuration's primary
+    /// state index; authoritative evidence recovery uses its retained guards.
+    pub async fn open_existing_state_db_connection(&self) -> Result<SqliteConnection, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(self.state_db_path())
+            .create_if_missing(false)
+            .foreign_keys(true);
+        SqliteConnection::connect_with(&options).await
     }
 
     /// Return the path to the logs database.
@@ -335,7 +349,9 @@ impl SqliteConfig {
             .foreign_keys(true)
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
-        let mut connection = options.connect().await?;
+        let mut connection = Self::with_private_creation_owner(options)?
+            .connect()
+            .await?;
         let checkpoint = async {
             let (busy, _, _): (i32, i32, i32) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
                 .fetch_one(&mut connection)
@@ -392,3 +408,7 @@ impl SqliteConfig {
             .await
     }
 }
+
+#[cfg(test)]
+#[path = "sqlite_index_connection_tests.rs"]
+mod index_connection_tests;
