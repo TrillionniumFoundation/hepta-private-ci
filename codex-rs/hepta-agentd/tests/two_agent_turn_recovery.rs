@@ -707,15 +707,15 @@ async fn run_recovery(fleet: &mut FleetHarness, scenario: RecoveryScenario) -> R
         "durable queue changed before Agent A was killed"
     );
 
-    let cross_agent_resume = client_b
-        .resume(&thread_a.id)
-        .await
-        .expect_err("Agent B must not resume Agent A's private thread");
+    let cross_agent_resume = match client_b.resume(&thread_a.id).await {
+        Err(error) => error,
+        Ok(value) => panic!("Agent B must not resume Agent A's private thread: {value:?}"),
+    };
     assert_cross_agent_thread_not_found(&cross_agent_resume, "resume")?;
-    let cross_agent_recover = client_b
-        .recover(&thread_a.id, &original_turn_id)
-        .await
-        .expect_err("Agent B must not recover Agent A's private turn");
+    let cross_agent_recover = match client_b.recover(&thread_a.id, &original_turn_id).await {
+        Err(error) => error,
+        Ok(value) => panic!("Agent B must not recover Agent A's private turn: {value:?}"),
+    };
     assert_cross_agent_thread_not_found(&cross_agent_recover, "recovery")?;
     ensure!(model_a_state.request_count()? == 1);
     ensure!(model_b_state.request_count()? == 0);
