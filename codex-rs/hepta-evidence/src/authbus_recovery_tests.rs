@@ -36,23 +36,7 @@ async fn unchanged_external_checkpoint_recomputes_clean_and_pending_replay_front
         for pending in [false, true] {
             let temp = TempDir::new().unwrap();
             let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
-            let (_, mut issuer, mut message) = fixture(1);
-            if algorithm == AuthBusAlgorithm::MlDsa65V2 {
-                let spki = PqNativeSigningKey::public_spki_from_seed(&[97; 32].into());
-                let key = PqNativeSigningKey::from_owned_seed(
-                    [97; 32].into(),
-                    ml_dsa_65_key_id_from_spki(&spki).unwrap(),
-                )
-                .unwrap();
-                issuer.verifying_key = AuthBusVerifyingKey::from_pq_spki(&spki).unwrap();
-                message.claims.expires_at_ms = now_millis().unwrap() as u64 + 60_000;
-                message.signature = key
-                    .sign_exact_message(&message.claims.signing_bytes_for(algorithm))
-                    .unwrap()
-                    .into();
-                store.bind_authbus_profile(algorithm).await.unwrap();
-                store.pin_authbus_issuer(&issuer).await.unwrap();
-            }
+            let (issuer, message) = fixture_for_profile(&store, algorithm).await;
             if !pending {
                 admit(&store, &issuer, &message).await.unwrap();
             }
@@ -154,6 +138,30 @@ fn fixture(sequence: u64) -> (SigningKey, IssuerRegistration, SignedMessage) {
             signature: signature.into(),
         },
     )
+}
+
+async fn fixture_for_profile(
+    store: &HeptaEvidenceStore,
+    algorithm: AuthBusAlgorithm,
+) -> (IssuerRegistration, SignedMessage) {
+    let (_, mut issuer, mut message) = fixture(1);
+    if algorithm == AuthBusAlgorithm::MlDsa65V2 {
+        let spki = PqNativeSigningKey::public_spki_from_seed(&[97; 32].into());
+        let key = PqNativeSigningKey::from_owned_seed(
+            [97; 32].into(),
+            ml_dsa_65_key_id_from_spki(&spki).unwrap(),
+        )
+        .unwrap();
+        issuer.verifying_key = AuthBusVerifyingKey::from_pq_spki(&spki).unwrap();
+        message.claims.expires_at_ms = now_millis().unwrap() as u64 + 60_000;
+        message.signature = key
+            .sign_exact_message(&message.claims.signing_bytes_for(algorithm))
+            .unwrap()
+            .into();
+        store.bind_authbus_profile(algorithm).await.unwrap();
+        store.pin_authbus_issuer(&issuer).await.unwrap();
+    }
+    (issuer, message)
 }
 
 async fn admit(
@@ -269,6 +277,68 @@ async fn external_checkpoint_detects_real_old_database_restore() {
             .await,
         Err(AuthBusRecoveryError::RollbackDetected)
     ));
+}
+
+#[tokio::test]
+async fn rejected_authority_owner_leaves_replay_and_retirement_state_unchanged() {
+    use codex_hepta_authbus::AuthBusAuthorityError;
+    use codex_hepta_authbus::AuthBusAuthorityOwner;
+
+    for algorithm in [AuthBusAlgorithm::Ed25519V1, AuthBusAlgorithm::MlDsa65V2] {
+        let evidence = TempDir::new().unwrap();
+        let store = HeptaEvidenceStore::open(&config(&evidence)).await.unwrap();
+        let (issuer, message) = fixture_for_profile(&store, algorithm).await;
+        admit(&store, &issuer, &message).await.unwrap();
+        let checkpoint = initialize(&store, 1).await;
+
+        let database_root = TempDir::new().unwrap();
+        let checkpoint_root = TempDir::new().unwrap();
+        let database = database_root
+            .path()
+            .canonicalize()
+            .unwrap()
+            .join("authority.sqlite");
+        // Unix must reject shared parents; unsupported platforms must reject
+        // even when the database and checkpoint have separate parents.
+        let checkpoint_parent = if cfg!(unix) {
+            database.parent().unwrap().to_path_buf()
+        } else {
+            checkpoint_root.path().canonicalize().unwrap()
+        };
+        let owner_checkpoint = checkpoint_parent.join("checkpoint.json");
+        let result = match algorithm {
+            AuthBusAlgorithm::Ed25519V1 => {
+                AuthBusAuthorityOwner::bootstrap_new(&database, owner_checkpoint, "retirement-test")
+                    .await
+            }
+            AuthBusAlgorithm::MlDsa65V2 => {
+                AuthBusAuthorityOwner::bootstrap_new_pq(
+                    &database,
+                    owner_checkpoint,
+                    "retirement-test",
+                )
+                .await
+            }
+        };
+
+        assert!(matches!(
+            result,
+            Err(AuthBusAuthorityError::UnsafeCheckpoint)
+        ));
+        assert_eq!(std::fs::read_dir(database_root.path()).unwrap().count(), 0);
+        assert_eq!(
+            std::fs::read_dir(checkpoint_root.path()).unwrap().count(),
+            0
+        );
+        assert_eq!(
+            store.authbus_replay_frontier_digest().await.unwrap(),
+            checkpoint.digest
+        );
+        assert_eq!(
+            store.pending_authbus_restore_checkpoint().await.unwrap(),
+            None
+        );
+    }
 }
 
 // Successful owner-backed retirement uses the documented Unix checkpoint hardening.
