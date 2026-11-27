@@ -1,0 +1,30 @@
+{
+  "source_commit": "0740add90bc6cd0639052bcb025ea65f0ef81b37",
+  "commands": [
+    [
+      "/opt/homebrew/bin/just",
+      "bazel-lock-update"
+    ],
+    [
+      "./scripts/check-module-bazel-lock.sh"
+    ]
+  ],
+  "bazel": {
+    "path": "/Users/qianqi/Library/Caches/bazelisk/downloads/sha256/2c3cce548a4b6a97a2a5267712187b784b52714c4a2b0613e7386b15669d783c/bin/bazel",
+    "bytes": 60358731,
+    "sha256": "2c3cce548a4b6a97a2a5267712187b784b52714c4a2b0613e7386b15669d783c"
+  },
+  "distdir": {
+    "path": "/Users/qianqi/work/codex-bazel-v8-transport-20261127-2ac5/retry-fresh-server-distdir/distdir",
+    "files": {
+      "15.0.245.2.tar.gz": {
+        "bytes": 32838188,
+        "sha256": "164f3d3e0a8b4c02a386d3a88d1b1133d37e5c20be0239fecdcdde414a4340d5"
+      }
+    }
+  },
+  "output_base": "/Users/qianqi/work/codex-native38-common-20261127-2ac5/bazel-current-graph-output",
+  "dependency_inputs": 253,
+  "historical_a201_aeb_graphs_changed": false,
+  "transport": "owned loopback SOCKS via existing authorized rog SSH; original URL and digests unchanged"
+}
