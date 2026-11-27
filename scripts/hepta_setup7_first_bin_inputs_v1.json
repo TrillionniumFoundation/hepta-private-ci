@@ -1,20 +1,20 @@
 {
-  "schema": "hepta.setup7.first_native_input.v1",
-  "scope_id": "hepta-setup7-tool-homes-20261127-7c9e",
+  "schema": "hepta.setup7.target_dependency_input.v1",
+  "scope_id": "hepta-setup7-windows-dependencies-20261127-7c9e",
   "root_execution_authorized": true,
   "root_budget_accepted": true,
   "root_first_native_clearance": true,
-  "root_admission_sha256": "96689b0bd53538295ee03d0d087906cfc4bd50e66dc576f3c5202fb3b15c5088",
-  "first_native_clearance_sha256": "121c9b59bca3459cffbc4f38df2eba0ed7231d2ac15325b0686d83e44e1b661f",
-  "root_source_review_sha256": "e95cd1b5b71a72cdbe6ee87dd4f7b69ca65608c09aab163f0e875773f88f6b77",
+  "root_admission_sha256": "5e6deeee90c3d7a77108f739d86c780baa8f3af60c82f45c585131d8647f286e",
+  "first_native_clearance_sha256": "9833190e035ff9b50bf2fb4d78948e57754940ad65424cfdbe54331645074d0d",
+  "root_source_review_sha256": "126443a330e112bdf52c22fee86510b595ce1ff3f9bb67c287fce5f1797153a5",
   "parent": {
-    "head": "b8cb004664d7f89d16d4e031cdb35617fd7f6188",
-    "tree": "13edb5d85728189175527af9d0f479423d084892"
+    "head": "ff9f5f8671f56444c55e9817c73156d060d84492",
+    "tree": "00a7dbb29aeb78d589b3090e1556bf9f7a6db12f"
   },
   "source_sha256": {
     "scripts/hepta_setup7_windows_owner_v1.py": "be255914609d2b8b420357af6992c494b08523109616bb9e5d7d5436c9971be5",
     "scripts/hepta_setup7_collector_v1.py": "840ca1ce4770295e05564cfb55749373a60d5bbc0f86098b39acfa09ec59fd72",
-    "scripts/run_hepta_setup7_first_bin_v1.py": "47c248db388061d5fa9d163e223996d87d17c1c244e8af35afd1d074cf99482c"
+    "scripts/run_hepta_setup7_first_bin_v1.py": "eb2465a525742218d1195612c20e956f9573a092ae8c1ccd3b1acd54e2e6d441"
   },
   "attributes_sha256": {
     ".gitattributes": "182d9c13a747806ee4eeab7d9a49f368e09eabaf174f393be09ce14519f83396",
@@ -36,7 +36,11 @@
     "work_seconds": 1000,
     "retention_seconds": 200,
     "platform_upload_reserve_seconds": 60,
-    "phase_seconds": [60, 800, 60, 80]
+    "shared_dependency_metadata_cold_build_seconds": 800,
+    "metadata_seconds": 60,
+    "list_seconds": 60,
+    "run_seconds": 80,
+    "maximum_owned_commands": 5
   },
   "owner_limits": {
     "processes": 8192,
@@ -68,19 +72,63 @@
       "bytes": 13704,
       "sha256": "16479c7d309638c9d1cdcac3604d560895e27f062993e9de24cce40ffb8651da",
       "git_blob": "70e585bb356dda08cd6ea425318d2fbcbaec1b2c"
+    },
+    "original7181_failure_observation": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7181_ORIGINAL_FAILURE_OBSERVATION_ROOT_V1.json",
+      "bytes": 32139,
+      "sha256": "d0afe3b3675ee8199849e0a2013b7cf3b7e4f6262ea7cd330ac9cba86464c312"
+    },
+    "original7181_source_inputs": [
+      {
+        "name": "source-2.original",
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_ORIGINAL_ARTIFACT_EVIDENCE_READS_0926_ROOT_V1/EXTRACTED_SETUP7181_ORIGINAL_V1/source-2.original",
+        "bytes": 56379,
+        "sha256": "47c248db388061d5fa9d163e223996d87d17c1c244e8af35afd1d074cf99482c",
+        "git_blob": "ae35db592f32d8c19ee4f85ccc8615abfeaf2d76"
+      },
+      {
+        "name": "source-3.original",
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_ORIGINAL_ARTIFACT_EVIDENCE_READS_0926_ROOT_V1/EXTRACTED_SETUP7181_ORIGINAL_V1/source-3.original",
+        "bytes": 6309,
+        "sha256": "b3a135096f485c98d691758fa37b92cc46ced787d228b8ab327f0ccb4648005b",
+        "git_blob": "1199d16840ddd085bc102354e196e436a493e2c7"
+      },
+      {
+        "name": "source-4.original",
+        "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_ORIGINAL_ARTIFACT_EVIDENCE_READS_0926_ROOT_V1/EXTRACTED_SETUP7181_ORIGINAL_V1/source-4.original",
+        "bytes": 9410,
+        "sha256": "a03ff484c965af8789cfa25572ccba1efd731c111f1b3852e929e1e7962be123",
+        "git_blob": "c0a43b449a0073c92f198e3e5457ed598b80374e"
+      }
+    ],
+    "original_source_inventory": {
+      "actual7181": {
+        "leaf_count": 16152,
+        "total_blob_bytes": 335755889,
+        "tree": "00a7dbb29aeb78d589b3090e1556bf9f7a6db12f",
+        "head": "ff9f5f8671f56444c55e9817c73156d060d84492",
+        "basis": "Root recomputed the authenticated complete actual7181 map; exact values delivered to author without a new GET"
+      },
+      "prior7176": {
+        "leaf_count": 16152,
+        "total_blob_bytes": 335747692,
+        "tree": "13edb5d85728189175527af9d0f479423d084892",
+        "head": "b8cb004664d7f89d16d4e031cdb35617fd7f6188",
+        "historical_only": true
+      }
     }
   },
   "publication": {
     "future_source_head": null,
     "future_source_tree": null,
-    "fixed_first_open_base": "fix/hepta-setup7-first-bin-controls-20261127-7c9e",
-    "fixed_first_open_head": "fix/hepta-setup7-explicit-tool-homes-20261127-7c9e",
+    "fixed_first_open_base": "fix/hepta-setup7-explicit-tool-homes-20261127-7c9e",
+    "fixed_first_open_head": "fix/hepta-setup7-windows-dependencies-20261127-7c9e",
     "source_paths": [
       "scripts/run_hepta_setup7_first_bin_v1.py",
       "scripts/hepta_setup7_first_bin_inputs_v1.json",
       ".github/workflows/hepta-setup7-first-bin-v1.yml"
     ],
-    "activation": "Root must independently accept the successor actual7176 parent, original65-second failure, new budget, new first-native clearance and complete changed source; then bind the three new receipt hashes, three flags and workflow gate. The original7176 authorization is not transferable.",
+    "activation": "Root must independently accept actual7181 as sole parent, both original failures (65 and 127 seconds), this complete target-materialization candidate, the nonadditive800 window and a distinct budget/first-seven-body clearance. Only then bind three new receipt hashes, three flags and the workflow gate. Neither consumed authorization is transferable; original7181 must not be rerun.",
     "unchanged_retained_source_paths": [
       "scripts/hepta_setup7_windows_owner_v1.py",
       "scripts/hepta_setup7_collector_v1.py"
@@ -93,7 +141,13 @@
     "The observed runner/tool environment is not admitted for future source-only native-result reuse.",
     "The original7176 run remains a65-second FAIL_OR_UNKNOWN with zero native commands and four unlaunched phases. This successor is not an original-run retry.",
     "An explicit fresh tool home may incur additional installation/materialization time. All such work remains inside the chosen future whole-job budget; no cold binary or registry reuse is claimed.",
-    "The successor numeric1200/1000/200 cap needs its own explicit Root budget admission. This inactive source file allocates no new time and the old65 seconds are not refunded or erased."
+    "The original7181 metadata operation hit its60-second deadline, returned after60.047 seconds, and produced no metadata stdout. The cold build, list and seven bodies were never launched; its127-second whole failure remains unchanged.",
+    "The Windows/host-targeted full non-null resolve projection is deliberately not the old all-platform graph; --no-deps or a fabricated/empty resolve cannot satisfy this policy.",
+    "Exactly one separately observed locked target fetch is allowed only under fresh Root admission. Fetch, metadata, cold build and intermediate custody/IO share one absolute800-second deadline; metadata retains its own60-second cap. No second800 allocation exists.",
+    "CARGO_NET_OFFLINE=true is applied to private metadata/cold-build/list/run environments after fetch. Missing required materialization must fail, not trigger an alternate online retry.",
+    "The proposed1200/1000/200 and shared800 caps need a distinct Root budget admission. This inactive source allocates zero execution time; neither65 nor127 seconds is refunded and E1-E6 is unchanged.",
+    "Fixed-target fetch still performs the lock/workspace resolver work before target pruning. Neither completion within60/800 nor a speedup is promised.",
+    "Cargo --offline/CARGO_NET_OFFLINE constrain Cargo resolution and dependency materialization. They are not an OS firewall for arbitrary build scripts or native tests; no general network isolation or hermetic reuse is claimed."
   ],
   "prior_original_attempt": {
     "head": "b8cb004664d7f89d16d4e031cdb35617fd7f6188",
@@ -116,5 +170,59 @@
     "result_sha256": "16479c7d309638c9d1cdcac3604d560895e27f062993e9de24cce40ffb8651da",
     "preserved_without_rerun": true,
     "old_execution_authority_inherited": false
+  },
+  "target_dependency_policy": {
+    "schema": "hepta.setup7.windows_target_materialization.v1",
+    "target": "x86_64-pc-windows-msvc",
+    "maximum_fetch_commands": 1,
+    "automatic_cargo_network_retries": 0,
+    "metadata_requires_non_null_resolve": true,
+    "no_deps": false,
+    "metadata_filter_platform": "x86_64-pc-windows-msvc",
+    "all_platform_graph_equivalence_claimed": false,
+    "offline_after_fetch": true,
+    "fresh_target": true,
+    "maximum_owned_commands": 5,
+    "shared_absolute_deadline_never_reset": true
+  },
+  "prior_dependency_attempt": {
+    "head": "ff9f5f8671f56444c55e9817c73156d060d84492",
+    "tree": "00a7dbb29aeb78d589b3090e1556bf9f7a6db12f",
+    "run_id": 45970423864,
+    "run_attempt": 1,
+    "job_id": 140409215826,
+    "whole_job_seconds": 127,
+    "status": "FAIL_OR_UNKNOWN",
+    "errors": [
+      "RuntimeError('owner receipt IO exceeded the original phase ceiling')"
+    ],
+    "launched_phases": ["01-metadata"],
+    "unlaunched_phases": [
+      "02-cold-single-bin",
+      "03-exact-seven-list",
+      "04-exact-seven-run"
+    ],
+    "metadata_operation_cap_seconds": 60,
+    "metadata_seconds_including_owner_receipt_io": 60.047000000000025,
+    "metadata_stdout_bytes": 0,
+    "metadata_result_available": false,
+    "observed_process_members": 15,
+    "all_observed_original_handles_terminal_and_closed": true,
+    "stdout_eof": true,
+    "stderr_eof": true,
+    "exact_seven_body_started": false,
+    "result": {
+      "bytes": 35640,
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_ORIGINAL_ARTIFACT_EVIDENCE_READS_0926_ROOT_V1/EXTRACTED_SETUP7181_ORIGINAL_V1/RESULT.json",
+      "sha256": "c620fcb76c77614d4587407ab9a4f8f3a48cb770b46d71fc667e77039799c1f6"
+    },
+    "root_failure_observation": {
+      "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7181_ORIGINAL_FAILURE_OBSERVATION_ROOT_V1.json",
+      "bytes": 32139,
+      "sha256": "d0afe3b3675ee8199849e0a2013b7cf3b7e4f6262ea7cd330ac9cba86464c312"
+    },
+    "preserved_without_rerun": true,
+    "old_execution_authority_inherited": false,
+    "original_seconds_refunded": 0
   }
 }

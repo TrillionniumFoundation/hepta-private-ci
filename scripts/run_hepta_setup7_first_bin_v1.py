@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""First and only native observation of the seven new setup binary controls.
+"""Observe seven setup controls after bounded Windows dependency materialization.
 
-This module is loaded from one workflow-hashed byte buffer. It performs no native
-command until Root admission, original PR/run identity and full source custody
-are established. A result is provisional until original whole-job/upload review.
+The previous two failed candidates and their complete costs remain immutable.
+This distinct inactive successor requires fresh Root source/budget/native gates.
+Fetch, metadata and cold build share one absolute window; only metadata, list and
+run have additional narrower caps. Original whole-job/upload review is required.
 """
 
 import ctypes
@@ -22,10 +23,10 @@ import urllib.parse
 import urllib.request
 
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-PARENT_HEAD = "b8cb004664d7f89d16d4e031cdb35617fd7f6188"
-PARENT_TREE = "13edb5d85728189175527af9d0f479423d084892"
-BASE_BRANCH = "fix/hepta-setup7-first-bin-controls-20261127-7c9e"
-HEAD_BRANCH = "fix/hepta-setup7-explicit-tool-homes-20261127-7c9e"
+PARENT_HEAD = "ff9f5f8671f56444c55e9817c73156d060d84492"
+PARENT_TREE = "00a7dbb29aeb78d589b3090e1556bf9f7a6db12f"
+BASE_BRANCH = "fix/hepta-setup7-explicit-tool-homes-20261127-7c9e"
+HEAD_BRANCH = "fix/hepta-setup7-windows-dependencies-20261127-7c9e"
 WORKFLOW = ".github/workflows/hepta-setup7-first-bin-v1.yml"
 NEW_PATHS = (
     "scripts/hepta_setup7_windows_owner_v1.py",
@@ -36,12 +37,17 @@ NEW_PATHS = (
 )
 MODIFIED_PATHS = (NEW_PATHS[2], NEW_PATHS[3], WORKFLOW)
 PHASES = (
-    "01-metadata",
-    "02-cold-single-bin",
-    "03-exact-seven-list",
-    "04-exact-seven-run",
+    "01-target-dependency-materialization",
+    "02-metadata",
+    "03-cold-single-bin",
+    "04-exact-seven-list",
+    "05-exact-seven-run",
 )
-PHASE_CAPS = (60, 800, 60, 80)
+DEPENDENCY_SHARED_SECONDS = 800
+METADATA_SECONDS = 60
+LIST_SECONDS = 60
+RUN_SECONDS = 80
+TARGET_TRIPLE = "x86_64-pc-windows-msvc"
 LINK_PATH = "codex-rs/vendor/bubblewrap/LICENSE"
 LINK_BLOB = "d24842f3cdcf2e447f9a7a26fa387ad63f5c4b91"
 SOURCE_LIMIT = 768 * 1024 * 1024
@@ -357,7 +363,7 @@ def enumerate_files(root, allowed_generated=()):
 
 def main():
     result = {
-        "schema": "hepta-setup7-first-native-observation-v1",
+        "schema": "hepta-setup7-target-dependency-observation-v1",
         "status": "FAIL_OR_UNKNOWN",
         "native_observation_pass": False,
         "whole_job_acceptance": "PENDING_ORIGINAL_PLATFORM_AND_UPLOAD_REVIEW",
@@ -433,7 +439,10 @@ def main():
         )
         config = parse(input_raw)
         result["input"] = durable(output / "INPUT.original.json", input_raw)
-        need(config["schema"] == "hepta.setup7.first_native_input.v1", "input schema")
+        need(
+            config["schema"] == "hepta.setup7.target_dependency_input.v1",
+            "input schema",
+        )
         need(
             config["root_execution_authorized"] is True
             and config["root_budget_accepted"] is True
@@ -442,10 +451,10 @@ def main():
         )
         need(
             config["parent"] == {"head": PARENT_HEAD, "tree": PARENT_TREE},
-            "actual7176 predecessor binding",
+            "actual7181 predecessor binding",
         )
         need(
-            config["scope_id"] == "hepta-setup7-tool-homes-20261127-7c9e",
+            config["scope_id"] == "hepta-setup7-windows-dependencies-20261127-7c9e",
             "frozen new scope identity",
         )
         for key in (
@@ -484,23 +493,77 @@ def main():
             "original7176 failure/cost record changed",
         )
         result["prior_original_attempt"] = config["prior_original_attempt"]
-        for key, previous_hash in (
+        need(
+            config.get("prior_dependency_attempt")
+            == {
+                "head": "ff9f5f8671f56444c55e9817c73156d060d84492",
+                "tree": "00a7dbb29aeb78d589b3090e1556bf9f7a6db12f",
+                "run_id": 45970423864,
+                "run_attempt": 1,
+                "job_id": 140409215826,
+                "whole_job_seconds": 127,
+                "status": "FAIL_OR_UNKNOWN",
+                "errors": [
+                    "RuntimeError('owner receipt IO exceeded the original phase ceiling')"
+                ],
+                "launched_phases": ["01-metadata"],
+                "unlaunched_phases": [
+                    "02-cold-single-bin",
+                    "03-exact-seven-list",
+                    "04-exact-seven-run",
+                ],
+                "metadata_operation_cap_seconds": 60,
+                "metadata_seconds_including_owner_receipt_io": 60.047000000000025,
+                "metadata_stdout_bytes": 0,
+                "metadata_result_available": False,
+                "observed_process_members": 15,
+                "all_observed_original_handles_terminal_and_closed": True,
+                "stdout_eof": True,
+                "stderr_eof": True,
+                "exact_seven_body_started": False,
+                "result": {
+                    "bytes": 35640,
+                    "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA_ORIGINAL_ARTIFACT_EVIDENCE_READS_0926_ROOT_V1/EXTRACTED_SETUP7181_ORIGINAL_V1/RESULT.json",
+                    "sha256": "c620fcb76c77614d4587407ab9a4f8f3a48cb770b46d71fc667e77039799c1f6",
+                },
+                "root_failure_observation": {
+                    "path": "/Users/qianqi/work/hepta-acceptance-20261125-7c9e/HEPTA7181_ORIGINAL_FAILURE_OBSERVATION_ROOT_V1.json",
+                    "bytes": 32139,
+                    "sha256": "d0afe3b3675ee8199849e0a2013b7cf3b7e4f6262ea7cd330ac9cba86464c312",
+                },
+                "preserved_without_rerun": True,
+                "old_execution_authority_inherited": False,
+                "original_seconds_refunded": 0,
+            },
+            "original7181 dependency failure/cost record changed",
+        )
+        result["prior_dependency_attempt"] = config["prior_dependency_attempt"]
+        for key, previous_hashes in (
             (
                 "root_admission_sha256",
-                "0482778c62abd85d1cf69e808fff7060ff15b4cfa6471f3b6da6d3b8d692da13",
+                (
+                    "0482778c62abd85d1cf69e808fff7060ff15b4cfa6471f3b6da6d3b8d692da13",
+                    "96689b0bd53538295ee03d0d087906cfc4bd50e66dc576f3c5202fb3b15c5088",
+                ),
             ),
             (
                 "first_native_clearance_sha256",
-                "93f07c2aecdf047e22802dc01b8e1c6fa22fab02fa33eecf61babfec459fa852",
+                (
+                    "93f07c2aecdf047e22802dc01b8e1c6fa22fab02fa33eecf61babfec459fa852",
+                    "121c9b59bca3459cffbc4f38df2eba0ed7231d2ac15325b0686d83e44e1b661f",
+                ),
             ),
             (
                 "root_source_review_sha256",
-                "d90e81a9b9a9e777945372f3cfd5faf23e0d6c208a1e17b22b0ed5bcfff0b99d",
+                (
+                    "d90e81a9b9a9e777945372f3cfd5faf23e0d6c208a1e17b22b0ed5bcfff0b99d",
+                    "e95cd1b5b71a72cdbe6ee87dd4f7b69ca65608c09aab163f0e875773f88f6b77",
+                ),
             ),
         ):
             need(
-                config[key] != previous_hash,
-                "original7176 authority is not transferable",
+                config[key] not in previous_hashes,
+                "original7176/7181 authority is not transferable",
             )
         need(
             config["budget"]
@@ -509,9 +572,31 @@ def main():
                 "work_seconds": 1000,
                 "retention_seconds": 200,
                 "platform_upload_reserve_seconds": 60,
-                "phase_seconds": [60, 800, 60, 80],
+                "shared_dependency_metadata_cold_build_seconds": 800,
+                "metadata_seconds": 60,
+                "list_seconds": 60,
+                "run_seconds": 80,
+                "maximum_owned_commands": 5,
             },
-            "original independent budget changed",
+            "independent shared dependency budget changed",
+        )
+        need(
+            config.get("target_dependency_policy")
+            == {
+                "schema": "hepta.setup7.windows_target_materialization.v1",
+                "target": "x86_64-pc-windows-msvc",
+                "maximum_fetch_commands": 1,
+                "automatic_cargo_network_retries": 0,
+                "metadata_requires_non_null_resolve": True,
+                "no_deps": False,
+                "metadata_filter_platform": "x86_64-pc-windows-msvc",
+                "all_platform_graph_equivalence_claimed": False,
+                "offline_after_fetch": True,
+                "fresh_target": True,
+                "maximum_owned_commands": 5,
+                "shared_absolute_deadline_never_reset": True,
+            },
+            "explicit Windows dependency projection/offline policy differs",
         )
         need(
             config["tool_capture_policy"]
@@ -687,8 +772,8 @@ def main():
         parent, current = tree_map(original_parent), tree_map(original_current)
         need(
             len(parent) == 16152
-            and sum(x["bytes"] for x in parent.values()) == 335747692,
-            "actual7176 complete parent inventory",
+            and sum(x["bytes"] for x in parent.values()) == 335755889,
+            "actual7181 complete parent inventory",
         )
         need(
             {p for p in parent if parent[p]["mode"] == "120000"} == {LINK_PATH}
@@ -934,6 +1019,7 @@ def main():
                 "CARGO_TARGET_DIR": str(target),
                 "CARGO_BUILD_JOBS": "1",
                 "CARGO_INCREMENTAL": "0",
+                "CARGO_NET_RETRY": "0",
                 "CARGO_TERM_COLOR": "never",
                 "NEXTEST_PROFILE": "local",
                 "RUST_MIN_STACK": "8388608",
@@ -950,17 +1036,31 @@ def main():
             if key.startswith(("CARGO", "RUST", "NEXTEST", "GIT_", "PYTHON"))
             or key in ("PATH", "PATHEXT", "SystemRoot", "TEMP", "TMP")
         }
-        result["dependency_materialization"] = (
-            "Original locked resolution and fresh compiled target; registry bytes may be fetched once and costs are charged."
-        )
+        result["dependency_materialization"] = {
+            "schema": "hepta.setup7.windows_target_materialization.v1",
+            "target": TARGET_TRIPLE,
+            "maximum_fetch_commands": 1,
+            "automatic_cargo_network_retries": 0,
+            "shared_dependency_metadata_cold_build_seconds": DEPENDENCY_SHARED_SECONDS,
+            "metadata_own_cap_seconds": METADATA_SECONDS,
+            "metadata_graph": "complete Cargo Windows/host resolve projection, not the old all-platform graph",
+            "no_deps_used": False,
+            "cargo_network_materialization_after_fetch_allowed": False,
+            "arbitrary_build_script_or_test_network_firewall_claimed": False,
+            "cold_target": str(target),
+            "old_binary_or_registry_reuse_claimed": False,
+            "duration_or_success_promised": False,
+        }
         cancellation = owner.Cancellation(api_native)
         cancellation.__enter__()
         workspace = repo / "codex-rs"
         meta_path = output / "cargo-metadata.windows.json"
         binary_path = output / "binaries-metadata.windows.json"
         phase_rows = []
+        dependency_deadline = None
 
         def invoke(index, argv):
+            nonlocal dependency_deadline
             cancellation.check()
             need(index == len(phase_rows), "phase order or repeated phase")
             now = time.monotonic()
@@ -972,7 +1072,41 @@ def main():
                 and not (repo / ".git/objects/info/alternates").exists(),
                 "external Git attributes/object store appeared",
             )
-            phase_deadline = min(operation_deadline, now + PHASE_CAPS[index])
+            if index == 0:
+                need(
+                    dependency_deadline is None, "dependency window was already opened"
+                )
+                dependency_deadline = min(
+                    operation_deadline, now + DEPENDENCY_SHARED_SECONDS
+                )
+                result["dependency_window"] = {
+                    "started_monotonic": now,
+                    "absolute_deadline": dependency_deadline,
+                    "maximum_seconds": DEPENDENCY_SHARED_SECONDS,
+                    "includes_fetch_metadata_cold_build_and_intermediate_io": True,
+                    "reset_between_phases": False,
+                    "completed": False,
+                }
+            if index <= 2:
+                need(
+                    dependency_deadline is not None and now < dependency_deadline,
+                    "shared dependency/metadata/cold-build window exhausted",
+                )
+                phase_deadline = dependency_deadline
+                if index == 1:
+                    phase_deadline = min(phase_deadline, now + METADATA_SECONDS)
+            else:
+                phase_deadline = min(
+                    operation_deadline,
+                    now + (LIST_SECONDS if index == 3 else RUN_SECONDS),
+                )
+            command_env = dict(child_env)
+            if index > 0:
+                command_env["CARGO_NET_OFFLINE"] = "true"
+            need(
+                (command_env.get("CARGO_NET_OFFLINE") == "true") == (index > 0),
+                "only the single target fetch may perform Cargo network materialization",
+            )
             result["unlaunched_phases"].remove(PHASES[index])
             attempt = {
                 "phase": PHASES[index],
@@ -982,6 +1116,12 @@ def main():
                 "operation_deadline": phase_deadline,
                 "owner_returned": False,
                 "launch_state": "UNKNOWN_UNTIL_ORIGINAL_OWNER_RETURN",
+                "dependency_window_deadline": dependency_deadline
+                if index <= 2
+                else None,
+                "cargo_net_offline": command_env.get("CARGO_NET_OFFLINE"),
+                "cargo_net_retry": command_env["CARGO_NET_RETRY"],
+                "command_environment_is_a_private_copy": True,
             }
             result["phase_attempts"].append(attempt)
             json_file(output / (PHASES[index] + ".ORIGINAL_ATTEMPT.json"), attempt)
@@ -990,7 +1130,7 @@ def main():
                 cancellation,
                 argv,
                 workspace,
-                child_env,
+                command_env,
                 output / "commands" / PHASES[index],
                 operation_deadline=phase_deadline,
                 cleanup_deadline=cleanup_deadline,
@@ -1020,7 +1160,17 @@ def main():
             )
             return row
 
-        def retain_stdout(row, destination):
+        def retain_stdout(row, destination, *, deadline=None):
+            retained_deadline = (
+                min(operation_deadline, deadline)
+                if deadline is not None
+                else operation_deadline
+            )
+            cancellation.check()
+            need(
+                time.monotonic() < retained_deadline,
+                "metadata retention deadline before original read",
+            )
             raw = read_bound(
                 row["stdout"]["path"], config["owner_limits"]["stream_bytes"]
             )
@@ -1032,20 +1182,61 @@ def main():
             pin = owner.PinnedFile(api_native, destination, FILE_LIMIT)
             held.append(pin)
             generated_files.append(pin)
-            info, same = pin.read(keep_bytes=True, deadline=operation_deadline)
+            info, same = pin.read(keep_bytes=True, deadline=retained_deadline)
             need(same == raw, "generated metadata publication changed")
+            cancellation.check()
+            need(
+                time.monotonic() <= retained_deadline,
+                "metadata retention exceeded its bound",
+            )
             return raw
 
         prepared = True
-        row = invoke(
-            0, [str(tools["cargo"]), "metadata", "--locked", "--format-version", "1"]
+        fetch = invoke(
+            0, [str(tools["cargo"]), "fetch", "--locked", "--target", TARGET_TRIPLE]
         )
-        metadata_raw = retain_stdout(row, meta_path)
+        result["dependency_materialization"]["fetch_original_receipt"] = fetch[
+            "receipt_path"
+        ]
+        row = invoke(
+            1,
+            [
+                str(tools["cargo"]),
+                "metadata",
+                "--locked",
+                "--offline",
+                "--filter-platform",
+                TARGET_TRIPLE,
+                "--format-version",
+                "1",
+            ],
+        )
+        metadata_attempt = result["phase_attempts"][1]
+        metadata_raw = retain_stdout(
+            row, meta_path, deadline=metadata_attempt["operation_deadline"]
+        )
         full_metadata, package = collector.metadata(metadata_raw, workspace, target)
         need(
             full_metadata.get("resolve") is not None,
             "complete original dependency resolve graph required",
         )
+        cancellation.check()
+        metadata_finished = time.monotonic()
+        need(
+            metadata_finished <= metadata_attempt["operation_deadline"],
+            "metadata retention/interpretation exceeded its independent60 or shared800",
+        )
+        result["metadata_projection"] = {
+            "target": TARGET_TRIPLE,
+            "host_dependencies_selected_by_original_Cargo": True,
+            "complete_non_null_resolve_required": True,
+            "same_as_prior_all_platform_graph_claimed": False,
+            "original_raw": {**digest(metadata_raw), "path": str(meta_path)},
+            "finished_after_materialization_io_monotonic": metadata_finished,
+            "seconds_including_metadata_retention_and_interpretation": metadata_finished
+            - metadata_attempt["started_monotonic"],
+            "operation_deadline": metadata_attempt["operation_deadline"],
+        }
         nextest = [
             str(tools["nextest"]),
             "nextest",
@@ -1055,7 +1246,7 @@ def main():
             str(workspace / ".config/nextest.toml"),
         ]
         row = invoke(
-            1,
+            2,
             nextest
             + [
                 "list",
@@ -1078,7 +1269,7 @@ def main():
                 "json",
             ],
         )
-        binary_raw = retain_stdout(row, binary_path)
+        binary_raw = retain_stdout(row, binary_path, deadline=dependency_deadline)
         binary_list, binary = collector.binaries(binary_raw, package, target)
         harness_parent = Path(binary["binary-path"]).parent
         harness_directories = []
@@ -1091,7 +1282,7 @@ def main():
         held.append(harness)
         generated_files.append(harness)
         binary_info, binary_bytes = harness.read(
-            keep_bytes=True, deadline=operation_deadline
+            keep_bytes=True, deadline=dependency_deadline
         )
         need(
             binary_bytes[:2] == b"MZ" and len(binary_bytes) >= 64,
@@ -1106,6 +1297,19 @@ def main():
         )
         del binary_bytes
         result["cold_harness_before"] = binary_info
+        cancellation.check()
+        dependency_finished = time.monotonic()
+        need(
+            dependency_deadline is not None
+            and dependency_finished <= dependency_deadline,
+            "dependency metadata cold-build and binary custody exceeded shared800",
+        )
+        result["dependency_window"].update(
+            completed=True,
+            finished_after_harness_custody_monotonic=dependency_finished,
+            elapsed_seconds=dependency_finished
+            - result["dependency_window"]["started_monotonic"],
+        )
         reuse = [
             "--cargo-metadata",
             str(meta_path),
@@ -1113,7 +1317,7 @@ def main():
             str(binary_path),
         ]
         row = invoke(
-            2,
+            3,
             nextest
             + [
                 "list",
@@ -1132,7 +1336,7 @@ def main():
         )
         need(not junit_path.exists(), "JUnit must be absent before the first test body")
         row = invoke(
-            3,
+            4,
             nextest
             + [
                 "run",
@@ -1168,8 +1372,8 @@ def main():
         result["junit_raw"] = durable(output / "junit.original.xml", junit_raw)
         result["junit"] = collector.junit(junit_raw)
         need(
-            len(result["commands"]) == 4 and not result["unlaunched_phases"],
-            "four original phases",
+            len(result["commands"]) == 5 and not result["unlaunched_phases"],
+            "five original phases in this distinct dependency candidate",
         )
         cancellation.check()
         need(
