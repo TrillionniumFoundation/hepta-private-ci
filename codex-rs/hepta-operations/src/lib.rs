@@ -66,3 +66,9 @@ pub use outbox::OutboxState;
 mod exact_claim_tests;
 #[cfg(test)]
 mod fault_tests;
+
+// Historical receipt-ordering models are test fixtures, not authority APIs.
+#[cfg(test)]
+mod cell_split_receipt_gate;
+#[cfg(test)]
+mod split_receipt_gate;
