@@ -1,0 +1,100 @@
+{
+  "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/140642486749",
+  "completed_at": "2026-11-27T18:11:07Z",
+  "conclusion": "failure",
+  "created_at": "2026-11-27T17:07:15Z",
+  "head_branch": "codex/hia-windows-sandbox-runfiles-20261127-2ac5",
+  "head_sha": "d455e55cf25bfada9ff0adb4db4fd8eda6b7ac59",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46039259473/job/140642486749",
+  "id": 140642486749,
+  "labels": [
+    "windows-latest"
+  ],
+  "name": "Three complete original Windows sandbox consumer targets",
+  "node_id": "CR_kwDOTrgxoM8AAAAgvvIJ3Q",
+  "run_attempt": 1,
+  "run_id": 46039259473,
+  "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/46039259473",
+  "runner_group_id": 0,
+  "runner_group_name": "GitHub Actions",
+  "runner_id": 1000379131,
+  "runner_name": "GitHub Actions 1000379131",
+  "started_at": "2026-11-27T17:26:49Z",
+  "status": "completed",
+  "steps": [
+    {
+      "completed_at": "2026-11-27T17:26:52Z",
+      "conclusion": "success",
+      "name": "Set up job",
+      "number": 1,
+      "started_at": "2026-11-27T17:26:50Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T17:27:22Z",
+      "conclusion": "success",
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "number": 2,
+      "started_at": "2026-11-27T17:26:52Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T17:28:15Z",
+      "conclusion": "success",
+      "name": "Prepare Bazel CI",
+      "number": 3,
+      "started_at": "2026-11-27T17:27:22Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T18:10:57Z",
+      "conclusion": "failure",
+      "name": "Run every original test in all three sandbox consumer targets",
+      "number": 4,
+      "started_at": "2026-11-27T17:28:15Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T18:11:01Z",
+      "conclusion": "success",
+      "name": "Preserve original execution evidence",
+      "number": 5,
+      "started_at": "2026-11-27T18:10:57Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T18:11:02Z",
+      "conclusion": "success",
+      "name": "Check for a clean worktree",
+      "number": 6,
+      "started_at": "2026-11-27T18:11:01Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T18:11:02Z",
+      "conclusion": "success",
+      "name": "Post Prepare Bazel CI",
+      "number": 11,
+      "started_at": "2026-11-27T18:11:02Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T18:11:04Z",
+      "conclusion": "success",
+      "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "number": 12,
+      "started_at": "2026-11-27T18:11:02Z",
+      "status": "completed"
+    },
+    {
+      "completed_at": "2026-11-27T18:11:04Z",
+      "conclusion": "success",
+      "name": "Complete job",
+      "number": 13,
+      "started_at": "2026-11-27T18:11:04Z",
+      "status": "completed"
+    }
+  ],
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/140642486749",
+  "workflow_name": "HIA Windows original sandbox runfiles targets"
+}

@@ -2,8 +2,7 @@ use anyhow::Result;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use rand::RngCore;
-use rand::SeedableRng;
-use rand::rngs::SmallRng;
+use rand::rngs::OsRng;
 use serde::Serialize;
 use std::ffi::OsStr;
 use std::ffi::c_void;
@@ -19,6 +18,7 @@ use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::NetworkManagement::NetManagement::LOCALGROUP_INFO_1;
 use windows_sys::Win32::NetworkManagement::NetManagement::LOCALGROUP_MEMBERS_INFO_3;
 use windows_sys::Win32::NetworkManagement::NetManagement::NERR_Success;
+use windows_sys::Win32::NetworkManagement::NetManagement::NERR_UserExists;
 use windows_sys::Win32::NetworkManagement::NetManagement::NetLocalGroupAdd;
 use windows_sys::Win32::NetworkManagement::NetManagement::NetLocalGroupAddMembers;
 use windows_sys::Win32::NetworkManagement::NetManagement::NetUserAdd;
@@ -47,7 +47,6 @@ use codex_windows_sandbox::SetupErrorCode;
 use codex_windows_sandbox::SetupFailure;
 use codex_windows_sandbox::dpapi_protect;
 use codex_windows_sandbox::sandbox_dir;
-use codex_windows_sandbox::sandbox_secrets_dir;
 use codex_windows_sandbox::string_from_sid_bytes;
 use codex_windows_sandbox::to_wide;
 
@@ -69,6 +68,7 @@ pub fn resolve_sandbox_users_group_sid() -> Result<Vec<u8>> {
 
 pub fn provision_sandbox_users(
     codex_home: &Path,
+    real_user: &str,
     offline_username: &str,
     online_username: &str,
     log: &mut dyn Write,
@@ -78,18 +78,22 @@ pub fn provision_sandbox_users(
         log,
         &format!("ensuring sandbox users offline={offline_username} online={online_username}"),
     )?;
-    let offline_password = random_password();
-    let online_password = random_password();
-    ensure_sandbox_user(offline_username, &offline_password, log)?;
-    ensure_sandbox_user(online_username, &online_password, log)?;
-    write_secrets(
-        codex_home,
+    let publication =
+        super::private_identity_publication::PrivateSecrets::prepare(codex_home, real_user)?;
+    super::machine_identity::with_credentials(
         offline_username,
-        &offline_password,
         online_username,
-        &online_password,
-    )?;
-    Ok(())
+        log,
+        |offline_password, online_password| {
+            write_secrets(
+                &publication,
+                offline_username,
+                offline_password,
+                online_username,
+                online_password,
+            )
+        },
+    )
 }
 
 pub fn ensure_sandbox_user(username: &str, password: &str, log: &mut dyn Write) -> Result<()> {
@@ -98,7 +102,21 @@ pub fn ensure_sandbox_user(username: &str, password: &str, log: &mut dyn Write) 
     Ok(())
 }
 
+pub fn create_sandbox_user(username: &str, password: &str, log: &mut dyn Write) -> Result<()> {
+    ensure_local_user_inner(username, password, log, false)?;
+    ensure_local_group_member(SANDBOX_USERS_GROUP, username)
+}
+
 pub fn ensure_local_user(name: &str, password: &str, log: &mut dyn Write) -> Result<()> {
+    ensure_local_user_inner(name, password, log, true)
+}
+
+fn ensure_local_user_inner(
+    name: &str,
+    password: &str,
+    log: &mut dyn Write,
+    allow_existing_password_update: bool,
+) -> Result<()> {
     let name_w = to_wide(OsStr::new(name));
     let pwd_w = to_wide(OsStr::new(password));
     unsafe {
@@ -119,7 +137,15 @@ pub fn ensure_local_user(name: &str, password: &str, log: &mut dyn Write) -> Res
             std::ptr::null_mut(),
         );
         if status != NERR_Success {
-            // Try update password via level 1003.
+            if status != NERR_UserExists || !allow_existing_password_update {
+                return Err(anyhow::Error::new(SetupFailure::new(
+                    SetupErrorCode::HelperUserCreateOrUpdateFailed,
+                    format!(
+                        "failed to create user {name}, code {status}; existing account was not modified"
+                    ),
+                )));
+            }
+            // Only an explicitly admitted, SID-bound initial migration reaches this update.
             let pw_info = USER_INFO_1003 {
                 usri1003_password: pwd_w.as_ptr() as *mut u16,
             };
@@ -363,10 +389,10 @@ pub fn sid_bytes_to_psid(sid: &[u8]) -> Result<*mut c_void> {
     Ok(psid)
 }
 
-fn random_password() -> String {
+pub(super) fn random_password() -> String {
     const CHARS: &[u8] =
         b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
-    let mut rng = SmallRng::from_entropy();
+    let mut rng = OsRng;
     let mut buf = [0u8; 24];
     rng.fill_bytes(&mut buf);
     buf.iter()
@@ -403,22 +429,12 @@ struct SetupMarker {
 }
 
 fn write_secrets(
-    codex_home: &Path,
+    publication: &super::private_identity_publication::PrivateSecrets,
     offline_user: &str,
     offline_pwd: &str,
     online_user: &str,
     online_pwd: &str,
 ) -> Result<()> {
-    let secrets_dir = sandbox_secrets_dir(codex_home);
-    std::fs::create_dir_all(&secrets_dir).map_err(|err| {
-        anyhow::Error::new(SetupFailure::new(
-            SetupErrorCode::HelperUsersFileWriteFailed,
-            format!(
-                "failed to create secrets dir {}: {err}",
-                secrets_dir.display()
-            ),
-        ))
-    })?;
     let offline_blob = dpapi_protect(offline_pwd.as_bytes()).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperDpapiProtectFailed,
@@ -442,23 +458,18 @@ fn write_secrets(
             password: BASE64.encode(online_blob),
         },
     };
-    let users_path = secrets_dir.join("sandbox_users.json");
     let users_json = serde_json::to_vec_pretty(&users).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperUsersFileWriteFailed,
             format!("serialize sandbox users failed: {err}"),
         ))
     })?;
-    std::fs::write(&users_path, users_json).map_err(|err| {
+    publication.publish(&users_json).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
             SetupErrorCode::HelperUsersFileWriteFailed,
-            format!(
-                "write sandbox users file {} failed: {err}",
-                users_path.display()
-            ),
+            format!("publish private sandbox users file failed: {err:#}"),
         ))
-    })?;
-    Ok(())
+    })
 }
 
 // Create the final marker path with its protected ACL before provisioning begins. The empty file
