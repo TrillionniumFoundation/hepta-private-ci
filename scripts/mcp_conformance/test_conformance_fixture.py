@@ -262,8 +262,8 @@ class OriginalCandidateIdentityTests(unittest.TestCase):
     def test_publication_requires_actual_parent_and_exact_roster(self):
         publication = {
             "parent": dict(fixture.HEPTA_PARENT),
-            "source_paths": list(fixture.HEPTA_C2_PATHS),
-            "requires_actual_stage_b_parent": True,
+            "source_paths": list(fixture.HEPTA_CHANGED_PATHS),
+            "requires_actual_parent": True,
             "root_must_bind_final_candidate": True,
         }
         self.assertEqual(
@@ -332,6 +332,44 @@ class OriginalCandidateIdentityTests(unittest.TestCase):
             self.assertNotEqual(first["codex"]["sha256"], after["codex"]["sha256"])
             with self.assertRaisesRegex(ValueError, "differs from original build"):
                 fixture.compare_build_binaries(first, after)
+
+            bounded = root / "bounded"
+            bounded.write_bytes(b"0123456789abcdef")
+            bounded.chmod(0o755)
+            with mock.patch.object(fixture, "BINARY_BYTES_LIMIT", 16):
+                accepted = fixture.binary_identity(bounded, time.monotonic() + 2)
+                self.assertEqual(accepted["bytes"], 16)
+                with self.assertRaisesRegex(ValueError, "exceeds byte bound"):
+                    fixture.file_observation(bounded, time.monotonic() + 2, maximum=8)
+                bounded.write_bytes(b"0123456789abcdefg")
+                with self.assertRaisesRegex(ValueError, "exceeds byte bound"):
+                    fixture.binary_identity(bounded, time.monotonic() + 2)
+                bounded.write_bytes(b"0123456789abcdef")
+                bounded.chmod(0o644)
+                with self.assertRaisesRegex(ValueError, "not executable"):
+                    fixture.binary_identity(bounded, time.monotonic() + 2)
+                bounded.chmod(0o755)
+                with self.assertRaisesRegex(ValueError, "nonregular identity file"):
+                    fixture.binary_identity(root, time.monotonic() + 2)
+                with self.assertRaisesRegex(ValueError, "existing deadline"):
+                    fixture.binary_identity(bounded, time.monotonic() - 1)
+
+            oversized_source = {
+                "sha": "1" * 40,
+                "truncated": False,
+                "tree": [
+                    {
+                        "path": "source",
+                        "type": "blob",
+                        "mode": "100644",
+                        "size": fixture.SOURCE_BYTES_LIMIT + 1,
+                        "sha": "2" * 40,
+                    }
+                ],
+            }
+            self.assertGreater(fixture.BINARY_BYTES_LIMIT, fixture.SOURCE_BYTES_LIMIT)
+            with self.assertRaisesRegex(ValueError, "source size"):
+                fixture.source_map(oversized_source, "1" * 40)
 
     def test_full_physical_tree_rejects_changed_file_and_symlink(self):
         files = {
