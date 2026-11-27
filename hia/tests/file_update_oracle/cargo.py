@@ -129,7 +129,9 @@ def capture(cargo, producer, env, native, commands):
     return result
 
 
-def admit(path, packages, owner, dependencies, target_dir, stage, *, native):
+def admit(path, packages, owner, dependencies, target_dir, stage, *, native, overflow_mode=0):
+    if type(overflow_mode) is not int or overflow_mode not in (0, 1):
+        raise RuntimeError("unsupported complete-owner overflow policy")
     messages = [json.loads(line) for line in path.read_text().splitlines()]
     endings = [m for m in messages if m.get("reason") == "build-finished"]
     if len(endings) != 1 or endings[0].get("success") is not True or messages[-1] != endings[0]:
@@ -200,7 +202,9 @@ def admit(path, packages, owner, dependencies, target_dir, stage, *, native):
         if name in direct and package["id"] == wanted[name]:
             rlibs = [f for f in library_files if f.suffix == ".rlib"]
             expected = {"opt_level": "0", "debuginfo": 0, "debug_assertions": True,
-                        "overflow_checks": True, "test": False}
+                        "overflow_checks": not (overflow_mode == 1 and
+                                                name in {"similar", "codex_apply_patch"}),
+                        "test": False}
             if len(rlibs) != 1 or any(profile.get(k) != v for k, v in expected.items()):
                 raise RuntimeError(f"wrong actual direct-library profile: {name}")
             direct[name].append({"path": str(stage / rlibs[0].name), "unit": unit})
@@ -238,7 +242,8 @@ def flags(rustc, graph, *, original):
     return args
 
 
-def build_drivers(rustc, original_root, producer, driver, default, native, env, commands, output):
+def build_drivers(rustc, original_root, producer, driver, historical, default, native,
+                  env, commands, output):
     for name in REQUIRED:
         left, right = default["direct"][name]["unit"], native["direct"][name]["unit"]
         for field in ("package_id", "features", "profile", "target"):
@@ -248,7 +253,7 @@ def build_drivers(rustc, original_root, producer, driver, default, native, env, 
     child.pop("CODEX_HIA_NATIVE_LIB_DIR", None)
     child["CARGO_MANIFEST_DIR"] = str(original_root / CRATE)
     source = original_root / CRATE / "src/lib.rs"
-    common = flags(rustc, default, original=True)
+    common = flags(rustc, historical, original=True)
     reference = output / "libcodex_apply_patch_original.rlib"
     commands.run("compile-whole-original-lib", common + ["--crate-name", "codex_apply_patch_original",
         "--crate-type", "rlib", source, "-o", reference], cwd=producer, env=child)

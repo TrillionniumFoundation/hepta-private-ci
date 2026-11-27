@@ -47,7 +47,7 @@ def prepare(args, report):
 
     bind(parent_path)
     parent = json.loads(parent_path.read_text())
-    require(parent["schema"] == "codex.hia.native-patch-effects-caller.v1" and
+    require(parent["schema"] == "codex.hia.native-patch-effects-caller.v2" and
             parent["passed"] and parent["source_and_artifacts_unchanged"],
             "the prerequisite complete-owner effects gate did not pass")
     parent_work = identity.outside(parent["work_dir"], roots)
@@ -65,7 +65,9 @@ def prepare(args, report):
     require(original_tests["passed"] == 13 and original_tests["skipped"] == 0 and
             set(original_tests["names"]) == {"tests::" + name for name in admission.ORIGINAL_TESTS},
             "the prerequisite did not execute the 13 unchanged original root tests")
-    producing = identity.producer_inputs(producer, snapshot, manifest)
+    dependency_baseline = parent["dependency_baseline"]
+    producing = identity.producer_inputs(producer, snapshot, manifest,
+                                        dependency_baseline=dependency_baseline)
     producing["complete_lib_inverse"] = admission.recover_lib(producer)
     require(producing["complete_lib_inverse"]["exact_routing_rewrites"] == 33,
             "standalone requires the complete reviewed 33-rewrite lib inverse")
@@ -109,6 +111,8 @@ def prepare(args, report):
     graphs = {}
     for side in ("default", "native"):
         record = parent["actual_cargo_graph_manifests"][side]
+        require(side != "default" or record["sha256"] == dependency_baseline["graph"]["sha256"],
+                "the reference dependency graph is not the qualified historical graph")
         path = parent_work / (side + "-dependency-manifest.json")
         require(record["path"] == str(path) and record["bytes"] == path.stat().st_size,
                 "the prerequisite graph path or length differs")
@@ -169,7 +173,8 @@ def prepare(args, report):
         commands_file=str(logs / "commands.json"))
     return {"producer": producer, "library": library, "work": work, "binaries": binaries,
             "bound": bound, "graphs": graphs, "serde": parent["actual_serde_identity"],
-            "snapshot": snapshot, "manifest": manifest, "producing": producing, "binding": binding}
+            "snapshot": snapshot, "manifest": manifest, "producing": producing, "binding": binding,
+            "dependency_baseline": dependency_baseline}
 
 
 def unchanged(context):
@@ -178,7 +183,8 @@ def unchanged(context):
     for receipt in context["serde"].values():
         admission.verify_fingerprints(receipt)
     identity.verify_sources(context["snapshot"], context["manifest"])
-    current = identity.producer_inputs(context["producer"], context["snapshot"], context["manifest"])
+    current = identity.producer_inputs(context["producer"], context["snapshot"], context["manifest"],
+                                      dependency_baseline=context["dependency_baseline"])
     current["complete_lib_inverse"] = admission.recover_lib(context["producer"])
     require(current == context["producing"] and
             admission.native_inputs(context["producer"], context["library"]) == context["binding"],

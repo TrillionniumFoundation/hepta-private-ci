@@ -1,13 +1,23 @@
 """Compile the complete fixed original crate; never reconstruct an algorithm."""
 import hashlib
 import subprocess
+import tomllib
+from file_update_oracle import historical
 from .common import BASE as COMMIT, CRATE_TREE
 
 def extract_original(context):
     OUT, REPO, REPORT, common = context.output, context.args.original_root.resolve(strict=True), context.report, context
+    REPORT['original_dependency_workspace'] = historical.source(REPO, COMMIT)
     assert subprocess.check_output(['git', '-C', REPO, 'rev-parse', f'{COMMIT}:codex-rs/apply-patch']).decode().strip() == CRATE_TREE
+    declarations = {}
     for relative in ('codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'codex-rs/apply-patch/Cargo.toml'):
-        assert subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}']) == (context.repo / relative).read_bytes()
+        original = subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}'])
+        assert original == (REPO / relative).read_bytes()
+        if relative == 'codex-rs/apply-patch/Cargo.toml':
+            assert original == (context.repo / relative).read_bytes()
+        declarations[relative] = {'original': common.bind(REPO / relative),
+                                  'current': common.bind(context.repo / relative)}
+    REPORT['dependency_declarations'] = declarations
     root = OUT / 'original-source'
     root.mkdir()
     rows = []
@@ -65,3 +75,29 @@ def original_args(receipt, root, directory):
 
 def options(argv, name):
     return [argv[i + 1] for i, value in enumerate(argv) if value == name]
+
+
+def historical_args(argv, root, graph):
+    """Keep the admitted policy flags while selecting only historical libraries."""
+    declared = {name.replace('-', '_') for name in
+                tomllib.loads((root / 'Cargo.toml').read_text())['dependencies']}
+    externs = [value.split('=', 1)[0] for value in options(argv, '--extern')]
+    assert len(externs) == len(set(externs)) and set(externs) == declared, \
+        'actual native owner externs differ from the unchanged original declaration'
+    assert declared <= set(graph['direct'])
+    result, index = [], 0
+    while index < len(argv):
+        value = argv[index]
+        if value == '--extern':
+            name = argv[index + 1].split('=', 1)[0]
+            result.extend([value, name + '=' + graph['direct'][name]['path']])
+            index += 2
+        elif value == '-L':
+            index += 2
+        else:
+            assert not value.startswith('-L'), 'unsupported combined library search argument'
+            result.append(value)
+            index += 1
+    result.extend(['-L', 'dependency=' + graph['stage']])
+    result.extend(item for path in graph['native_paths'] for item in ('-L', path))
+    return result
