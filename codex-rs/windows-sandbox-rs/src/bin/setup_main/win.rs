@@ -1,4 +1,5 @@
 mod firewall;
+mod home_setup_transaction;
 mod machine_identity;
 mod machine_identity_mutex;
 mod machine_identity_store;
@@ -512,6 +513,13 @@ fn real_main() -> Result<()> {
 
 fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
     let writes_setup_marker = !payload.refresh_only && payload.mode != SetupMode::ReadAclsOnly;
+    let _home_setup = if writes_setup_marker {
+        Some(home_setup_transaction::HomeSetupGuard::acquire(
+            &payload.codex_home,
+        )?)
+    } else {
+        None
+    };
     if writes_setup_marker {
         prepare_setup_marker(&payload.codex_home, &payload.real_user)?;
     }

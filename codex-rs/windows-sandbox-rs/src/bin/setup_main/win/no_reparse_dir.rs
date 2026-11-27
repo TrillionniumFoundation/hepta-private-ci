@@ -20,6 +20,7 @@ use windows_sys::Win32::Foundation::UNICODE_STRING;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
@@ -30,6 +31,7 @@ use windows_sys::Win32::System::IO::IO_STATUS_BLOCK_0;
 use windows_sys::Win32::System::Kernel::OBJ_CASE_INSENSITIVE;
 use windows_sys::Win32::System::Kernel::OBJ_DONT_REPARSE;
 
+const FILE_OPEN: u32 = 1;
 const FILE_OPEN_IF: u32 = 3;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
@@ -74,6 +76,7 @@ pub(super) fn open_or_create_no_reparse(path: &Path) -> Result<OwnedHandle> {
         ptr::null(),
         READ_CONTROL | WRITE_DAC,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        FILE_OPEN_IF,
     )
 }
 
@@ -88,6 +91,19 @@ pub(super) fn open_or_create_private_no_reparse(
         security_descriptor,
         FILE_GENERIC_READ | FILE_GENERIC_WRITE | WRITE_DAC,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_OPEN_IF,
+    )
+}
+
+/// Retains an existing directory for a transaction, without granting delete
+/// sharing or following a reparse point. This never creates an unvalidated leaf.
+pub(super) fn retain_no_reparse(path: &Path) -> Result<OwnedHandle> {
+    open_or_create(
+        path,
+        ptr::null(),
+        FILE_READ_ATTRIBUTES,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        FILE_OPEN,
     )
 }
 
@@ -96,6 +112,7 @@ fn open_or_create(
     security_descriptor: *const c_void,
     access: u32,
     share_access: u32,
+    disposition: u32,
 ) -> Result<OwnedHandle> {
     ensure!(
         path.is_absolute(),
@@ -155,7 +172,7 @@ fn open_or_create(
             ptr::null(),
             FILE_ATTRIBUTE_NORMAL,
             share_access,
-            FILE_OPEN_IF,
+            disposition,
             FILE_DIRECTORY_FILE,
             ptr::null(),
             /*ea_length*/ 0,

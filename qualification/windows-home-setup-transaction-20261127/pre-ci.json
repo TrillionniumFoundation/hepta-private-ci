@@ -1,0 +1,35 @@
+{
+  "actual_windows_regression": "PENDING",
+  "command": [
+    "/opt/homebrew/bin/just",
+    "fmt"
+  ],
+  "diff_check": 0,
+  "official_api_sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/api/winbase/ns-winbase-file_id_info",
+    "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getfileinformationbyhandleex",
+    "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew"
+  ],
+  "previous_job": 140769775078,
+  "previous_run": 46077877274,
+  "returncode": 0,
+  "seconds": 0.34065812500193715,
+  "sources": {
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": {
+      "bytes": 48141,
+      "sha256": "46d7b52b14f9bfcc4f9548a74770a2f06b371428c6f5b9f4e6d4f1ca19a9cfa0"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/home_setup_transaction.rs": {
+      "bytes": 2338,
+      "sha256": "229a5531de0139e130c876d3d5148c849ffdfa90bdf4e67936513100f2e1bd35"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/home_setup_transaction_tests.rs": {
+      "bytes": 7760,
+      "sha256": "d77a34ee7ba2075dfa05c2e5e3f2ba57e39aa3db33f0c916fb54760885c3cfdc"
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs": {
+      "bytes": 7020,
+      "sha256": "ef912dbe162801c652fd0bbe7676d7243f4d26f3ce1dcaa52037ed3b9a30f428"
+    }
+  }
+}
