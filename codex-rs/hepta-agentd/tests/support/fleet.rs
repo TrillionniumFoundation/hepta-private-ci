@@ -393,9 +393,23 @@ fn readiness_diagnostics(snapshot: Option<&AgentSupervisorSnapshot>, last_health
         }
         decoded[start..].to_string()
     });
+    let stderr_head_bytes = snapshot
+        .logs
+        .iter()
+        .filter(|log| log.stream == ProcessStream::Stderr)
+        .flat_map(|log| log.bytes.iter().copied())
+        .take(MAX_DIAGNOSTIC_STREAM_BYTES)
+        .collect::<Vec<_>>();
+    let stderr_head = String::from_utf8_lossy(&stderr_head_bytes);
+    let mut head_end = stderr_head.len().min(MAX_DIAGNOSTIC_STREAM_BYTES);
+    while !stderr_head.is_char_boundary(head_end) {
+        head_end -= 1;
+    }
+    let stderr_head = &stderr_head[..head_end];
     format!(
         "active={}; healthy={}; runtime_generation={:?}; release_change_pending={}; \
          last_exit={last_exit:?}; last_health={last_health}; \
+         stderr (head, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stderr_head}\n\
          stdout (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stdout}\n\
          stderr (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stderr}",
         snapshot.active,

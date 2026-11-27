@@ -1,0 +1,232 @@
+{
+  "build_report_sha256": "d0831a8c5ccd66914cbf2d6148bb2be824fdbee9d175995ecb8d8a6dffa4511e",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/build.py",
+        "--hepta-root",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/Hepta",
+        "--output",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1"
+      ],
+      "elapsed_ns": 10582714570,
+      "exit": 0,
+      "label": "build",
+      "stderr": "build.stderr",
+      "stdout": "build.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_retry_decision_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/retry_decision.json"
+      ],
+      "elapsed_ns": 114284176,
+      "exit": 0,
+      "label": "retry_decision",
+      "stderr": "retry_decision.stderr",
+      "stdout": "retry_decision.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_inline_hidden_tag_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/inline_hidden_tag.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 264467549,
+      "exit": 0,
+      "label": "inline_hidden_tag",
+      "stderr": "inline_hidden_tag.stderr",
+      "stdout": "inline_hidden_tag.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_utf8_stream_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/utf8_stream.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 164300856,
+      "exit": 0,
+      "label": "utf8_stream",
+      "stderr": "utf8_stream.stderr",
+      "stdout": "utf8_stream.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_output_lines_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/output_lines.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 214396002,
+      "exit": 0,
+      "label": "output_lines",
+      "stderr": "output_lines.stderr",
+      "stdout": "output_lines.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_output_item_budget_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/output_item_budget.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 114242187,
+      "exit": 0,
+      "label": "output_item_budget",
+      "stderr": "output_item_budget.stderr",
+      "stdout": "output_item_budget.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_format_env_display_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/format_env_display.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 164643704,
+      "exit": 0,
+      "label": "format_env_display",
+      "stderr": "format_env_display.stderr",
+      "stdout": "format_env_display.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_citation_stream_parser_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/citation_stream_parser.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 565070069,
+      "exit": 0,
+      "label": "citation_stream_parser",
+      "stderr": "citation_stream_parser.stderr",
+      "stdout": "citation_stream_parser.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_proposed_plan_parser_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/proposed_plan_parser.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 17592679078,
+      "exit": 0,
+      "label": "proposed_plan_parser",
+      "stderr": "proposed_plan_parser.stderr",
+      "stdout": "proposed_plan_parser.stdout"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/src/hia/tests/test_fuzzy_match_abi.py",
+        "--library-dir",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-current-v1",
+        "--report",
+        "/home/qq/codex-hia-work/codex-native-qualification-20261127-2807/native38-component-v1/fuzzy_match.json",
+        "--build-profile",
+        "full-native38"
+      ],
+      "elapsed_ns": 164293616,
+      "exit": 0,
+      "label": "fuzzy_match",
+      "stderr": "fuzzy_match.stderr",
+      "stdout": "fuzzy_match.stdout"
+    }
+  ],
+  "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+  "finished_ns": 1795799816720342307,
+  "native_input_pins": {
+    "hia/allowed_prefixes.hepta": "257184be5851e53a4c95deb70dc7e980a7dbafa131a4562cb9b6274c00116fc0",
+    "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+    "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
+    "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+    "hia/citation_stream_parser.hepta": "a73619f953b10636e6201515fb324f5a9dcf0806df5ccd968dd3eda5b028b354",
+    "hia/command_dispatch.hepta": "b45b7592b5df2df5fee21ccec693fc9c8e12f445c3883a96b1ab7581cdf4a9c7",
+    "hia/file_update.hepta": "aaf5a14f8ba8627275b406c1f5ad26fffc6628048b68cdac7d732013491a2ddc",
+    "hia/format_env_display.hepta": "03e02924aa02c32e52027a321af777ad6ddc5bc4cb622c0b2fad949be4d5e922",
+    "hia/fuzzy_match.hepta": "db0747f09baab8bdb477118059895b7a49fade002b573256e0aab730d131b661",
+    "hia/inline_hidden_tag.hepta": "4170045f784ac4c9ffd1f48e0d6ae78b82d49a092863afc28499598c7289d879",
+    "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+    "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+    "hia/network_domains.hepta": "7ef166afa54278b0ec0957a9e210141cc58ca31652518a5d127ffff4a0eb9859",
+    "hia/network_host.hepta": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+    "hia/output_item_budget.hepta": "4700c1fd61778ef0eaf479f7be8ada24d9a65daff5e65324a504fb51f867c814",
+    "hia/output_lines.hepta": "9abf072acb819d8a85c8d51ed078d8b0ebce963b80cf53d610de010203f995d0",
+    "hia/parser.hepta": "4bc5c33576b56b27214d21dae686a7242f81ea01ac81516bd0be6583424b827f",
+    "hia/patch_application.hepta": "bdb1c92db9470c2f6d4b5208ac72107538a3e29a4dbe14c0390bc25db6b907ae",
+    "hia/patch_effects.hepta": "3fa4152c1737970f67d4ab24594870c38f3f03a774ffa151a256da6cf3c026b8",
+    "hia/patch_standalone.hepta": "328598b4d03b2852329d780500a9135c2c990a260926b480bbf97e2a75afc263",
+    "hia/patch_summary.hepta": "50dd79660f44dd6ed5bcaf835364478875528a2050fdaad2199077b74529b84e",
+    "hia/policy_summary.hepta": "f6b6f44bffaf5984116d6c5b3b3e0b619c5a944b0becd9a3e4bd7c6dbc9cc5ef",
+    "hia/prefix_admission.hepta": "2ad0a3454b58901fa52c3dd48dd37e4b18e38560c97f279aab755f1a31383cdb",
+    "hia/prefix_match.hepta": "5502f02c6b7e18cb88ca48323d3cebcd9bf95e43f8557556f52bfb39fad215ee",
+    "hia/proposed_plan_parser.hepta": "b8abe8bee8dc945bacd313f201af792b56134ad2d867231da43e91fafd64b755",
+    "hia/retry_decision.hepta": "f7a7cff8875291b7d58f254d8dcf35c8438b1076fb1db63250fa10e403641a2b",
+    "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+    "hia/source_file.hepta": "773bd290570ecd9e404ea3a393a2974981f4ac3f194daf452d79ffc21af71d70",
+    "hia/template_index.hepta": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
+    "hia/template_parse.hepta": "7e9d067faf27c0fff4863b880e5f429a2e430bdedbe9c29268c1b0159f880f8b",
+    "hia/template_parser.hepta": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
+    "hia/template_render.hepta": "55fb74a3573ae586d3c234725c58c038accb56c7424d59ed45edaceced48ef81",
+    "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
+    "hia/toolchain.json": "d851da300cb8ceef4fa0b58d66508c5ef535b7798b97af50e1ebea0c3f134980",
+    "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
+    "hia/unified_diff.hepta": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
+    "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+    "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+    "hia/utf8_stream.hepta": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+    "hia/uuid_find.hepta": "796df10f9f61aa1422fe7361f34ee171b137e1062cf3acf88a4fe15d91bcd778",
+    "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0"
+  },
+  "native_inputs_terminal_readback_unchanged": true,
+  "passed": true,
+  "qualification_reused": false,
+  "schema": "codex.hia.native38.fresh-component-execution.v1",
+  "scope": "fresh pinned B1/B2/B3 and retained exact source raw ABI gates; public owners and full workflow remain separate",
+  "started_ns": 1795799786750750264
+}

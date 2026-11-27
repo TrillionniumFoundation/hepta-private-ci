@@ -1,3 +1,5 @@
+#[cfg(feature = "hia-native")]
+mod hia_native_retry;
 mod retry;
 mod sse;
 mod telemetry;

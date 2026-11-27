@@ -1,0 +1,223 @@
+{
+  "base": "a05499eb5d2b2088de6a192d0c42ce9ba0249882",
+  "source": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src",
+  "original_failed_job": "1a21d14c157-ffbe-52ba",
+  "transport_failed_job": "1a21dba28d5-ffbe-547f",
+  "transport_failure_receipt": {
+    "bytes": 3103,
+    "sha256": "8fa5edcbfde71d80c44febd4946b5715d5619631026cf9646afc3101572ec8a0"
+  },
+  "source_qualified": true,
+  "whole_hia_rewrite": false,
+  "calls": [
+    {
+      "name": "connectivity-check",
+      "argv": [
+        "/usr/bin/git",
+        "fsck",
+        "--connectivity-only",
+        "--no-reflogs",
+        "a05499eb5d2b2088de6a192d0c42ce9ba0249882"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src",
+      "started_unix_ns": 1795795793087074000,
+      "returncode": 0,
+      "elapsed_ns": 74631083,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "checkout-recovered-candidate",
+      "argv": [
+        "/usr/bin/git",
+        "checkout",
+        "-b",
+        "recovery/hia-sqlx-chrono-20261127-2807",
+        "a05499eb5d2b2088de6a192d0c42ce9ba0249882"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src",
+      "started_unix_ns": 1795795793162657000,
+      "returncode": 0,
+      "elapsed_ns": 1131077459,
+      "log": {
+        "bytes": 208,
+        "sha256": "92d0baf4f99d0a3e975ad73039ec17d0a224efbf33818a6002f074a6f57f3007"
+      }
+    },
+    {
+      "name": "clean-source",
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain=v1"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src",
+      "started_unix_ns": 1795795794294800000,
+      "returncode": 0,
+      "elapsed_ns": 130757333,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "exact-candidate-diff",
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--",
+        "codex-rs/Cargo.toml",
+        "codex-rs/Cargo.lock"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src",
+      "started_unix_ns": 1795795794446364000,
+      "returncode": 0,
+      "elapsed_ns": 20013334,
+      "log": {
+        "bytes": 1168,
+        "sha256": "82005fc23f81d8eca8ae898f32661788815c26c5ae8ecebcc5ede4b4e0fa5050"
+      }
+    },
+    {
+      "name": "all-14-owners-original-gate",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-cli",
+        "-p",
+        "codex-exec",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-authbus",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-matrix-sdk",
+        "-p",
+        "codex-hepta-matrix-store",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-hepta-operations",
+        "-p",
+        "codex-hepta-runtime",
+        "-p",
+        "codex-hepta-shadow-qualification",
+        "-p",
+        "codex-state",
+        "-p",
+        "codex-thread-store"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src/codex-rs",
+      "started_unix_ns": 1795795794468673000,
+      "returncode": 0,
+      "elapsed_ns": 878735996459,
+      "log": {
+        "bytes": 343587,
+        "sha256": "4e7cba65efd11793386aebe3345836efe9d6dc4cfe74419d677a432942815e1d"
+      }
+    },
+    {
+      "name": "bazel-lock-update",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "bazel-lock-update"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src",
+      "started_unix_ns": 1795796673224195000,
+      "returncode": 0,
+      "elapsed_ns": 4892154458,
+      "log": {
+        "bytes": 1308,
+        "sha256": "f070c03dc231f8d3863d4d451d61de68ea66938a8a1717677a8d0e3bd533334a"
+      }
+    },
+    {
+      "name": "repository-format",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src/codex-rs",
+      "started_unix_ns": 1795796678117127000,
+      "returncode": 0,
+      "elapsed_ns": 424230833,
+      "log": {
+        "bytes": 73,
+        "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      }
+    },
+    {
+      "name": "candidate-diff-check",
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/src",
+      "started_unix_ns": 1795796678541882000,
+      "returncode": 0,
+      "elapsed_ns": 138670459,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "restored_git_objects": {
+    "source_tree": "1934f3caad0cc8579eac5ba67b5698f1403dd57b",
+    "commits": [
+      "67d749b6f51d5c2c60a941d8a35a08bde8b12d3b",
+      "a05499eb5d2b2088de6a192d0c42ce9ba0249882"
+    ],
+    "changed_blobs": {
+      "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs": "93014e9371acc96e72d819557dc8cbbc56d65395",
+      "codex-rs/hepta-agentd/tests/support/fleet.rs": "a9b94561a39d614403123dd070e52844847583cd",
+      "hia/evidence/20261127-readiness-diagnostics/README.md": "fa339f1e0f6013f3db62067136c44e9a06239eab",
+      "hia/evidence/20261127-readiness-diagnostics/base-qualification.receipt.json": "84c366bac38ceab03ab40b5fd38b1032a2cee0ed",
+      "hia/evidence/20261127-readiness-diagnostics/complete-agentd-tests.log.gz": "e546c860747be97088a1b0014fb2c7c11f00350d",
+      "hia/evidence/20261127-readiness-diagnostics/final.patch": "5d44beb850b016b38790b7ae8f49ef6a7d79bd88",
+      "hia/evidence/20261127-readiness-diagnostics/index.json": "2383bb4a984c38dfc371940f84ee0b7586afff03",
+      "hia/evidence/20261127-readiness-diagnostics/negative-control-v1.log.gz": "01283a6452f7a1d01affe4b71bd84a8e3069fae5",
+      "hia/evidence/20261127-readiness-diagnostics/negative-control-v1.receipt.json": "e62e21caf7a1c5ad34f84bebdcdd9735e3dd96a3",
+      "hia/evidence/20261127-readiness-diagnostics/original-sqlx-full.log.gz": "1b544345d2bd2a8f6cd9a3728ddf1f57c7c35d54",
+      "hia/evidence/20261127-readiness-diagnostics/original-sqlx-full.receipt.json": "a52dc840f1c08358b3b78c827b731a9690cb48ed",
+      "hia/evidence/20261127-readiness-diagnostics/post-fix-sqlx-v1.log.gz": "fdbdeb401557ed769b9e326ea0a08d294c4d0a4a",
+      "hia/evidence/20261127-readiness-diagnostics/post-fix-sqlx-v1.receipt.json": "c46f8e1eaf6e67d197103681adbcae9931ce4b62",
+      "hia/evidence/20261127-readiness-diagnostics/repository-format.log.gz": "86e43ea3218b5890302b754bbf8927f94e79f7ee",
+      "hia/evidence/20261127-readiness-diagnostics/strict-scoped-fix.log.gz": "845e467c39a57913c14139877b81e1e9aa1f9012",
+      "hia/evidence/20261127-readiness-diagnostics/tested.patch": "5d44beb850b016b38790b7ae8f49ef6a7d79bd88"
+    },
+    "github_merge_signature_bytes_preserved": true
+  },
+  "candidate_pins": {
+    "codex-rs/Cargo.toml": {
+      "bytes": 22538,
+      "sha256": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 423355,
+      "sha256": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007"
+    }
+  },
+  "original_failure_preserved": {
+    "path": "/Users/qianqi/work/hia-chrono-dependency-audit-20261127-0954/sqlx-feature-v1/owner-check-short-tmp-full-v1/all-14-owners-just-test.log",
+    "bytes": 348801,
+    "sha256": "f54d9787446ef890494b13b12adcaab830bf9088a7b665df2c9da1f1783c86b8"
+  },
+  "temporary_root": "/tmp/hcx28-dsge3i_e",
+  "all_14_owner_tests_passed": true,
+  "bazel": "/opt/homebrew/bin/bazel",
+  "changed_files": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml"
+  ]
+}

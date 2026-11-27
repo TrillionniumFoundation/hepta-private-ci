@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Admit native37 and check literal generic inline parser state/commands."""
+"""Admit exact native input and check literal generic inline parser state/commands."""
 import argparse
 import ctypes
 import hashlib
@@ -103,10 +103,11 @@ def cases():
     return rows
 
 
-def verify(directory, report):
-    native_inputs(directory / 'network_host.so', ROOT / 'network_host.hepta', 'full-native37', report)
-    if not report['native_build']['full37_manifest_verified']:
-        raise RuntimeError('the complete native37 build was not admitted')
+def verify(directory, profile, report):
+    native_inputs(directory / 'network_host.so', ROOT / 'network_host.hepta', profile, report)
+    verified = {'full-native37': 'full37_manifest_verified', 'full-native38': 'full38_manifest_verified'}[profile]
+    if not report['native_build'][verified]:
+        raise RuntimeError('the requested complete build was not admitted')
     contract_path = ROOT / 'inline_hidden_tag_buffer_contract.json'
     contract_bytes = contract_path.read_bytes()
     contract = json.loads(contract_bytes)
@@ -151,11 +152,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--library-dir', type=Path, required=True)
     parser.add_argument('--report', type=Path, required=True)
+    parser.add_argument('--build-profile', choices=['full-native37', 'full-native38'], default='full-native37')
     args = parser.parse_args()
     report = {'schema': 'codex.hia.inline-hidden-tag-abi.v1', 'passed': False, 'calls': [],
-              'scope': 'Exact native37 literal state, selection, capacities and guards; original public owner tests are separate.'}
+              'scope': 'Exact native literal state, selection, capacities and guards; original public owner tests are separate.'}
     try:
-        verify(args.library_dir.resolve(strict=True), report)
+        verify(args.library_dir.resolve(strict=True), args.build_profile, report)
         if not recheck_inputs(report):
             raise RuntimeError('bound input changed during raw execution')
         report['passed'] = True

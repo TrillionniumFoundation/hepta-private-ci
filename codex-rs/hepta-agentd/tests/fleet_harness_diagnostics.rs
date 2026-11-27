@@ -30,6 +30,7 @@ async fn readiness_reports_exited_child_with_bounded_decoded_output() -> Result<
             "-c".into(),
             r#"printf '%05000d' 0
 printf '\377stdout diagnostic marker\n'
+printf '\377stderr initial recovery_required marker\n' >&2
 printf '%05000d' 0 >&2
 printf '\377stderr startup failure marker\n' >&2
 while [ ! -f "$1" ]; do sleep 0.01; done
@@ -90,6 +91,21 @@ exit 17"#
     );
     ensure!(diagnostic.contains("code: Some(17)"), "{diagnostic}");
     ensure!(diagnostic.contains("last_health="), "{diagnostic}");
+    ensure!(
+        diagnostic.contains("stderr initial recovery_required marker"),
+        "startup cause was hidden by later output: {diagnostic}"
+    );
+    let (_, stderr_head) = diagnostic
+        .split_once("stderr (head, max 4096 bytes):\n")
+        .context("stderr head diagnostic missing")?;
+    let (stderr_head, _) = stderr_head
+        .split_once("\nstdout (tail, max 4096 bytes):\n")
+        .context("stdout tail diagnostic missing after stderr head")?;
+    ensure!(stderr_head.len() <= 4096, "{diagnostic}");
+    ensure!(
+        stderr_head.starts_with("\u{fffd}stderr initial recovery_required marker\n"),
+        "{diagnostic}"
+    );
     let (_, output) = diagnostic
         .split_once("stdout (tail, max 4096 bytes):\n")
         .context("stdout diagnostic missing")?;

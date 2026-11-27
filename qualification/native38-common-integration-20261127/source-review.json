@@ -1,0 +1,35 @@
+{
+  "added_native_component_steps": [
+    "Verify retry decisions and atomic ABI errors",
+    "Test retry public owner and existing provider clients with HIA enabled",
+    "Test retry public owner and existing provider clients with default Rust",
+    "Lint retry owner and public consumer with native and default features"
+  ],
+  "all_four_original_job_timeouts_minutes": 60,
+  "complete_gate_passed": false,
+  "conflict_paths": [
+    ".github/workflows/codex-hia-native.yml"
+  ],
+  "current_dependency_graph_recheck_required": true,
+  "historical_dependency_graphs_modified": false,
+  "merged_native_component_step_count": 114,
+  "ordinary_merge": true,
+  "original_merge_tree": "c423c2432b0a15e775d0894e2fd0160919607b4a",
+  "parents": [
+    "5756a7a47269abfb2a1e84c70b59d7ac5cdb6be6",
+    "86a51df03f698506b18d1c0fb51d3fa1149c5da6"
+  ],
+  "prior_native_component_step_count": 110,
+  "prior_steps_retained_once": true,
+  "private_legacy16_admitted": false,
+  "resolution": "Retain the complete original stdin prompt decoder gate followed by the complete native retry ABI gate.",
+  "retirement_qualified": false,
+  "schema": "hia.codex-native38-common-merge-review.v1",
+  "source_tests_executed": false,
+  "unchanged_complete_job_sha256": {
+    "exec-stdin-consumers": "374829f15bd7c974762c03c2753d3923db0820dfb8a3c73189349b854281fbfc",
+    "historical-native17": "f99d5cb84edfe914785c2d7326c466abf745cc890cff9be3ddc6561146c64faa",
+    "original-owner-comparisons": "ab0bd6468563f2f08afcc0ed0ff87904ae096e5d66b905ff27180c9fdf26c826"
+  },
+  "workflow_sha256": "91d5dd1dc1a3ac29cdd8177bf1520784e88736fd58529d1528949ec53f162850"
+}

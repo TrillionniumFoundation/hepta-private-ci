@@ -4,6 +4,9 @@ license.workspace = true
 name = "codex-client"
 version.workspace = true
 
+[features]
+hia-native = []
+
 [dependencies]
 codex-http-client = { workspace = true }
 eventsource-stream = { workspace = true }

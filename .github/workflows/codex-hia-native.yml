@@ -20,6 +20,8 @@ on:
       - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
       - codex-rs/utils/stream-parser/**
+      - codex-rs/codex-client/**
+      - codex-rs/codex-api/**
       - codex-rs/utils/fuzzy-match/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
@@ -53,6 +55,8 @@ on:
       - codex-rs/ext/memories/**
       - codex-rs/utils/output-truncation/**
       - codex-rs/utils/stream-parser/**
+      - codex-rs/codex-client/**
+      - codex-rs/codex-api/**
       - codex-rs/utils/fuzzy-match/**
       - codex-rs/protocol/**
       - codex-rs/context-fragments/**
@@ -509,7 +513,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
@@ -519,7 +523,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
@@ -529,7 +533,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_format_env_display_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
@@ -539,7 +543,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_citation_stream_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-citation-stream-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-abi.log"
       - name: Verify proposed plan literal frames and atomic ABI errors
@@ -548,7 +552,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_proposed_plan_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-proposed-plan-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-proposed-plan-parser-abi.log"
       - name: Verify fuzzy match literal states and atomic ABI errors
@@ -557,7 +561,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_fuzzy_match_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-fuzzy-match-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-abi.log"
 
@@ -567,7 +571,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_utf8_stream_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-utf8-stream-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-utf8-stream-abi.log"
 
@@ -577,6 +581,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_inline_hidden_tag_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-inline-hidden-tag-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-inline-hidden-tag-abi.log"
 
@@ -590,6 +595,15 @@ jobs:
             --rustc "$RUSTC" \
             --report "$RUNNER_TEMP/hia-prompt-decode-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-prompt-decode-caller.log"
+
+      - name: Verify retry decisions and atomic ABI errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_retry_decision_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-retry-decision-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-retry-decision-abi.log"
 
       - name: Test statically linked native string caller and allocation behavior
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -711,6 +725,36 @@ jobs:
           env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
             -p codex-utils-stream-parser -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default-clippy.log"
+      - name: Test retry public owner and existing provider clients with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-api --test retry_owner_tests --test clients \
+            --features codex-client/hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-retry-owner-native.log"
+
+      - name: Test retry public owner and existing provider clients with default Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-api \
+            --test retry_owner_tests --test clients --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-retry-owner-default.log"
+
+      - name: Lint retry owner and public consumer with native and default features
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --all-targets -p codex-client -p codex-api \
+            --features codex-client/hia-native -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-retry-native-clippy.log"
+          env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
+            -p codex-client -p codex-api -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-retry-default-clippy.log"
+
       - name: Test fuzzy match public and decoder oracles with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -1089,7 +1133,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -1097,12 +1141,12 @@ jobs:
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
-          # This checkout runs original/native34. The separate owner gate requires
-          # original/native16/native34 and an admitted published16 link bundle.
+          # This checkout runs original/native38. The separate owner gate requires
+          # original/native16/native38 and an admitted published16 link bundle.
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native37 \
+            --build-profile full-native38 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
@@ -1328,7 +1372,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: codex-hia-current37-results
+          name: codex-hia-current38-results
           retention-days: 14
           if-no-files-found: warn
           # The pinned original snapshot includes a tracked .gitattributes fixture.
@@ -1465,6 +1509,12 @@ jobs:
             {0}/hia-prompt-decode-caller.log
             {0}/hia-inline-hidden-tag-abi.json
             {0}/hia-inline-hidden-tag-abi.log
+            {0}/hia-retry-decision-abi.json
+            {0}/hia-retry-decision-abi.log
+            {0}/hia-retry-owner-native.log
+            {0}/hia-retry-owner-default.log
+            {0}/hia-retry-native-clippy.log
+            {0}/hia-retry-default-clippy.log
             {0}/hia-fuzzy-match-abi.json
             {0}/hia-fuzzy-match-abi.log
             {0}/hia-fuzzy-match-native.log

@@ -1,0 +1,166 @@
+{
+  "base_revision": "a05499eb5d2b2088de6a192d0c42ce9ba0249882",
+  "bazel_lock_bytes_unchanged": true,
+  "bazel_lock_update_passed": true,
+  "bazel_version": "9.0.0",
+  "candidate_files": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 423355,
+      "sha256": "89c6b8fd5bbe8699b587936455aa78786281b6caa84e6938f2a1a0d399c3d007"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 22538,
+      "sha256": "98060794c2dca51858d03c5392147e3ab45df9009c9c8083514948d53ac92a3e"
+    }
+  },
+  "cargo_lock_update_scope": "Remove four sqlx dependency edges to chrono after removing the unused workspace sqlx chrono feature.",
+  "files": {
+    "all-14-owners.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 343587,
+        "sha256": "4e7cba65efd11793386aebe3345836efe9d6dc4cfe74419d677a432942815e1d"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/all-14-owners-original-gate.log",
+      "stored": {
+        "bytes": 61889,
+        "sha256": "1656046319cf19aedbad055002fd9d66456bd6084f9185fed69adcfec35dab1f"
+      }
+    },
+    "bazel-lock-update.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 1308,
+        "sha256": "f070c03dc231f8d3863d4d451d61de68ea66938a8a1717677a8d0e3bd533334a"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/bazel-lock-update.log",
+      "stored": {
+        "bytes": 648,
+        "sha256": "a529d56a05e2ece897919bdc40c8d1428bd062a4bb30d999ae491d801cf5a610"
+      }
+    },
+    "candidate-diff-check.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/candidate-diff-check.log",
+      "stored": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      }
+    },
+    "candidate.patch": {
+      "compression": null,
+      "raw": {
+        "bytes": 1168,
+        "sha256": "82005fc23f81d8eca8ae898f32661788815c26c5ae8ecebcc5ede4b4e0fa5050"
+      },
+      "stored": {
+        "bytes": 1168,
+        "sha256": "82005fc23f81d8eca8ae898f32661788815c26c5ae8ecebcc5ede4b4e0fa5050"
+      }
+    },
+    "checkout-recovered-candidate.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 208,
+        "sha256": "92d0baf4f99d0a3e975ad73039ec17d0a224efbf33818a6002f074a6f57f3007"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/checkout-recovered-candidate.log",
+      "stored": {
+        "bytes": 188,
+        "sha256": "a80d4fbbde8a62b2f4e2096dced3a1902c5c97ecb83152f46159167868568af4"
+      }
+    },
+    "clean-source.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/clean-source.log",
+      "stored": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      }
+    },
+    "connectivity-check.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/connectivity-check.log",
+      "stored": {
+        "bytes": 20,
+        "sha256": "ac73670af3abed54ac6fb4695131f4099be9fbe39d6076c5d0264a6bbdae9d83"
+      }
+    },
+    "original-14-owner-failure.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 348801,
+        "sha256": "f54d9787446ef890494b13b12adcaab830bf9088a7b665df2c9da1f1783c86b8"
+      },
+      "source_path": "/Users/qianqi/work/hia-chrono-dependency-audit-20261127-0954/sqlx-feature-v1/owner-check-short-tmp-full-v1/all-14-owners-just-test.log",
+      "stored": {
+        "bytes": 61692,
+        "sha256": "5054b38aa0296f4629d0b4e4c0610104250a1403936f6219293ba5ba08cb2c04"
+      }
+    },
+    "original-git-fetch-timeout.receipt.json": {
+      "compression": null,
+      "raw": {
+        "bytes": 3103,
+        "sha256": "8fa5edcbfde71d80c44febd4946b5715d5619631026cf9646afc3101572ec8a0"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/receipt.json",
+      "stored": {
+        "bytes": 3103,
+        "sha256": "8fa5edcbfde71d80c44febd4946b5715d5619631026cf9646afc3101572ec8a0"
+      }
+    },
+    "qualification.receipt.json": {
+      "compression": null,
+      "raw": {
+        "bytes": 7866,
+        "sha256": "6d4680a78211529d67913a1f9ca3121fb96609d3805994aa02fedd1a914621b5"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/receipt.json",
+      "stored": {
+        "bytes": 7866,
+        "sha256": "6d4680a78211529d67913a1f9ca3121fb96609d3805994aa02fedd1a914621b5"
+      }
+    },
+    "repository-format.log.gz": {
+      "compression": "gzip",
+      "raw": {
+        "bytes": 73,
+        "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      },
+      "source_path": "/Users/qianqi/work/hia-sqlx-final-owner-20261127-2807/git-object-recovery-v1/repository-format.log",
+      "stored": {
+        "bytes": 86,
+        "sha256": "99e79c5c8b4228d3fdb4deae912acf085b49d0b58457be43a4066b479e2963c9"
+      }
+    }
+  },
+  "legacy_retirement_ready": false,
+  "original_failure_retained": true,
+  "repository_format_passed": true,
+  "rust_product_sources_changed": false,
+  "schema": "codex.sqlx-chrono-dependency-qualification.v1",
+  "tests": {
+    "failure_count": 0,
+    "original_methods_and_assertions_changed": false,
+    "passed": 2179,
+    "run": 2179,
+    "skip_configuration_changed": false,
+    "skipped": 16,
+    "slow": 7
+  },
+  "timestamp_storage_changed": false,
+  "whole_hia_rewrite": false
+}
