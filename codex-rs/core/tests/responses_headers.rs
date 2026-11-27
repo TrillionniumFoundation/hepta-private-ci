@@ -98,6 +98,7 @@ async fn responses_stream_includes_subagent_header_on_review() -> anyhow::Result
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     };
 
     let codex_home = TempDir::new().context("failed to create TempDir")?;
@@ -236,6 +237,7 @@ async fn responses_stream_includes_subagent_header_on_other() -> anyhow::Result<
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     };
 
     let codex_home = TempDir::new().context("failed to create TempDir")?;
@@ -355,6 +357,7 @@ async fn responses_respects_model_info_overrides_from_config() -> anyhow::Result
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     };
 
     let codex_home = TempDir::new().context("failed to create TempDir")?;
