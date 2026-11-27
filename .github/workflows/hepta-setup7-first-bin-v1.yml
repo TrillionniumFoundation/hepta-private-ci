@@ -1,10 +1,10 @@
-name: Setup seven first native binary observation
+name: Setup seven target dependency observation
 
 on:
   pull_request:
     types: [opened]
     branches:
-      - "fix/hepta-setup7-first-bin-controls-20261127-7c9e"
+      - "fix/hepta-setup7-explicit-tool-homes-20261127-7c9e"
 
 permissions:
   contents: read
@@ -12,7 +12,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: hepta-setup7-tool-homes-20261127-7c9e
+  group: hepta-setup7-windows-dependencies-20261127-7c9e
   cancel-in-progress: false
 
 env:
@@ -30,14 +30,14 @@ env:
 jobs:
   first-seven-native:
     if: >-
-      ${{ true && github.event_name == 'pull_request' &&
+      ${{ github.event_name == 'pull_request' &&
       github.event.action == 'opened' &&
       github.run_attempt == 1 &&
       github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      github.event.pull_request.head.ref == 'fix/hepta-setup7-explicit-tool-homes-20261127-7c9e' &&
-      github.event.pull_request.base.ref == 'fix/hepta-setup7-first-bin-controls-20261127-7c9e' &&
-      github.event.pull_request.base.sha == 'b8cb004664d7f89d16d4e031cdb35617fd7f6188' &&
+      github.event.pull_request.head.ref == 'fix/hepta-setup7-windows-dependencies-20261127-7c9e' &&
+      github.event.pull_request.base.ref == 'fix/hepta-setup7-explicit-tool-homes-20261127-7c9e' &&
+      github.event.pull_request.base.sha == 'ff9f5f8671f56444c55e9817c73156d060d84492' &&
       github.actor == 'ProfHepta' &&
       github.event.pull_request.user.login == 'ProfHepta' }}
     runs-on: windows-2025
@@ -122,7 +122,7 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          HEPTA_SETUP7_INPUT_SHA256: "b3a135096f485c98d691758fa37b92cc46ced787d228b8ab327f0ccb4648005b"
+          HEPTA_SETUP7_INPUT_SHA256: "270113f2c130413625ec66b8885157bc7733991872179407ae8fd019684b5424"
         run: |
           $ErrorActionPreference = "Stop"
           $out = Join-Path $env:RUNNER_TEMP ("hepta-setup7-" + $env:GITHUB_RUN_ID)
@@ -141,7 +141,7 @@ jobs:
           scope = {"__name__": "__main__", "__file__": str(path), "__package__": ""}
           exec(compile(raw, str(path), "exec"), scope)
           '@
-            & python -I -B -X utf8 -c $bootstrap (Join-Path $env:GITHUB_WORKSPACE "scripts/run_hepta_setup7_first_bin_v1.py") "47c248db388061d5fa9d163e223996d87d17c1c244e8af35afd1d074cf99482c"
+            & python -I -B -X utf8 -c $bootstrap (Join-Path $env:GITHUB_WORKSPACE "scripts/run_hepta_setup7_first_bin_v1.py") "eb2465a525742218d1195612c20e956f9573a092ae8c1ccd3b1acd54e2e6d441"
             $code = $LASTEXITCODE
             if ($null -eq $code) { $code = 1; throw "No original Python exit code" }
           } catch {
