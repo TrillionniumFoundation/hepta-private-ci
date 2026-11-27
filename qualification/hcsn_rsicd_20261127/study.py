@@ -54,6 +54,26 @@ def neural(panel,seed):
         torch.manual_seed(seed);net=Conventional(int(d["tokens"].max())+1,24)
         nets.append(net);ops.append(Adam(net.parameters(),lr,weight_decay=.001));gens.append(np.random.default_rng(seed))
     bounds=LONG if panel=="long" else SHORT
+    prior=0.0
+    resume_path=out/"training.resume.pt"
+    if panel=="long" and resume_path.exists():
+        saved=torch.load(resume_path,map_location="cpu",weights_only=False)
+        if saved["seed"]!=seed or saved["dataset"]!=sha(ROOT/"prepared.json"):
+            raise RuntimeError("incompatible recovery")
+        rows=saved["rows"];steps=saved["steps"];best=saved["best"];prior=saved["elapsed"]
+        for i in range(2):
+            nets[i].load_state_dict(saved["nets"][i])
+            ops[i].n,ops[i].state=saved["optimizers"][i]
+            gens[i].bit_generator.state=saved["generators"][i]
+    def elapsed():
+        return prior+time.perf_counter()-start
+    def save_progress():
+        if panel!="long":return
+        tmp=out/"training.resume.tmp"
+        checkpoint={"seed":seed,"dataset":sha(ROOT/"prepared.json"),"rows":rows,"steps":steps,
+                    "best":best,"elapsed":elapsed(),"nets":[m.state_dict() for m in nets],
+                    "optimizers":[(op.n,op.state) for op in ops],"generators":[g.bit_generator.state for g in gens]}
+        torch.save(checkpoint,tmp);tmp.replace(resume_path)
     def evaluate(i):
         nonlocal best
         net=nets[i];net.eval();image=[];text=[]
@@ -64,18 +84,23 @@ def neural(panel,seed):
         row=make_row(start,metrics,rate=rates[i],step=steps[i],state=None);quality=(row["dev_r1"],row["dev_r5"])
         if best is None or quality>best:
             path=out/f'lr{i}-s{steps[i]}.pt';torch.save(net.state_dict(),path);row["state"]=path.name;row["hash"]=sha(path);best=quality
-        row["time"]=time.perf_counter()-start;rows.append(row);atomic(out/"history.json",rows)
-    for i in order:evaluate(i)
-    while time.perf_counter()-start < max(bounds):
+        row["time"]=elapsed();rows.append(row);atomic(out/"history.json",rows)
+    if not rows:
+        for i in order:evaluate(i)
+    last_save=elapsed()
+    while elapsed() < max(bounds):
         for i in order:
-            if time.perf_counter()-start>=max(bounds):break
+            if elapsed()>=max(bounds):break
             net=nets[i];net.train();opt=ops[i]
             for _ in range(32):
                 ix=gens[i].choice(tr,64,replace=False);opt.zero_grad()
                 x,y=net(*inputs.batch(ix));loss=masked_infonce(x,y,torch.tensor(d["title"][ix]))
                 loss.backward();opt.step();steps[i]+=1
             evaluate(i)
-    atomic(out/"complete.json",{"fit_and_dev_s":time.perf_counter()-start,"optimizer_steps":steps,"stop":"time_cap","model_params":sum(p.numel() for p in nets[0].parameters())})
+        if elapsed()-last_save >= 60:
+            save_progress();last_save=elapsed()
+    save_progress()
+    atomic(out/"complete.json",{"fit_and_dev_s":elapsed(),"optimizer_steps":steps,"stop":"time_cap","model_params":sum(p.numel() for p in nets[0].parameters())})
 def seal(panel):
     bounds=LONG if panel=="long" else SHORT
     selection={}

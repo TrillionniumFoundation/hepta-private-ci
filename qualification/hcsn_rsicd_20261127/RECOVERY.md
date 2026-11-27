@@ -1,0 +1,3 @@
+# Multi-hour state continuity
+
+The long panel writes a private interim training state every minute after both learning-rate streams have advanced. A fresh process can recover both complete models, Adam moments, optimizer counts, NumPy sample generators, archived choice history and the elapsed budget at that checkpoint. The public summary separately records any interruption, original time used and additional reruns if recovery is needed; interrupted computation after a checkpoint must not be counted as a new experiment. The optional implementation does not change short-panel parameter updates or metrics.
