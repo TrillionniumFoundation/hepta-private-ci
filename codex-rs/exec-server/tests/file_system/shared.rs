@@ -29,14 +29,14 @@ use codex_utils_path_uri::PathUri;
 use futures::TryStreamExt;
 use pretty_assertions::assert_eq;
 use std::path::Path;
+use std::sync::Arc;
 use tempfile::TempDir;
 use test_case::test_case;
 
 use super::support::FileSystemImplementation;
+use super::support::SandboxFixture;
 use super::support::absolute_path;
 use super::support::create_file_system_context;
-#[cfg(windows)]
-use super::support::is_unsupported_restricted_token_host;
 use super::support::read_only_sandbox;
 use super::support::workspace_write_sandbox;
 
@@ -138,10 +138,14 @@ async fn file_system_create_directory_creates_nested_directories(
     follow_symlinks: bool,
     sandboxed: bool,
 ) -> Result<()> {
+    let tmp = if sandboxed {
+        SandboxFixture::sandboxed()?
+    } else {
+        SandboxFixture::ordinary()?
+    };
     let context = create_file_system_context(implementation).await?;
-    let file_system = context.file_system;
+    let file_system = Arc::clone(&context.file_system);
 
-    let tmp = TempDir::new()?;
     let root = tmp.path().canonicalize()?;
     let nested_dir = root.join("source").join("nested");
     let sandbox = sandboxed.then(|| workspace_write_sandbox(root));
@@ -156,13 +160,12 @@ async fn file_system_create_directory_creates_nested_directories(
             sandbox.as_ref(),
         )
         .await;
-    #[cfg(windows)]
-    if is_unsupported_restricted_token_host(&result) {
-        return Ok(());
-    }
     result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
     assert!(nested_dir.is_dir());
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 
@@ -178,10 +181,14 @@ async fn file_system_write_file_writes_bytes(
     follow_symlinks: bool,
     sandboxed: bool,
 ) -> Result<()> {
+    let tmp = if sandboxed {
+        SandboxFixture::sandboxed()?
+    } else {
+        SandboxFixture::ordinary()?
+    };
     let context = create_file_system_context(implementation).await?;
-    let file_system = context.file_system;
+    let file_system = Arc::clone(&context.file_system);
 
-    let tmp = TempDir::new()?;
     let root = tmp.path().canonicalize()?;
     let file_path = root.join("note.txt");
     let sandbox = sandboxed.then(|| workspace_write_sandbox(root.clone()));
@@ -193,10 +200,6 @@ async fn file_system_write_file_writes_bytes(
             sandbox.as_ref(),
         )
         .await;
-    #[cfg(windows)]
-    if is_unsupported_restricted_token_host(&result) {
-        return Ok(());
-    }
     result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
     assert_eq!(std::fs::read(file_path)?, b"hello from trait");
 
@@ -213,6 +216,9 @@ async fn file_system_write_file_writes_bytes(
         .with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
     assert_eq!(std::fs::read(file_path)?, b"after");
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 
@@ -271,10 +277,10 @@ async fn file_system_read_file_returns_bytes(
 async fn file_system_read_file_stream_returns_bounded_chunks(
     implementation: FileSystemImplementation,
 ) -> Result<()> {
+    let tmp = SandboxFixture::sandboxed()?;
     let context = create_file_system_context(implementation).await?;
-    let file_system = context.file_system;
+    let file_system = Arc::clone(&context.file_system);
 
-    let tmp = TempDir::new()?;
     let file_path = tmp.path().join("blocks.bin");
     let contents = (0..FILE_READ_CHUNK_SIZE * 2 + 17)
         .map(|index| (index % 251) as u8)
@@ -305,6 +311,9 @@ async fn file_system_read_file_stream_returns_bounded_chunks(
         );
     }
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 
@@ -662,10 +671,10 @@ async fn file_system_walk_handles_invalid_roots_and_limits(
 async fn file_system_walk_honors_read_sandbox(
     implementation: FileSystemImplementation,
 ) -> Result<()> {
+    let tmp = SandboxFixture::sandboxed()?;
     let context = create_file_system_context(implementation).await?;
-    let file_system = context.file_system;
+    let file_system = Arc::clone(&context.file_system);
 
-    let tmp = TempDir::new()?;
     let source_dir = tmp.path().join("source");
     let file_path = source_dir.join("note.txt");
     std::fs::create_dir_all(&source_dir)?;
@@ -698,6 +707,9 @@ async fn file_system_walk_honors_read_sandbox(
         }
     );
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 
@@ -740,9 +752,13 @@ async fn file_system_remove_no_follow_removes_file_and_empty_directory(
     implementation: FileSystemImplementation,
     sandboxed: bool,
 ) -> Result<()> {
+    let tmp = if sandboxed {
+        SandboxFixture::sandboxed()?
+    } else {
+        SandboxFixture::ordinary()?
+    };
     let context = create_file_system_context(implementation).await?;
-    let file_system = context.file_system;
-    let tmp = TempDir::new()?;
+    let file_system = Arc::clone(&context.file_system);
     let root = tmp.path().canonicalize()?;
     let sandbox = sandboxed.then(|| workspace_write_sandbox(root.clone()));
     let options = RemoveOptions {
@@ -760,10 +776,6 @@ async fn file_system_remove_no_follow_removes_file_and_empty_directory(
             sandbox.as_ref(),
         )
         .await;
-    #[cfg(windows)]
-    if is_unsupported_restricted_token_host(&result) {
-        return Ok(());
-    }
     result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
     assert!(!file_path.exists());
 
@@ -779,6 +791,9 @@ async fn file_system_remove_no_follow_removes_file_and_empty_directory(
         .with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
     assert!(!directory_path.exists());
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 
@@ -853,10 +868,10 @@ async fn file_system_copy_rejects_directory_without_recursive(
 async fn file_system_sandboxed_metadata_and_read_allow_readable_root(
     implementation: FileSystemImplementation,
 ) -> Result<()> {
+    let tmp = SandboxFixture::sandboxed()?;
     let context = create_file_system_context(implementation).await?;
-    let file_system = context.file_system;
+    let file_system = Arc::clone(&context.file_system);
 
-    let tmp = TempDir::new()?;
     let allowed_dir = tmp.path().join("allowed");
     let file_path = allowed_dir.join("note.txt");
     std::fs::create_dir_all(&allowed_dir)?;
@@ -901,6 +916,9 @@ async fn file_system_sandboxed_metadata_and_read_allow_readable_root(
         .await?;
     assert_eq!(chunks.concat(), b"sandboxed hello");
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 
@@ -1025,10 +1043,10 @@ pub(crate) async fn assert_sandboxed_canonicalize_resolves_directory_alias(
     implementation: FileSystemImplementation,
     create_directory_alias: impl FnOnce(&Path, &Path) -> Result<()>,
 ) -> Result<()> {
+    let tmp = SandboxFixture::sandboxed()?;
     let context = create_file_system_context(implementation).await?;
-    let file_system = context.file_system;
+    let file_system = Arc::clone(&context.file_system);
 
-    let tmp = TempDir::new()?;
     let source_dir = tmp.path().join("source");
     let nested_dir = source_dir.join("nested");
     let file_path = nested_dir.join("note.txt");
@@ -1048,6 +1066,9 @@ pub(crate) async fn assert_sandboxed_canonicalize_resolves_directory_alias(
         .with_context(|| format!("mode={implementation}"))?;
     assert_eq!(canonical_path, expected_path);
 
+    drop(file_system);
+    context.close().await?;
+    tmp.close()?;
     Ok(())
 }
 

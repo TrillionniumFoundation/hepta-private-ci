@@ -23,11 +23,23 @@ use crate::common::exec_server::ExecServerHarness;
 use crate::common::exec_server::TestCodexHelperPaths;
 use crate::common::exec_server::exec_server;
 use crate::common::exec_server::test_codex_helper_paths;
+#[cfg(windows)]
+use crate::windows_elevated_fixture::AuthorizedReadOnlySandboxFixture;
 
 pub(crate) struct FileSystemContext {
     pub(crate) file_system: Arc<dyn ExecutorFileSystem>,
     _helper_paths: Option<TestCodexHelperPaths>,
     _server: Option<ExecServerHarness>,
+}
+
+impl FileSystemContext {
+    pub(crate) async fn close(mut self) -> Result<()> {
+        drop(self.file_system);
+        if let Some(server) = self._server.as_mut() {
+            server.shutdown().await?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -74,12 +86,46 @@ pub(crate) async fn create_file_system_context(
     }
 }
 
-#[cfg(windows)]
-pub(crate) fn is_unsupported_restricted_token_host<T>(result: &std::io::Result<T>) -> bool {
-    result.as_ref().err().is_some_and(|err| {
-        err.to_string()
-            .contains("windows sandbox failed: CreateRestrictedToken failed: 87")
-    })
+pub(crate) enum SandboxFixture {
+    Ordinary(tempfile::TempDir),
+    #[cfg(windows)]
+    Elevated(AuthorizedReadOnlySandboxFixture),
+}
+
+impl SandboxFixture {
+    pub(crate) fn ordinary() -> Result<Self> {
+        Ok(Self::Ordinary(tempfile::TempDir::new()?))
+    }
+
+    pub(crate) fn sandboxed() -> Result<Self> {
+        #[cfg(windows)]
+        {
+            Ok(Self::Elevated(AuthorizedReadOnlySandboxFixture::new(
+                *uuid::Uuid::new_v4().as_bytes(),
+            )?))
+        }
+        #[cfg(not(windows))]
+        {
+            Self::ordinary()
+        }
+    }
+
+    pub(crate) fn path(&self) -> &std::path::Path {
+        match self {
+            Self::Ordinary(fixture) => fixture.path(),
+            #[cfg(windows)]
+            Self::Elevated(fixture) => fixture.path(),
+        }
+    }
+
+    pub(crate) fn close(self) -> Result<()> {
+        match self {
+            Self::Ordinary(fixture) => fixture.close()?,
+            #[cfg(windows)]
+            Self::Elevated(fixture) => fixture.close()?,
+        }
+        Ok(())
+    }
 }
 
 pub(crate) fn absolute_path(path: std::path::PathBuf) -> AbsolutePathBuf {
@@ -121,8 +167,7 @@ pub(crate) fn workspace_write_sandbox(
     writable_root: std::path::PathBuf,
 ) -> FileSystemSandboxContext {
     let writable_root = absolute_path(writable_root);
-    // Keep the runtime policy aligned with the legacy workspace-write projection used by the
-    // unelevated restricted-token preflight.
+    // Preserve the existing root-read and workspace-write permission scope.
     let policy = FileSystemSandboxPolicy::restricted(vec![
         FileSystemSandboxEntry::new(
             FileSystemPath::Special {
@@ -141,14 +186,13 @@ pub(crate) fn workspace_write_sandbox(
         PermissionProfile::from_runtime_permissions(&policy, NetworkSandboxPolicy::Restricted),
         PathUri::from_abs_path(&writable_root),
     );
-    sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
     sandbox
 }
 
 fn sandbox_context(mut entries: Vec<FileSystemSandboxEntry>) -> FileSystemSandboxContext {
     if cfg!(windows) {
-        // Restricted-token sandboxing cannot enforce read restrictions, so leave the root
-        // readable while exercising the requested write restrictions.
+        // Preserve this fixture's existing root-read permission scope.
         entries.push(FileSystemSandboxEntry::new(
             FileSystemPath::Special {
                 value: FileSystemSpecialPath::Root,
@@ -163,7 +207,7 @@ fn sandbox_context(mut entries: Vec<FileSystemSandboxEntry>) -> FileSystemSandbo
         ),
     );
     if cfg!(windows) {
-        sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+        sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
     }
     sandbox
 }

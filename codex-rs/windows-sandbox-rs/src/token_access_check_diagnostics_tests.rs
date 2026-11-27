@@ -5,6 +5,7 @@
 use super::super::DISABLE_MAX_PRIVILEGE;
 use super::super::LUA_TOKEN;
 use super::super::enable_single_privilege;
+use crate::winutil::to_wide;
 use anyhow::Result;
 use anyhow::anyhow;
 use anyhow::ensure;
@@ -17,10 +18,12 @@ use std::os::windows::io::OwnedHandle;
 use std::path::Path;
 use std::ptr;
 use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
+use windows_sys::Win32::Foundation::ERROR_NO_TOKEN;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
+use windows_sys::Win32::Foundation::LUID;
 use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Foundation::SetLastError;
 use windows_sys::Win32::Security::AccessCheck;
@@ -36,16 +39,26 @@ use windows_sys::Win32::Security::GetSecurityDescriptorLength;
 use windows_sys::Win32::Security::GetTokenInformation;
 use windows_sys::Win32::Security::IsValidSecurityDescriptor;
 use windows_sys::Win32::Security::IsValidSid;
+use windows_sys::Win32::Security::LUID_AND_ATTRIBUTES;
+use windows_sys::Win32::Security::LookupPrivilegeValueW;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::SE_PRIVILEGE_ENABLED;
 use windows_sys::Win32::Security::SE_SELF_RELATIVE;
 use windows_sys::Win32::Security::SID_AND_ATTRIBUTES;
 use windows_sys::Win32::Security::SecurityImpersonation;
 use windows_sys::Win32::Security::SetTokenInformation;
 use windows_sys::Win32::Security::TOKEN_DEFAULT_DACL;
+use windows_sys::Win32::Security::TOKEN_DUPLICATE;
 use windows_sys::Win32::Security::TOKEN_GROUPS;
 use windows_sys::Win32::Security::TOKEN_INFORMATION_CLASS;
+use windows_sys::Win32::Security::TOKEN_PRIVILEGES;
+use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TokenDefaultDacl;
+use windows_sys::Win32::Security::TokenElevation;
+use windows_sys::Win32::Security::TokenHasRestrictions;
+use windows_sys::Win32::Security::TokenPrivileges;
 use windows_sys::Win32::Security::TokenRestrictedSids;
+use windows_sys::Win32::Security::TokenType;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
@@ -61,6 +74,10 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_DATA;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
+use windows_sys::Win32::System::Threading::GetCurrentProcess;
+use windows_sys::Win32::System::Threading::GetCurrentThread;
+use windows_sys::Win32::System::Threading::OpenProcessToken;
+use windows_sys::Win32::System::Threading::OpenThreadToken;
 
 const MAX_DIAGNOSTIC_BYTES: usize = 1024 * 1024;
 
@@ -411,4 +428,211 @@ pub(super) fn observe(base: HANDLE, original: HANDLE, paths: &[(&str, &Path)]) -
         eprintln!("delete-accesscheck object={object} same_descriptor_bytes=true");
     }
     Ok(())
+}
+
+fn describe_host_token(label: &str, token: HANDLE) {
+    for (field, class) in [
+        ("type", TokenType),
+        ("elevation", TokenElevation),
+        ("has-restrictions", TokenHasRestrictions),
+    ] {
+        let observed = TokenInformation::read(token, class).and_then(|information| {
+            ensure!(information.bytes >= 4, "host token scalar is truncated");
+            // SAFETY: the complete returned DWORD was bounded above.
+            Ok(unsafe { ptr::read_unaligned(information.words.as_ptr().cast::<u32>()) })
+        });
+        eprintln!("delete-host token={label} field={field} value={observed:?}");
+    }
+    let privileges = TokenInformation::read(token, TokenPrivileges).and_then(|information| {
+        let offset = std::mem::offset_of!(TOKEN_PRIVILEGES, Privileges);
+        ensure!(
+            information.bytes >= offset,
+            "host privilege header is truncated"
+        );
+        // SAFETY: PrivilegeCount lies completely before the checked array offset.
+        let count =
+            unsafe { ptr::read_unaligned(information.words.as_ptr().cast::<u32>()) } as usize;
+        let size = std::mem::size_of::<LUID_AND_ATTRIBUTES>();
+        ensure!(
+            count <= 128 && count <= (information.bytes - offset) / size,
+            "host privilege array is truncated or exceeds diagnostic cap"
+        );
+        let mut values = Vec::with_capacity(count);
+        for index in 0..count {
+            // SAFETY: the full native entry lies within this retained aligned buffer.
+            let entry = unsafe {
+                ptr::read_unaligned(
+                    information
+                        .words
+                        .as_ptr()
+                        .cast::<u8>()
+                        .add(offset + index * size)
+                        .cast::<LUID_AND_ATTRIBUTES>(),
+                )
+            };
+            values.push((entry.Luid.LowPart, entry.Luid.HighPart, entry.Attributes));
+        }
+        Ok(values)
+    });
+    eprintln!(
+        "delete-host token={label} privilege_fields=[luid_low,luid_high,attributes] values={privileges:?}"
+    );
+    if let Ok(values) = &privileges {
+        for name in [
+            "SeBackupPrivilege",
+            "SeRestorePrivilege",
+            "SeTakeOwnershipPrivilege",
+            "SeChangeNotifyPrivilege",
+        ] {
+            let mut luid = LUID {
+                LowPart: 0,
+                HighPart: 0,
+            };
+            // SAFETY: this resolves a privilege name only; no token is adjusted.
+            if unsafe { LookupPrivilegeValueW(ptr::null(), to_wide(name).as_ptr(), &mut luid) } != 0
+            {
+                let attributes = values
+                    .iter()
+                    .find(|(low, high, _)| *low == luid.LowPart && *high == luid.HighPart)
+                    .map(|(_, _, attributes)| *attributes);
+                let enabled = attributes.map(|value| value & SE_PRIVILEGE_ENABLED != 0);
+                eprintln!(
+                    "delete-host token={label} privilege={name} attributes={attributes:?} enabled={enabled:?}"
+                );
+            } else {
+                eprintln!(
+                    "delete-host token={label} privilege={name} lookup_errno={}",
+                    unsafe { GetLastError() }
+                );
+            }
+        }
+    }
+}
+
+/// Observe the unchanged host context before the original four-cell deletions.
+/// No token is filtered or impersonated; no privilege or ACL is modified.
+pub(crate) fn observe_host(paths: &[(&str, &Path)]) {
+    if paths.len() > 12 {
+        eprintln!("delete-host observation_error=path-count-exceeds-12");
+        return;
+    }
+    let mut process_raw = 0;
+    // SAFETY: the current process pseudo-handle is borrowed; only query and
+    // duplication rights are requested, never adjustment or assignment rights.
+    let process_ok = unsafe {
+        OpenProcessToken(
+            GetCurrentProcess(),
+            TOKEN_QUERY | TOKEN_DUPLICATE,
+            &mut process_raw,
+        )
+    };
+    let process_token = if process_ok != 0 {
+        // SAFETY: the successful call transferred one newly owned token handle.
+        Some(unsafe { OwnedHandle::from_raw_handle(process_raw as _) })
+    } else {
+        eprintln!("delete-host process_token_query_errno={}", unsafe {
+            GetLastError()
+        });
+        None
+    };
+    let mut thread_raw = 0;
+    // SAFETY: querying the current thread does not start or change impersonation.
+    let thread_ok = unsafe {
+        OpenThreadToken(
+            GetCurrentThread(),
+            TOKEN_QUERY | TOKEN_DUPLICATE,
+            /*openasself*/ 1,
+            &mut thread_raw,
+        )
+    };
+    let thread_token = if thread_ok != 0 {
+        // SAFETY: the successful call transferred one newly owned token handle.
+        Some(unsafe { OwnedHandle::from_raw_handle(thread_raw as _) })
+    } else {
+        let errno = unsafe { GetLastError() };
+        eprintln!(
+            "delete-host thread_token_query_errno={errno} no_thread_token={}",
+            errno == ERROR_NO_TOKEN
+        );
+        None
+    };
+    let mut access_tokens = Vec::new();
+    for (label, token) in [
+        ("process-primary", process_token.as_ref()),
+        ("thread-effective", thread_token.as_ref()),
+    ] {
+        if let Some(token) = token {
+            let raw = token.as_raw_handle() as HANDLE;
+            describe_host_token(label, raw);
+            match access_token(raw) {
+                Ok(token) => access_tokens.push((label, token)),
+                Err(error) => eprintln!("delete-host token={label} duplicate_error={error:#}"),
+            }
+        }
+    }
+    let mut observation_errors = 0;
+    for &(object, path) in paths {
+        let observation = (|| -> Result<()> {
+            let file = OpenOptions::new()
+                .access_mode(READ_CONTROL | FILE_READ_ATTRIBUTES)
+                .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+                .open(path)?;
+            let is_directory = file.metadata()?.is_dir();
+            let descriptor = SecurityDescriptor::read(&file)?;
+            let before = descriptor.bytes()?;
+            for (access, mask) in [("delete", DELETE), ("delete-child", FILE_DELETE_CHILD)] {
+                if access == "delete-child" && !is_directory {
+                    continue;
+                }
+                // This existing-object rights probe never sets delete-on-close,
+                // writes, changes disposition, or invokes a deletion API.
+                let open_flags = FILE_FLAG_OPEN_REPARSE_POINT
+                    | if is_directory {
+                        FILE_FLAG_BACKUP_SEMANTICS
+                    } else {
+                        0
+                    };
+                let opened = OpenOptions::new()
+                    .access_mode(mask)
+                    .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+                    .custom_flags(open_flags)
+                    .open(path);
+                let errno = opened.as_ref().err().and_then(std::io::Error::raw_os_error);
+                eprintln!(
+                    "delete-host native-current-context object={object} access={access} desired={mask:#x} flags={open_flags:#x} success={} errno={errno:?}",
+                    opened.is_ok()
+                );
+                drop(opened);
+                for (token_label, token) in &access_tokens {
+                    if let Err(error) = check(
+                        &descriptor,
+                        token.as_raw_handle() as _,
+                        token_label,
+                        object,
+                        access,
+                        mask,
+                    ) {
+                        observation_errors += 1;
+                        eprintln!(
+                            "delete-host token={token_label} object={object} access={access} check_error={error:#}"
+                        );
+                    }
+                }
+            }
+            ensure!(
+                before == descriptor.bytes()?,
+                "host descriptor copy changed"
+            );
+            Ok(())
+        })();
+        if let Err(error) = observation {
+            observation_errors += 1;
+            eprintln!("delete-host object={object} observation_error={error:#}");
+        }
+    }
+    eprintln!(
+        "delete-host observed_objects={} object_errors={observation_errors}",
+        paths.len()
+    );
 }
