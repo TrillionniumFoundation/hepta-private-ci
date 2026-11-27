@@ -1,0 +1,37 @@
+{
+  "source": {
+    "train": {
+      "sha256": "2bddb4bd46732f09982b7d1631b7c29c19853c73d3d240e3eb32bba909bdd6c1",
+      "records": 8156,
+      "source_events": 63993588,
+      "after_1p2s_records": 10,
+      "independent_max_abs": 5.115907697472721e-13
+    },
+    "test": {
+      "sha256": "47d8621a092cb483bea9448a93c0a3375a6726d370045090c2f7a77f70f95df3",
+      "records": 2264,
+      "source_events": 18631462,
+      "after_1p2s_records": 0,
+      "independent_max_abs": 0.0
+    }
+  },
+  "arrays": {
+    "devmask.npy": "b32a37b63f503c3e14b19528f417bdf81bc0e5de246b314ed5fbbaf9469f9d0a",
+    "labels_train.npy": "79c1773981b65a29dd269af5eab37cdcbc6de6390c2534b28806ee6449dec9b9",
+    "people_test.npy": "0e7d4597d1a30cf6eb1368d97b01f5f5e41ddbb6f479e54bea05441b417ea2a9",
+    "people_train.npy": "e15225245c68c04448e006984676c37d8df4154a3c2026deb02f58f1dc566968",
+    "x_test.npy": "361473a062f668450a24006a42fa69b93327d0b8acf1988e59fd113c8f96ce38",
+    "x_train.npy": "eb8a866534d478e9aee8e1658f6c218866bc128969f26a19dd6be901ad426869"
+  },
+  "test_label_access": false,
+  "protocol": "d9777115671187a57149bb60299f3f00996869155238eaab170d8f605739e1c8",
+  "dev_speakers": [
+    3,
+    10
+  ],
+  "fit_n": 6645,
+  "dev_n": 1511,
+  "wall_s": 5.6600048129985225,
+  "cpu_s": 5.659388328,
+  "peak_rss_kib": 74336
+}
