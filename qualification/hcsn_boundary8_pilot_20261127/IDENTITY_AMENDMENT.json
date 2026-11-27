@@ -1,0 +1,222 @@
+{
+  "approved_trace_accounting": {
+    "backwards": 0,
+    "body_ticks": 48,
+    "call_sites": "Only runner candidate train80 Adapter.run(... compile_trace=True), four frozen candidates, slow ticks0/2/4. Dev32+retain28 calls compile_trace=False.",
+    "cpu_seconds": 120,
+    "input_scope": "Original standardized train80 input and actual candidate old centered PopulationState.message; original recurrent weights/mask; drift/cost exact-bit checks in predecessor Adapter.",
+    "memory_bytes": 1073741824,
+    "new_linear_recurrence_replays": 12,
+    "no_budget_increase": true,
+    "optimizer_steps": 0,
+    "paired_queries": 560,
+    "purpose": "Predetermined actual-vs-frozen z diagnostic only",
+    "real_shared_fits": 2,
+    "wall_seconds": 180,
+    "whole_forwards": 8
+  },
+  "at_utc": "2026-11-27T10:03:02.601045+00:00",
+  "cost_interpretation": "Incremental8F uses an already paid train trace and predecessor qualification. Report predecessor33F17B16steps plus new8F0B and scalar/solve/linear costs; not a gradient-free whole comparison, not free cached activations, not matched-quality speedup by construction.",
+  "cpu_checkpoint_scope": {
+    "all_other_registered_value_bytes_immutable": true,
+    "elements": 40,
+    "mutable": [
+      "body.input_drive.weight",
+      "body.input_drive.bias"
+    ],
+    "native_binary_mask_claim": false,
+    "native_owner_eligibility": false,
+    "readout_aliases_unchanged": true,
+    "torch_container_headers_may_change": true
+  },
+  "cross_parent_v3_sha256": "0534fd9c58e6c12c5ee7b18e483630aa70e7431518cf36ccf97f548ee6783c7e",
+  "current_boundary_counts": {
+    "backwards": 0,
+    "real_model_forwards": 0,
+    "real_scalar_inverse_targets": 0,
+    "real_trace_fits": 0
+  },
+  "future_cross_parent": {
+    "budget_unchanged_backwards": 34,
+    "budget_unchanged_full_forwards": 66,
+    "budget_unchanged_optimizer_steps": 32,
+    "executed": false,
+    "not_part_of_this_runner": true
+  },
+  "old_documents_preserved": true,
+  "predecessor_helper_sources": {
+    "PROTOCOL.json": {
+      "bytes": 13570,
+      "sha256": "6faa56b621427de19e15025cde193e0defd2c48f052d3efb5f966d97852e8653"
+    },
+    "candidates.py": {
+      "bytes": 8996,
+      "sha256": "88edf2ac88467272868e3fe030fcb62ca31b58ad15dacfeceb7cf91d6336c023"
+    },
+    "model_adapter.py": {
+      "bytes": 15140,
+      "sha256": "9e43c5a91c9859f1689195068d86eaab9a02b0894103648f7fb0c4f348edc412"
+    },
+    "prepare_public.py": {
+      "bytes": 6082,
+      "sha256": "30f5259ee9a94bd54c46f99445277bc1b101bf5f2f3a36e47f0bd6a695f72e6b"
+    },
+    "public_inputs.json": {
+      "bytes": 9781,
+      "sha256": "ae6aea553ae9ab99c8aba0e47056eb1377f2e34dad683a397f3e4163f8bd45ea"
+    },
+    "static_support.py": {
+      "bytes": 8701,
+      "sha256": "80683a7496553acac63fc23226155761bb4354ef7fbb935aff1f9b8ff25c90ea"
+    }
+  },
+  "predecessor_seal_sha256": "e1257784ccc58337c72df4505a877c9dbab15e8f873bb7b153d6d9753b6f6f99",
+  "prior_rule_sha256": "3f56e3384c516e8ec7dcf970e2a9d535ab32f437b7d690a85946f52d1497adc1",
+  "prior_v4_source_seal_sha256": "f9730f7bdb3f10d2f65b628d07f7235b3b61237dc96c067328a5e213eea26e39",
+  "public_parent": {
+    "archive_git_blob": "52e6803e148b40c1ea36075f48b7b10d6fec2216",
+    "archive_sha256": "56bf3a5f144e1a0ff1ebcdf4d510f4685da9d7aaef96f7015aba0759cb8c680c",
+    "canonical_safetensors_or_private_cache_input_permitted": false,
+    "equivalence_scope": "All original registered tensor/buffer numeric bytes and declared readout aliases. PT and canonical files differ in serialization; no identical whole-file claim.",
+    "historical_canonical_identity_only": "ef79165452a16c852892fb7b08bf709fae45c4a3e7f4d50f2cf72c6914587dac",
+    "normalizer_sha256": "7e82bcff70d5d8b94f9096f66ef6b28a6eedfad12bc763214d5cca68e75b98b0",
+    "original_PT_sha256": "92756ef7d5dc98d27cb305a9132eb03aca31487ceddaa09be7456457ed3df7dd",
+    "registered_tensor_profile": {
+      "body.fixed_boundary": {
+        "bytes": 64,
+        "dtype": "float64",
+        "sha256": "15cac12698f58a4a0437b9957c637b525c0ff65945f9da296628c81a3fb0c65d",
+        "shape": [
+          8
+        ]
+      },
+      "body.input_drive.bias": {
+        "bytes": 16,
+        "dtype": "float32",
+        "sha256": "b68c14728c6a36237b872575b2d89378b10fe7662892566c1d3c586d44cbc36d",
+        "shape": [
+          4
+        ]
+      },
+      "body.input_drive.weight": {
+        "bytes": 144,
+        "dtype": "float32",
+        "sha256": "a4eb0076cdf9ee900edbc233d19aad37d9f84996bc6f938359b871a32e359063",
+        "shape": [
+          4,
+          9
+        ]
+      },
+      "body.input_mark.bias": {
+        "bytes": 16,
+        "dtype": "float32",
+        "sha256": "6509a0693ab092628db4f38ddca8ae3fcba73282a6a33f18223f4e872201e33b",
+        "shape": [
+          4
+        ]
+      },
+      "body.input_mark.weight": {
+        "bytes": 144,
+        "dtype": "float32",
+        "sha256": "608ae025eb70a6c25df01f449d0950dbf0f7ce2eba687406c9f4e6c62860db06",
+        "shape": [
+          4,
+          9
+        ]
+      },
+      "body.raw_boundary": {
+        "bytes": 32,
+        "dtype": "float32",
+        "sha256": "66687aadf862bd776c8fc18b8e9f8e20089714856ee233b3902a591d0d5f2925",
+        "shape": [
+          8
+        ]
+      },
+      "body.raw_cost": {
+        "bytes": 32,
+        "dtype": "float32",
+        "sha256": "0ee336e7f9cdf51ef1eab6926ba53f01f6d0e602dcb26e70d6128916f24a4538",
+        "shape": [
+          8
+        ]
+      },
+      "body.readout.bias": {
+        "bytes": 8,
+        "dtype": "float32",
+        "sha256": "c9a4e784fb49876acc3927922e9a0e70e13bb356a4ff79247a3655d5f6d14268",
+        "shape": [
+          2
+        ]
+      },
+      "body.readout.weight": {
+        "bytes": 160,
+        "dtype": "float32",
+        "sha256": "750e4347c6009b694c0b2cd01b973b8c9c0ad7a345770a139e92a55135aa5c87",
+        "shape": [
+          2,
+          20
+        ]
+      },
+      "body.recurrent.weight": {
+        "bytes": 768,
+        "dtype": "float32",
+        "sha256": "90be8b92210665cf38a319e7da1bffce8b5e05892f7a684868955e57b8e3c47a",
+        "shape": [
+          8,
+          24
+        ]
+      },
+      "body.reset_absolute": {
+        "bytes": 64,
+        "dtype": "float64",
+        "sha256": "e90a2de35914f8efd980ba636d96ae8916ce237dc64cfcb47a3b08083fb94938",
+        "shape": [
+          8
+        ]
+      },
+      "body.synaptic_mask": {
+        "bytes": 768,
+        "dtype": "float32",
+        "sha256": "868454d030c7285340d40c2c333be2148fd289e884245a7683dafb14508c4e45",
+        "shape": [
+          8,
+          24
+        ]
+      },
+      "head.bias": {
+        "bytes": 8,
+        "dtype": "float32",
+        "sha256": "c9a4e784fb49876acc3927922e9a0e70e13bb356a4ff79247a3655d5f6d14268",
+        "shape": [
+          2
+        ]
+      },
+      "head.weight": {
+        "bytes": 160,
+        "dtype": "float32",
+        "sha256": "750e4347c6009b694c0b2cd01b973b8c9c0ad7a345770a139e92a55135aa5c87",
+        "shape": [
+          2,
+          20
+        ]
+      }
+    },
+    "registered_tensor_profile_sha256": "d6f7555e073a923f6ceee34941e57f5f7c42fe1b1043821c49bc89e6e5513f01",
+    "source_commit": "bc4912ea657864d33b36a57da0b50eb35bee90af"
+  },
+  "pure_inverse_qualification": {
+    "actual_physical_scalar_equation_calls": 12,
+    "fourteen_controls_passed": true,
+    "model_forwards": 0,
+    "new_real_trace_reads_in_qualification": 0,
+    "result_sha256": "de14af6c8f291a7bff4c250c738e7b23565f76b63785921ebc36db2dd3569b5d"
+  },
+  "schema": "hepta.boundary8-public-identity-and-accounting-amendment.v1",
+  "status": "PREPARED_BEFORE_ANY_BOUNDARY_MODEL_OR_REAL_FIT__AWAITING_ROOT_REVIEW",
+  "target_role_root_policy_doses_selection_radii_and_budgets_unchanged": true,
+  "trace": {
+    "baseline_scores": "Actual budgeted KEEP F32 train80/dev32/retain28 scores and identities; no extra KEEP forward",
+    "dynamic_trace_and_artifact_SHA": "Must be filled from exact predecessor artifact without changing method; template cannot execute",
+    "source": "Actual baseline_train_trace.npz from one completed qualified predecessor, source/meta/query/normalizer/parent hashes bound before new fit"
+  }
+}

@@ -1,0 +1,150 @@
+# Disabled preparation template. Root materializes the reviewed exact file to
+# .github/workflows/hcsn-boundary8-quality-pilot.yml only after binding the real
+# completed predecessor run/artifact and independently auditing base triggers.
+name: HCSN boundary8 single public CPU extension 20261127
+
+"on":
+  push:
+    branches: [research/hcsn-boundary8-pilot-20261127]
+    paths:
+      - qualification/hcsn_boundary8_pilot_20261127/**
+      - .github/workflows/hcsn-boundary8-quality-pilot.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hcsn-boundary8-pilot-20261127-once
+  cancel-in-progress: false
+
+jobs:
+  frozen-boundary:
+    if: github.run_attempt == 1 && github.run_number == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      NUMEXPR_NUM_THREADS: '1'
+      CUDA_VISIBLE_DEVICES: ''
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/hcsn_sender40_pilot_20261127
+            qualification/hcsn_boundary8_pilot_20261127
+            .github/workflows/hcsn-boundary8-quality-pilot.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12.3'
+      - name: Verify exact publication and source identities before preparation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast, hashlib, json, os, pathlib, subprocess
+          task = pathlib.Path('qualification/hcsn_boundary8_pilot_20261127')
+          helper = pathlib.Path('qualification/hcsn_sender40_pilot_20261127')
+          binding = json.loads((task / 'EXECUTION_BINDINGS.json').read_text())
+          if binding['status'] != 'FROZEN_FOR_EXECUTION_AFTER_ROOT_REVIEW':
+              raise SystemExit('Input template is not enabled.')
+          parent = subprocess.check_output(['git','rev-parse','HEAD^'],text=True).strip()
+          if parent != binding['predecessor_artifact']['qualified_head_commit']:
+              raise SystemExit('New source must be one child of the exact qualified public pilot head.')
+          names = ['README.md','runner.py','supervise.py','prepare_evidence.py','fetch_predecessor.py',
+                   'boundary_program.py','boundary_inverse.py','PREREGISTERED_TARGET_RULES_V2.json',
+                   'IDENTITY_AMENDMENT.json','EXECUTION_BINDINGS.json']
+          allowed = {str(task / name) for name in names}
+          allowed.add('.github/workflows/hcsn-boundary8-quality-pilot.yml')
+          changes = subprocess.check_output(['git','diff','--name-status',parent,'HEAD'],text=True).splitlines()
+          if len(changes) != len(allowed) or {line.split('\t')[-1] for line in changes} != allowed:
+              raise SystemExit('Unexpected file count or path outside exact eleven new-file closure.')
+          if any(line.split('\t')[0] != 'A' for line in changes):
+              raise SystemExit('Existing source or workflow would be modified.')
+          for name, expected in binding['adapter_source_sha256'].items():
+              if hashlib.sha256((task/name).read_bytes()).hexdigest() != expected:
+                  raise SystemExit('Adapter source identity mismatch: '+name)
+          for name, expected in binding['helper_files'].items():
+              raw = (helper/name).read_bytes()
+              if len(raw) != expected['bytes'] or hashlib.sha256(raw).hexdigest() != expected['sha256']:
+                  raise SystemExit('Predecessor helper identity mismatch: '+name)
+          for path in task.glob('*.py'):
+              ast.parse(path.read_text(),filename=str(path))
+          output = pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-boundary8-public-output'
+          output.mkdir(exist_ok=False)
+          (output/'PUBLICATION.json').write_text(json.dumps(dict(parent=parent,head=os.environ['GITHUB_SHA'],
+              changed_paths=sorted(allowed),run_id=os.environ['GITHUB_RUN_ID'],run_number=os.environ['GITHUB_RUN_NUMBER'],
+              run_attempt=os.environ['GITHUB_RUN_ATTEMPT'],private_model_inputs=False),indent=2)+'\n')
+          PY
+      - name: Install fixed public CPU dependencies in a new isolated environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          export BOUNDARY_SETUP_START=$(date +%s)
+          python -m venv "$RUNNER_TEMP/hcsn-boundary8-venv"
+          PYTHON="$RUNNER_TEMP/hcsn-boundary8-venv/bin/python"
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 torch==2.10.0+cpu --index-url https://download.pytorch.org/whl/cpu
+          "$PYTHON" -m pip install --disable-pip-version-check --no-cache-dir --only-binary=:all: --timeout 30 --retries 0 numpy==2.3.5 scipy==1.17.0
+          "$PYTHON" - <<'PY'
+          import importlib.metadata,json,os,pathlib,subprocess,sys,time
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'hcsn-boundary8-public-output'
+          (out/'packages.txt').write_text(subprocess.check_output([sys.executable,'-m','pip','freeze','--all'],text=True))
+          (out/'SETUP.json').write_text(json.dumps(dict(wall_seconds=time.time()-int(os.environ['BOUNDARY_SETUP_START']),
+              python=sys.version,versions={key:importlib.metadata.version(key) for key in ('torch','numpy','scipy')},
+              transitive_wheel_hashes_locked=False,model_calls=0),indent=2)+'\n')
+          PY
+      - name: Download only the exact completed predecessor artifact
+        env:
+          BOUNDARY_ARTIFACT_READ_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_boundary8_pilot_20261127
+          "$RUNNER_TEMP/hcsn-boundary8-venv/bin/python" "$TASK/fetch_predecessor.py" "$TASK/EXECUTION_BINDINGS.json" \
+            "$RUNNER_TEMP/hcsn-boundary8-predecessor.zip" "$RUNNER_TEMP/hcsn-boundary8-public-output/DOWNLOAD.json"
+      - name: Prepare bounded evidence and the original public source without running models
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK=qualification/hcsn_boundary8_pilot_20261127
+          HELPER=qualification/hcsn_sender40_pilot_20261127
+          PYTHON="$RUNNER_TEMP/hcsn-boundary8-venv/bin/python"
+          "$PYTHON" "$TASK/prepare_evidence.py" "$TASK/EXECUTION_BINDINGS.json" \
+            "$RUNNER_TEMP/hcsn-boundary8-predecessor.zip" "$RUNNER_TEMP/hcsn-boundary8-evidence"
+          "$PYTHON" "$HELPER/prepare_public.py" "$RUNNER_TEMP/hcsn-boundary8-public-prepared" \
+            "$RUNNER_TEMP/hcsn-boundary8-public-output/PUBLIC_PREPARATION_RESULT.json"
+          cp "$RUNNER_TEMP/hcsn-boundary8-evidence/PREPARED_EVIDENCE.json" "$RUNNER_TEMP/hcsn-boundary8-public-output/PREPARED_EVIDENCE.json"
+          cp "$RUNNER_TEMP/hcsn-boundary8-public-prepared/PREPARED.json" "$RUNNER_TEMP/hcsn-boundary8-public-output/PREPARED.json"
+      - name: Execute one separately budgeted eight-forward extension
+        shell: bash
+        run: |
+          set -euo pipefail
+          TASK="$GITHUB_WORKSPACE/qualification/hcsn_boundary8_pilot_20261127"
+          HELPER="$GITHUB_WORKSPACE/qualification/hcsn_sender40_pilot_20261127"
+          PYTHON="$RUNNER_TEMP/hcsn-boundary8-venv/bin/python"
+          sudo -n systemd-run --wait --pipe --collect --unit="hcsn-boundary8-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" \
+            --property="User=$(id -un)" --property="Group=$(id -gn)" --property="WorkingDirectory=$GITHUB_WORKSPACE" \
+            --property=MemoryMax=1073741824 --property=CPUQuota=100% --property=TasksMax=64 \
+            --property=RuntimeMaxSec=210 --property=KillMode=control-group \
+            --setenv=OMP_NUM_THREADS=1 --setenv=OPENBLAS_NUM_THREADS=1 --setenv=MKL_NUM_THREADS=1 \
+            --setenv=NUMEXPR_NUM_THREADS=1 --setenv=CUDA_VISIBLE_DEVICES= --setenv=PYTHONDONTWRITEBYTECODE=1 \
+            --setenv=PYTHONUNBUFFERED=1 --setenv="LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" \
+            "$PYTHON" "$TASK/supervise.py" "$TASK/EXECUTION_BINDINGS.json" "$HELPER" \
+            "$RUNNER_TEMP/hcsn-boundary8-public-prepared" "$RUNNER_TEMP/hcsn-boundary8-evidence" \
+            "$RUNNER_TEMP/hcsn-boundary8-public-output/supervised"
+      - name: Preserve the completed or rejected attempt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-boundary8-public-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-boundary8-public-output
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 6

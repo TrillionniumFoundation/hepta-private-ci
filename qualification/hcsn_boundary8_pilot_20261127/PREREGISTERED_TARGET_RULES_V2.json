@@ -1,0 +1,213 @@
+{
+  "schema": "hepta.weightcode-boundary-program-proposal.v2",
+  "status": "TARGET_RULES_FROZEN_BEFORE_PILOT_OUTPUT_ACCESS__NOT_AUTHORIZED_TO_EXECUTE",
+  "frozen_at_utc": "2026-11-27T09:31:37.086805+00:00",
+  "purpose": "New Hepta adaptation of WeightCode functional-program construction and later rerun-versus-copy protocol; not a rerun of its ViT benchmark or a claim of novel population generalization.",
+  "authorization": "Root authorized independent protocol and code preparation only; root must review numerical design and executable source before any new fit, scalar model computation or full rollout.",
+  "predecessor": {
+    "path": "wsp_closure_20261127/neuron/hidden_quality_prospective_v1/proposed_protocol.json",
+    "forward_budget": 33,
+    "backward_budget": 17,
+    "not_amended": true,
+    "new_pilot_outputs_read_by_this_agent": 0
+  },
+  "scope": {
+    "parent_seed": 47,
+    "parent_sha256": "ef79165452a16c852892fb7b08bf709fae45c4a3e7f4d50f2cf72c6914587dac",
+    "tensor_names": [
+      "body.input_drive.weight",
+      "body.input_drive.bias"
+    ],
+    "shapes": [
+      [
+        4,
+        9
+      ],
+      [
+        4
+      ]
+    ],
+    "dtype": "F32",
+    "elements": 40,
+    "immutable_all_other_header_payload_and_aliases": true,
+    "physical_laws_unchanged": true,
+    "production": false
+  },
+  "data": {
+    "train_sha256": "b708c4fbc0018aa0cac928d9de10b22663fe2479904e6c7491e6c3dd90190acd",
+    "n_train_queries": 80,
+    "dev_sha256": "099d6580639f03e16c72daca506eda6b8745fd9fd4e54deb83f103a199002d58",
+    "n_dev_queries": 32,
+    "retain_sha256": "9590a7d57fec843d18fe44ff61d0d49f8c35dffccf4320043158dd844c9a5fed",
+    "n_eligible_retain_queries": 28,
+    "retain_exclude_indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "old_test_new_calls": 0,
+    "all_dev_retain_historically_exposed": true,
+    "source_study_data_is_not_financial_market_data": true,
+    "labels_or_features_from_new_broker_source": 0
+  },
+  "target": {
+    "source": "Only immutable actual parent train trace from approved seed47 pilot; correct query means parent's predicted choice equals original target_position; metadata/schema and hashes must be independently bound before execution.",
+    "roles": "MATCH iff choice index equals target_position; DECOY otherwise; never equate index with semantic category.",
+    "slow_ticks": [
+      0,
+      2,
+      4
+    ],
+    "senders": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "prototype": "For each role,tick,sender, arithmetic F64 mean of actual sender boundary over parent-correct train queries. All means and reference z use exactly the same donor rows. No dev/retain inputs.",
+    "minimum_distinct_train_actors_per_role": 2,
+    "actor_semantics": "Use exactly predecessor's author-bound actor eligibility; required adapter must name concrete field and preserve exclusion rules. Unknown identity -> ABSTAIN.",
+    "desired": "Wrong train queries receive role's boundary prototype. Correct train queries have zero surrogate displacement and are soft protected. No task-correctness gate exists at deployment.",
+    "reference_z": "Same donor arithmetic F64 mean remains a diagnostic only, never a root-selection input.",
+    "non_redundancy": "Invert coupled QVI boundary response, not atanh(mean drift). Mean of nonlinear boundaries generally differs from boundary of mean drift; readout, raw_cost, recurrent weights and reset buffers remain fixed.",
+    "first_passage_limit": "Boundary is an active sender message feeding receiver dynamics and reset geometry. This does not target sender hitting density (inert for the current message path), guarantee receiver hitting probability, or assert task/NDU optimality."
+  },
+  "inverse": {
+    "real_equation": "F(b*,mu0+s*tanh(z),c0+d*tanh(theta_j+0.15*z);a_j)=0 with theta_j=original raw_cost[j].",
+    "constants": "Use the predecessor's exact qualified F64 physical constants and F32 theta values converted exactly to Decimal; source values and conversion recorded. This is a real-valued surrogate, distinct from F32 learned computation and native 56-step QVI.",
+    "domain_z": [
+      -8,
+      8
+    ],
+    "boundary_domain": "a-8 < b* < a-1e-4 and original reset/deposition validity; no clipping.",
+    "monotonicity": "Not assumed. F_z = F_mu*s*sech(z)^2 + .15*d*sech(theta+.15*z)^2; F_mu may change sign and the two terms decay at different rates.",
+    "root_isolation": "Directed 64-decimal interval arithmetic; start fixed 64 equal subintervals covering [-8,8], discard only intervals excluding F=0; certify monotone intervals only when derivative excludes zero, otherwise bisect left-first.",
+    "max_interval_cells_per_target": 4096,
+    "max_subdivision_depth": 40,
+    "max_monotone_bisections": 80,
+    "max_final_bracket_width": "1e-12",
+    "max_root_residual_upper_bound": "1e-10",
+    "complete_domain_required": true,
+    "multiple_roots": "Any second certified root in the fixed domain -> whole-program ABSTAIN even if one is nearer to reference_z. Early rejection may leave domain cells unvisited; record domain_complete=false. Acceptance requires complete-domain classification and exactly one certified root.",
+    "max_distinct_target_roots_per_program": 24,
+    "unreachable_policy": "Any required missing root, target outside domain, uncertain interval, budget exhaustion or nonfinite value -> whole-program ABSTAIN; never delete hard rows.",
+    "max_monotone_bisections_scope": "80 total across every root of one target, not 80 per root.",
+    "failure_accounting": "Record every visited cell, interval/point equation call, bisection, certified root interval and unclassified-cell count. Domain completion is explicit; no ABSTAIN becomes a no-root proof."
+  },
+  "compile": {
+    "keys": "Actual consumed F32 input concatenated with exactly 1; shape 480x10, query-major, choice-major, slow-tick-major; shared 10x4 matrix across all examples and ticks.",
+    "residual": "For failed queries R_i,j=z*_role,tick,j-z_old_i,j. Recurrent offset remains frozen only during this solve.",
+    "quadratic": "(1/n_failed)||K_failed D-R||F^2 + .25/n_correct||K_correct D||F^2 + .02||D||F^2 subject to ||D||F<=1.",
+    "minimum_group_rows": 1,
+    "ridge": 0.02,
+    "protection_weight": 0.25,
+    "radius": 1,
+    "solver": "One deterministic symmetric positive definite eigensolve and at most 128 scalar Lagrange-multiplier bisections. Same code/solver path as predecessor if interface agrees; otherwise separately source-sealed implementation before execution.",
+    "candidate_doses": [
+      0.25,
+      1
+    ],
+    "realized_norm": "Exact Fraction sum of squared differences of actual old/new F32 values across all40 entries.",
+    "rounding": "Use predecessor's fixed inward-only quantization policy, no output-based rescaling; at most16 rounding-only inward steps; failure -> ABSTAIN.",
+    "teacher_forcing_bias": "A changed early sender boundary changes later recurrent offsets. Frozen K/R solve is a proposal only; every candidate must restart from original raw inputs and complete all6ticks. Track actual-vs-frozen z, target boundary error, receiver risk/value and final quality."
+  },
+  "arms": [
+    {
+      "name": "KEEP",
+      "source": "Exact already-sealed predecessor baseline",
+      "new_rollouts": 0
+    },
+    {
+      "name": "DRIFT_PROGRAM",
+      "source": "Exact two predecessor analytic candidates and existing train/dev/retain outputs",
+      "new_rollouts": 0
+    },
+    {
+      "name": "BP_TASK",
+      "source": "Exact two predecessor task-gradient snapshots and existing outputs; same40/R1/labels. Different objective is explicitly declared.",
+      "new_rollouts": 0
+    },
+    {
+      "name": "BOUNDARY_PROGRAM",
+      "doses": [
+        0.25,
+        1
+      ],
+      "new_rollouts": 4,
+      "eligible": true
+    },
+    {
+      "name": "WRONG_BOUNDARY_ROLE",
+      "rule": "Exchange MATCH/DECOY boundary prototype and matching reference-z donor labels before inverse and solve; dose1 only",
+      "new_rollouts": 2,
+      "eligible": false
+    },
+    {
+      "name": "MATCHED_RANDOM",
+      "rule": "Fixed seed20261129 standard-normal 10x4 direction; same support, continuous norm matched to unscaled boundary solution, dose1 and same F32 inward handling; no quality feedback",
+      "new_rollouts": 2,
+      "eligible": false
+    }
+  ],
+  "feedback": {
+    "candidate_bytes_frozen_before_any_new_candidate_dev_or_retain_forward": true,
+    "main_candidate_count_per_method": 2,
+    "selection": "Same fixed predecessor dev count, dev Brier, actual displacement, KEEP complete tie; no threshold or radius adjustment.",
+    "retain_gate": "No previously correct-to-wrong eligible retain queries; Brier increase<=.01; historical development protection only.",
+    "development_signal": "At least1 additional dev correct and strictly lower train CE; no new heldout/statistical claim.",
+    "mechanism_reporting": "Always report boundary residual and receiver FirstPassage/value changes beside task metrics; do not infer task gain from physical improvement.",
+    "ablation_reporting": "All wrong-role/random outcomes and all roots/ABSTAIN/failed candidates retained; no additional trials."
+  },
+  "budget": {
+    "new_full_six_tick_rollouts": 8,
+    "new_body_tick_calls": 48,
+    "new_paired_query_rollouts": 560,
+    "new_backward": 0,
+    "new_optimizer_steps": 0,
+    "new_hidden_fit_solves_max": 2,
+    "new_scalar_inverse_targets_max": 48,
+    "total_root_interval_cells_max": 196608,
+    "total_root_bisection_point_evaluations_max": 3840,
+    "new_agent_model_api_calls": 0,
+    "gpu_calls": 0,
+    "test_calls": 0,
+    "other_parent_calls": 0,
+    "production_mutations": 0,
+    "one_numerical_thread": true,
+    "memory_max_bytes": 1073741824,
+    "cpu_seconds_max": 120,
+    "active_wall_seconds_max": 180,
+    "full_forward_definition": "Any equivalent body evaluation, cache generation, shadow implementation or intercepted forward counts; scalar QVI/inverse evaluations separately count all interval/point calls and time.",
+    "cost_denominators": "Report incremental8F and cold-start total incl prerequisite train trace, parent-correct labeling, donor construction, all scalar roots, both solves, F32 conversion, candidate checks, retained failures and previously incurred BP16steps. No cached data treated as free end-to-end compute.",
+    "llm_cost": "This research/planning conversation is not a reproduced author editor session; its attributable token/billing cost is unavailable unless platform supplies it. Never record it as measured zero.",
+    "ledger": "New independent create-only started/completed ledger before every operation; original33F/17B ledger unchanged."
+  },
+  "transfer_stage": {
+    "status": "METHOD_PROPOSAL_ONLY__NO_EXECUTION_BUDGET_GRANTED",
+    "fixed_future_parents": [
+      83,
+      137
+    ],
+    "source_delta": "Both fixed doses from seed47 boundary program, not selected based on success.",
+    "arms": [
+      "KEEP",
+      "same frozen program remeasured on target parent train data",
+      "same two source actualF32 deltas copied into target40 coords then identical norm handling",
+      "same task-gradient baseline budget to be frozen separately"
+    ],
+    "new_llm_calls_per_rerun": 0,
+    "selection_of_parent_by_source_success": false,
+    "root_review_required": true,
+    "scope_of_claim": "Across-checkpoint adaptation on historically exposed task data, not independent task generalization or production return."
+  },
+  "current_execution_counts": {
+    "new_model_forward": 0,
+    "new_backward": 0,
+    "new_fit": 0,
+    "new_scalar_model_eval": 0,
+    "broker_calls": 0
+  },
+  "predecessor_rule_sha256": "544f013a27ae2928c8b7554a32695a4b5216d06127bb0a904d7d486bf2788733",
+  "amendment_reason": "Root explicitly required all multiple-root cases to ABSTAIN before any new pilot output access; no data-driven rule change."
+}
