@@ -1,5 +1,6 @@
 use super::*;
 use codex_utils_approval_presets::builtin_approval_presets;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn unavailable_enable_events_preserve_config_and_report_failure() -> Result<()> {
