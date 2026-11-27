@@ -1,0 +1,50 @@
+{
+  "artifact": {
+    "id": 15224814572,
+    "sha256": "a4d4292620c7bc63e0900121bd599ca5b249b0eaebe05f1a5850bf158f74d0e7",
+    "size": 2112561
+  },
+  "diagnostic_after_sha256": "4d1888be3ce3e44c4b5f9bfde2aafd003ce8e4cad21f1df39ba43904e636acd0",
+  "diagnostic_before_sha256": "a5fc3ed5202417e3836d6949f0013b2c86596042abd12b48230615db2b5bbda9",
+  "failure": "E0425: SE_GROUP_INTEGRITY path under Win32::Security does not exist",
+  "format": {
+    "argv": [
+      "/opt/homebrew/bin/just",
+      "fmt"
+    ],
+    "elapsed_seconds": 0.2219671660568565,
+    "exit_code": 0,
+    "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "members": [
+    {
+      "bytes": 2107207,
+      "crc32": 3796217096,
+      "name": "bazel-execution-logs/execution-log-test-original-restricted-token-1607.zst",
+      "sha256": "39d76abb0994181208089d80cb1f39379dafc0a332040cb59af4e92cc2e180f7"
+    },
+    {
+      "bytes": 51877,
+      "crc32": 29738058,
+      "name": "windows-token-delete.log",
+      "sha256": "735c683c8cf062e14711c900d7d9d789abf94cb18a577751cf6b367554bea154"
+    }
+  ],
+  "original_job": 140683505667,
+  "original_result": "failed-to-build",
+  "original_run": 46051450584,
+  "original_tests_executed": 0,
+  "primary_source": {
+    "declaration": "pub const SE_GROUP_INTEGRITY: i32 = 32i32;",
+    "path": "crates/libs/sys/src/Windows/Win32/System/SystemServices/mod.rs",
+    "ref": "0.52.0",
+    "repository": "microsoft/windows-rs"
+  },
+  "production_qualified": false,
+  "raw_log": {
+    "bytes": 230322,
+    "sha256": "97cabcfe8d8242a9a83c4ec96643911712fb048b2b1395f48198621f49299c0b"
+  },
+  "schema": "hia.windows-token-diagnostic-compile-correction.v1",
+  "source_parent": "562d63a800381b20c6bc83db8b2d95f3f5c600a9"
+}

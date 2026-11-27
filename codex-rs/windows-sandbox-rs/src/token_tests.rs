@@ -561,7 +561,7 @@ fn record_native_write_restricted_delete_routes() -> Result<()> {
         let label = windows_sys::Win32::Security::TOKEN_MANDATORY_LABEL {
             Label: SID_AND_ATTRIBUTES {
                 Sid: low.as_ptr(),
-                Attributes: windows_sys::Win32::Security::SE_GROUP_INTEGRITY,
+                Attributes: windows_sys::Win32::System::SystemServices::SE_GROUP_INTEGRITY as u32,
             },
         };
         let ok = SetTokenInformation(
