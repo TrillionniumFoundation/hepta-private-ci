@@ -111,6 +111,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/n256-fp64-input-source-seal/raw-evidence-storage.json": (
+        "588de247b9efa3914427b00f4ce8f222fce7bcdf21894dcdad2a4e50ec0865a0"
+    ),
     "qa/repository-consolidation/20261126/neuroscience-reference-source-seals/raw-evidence-storage.json": (
         "6c969dc4d3100d574997756f12b6ccffd5247dac6d5e355b50c4982047f84df5"
     ),
@@ -217,6 +220,18 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_currentstate_n256_fp64_input_conversion/README.md": (
+        "6d850edcc440119fc7e3d374dc4bbdd7085e1a443cabd1c9ac411b6a3255dc93"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_input_conversion/REQUEST.json": (
+        "9532b99ce93555bf64f75679cf70c95cccef21ce5bfeccde96b81944a080f43f"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_input_conversion/__init__.py": (
+        "55e7b04683f9cc750b6579ac554fd130269c9abfa2e2ad892c17705a04a68d4b"
+    ),
+    "qualification/hcsn_currentstate_n256_fp64_input_conversion/verify_source.py": (
+        "d7b2ee95d053453813119a9ec3c7e3cf250a2e157eb06cc6eccb0359e6a4ac4e"
+    ),
     "qualification/neuroscience-20261110/study.py": (
         "f1619da3595976f13cdad1ae02c6265f5e72c356de6d78f711d6b9b6ab5f92e1"
     ),
@@ -343,14 +358,17 @@ def read_verified(repo, relative, expected_bytes, expected_sha256):
         raise ValueError("invalid original evidence checksum")
     relative = relative_path(str(relative)).as_posix()
     path = repo / relative
+    display_digest = ARCHIVE_NOTICE_SHA256.get(relative)
+    # A pinned active view can be larger than its archived original. This
+    # only widens the bounded read; both exact digests are still required.
+    source_limit = max(expected_bytes, 16 * 1024) if display_digest else expected_bytes
     data = (
-        read_regular(repo, relative, expected_bytes)
+        read_regular(repo, relative, source_limit)
         if path.exists() or path.is_symlink()
         else None
     )
     if data is None or (
-        relative in ARCHIVE_NOTICE_SHA256
-        and hashlib.sha256(data).hexdigest() == ARCHIVE_NOTICE_SHA256[relative]
+        display_digest is not None and hashlib.sha256(data).hexdigest() == display_digest
     ):
         entry = entries(repo)[relative]
         if (
