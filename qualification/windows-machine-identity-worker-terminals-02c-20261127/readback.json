@@ -1,0 +1,111 @@
+{
+  "schema": "hia.windows.machine-identity-terminal-readback.v1",
+  "source": "02c24d1e9659701a171755dc9239b06cb41ebdd2",
+  "run": 46060956079,
+  "job": 140714804405,
+  "original_target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+  "passed": 28,
+  "failed": 0,
+  "outer_ignored_entries": 1,
+  "outer_filtered": 0,
+  "worker_entry": "win::machine_identity::tests::credential_provisioning_worker",
+  "worker_entry_actually_invoked": 2,
+  "worker_terminal_records_verified": true,
+  "worker_pids": [
+    3952,
+    3628
+  ],
+  "worker_exits": [
+    0,
+    0
+  ],
+  "each_worker_passed": 1,
+  "each_worker_ignored": 0,
+  "each_worker_filtered_nonworker_tests": 28,
+  "retries": 0,
+  "flaky": 0,
+  "all_original_target_steps_natural_success": true,
+  "production_source_unchanged_from": "9f971725d5f228c86396dc469db7a515330f9bd2",
+  "full_consumer_matrix_passed": false,
+  "raw_log": {
+    "bytes": 228145,
+    "sha256": "4e2f20b5332e46d7107e643353fd195695c492baa6337d9bc84c1cb1891ebcd8"
+  },
+  "artifact": {
+    "id": 15229490168,
+    "node_id": "MDg6QXJ0aWZhY3QxNTIyOTQ5MDE2OA==",
+    "name": "windows-original-machine-identity-02c24d1e9659701a171755dc9239b06cb41ebdd2",
+    "size_in_bytes": 2121728,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/15229490168",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/15229490168/zip",
+    "expired": false,
+    "digest": "sha256:9bc75dd0b64a503352f8d9ef15ef522490fd114a533302339822b12069777af6",
+    "created_at": "2026-11-27T20:09:10Z",
+    "updated_at": "2026-11-27T20:09:10Z",
+    "expires_at": "2027-02-25T20:03:21Z",
+    "workflow_run": {
+      "id": 46060956079,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "codex/hia-windows-machine-identity-20261127-2ac5",
+      "head_sha": "02c24d1e9659701a171755dc9239b06cb41ebdd2"
+    }
+  },
+  "artifact_members": [
+    {
+      "name": "bazel-execution-logs/execution-log-test-original-setup-identity-213.zst",
+      "bytes": 2115937,
+      "sha256": "a3c0d1cc7db4759a00664f4305415cbc51864b939a603cb676bea3dd520aaaa7",
+      "crc32": 624665387
+    },
+    {
+      "name": "windows-machine-identity.log",
+      "bytes": 50166,
+      "sha256": "d8e09161409870aae2ae358172df128a5c616f4de6f3ecdc36612c261c00686e",
+      "crc32": 636707327
+    }
+  ],
+  "workers": [
+    {
+      "schema": "hia.windows.machine-identity-worker-terminal.v1",
+      "worker": 0,
+      "pid": 3952,
+      "exit_code": 0,
+      "same_test_binary": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\windows-sandbox-rs\\codex-windows-sandbox-setup-bin-unit-tests-bin.exe",
+      "method": "win::machine_identity::tests::credential_provisioning_worker",
+      "arguments": [
+        "--ignored",
+        "--exact",
+        "win::machine_identity::tests::credential_provisioning_worker",
+        "--nocapture"
+      ],
+      "stdout_bytes": 186,
+      "stderr_bytes": 0,
+      "wait_completed": true,
+      "stdout_sha256": "0ec62c2738295009006bda989a79d34eea979a2321be2b411c99793e0185f679",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_file": "worker-0-pid-3952.stdout.gz"
+    },
+    {
+      "schema": "hia.windows.machine-identity-worker-terminal.v1",
+      "worker": 1,
+      "pid": 3628,
+      "exit_code": 0,
+      "same_test_binary": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\bin\\codex-rs\\windows-sandbox-rs\\codex-windows-sandbox-setup-bin-unit-tests-bin.exe",
+      "method": "win::machine_identity::tests::credential_provisioning_worker",
+      "arguments": [
+        "--ignored",
+        "--exact",
+        "win::machine_identity::tests::credential_provisioning_worker",
+        "--nocapture"
+      ],
+      "stdout_bytes": 186,
+      "stderr_bytes": 0,
+      "wait_completed": true,
+      "stdout_sha256": "aa4a26bd27d2b9eeca03cf65d9f6a7e2780c7abcb521abf4eca0d939172e14aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_file": "worker-1-pid-3628.stdout.gz"
+    }
+  ],
+  "stdout_storage": "lossless gzip; original bytes and SHA256 unchanged"
+}

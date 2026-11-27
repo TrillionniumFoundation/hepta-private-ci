@@ -1,0 +1,105 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 140714804405,
+      "run_id": 46060956079,
+      "workflow_name": "HIA Windows machine account identity",
+      "head_branch": "codex/hia-windows-machine-identity-20261127-2ac5",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/46060956079",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAgw0GEtQ",
+      "head_sha": "02c24d1e9659701a171755dc9239b06cb41ebdd2",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/140714804405",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/46060956079/job/140714804405",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-27T20:03:21Z",
+      "started_at": "2026-11-27T20:05:23Z",
+      "completed_at": "2026-11-27T20:09:16Z",
+      "name": "Complete original setup helper and real identity controls",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-27T20:05:24Z",
+          "completed_at": "2026-11-27T20:05:25Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-27T20:05:25Z",
+          "completed_at": "2026-11-27T20:05:45Z"
+        },
+        {
+          "name": "Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-27T20:05:45Z",
+          "completed_at": "2026-11-27T20:06:17Z"
+        },
+        {
+          "name": "Run every original setup helper test and real identity controls",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-27T20:06:17Z",
+          "completed_at": "2026-11-27T20:09:07Z"
+        },
+        {
+          "name": "Preserve original execution evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-27T20:09:07Z",
+          "completed_at": "2026-11-27T20:09:10Z"
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-27T20:09:10Z",
+          "completed_at": "2026-11-27T20:09:11Z"
+        },
+        {
+          "name": "Post Prepare Bazel CI",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-27T20:09:11Z",
+          "completed_at": "2026-11-27T20:09:12Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-27T20:09:12Z",
+          "completed_at": "2026-11-27T20:09:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-27T20:09:14Z",
+          "completed_at": "2026-11-27T20:09:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/140714804405",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000381437,
+      "runner_name": "GitHub Actions 1000381437",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
