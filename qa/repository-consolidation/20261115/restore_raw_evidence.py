@@ -115,6 +115,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/macos-release-qualification-source/raw-evidence-storage.json": (
+        "144443115109d9b24b0e2f10a69b98a4668cec037ce4c8ecd84d251c66b7f13f"
+    ),
     "qa/repository-consolidation/20261126/n256-uniformization-source-proofs/raw-evidence-storage.json": (
         "f9b15cdd054052525b62126d53973158e215aadaf2cb95090e70922b5fffcc46"
     ),

@@ -188,3 +188,12 @@ filter = 'package(codex-hepta-agentd) & (test(=neuron_generation_current::initia
 test-group = "hepta_durable_capacity"
 slow-timeout = { period = "30s", terminate-after = 12 }
 retries = 0
+
+# Isolated c01cc macOS release qualification; existing profiles unchanged.
+# nextest 0.9.103 custom profiles automatically layer over profile.default.
+[profile.macos-release]
+retries = 0
+
+[profile.macos-release.junit]
+path = "junit.xml"
+report-name = "macos-release"

@@ -25,6 +25,9 @@ toml = { workspace = true }
 [target.'cfg(windows)'.dependencies]
 codex-utils-path = { workspace = true }
 
+[target.'cfg(target_os = "macos")'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
+
 [dev-dependencies]
 ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
