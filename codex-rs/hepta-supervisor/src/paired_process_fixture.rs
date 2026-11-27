@@ -10,10 +10,6 @@ use std::path::PathBuf;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
-use codex_hepta_agent_protocol::AgentdMethod;
-use codex_hepta_agent_protocol::AgentdPayload;
-use codex_hepta_agent_protocol::AgentdRequest;
-use codex_hepta_agent_protocol::AgentdResponse;
 use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
@@ -27,6 +23,14 @@ use codex_hepta_matrix_protocol::MatrixdPayload;
 use codex_hepta_matrix_protocol::MatrixdRequest;
 use codex_hepta_matrix_protocol::MatrixdResponse;
 use codex_hepta_paths::HeptaFleetRoot;
+
+#[path = "paired_process_fixture_wire.rs"]
+mod wire;
+
+use wire::AgentdMethod;
+use wire::AgentdPayload;
+use wire::AgentdRequest;
+use wire::AgentdResponse;
 
 pub(super) fn run() {
     let result = if std::env::var_os("HEPTA_MATRIXD_CONTROL_SOCKET").is_some() {
@@ -61,7 +65,7 @@ fn run_agent_child() -> Result<()> {
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
         let payload = match request.method {
-            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
+            AgentdMethod::Health {} => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -71,7 +75,7 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
-            AgentdMethod::Drain => {
+            AgentdMethod::Drain {} => {
                 // This process fixture owns no assistant turns. Acknowledge
                 // drain only after the registry has closed its admission.
                 let draining = lifecycle.lifecycle == AgentLifecycle::Draining;
@@ -83,7 +87,6 @@ fn run_agent_child() -> Result<()> {
                     fenced: false,
                 })
             }
-            other => anyhow::bail!("unsupported fixture Agentd method: {other:?}"),
         };
         let response = AgentdResponse {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
