@@ -37,6 +37,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_format_env_display",
     "codex_hia_citation_stream_parser",
     "codex_hia_proposed_plan_parser",
+    "codex_hia_utf8_stream",
     "codex_hia_source_file",
     "codex_hia_file_update",
     "codex_hia_parser",
@@ -59,7 +60,7 @@ NATIVE_SYMBOLS = (
 )
 
 
-LIBRARY_ONLY_NATIVE_SYMBOLS = ("codex_hia_uuid_find", "codex_hia_utf8_stream", "codex_hia_inline_hidden_tag")
+LIBRARY_ONLY_NATIVE_SYMBOLS = ("codex_hia_uuid_find", "codex_hia_inline_hidden_tag")
 RETAINED_ORACLE_ONLY_SYMBOLS = ("codex_hia_utf8_boundaries", "codex_hia_uuid_matches", "codex_hia_template_parser")
 
 
@@ -70,7 +71,7 @@ def verify(args: argparse.Namespace, report: dict) -> None:
         "retained_oracle_only_symbols": list(RETAINED_ORACLE_ONLY_SYMBOLS),
         "required_absent_from_reference": list(NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS + RETAINED_ORACLE_ONLY_SYMBOLS),
         "library_positive_gate": "hia/tests/test_native_uuid_find_caller.py",
-        "utf8_library_positive_gate": "codex-utils-stream-parser native public and ABI tests",
+        "utf8_consumer_gate": "hia/tests/test_native_prompt_decode_caller.py and installed stdin rejection cases",
         "inline_hidden_tag_library_positive_gate": "codex-utils-stream-parser generic inline native public and ABI tests",
     }
     binary = args.binary.resolve(strict=True)
@@ -128,6 +129,32 @@ def verify(args: argparse.Namespace, report: dict) -> None:
                 raise RuntimeError(f"relocated Codex startup differs from the original: {option}")
             print(f"PASS full Codex {option}: original Rust parity")
 
+        for name, data, expected in (
+            ("invalid_lead", b"\xff", "invalid byte at offset 0"),
+            ("invalid_third", b"ok\xe2\x82x", "invalid byte at offset 2"),
+            ("bom_incomplete", b"\xef\xbb\xbfprompt\xf0\x90\x80", "invalid byte at offset 6"),
+            ("utf32_le", b"\xff\xfe\0\0", "input appears to be UTF-32LE"),
+            ("utf32_be", b"\0\0\xfe\xff", "input appears to be UTF-32BE"),
+        ):
+            outputs = []
+            for variant in ("native", "reference"):
+                result = subprocess.run(
+                    [str(paths[variant, "codex"]), "exec", "--skip-git-repo-check", "-"],
+                    cwd=root, env=environment, input=data, capture_output=True, timeout=60,
+                )
+                errors = [line for line in result.stderr.decode(errors="replace").splitlines()
+                          if line.startswith("Failed to read prompt from stdin:")]
+                outputs.append((result.returncode, result.stdout, errors))
+            passed = (outputs[0] == outputs[1] and outputs[0][0] == 1
+                      and outputs[0][1] == b"" and len(outputs[0][2]) == 1
+                      and expected in outputs[0][2][0])
+            report["stdin_prompt_cases"].append({
+                "name": name, "passed": passed, "returncode": outputs[0][0],
+                "errors": outputs[0][2], "original_output_matches": outputs[0] == outputs[1],
+            })
+            if not passed:
+                raise RuntimeError(f"relocated Codex stdin decoding differs: {name}")
+
         run_execpolicy_cases(
             paths["native", "codex"], paths["reference", "codex"],
             root / "execpolicy", environment, report, dispatch="codex",
@@ -159,7 +186,7 @@ def main() -> int:
     args = parser.parse_args()
     report = {
         "schema": "codex.hia.installed-cli.v1", "passed": False,
-        "cases": [], "startup_cases": [], "skipped": 0,
+        "cases": [], "startup_cases": [], "stdin_prompt_cases": [], "skipped": 0,
         "whole_codex_rewritten": False,
     }
     try:
@@ -169,6 +196,7 @@ def main() -> int:
         print(str(error), file=sys.stderr)
     report["cases_passed"] = sum(case["passed"] for case in report["cases"])
     report["startup_cases_passed"] = sum(case["passed"] for case in report["startup_cases"])
+    report["stdin_prompt_cases_passed"] = sum(case["passed"] for case in report["stdin_prompt_cases"])
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return 0 if report["passed"] else 1

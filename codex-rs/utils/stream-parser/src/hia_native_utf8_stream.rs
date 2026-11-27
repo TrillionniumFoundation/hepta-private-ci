@@ -3,23 +3,9 @@
 //! HIA classifies the complete byte slice before any inner parser sees it.
 //! Rust retains the original pending buffer and commit/rollback ordering.
 
+use crate::Utf8ValidationError as ValidationError;
+
 const OUTPUT_BYTES: usize = 32;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) struct ValidationError {
-    valid_up_to: usize,
-    error_len: Option<usize>,
-}
-
-impl ValidationError {
-    pub(super) fn valid_up_to(self) -> usize {
-        self.valid_up_to
-    }
-
-    pub(super) fn error_len(self) -> Option<usize> {
-        self.error_len
-    }
-}
 
 unsafe extern "C" {
     fn codex_hia_utf8_stream(

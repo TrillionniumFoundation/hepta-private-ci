@@ -1376,5 +1376,112 @@
       "mandatory_predecessor16_gate_executed": false,
       "scope": "The exact native37 source was built locally through fresh B1/B2/B3 and all 37 module/link bindings. The generic inline-tag public library owner passed all 85 native and 65 default stream-parser tests, zero skipped, and both strict Clippy selections. The new 344-call literal raw gate and seven retained raw suites passed. This is Linux x86-64 GNU component evidence; complete current/historical CI, other owners, Core/UI consumers, installed CLI, required platforms, whole product behavior, performance and retirement remain unqualified."
     }
+  },
+  "stdin_utf8_consumer": {
+    "source_base_revision": "73a86e4c0f7b6d4772dc259796f7492323acb539",
+    "kernel_source_sha256": "00e8aa9e262d0cff4685c6755671495eaf60111401dd5e477c864a19a3388e63",
+    "kernel_changed": false,
+    "source_scope": "Real codex-exec stdin decoder calls the public shared HIA UTF-8 validator under hia-native. Default selection and BOM/UTF-16 handling are retained.",
+    "native37_build": {
+      "status": "built",
+      "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+      "B1_B2_B3_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "build_report_sha256": "ac697058379eff7962783c94e06c607a62b05c7a0cf43bf76eb3837d10ef4a32"
+    },
+    "utf8_raw_abi": {
+      "passed": true,
+      "literal_cases": 25,
+      "native_calls": 200,
+      "report_sha256": "812e27603662ee33feacd049905449740898ec41e652b930e8668a5f8666b159"
+    },
+    "default_macos": {
+      "stream_parser_passed": 67,
+      "exec_passed": 158,
+      "skipped": 0,
+      "configured_retry_passes": 0,
+      "exec_source_tree": "a249aa3af5d5487ac6c36ca869945092f9fb62dc",
+      "stream_log_sha256": "abc453d8d473ae1a8363c8d7766edd1acdf7d2c7ad38ac65a7cbf9ca743e251c",
+      "exec_log_sha256": "4ca651d2d9bdf99271484cc0c2ec4a7fc0a3bcd5d8c7f7fa65caa562e99e1ebc",
+      "initial_compile_failure": {
+        "error": "cannot find type PromptDecodeError in this scope",
+        "source": "codex-rs/exec/src/lib_tests.rs",
+        "original_lines": [
+          203,
+          221,
+          234
+        ],
+        "log_sha256": "18fab565c8d7e643951f1af6320baa6c3311f64cb8ada4e91663f5faf3680a50",
+        "resolution": "Moved all six original decoder tests, without changing their assertions, next to the extracted implementation before the passing complete package run."
+      }
+    },
+    "native_rust_consumer_passed": true,
+    "installed_cli_qualified": false,
+    "configured_installed_required_symbols": 32,
+    "whole_capability_qualified": false,
+    "default_selection_changed": false,
+    "scope_limit": "Fresh native37/raw ABI, the actual production Rust decoder caller, complete native stream-parser and default macOS packages are qualified at the recorded pre-format source. Full native exec-package, installed CLI, whole capability, required platforms, performance, release and legacy retirement remain unqualified.",
+    "qualified_source_revision": "cad201d43ff0bb7495a72f496a859a16474b2af0",
+    "qualified_source_tree": "55663ab8e80b5caf32da71eb557a2140b2a8597c",
+    "native_linux": {
+      "passed": true,
+      "production_decoder_unit_tests": {
+        "reference": 11,
+        "native": 11
+      },
+      "stdin_cases_per_selection": 18,
+      "stream_parser_passed": 87,
+      "skipped": 0,
+      "source_inputs_unchanged": true,
+      "full37_manifest_verified": true,
+      "native_symbol_required": true,
+      "native_symbol_absent_from_reference": true,
+      "receipt_path": "/home/qian-qi/work/hia-codex-deps-20261127-589c/stdin-native-gates-20261127/result.json",
+      "receipt_sha256": "aa5de584212df15a8a25265d431e494ccf18729d45f9e71b1d808d01c37ba865",
+      "caller_log_sha256": "c0cdb4e965e2d8d5065a74b4f1437c1aa969c7344044b5d69f2e71f04fde4446",
+      "stream_log_sha256": "72b9593f1d223d8c263877327a9b85e3b990e506f907c57e09fc0e4fefcb910f",
+      "caller_report_sha256": "3ec22fc9c0ceaf20226a38b31b490bc34c1669304a842688fda62ef5039c2d78"
+    },
+    "fix_and_format": {
+      "passed": true,
+      "strict_default_clippy_fix_packages": [
+        "codex-utils-stream-parser",
+        "codex-exec"
+      ],
+      "fix_elapsed_seconds": 111.211149125,
+      "fmt_elapsed_seconds": 0.5417183750000021,
+      "receipt_sha256": "745439efa1b4fb20736384f5148c435bddbc93be3437f159bb3d55dc4bf7ab5e",
+      "fix_log_sha256": "514a8e6c39cb64e5faa8c9a308bf2fcac4930361d8d3c55a46c187cae5307402",
+      "production_rust_bytes_unchanged": true,
+      "only_changed_path": "codex-rs/exec/tests/suite/prompt_stdin.rs",
+      "change_scope": "Only line wrapping of one new assertion; the condition and expected Unicode text are unchanged.",
+      "patch_sha256": "eafb2e43f025fbb71970feb5ef0918a41a860682ba9b36599c7dad44ca266295",
+      "tests_repeated_after_fix_or_fmt": false
+    },
+    "native_exec_package_qualified": false,
+    "bazel_lock": {
+      "update_passed": true,
+      "check_passed": true,
+      "cargo_lock_unchanged_by_bazel": true,
+      "cargo_lock_blob": "761922b9e0b6a173c9f395adc4b16441529a20f7",
+      "module_lock_changed": false,
+      "module_lock_blob": "ad293fd1b857c0d5e0cb066359695032aaea4d03",
+      "module_lock_sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+      "receipt_sha256": "d3e17e782eeeebad911c77c7875d059e9052ebc137bdb42a283f63d0b1b7f5d1"
+    },
+    "evidence_directory": "hia/evidence/20261127-stdin-utf8",
+    "evidence_archives": {
+      "compiler-abi-evidence.tar.gz": {
+        "sha256": "bbf7a3c72c07583bc2954c04e9c1c2a859bd822ed794e183b4a044b7c9b62c00",
+        "bytes": 50637
+      },
+      "linux-evidence.tar.gz": {
+        "sha256": "5432be2bf587f64c2d9e4ed7ba677d5de3c5355e6cbc3e0c846acc724e5c9b3d",
+        "bytes": 26542
+      },
+      "macos-evidence.tar.gz": {
+        "sha256": "45d94018fe564dedc956e94cbd5a23f710bde5b0e389fbd78faf6e5bc576a49a",
+        "bytes": 33533
+      }
+    }
   }
 }
