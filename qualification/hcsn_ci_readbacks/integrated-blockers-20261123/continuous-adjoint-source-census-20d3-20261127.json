@@ -1,0 +1,192 @@
+{
+  "candidate": "20d3a3c0353171132ac79527dcb092af1c26d821",
+  "pr": 6799,
+  "source_manifest_blob": "b563b033261deec74d145cb36602df198041de06",
+  "ci_run": 45942598468,
+  "ci_job": 140320037497,
+  "ci_binding_failure": "Bind exact precommitted probe source; assert source_sha256 equality; bounded real Torch probe skipped",
+  "current_matches": 7,
+  "current_files": 10,
+  "historical_ref": "1b69247fb4249f5fc3a623c6e471bee5bde8a553",
+  "historical_workflow_not_found_at": [
+    "3cc84fd2783d909bf0e430029a20de305dae03ca",
+    "1b69247fb4249f5fc3a623c6e471bee5bde8a553"
+  ],
+  "historical_matching_objects": 2,
+  "receipts": [
+    {
+      "id": "1a21b754447-ffbe-4f55",
+      "stdout": "{\"path\": \".github/workflows/hcsn-continuous-adjoint-torch.yml\", \"bytes\": 4419, \"git\": \"9d908458d859bbe0fcf95d2c3c078a2c5139246d\", \"sha256\": \"378e7a2488215f3959c8e4c513432dc8ce364751665b92b3347b9d3711f286b2\", \"expected\": \"003386e7811ef4615ed3584d3bfe86f60110f895c106e2f89543d1f830c3ed8d\", \"match\": false, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_adjoint_torch/TORCH-REQUEST.json\", \"bytes\": 1974, \"git\": \"1afe084f47a1259e7007cb45ceccbb624fa507cd\", \"sha256\": \"df6221d1aca3d289dbc9b001d1c112277cebed5ae63ef96a06ccc0c204f6a2c8\", \"expected\": \"df6221d1aca3d289dbc9b001d1c112277cebed5ae63ef96a06ccc0c204f6a2c8\", \"match\": true, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_adjoint_torch/native_probe.py\", \"bytes\": 17500, \"git\": \"5fcce67fe9ca342c8d4f735e438f5300299ee953\", \"sha256\": \"acb198097f49d01beb83236ee1f635f87dff534a1aab1b101887e878b1d87e2f\", \"expected\": \"acb198097f49d01beb83236ee1f635f87dff534a1aab1b101887e878b1d87e2f\", \"match\": true, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_adjoint_torch/torch_flow.py\", \"bytes\": 11542, \"git\": \"4c1d0323b2ec3d11dc6f1800027eaabd4470643b\", \"sha256\": \"0f23d6ff6351be021f93d054b2cc2037ef76a87f29d11ca48fd4a725238bb5b4\", \"expected\": \"0f23d6ff6351be021f93d054b2cc2037ef76a87f29d11ca48fd4a725238bb5b4\", \"match\": true, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_boundary_audit/refractory_transport.py\", \"bytes\": 8164, \"git\": \"f06253382882042c23f30593afa93357c17725da\", \"sha256\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\", \"expected\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\", \"match\": true, \"plus_lf_match\": false}\n",
+      "stderr": "",
+      "stdout_eof": true,
+      "rows": [
+        {
+          "path": ".github/workflows/hcsn-continuous-adjoint-torch.yml",
+          "bytes": 4419,
+          "git": "9d908458d859bbe0fcf95d2c3c078a2c5139246d",
+          "sha256": "378e7a2488215f3959c8e4c513432dc8ce364751665b92b3347b9d3711f286b2",
+          "expected": "003386e7811ef4615ed3584d3bfe86f60110f895c106e2f89543d1f830c3ed8d",
+          "match": false,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_adjoint_torch/TORCH-REQUEST.json",
+          "bytes": 1974,
+          "git": "1afe084f47a1259e7007cb45ceccbb624fa507cd",
+          "sha256": "df6221d1aca3d289dbc9b001d1c112277cebed5ae63ef96a06ccc0c204f6a2c8",
+          "expected": "df6221d1aca3d289dbc9b001d1c112277cebed5ae63ef96a06ccc0c204f6a2c8",
+          "match": true,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_adjoint_torch/native_probe.py",
+          "bytes": 17500,
+          "git": "5fcce67fe9ca342c8d4f735e438f5300299ee953",
+          "sha256": "acb198097f49d01beb83236ee1f635f87dff534a1aab1b101887e878b1d87e2f",
+          "expected": "acb198097f49d01beb83236ee1f635f87dff534a1aab1b101887e878b1d87e2f",
+          "match": true,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_adjoint_torch/torch_flow.py",
+          "bytes": 11542,
+          "git": "4c1d0323b2ec3d11dc6f1800027eaabd4470643b",
+          "sha256": "0f23d6ff6351be021f93d054b2cc2037ef76a87f29d11ca48fd4a725238bb5b4",
+          "expected": "0f23d6ff6351be021f93d054b2cc2037ef76a87f29d11ca48fd4a725238bb5b4",
+          "match": true,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_boundary_audit/refractory_transport.py",
+          "bytes": 8164,
+          "git": "f06253382882042c23f30593afa93357c17725da",
+          "sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+          "expected": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+          "match": true,
+          "plus_lf_match": false
+        }
+      ]
+    },
+    {
+      "id": "1a21b76fb1f-ffbe-4f58",
+      "stdout": "{\"path\": \"qualification/hcsn_boundary_audit/spatial_generator.py\", \"bytes\": 6021, \"git\": \"c0818b50d6fd7bc6088d736aeca4f4239c6e53bd\", \"sha256\": \"85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419\", \"expected\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\", \"match\": false, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_graded/model.py\", \"bytes\": 2288, \"git\": \"15ad986e37b012a6053b51d06d3a2206b2cb9510\", \"sha256\": \"36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c\", \"expected\": \"36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c\", \"match\": true, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_graded/spatial.py\", \"bytes\": 3095, \"git\": \"92481657720544b7972e755e77f5609f492f8fe2\", \"sha256\": \"ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0\", \"expected\": \"ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0\", \"match\": true, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_initial_adjoint/solver.py\", \"bytes\": 18978, \"git\": \"d1d55c05498b0077ccd8953f525dcda2c93b4770\", \"sha256\": \"05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91\", \"expected\": \"05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91\", \"match\": true, \"plus_lf_match\": false}\n{\"path\": \"qualification/hcsn_joint_dde/model.py\", \"bytes\": 14671, \"git\": \"6cd13303b218cb0351334c76da359e35098f6214\", \"sha256\": \"d7d6b2c6dd612ad3d412042dc4962d6b78adf18a6872c8c15e2a3b9a36b610fc\", \"expected\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\", \"match\": false, \"plus_lf_match\": false}\n",
+      "stderr": "",
+      "stdout_eof": true,
+      "rows": [
+        {
+          "path": "qualification/hcsn_boundary_audit/spatial_generator.py",
+          "bytes": 6021,
+          "git": "c0818b50d6fd7bc6088d736aeca4f4239c6e53bd",
+          "sha256": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419",
+          "expected": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+          "match": false,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_graded/model.py",
+          "bytes": 2288,
+          "git": "15ad986e37b012a6053b51d06d3a2206b2cb9510",
+          "sha256": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+          "expected": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+          "match": true,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_graded/spatial.py",
+          "bytes": 3095,
+          "git": "92481657720544b7972e755e77f5609f492f8fe2",
+          "sha256": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+          "expected": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+          "match": true,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_initial_adjoint/solver.py",
+          "bytes": 18978,
+          "git": "d1d55c05498b0077ccd8953f525dcda2c93b4770",
+          "sha256": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91",
+          "expected": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91",
+          "match": true,
+          "plus_lf_match": false
+        },
+        {
+          "path": "qualification/hcsn_joint_dde/model.py",
+          "bytes": 14671,
+          "git": "6cd13303b218cb0351334c76da359e35098f6214",
+          "sha256": "d7d6b2c6dd612ad3d412042dc4962d6b78adf18a6872c8c15e2a3b9a36b610fc",
+          "expected": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+          "match": false,
+          "plus_lf_match": false
+        }
+      ]
+    },
+    {
+      "id": "1a21b77dc1a-ffbe-4f5c",
+      "stdout": "{\"path\": \"qualification/hcsn_boundary_audit/spatial_generator.py\", \"git\": \"50aae1665910b12373854d80de9aaf7e32db8467\", \"bytes\": 5920, \"sha256\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\"}\n{\"path\": \"qualification/hcsn_joint_dde/model.py\", \"git\": \"53196eb0d4056850d5642be3d7da666c87745a22\", \"bytes\": 12626, \"sha256\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\"}\n",
+      "stderr": "",
+      "stdout_eof": true,
+      "rows": [
+        {
+          "path": "qualification/hcsn_boundary_audit/spatial_generator.py",
+          "git": "50aae1665910b12373854d80de9aaf7e32db8467",
+          "bytes": 5920,
+          "sha256": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+        },
+        {
+          "path": "qualification/hcsn_joint_dde/model.py",
+          "git": "53196eb0d4056850d5642be3d7da666c87745a22",
+          "bytes": 12626,
+          "sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+        }
+      ]
+    }
+  ],
+  "model_calls_new": 0,
+  "optimizer_calls_new": 0,
+  "admission": "HOLD",
+  "ci_first_page": {
+    "success": 50,
+    "failure": 17,
+    "skipped": 11,
+    "cancelled": 1,
+    "pending": 2,
+    "queued": 5,
+    "in_progress": 14
+  },
+  "new_native_readbacks": [
+    {
+      "run": 45942598793,
+      "job": 140320038285,
+      "source_files": 8,
+      "normal_tests": 4,
+      "optimized_tests": 4,
+      "coordinates_equal": 2656,
+      "coordinates_compared": 2656,
+      "capsule_bytes": 23581,
+      "capsule_sha256": "1ebdf4750ccbb56b4ef00d6764b1af266359d648e5449db371ffe631bb32c67d",
+      "dynamic_calls": 0,
+      "provider_calls": 0,
+      "status": "PASS_INDEPENDENT_COLD_BYTES_HOLD"
+    },
+    {
+      "run": 45942596318,
+      "job": 140320031123,
+      "scalar_rows": 570,
+      "eligible": 510,
+      "null": 60,
+      "direct_fullraw_byte_pairs": 6,
+      "new_expm_calls": 0,
+      "admission": "HOLD_NO_GO"
+    },
+    {
+      "run": 45942596281,
+      "job": 140320031017,
+      "status": "success_source_only"
+    },
+    {
+      "run": 45942596663,
+      "job": 140320031926,
+      "status": "failure_source_sha256_assertion"
+    }
+  ]
+}
