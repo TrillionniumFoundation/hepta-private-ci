@@ -153,9 +153,61 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn queue_python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("python.exe"))
+            .find(|candidate| candidate.is_absolute() && candidate.is_file())
+            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+        // cmd.exe's runner supplies the outer /C quoting.
+        format!("\"{}\" \"{}\"", python.display(), script_path.display())
+    }
+
+    #[cfg(not(windows))]
+    format!("python3 \"{}\"", script_path.display())
+}
+
+#[cfg(windows)]
+fn powershell_path(path: &Path) -> String {
+    format!("'{}'", path.to_string_lossy().replace('\'', "''"))
+}
+
+fn write_queue_hook(home: &Path, command: String) {
+    let hooks = serde_json::json!({
+        "hooks": {
+            "UserPromptSubmit": [{
+                "hooks": [{"type": "command", "command": command}]
+            }]
+        }
+    });
+    std::fs::write(home.join("hooks.json"), hooks.to_string())
+        .unwrap_or_else(|error| panic!("write queue hook configuration: {error}"));
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let log = powershell_path(&log_path);
+        // Exercise the actual command hook even when the child PATH differs.
+        // Do not introduce a second interpreter beneath the Windows shell.
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText({log}, [string]$payload.prompt + [char]10)
+if ($payload.prompt -ceq 'blocked') {{
+    @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -171,24 +223,38 @@ if payload["prompt"] == "blocked":
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
+    write_queue_hook(home, queue_python_hook_command(&script_path));
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let entered = powershell_path(&entered_path);
+        let release = powershell_path(&release_path);
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+if (@('delay exact persistence', 'delay exact rejection') -ccontains $payload.prompt) {{
+    [IO.File]::WriteAllText({entered}, 'entered')
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    while (![IO.File]::Exists({release})) {{
+        if ($clock.Elapsed.TotalSeconds -ge 20) {{
+            throw 'timed out waiting to release queue persistence hook'
+        }}
+        [Threading.Thread]::Sleep(10)
+    }}
+    if ($payload.prompt -ceq 'delay exact rejection') {{
+        @{{ decision = 'block'; reason = 'delayed queue rejection' }} | ConvertTo-Json -Compress
+    }}
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_blocking_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -211,18 +277,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+    write_queue_hook(home, queue_python_hook_command(&script_path));
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
