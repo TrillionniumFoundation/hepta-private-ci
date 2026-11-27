@@ -1,9 +1,17 @@
 use super::*;
+use crate::config::Constrained;
+use crate::config::PermissionProfileSnapshot;
+use crate::environment_selection::TurnEnvironmentState;
 use codex_apply_patch::MaybeApplyPatchVerified;
 use codex_exec_server::LOCAL_FS;
+use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::permissions::FileSystemAccessMode;
+use codex_protocol::permissions::FileSystemPath;
 use codex_protocol::permissions::FileSystemSandboxEntry;
 use codex_protocol::permissions::FileSystemSandboxPolicy;
+use codex_protocol::permissions::FileSystemSpecialPath;
+use codex_protocol::permissions::NetworkSandboxPolicy;
+use codex_protocol::protocol::AskForApproval;
 use codex_protocol::protocol::FileChange;
 use core_test_support::PathBufExt;
 use core_test_support::PathExt;
@@ -21,6 +29,7 @@ use crate::tools::context::ToolInvocation;
 use crate::tools::hook_names::HookToolName;
 use crate::tools::registry::PostToolUsePayload;
 use crate::tools::registry::PreToolUsePayload;
+use crate::tools::sandboxing::ExecApprovalRequirement;
 use crate::turn_diff_tracker::TurnDiffTracker;
 
 fn sample_patch() -> &'static str {
@@ -345,4 +354,192 @@ fn write_permissions_for_paths_do_not_regrant_an_already_writable_parent() {
     let permissions = write_permissions_for_paths(&[file_path], &sandbox_policy, &cwd);
 
     assert_eq!(permissions, None);
+}
+
+fn foreign_patch_cwd() -> PathUri {
+    let uri = if cfg!(windows) {
+        "file:///workspace"
+    } else {
+        "file:///C:/workspace"
+    };
+    let cwd = PathUri::parse(uri).expect("valid foreign cwd");
+    assert!(cwd.to_abs_path().is_err());
+    cwd
+}
+
+async fn verified_add_patch(cwd: &PathUri) -> ApplyPatchAction {
+    let argv = vec!["apply_patch".to_string(), sample_patch().to_string()];
+    match codex_apply_patch::maybe_parse_apply_patch_verified(
+        &argv,
+        cwd,
+        LOCAL_FS.as_ref(),
+        /*sandbox*/ None,
+    )
+    .await
+    {
+        MaybeApplyPatchVerified::Body(action) => action,
+        other => panic!("expected verified add patch, got: {other:?}"),
+    }
+}
+
+#[tokio::test]
+async fn foreign_patch_without_write_authority_requires_approval_or_rejects() {
+    let (_, mut turn) = make_session_and_context().await;
+    let cwd = foreign_patch_cwd();
+    let profiles = [
+        PermissionProfile::read_only(),
+        PermissionProfile::from_runtime_permissions(
+            &FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
+                FileSystemPath::Special {
+                    value: FileSystemSpecialPath::Root,
+                },
+                FileSystemAccessMode::Deny,
+            )]),
+            NetworkSandboxPolicy::Restricted,
+        ),
+        PermissionProfile::default(),
+    ];
+    for profile in profiles {
+        for approval in [AskForApproval::OnRequest, AskForApproval::Never] {
+            Arc::make_mut(&mut turn.config).permissions.approval_policy =
+                Constrained::allow_any(approval);
+            let action = verified_add_patch(&cwd).await;
+            let (paths, permissions, file_system_policy) =
+                patch_permissions_without_path_matching(&action, &profile);
+            assert_eq!(paths, vec![cwd.join("hello.txt").expect("patch target")]);
+            assert_eq!(file_system_policy, profile.file_system_sandbox_policy());
+            assert_eq!(
+                (
+                    permissions.sandbox_permissions,
+                    permissions.additional_permissions,
+                    permissions.permissions_preapproved,
+                ),
+                (
+                    crate::sandboxing::SandboxPermissions::UseDefault,
+                    None,
+                    false
+                ),
+            );
+            let prepared =
+                apply_patch::prepare_apply_patch(&turn, &profile, &file_system_policy, action);
+            if approval == AskForApproval::OnRequest {
+                let prepared = prepared.expect("read-only patch must ask before execution");
+                assert_eq!(
+                    (prepared.auto_approved, prepared.exec_approval_requirement),
+                    (
+                        false,
+                        ExecApprovalRequirement::NeedsApproval {
+                            reason: None,
+                            proposed_execpolicy_amendment: None,
+                        },
+                    ),
+                );
+            } else {
+                assert!(matches!(
+                    prepared,
+                    Err(FunctionCallError::RespondToModel(message))
+                        if message == "patch rejected: writing outside of the project; rejected by user approval settings"
+                ));
+            }
+        }
+    }
+}
+
+#[tokio::test]
+async fn foreign_patch_with_declared_writes_keeps_executor_first_approval() {
+    let (_, mut turn) = make_session_and_context().await;
+    turn.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    let cwd = foreign_patch_cwd();
+    let profiles = [
+        PermissionProfile::workspace_write(),
+        PermissionProfile::from_runtime_permissions(
+            &FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
+                FileSystemPath::Special {
+                    value: FileSystemSpecialPath::Root,
+                },
+                FileSystemAccessMode::Write,
+            )]),
+            NetworkSandboxPolicy::Enabled,
+        ),
+        PermissionProfile::from_runtime_permissions(
+            &FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
+                cwd.clone().into(),
+                FileSystemAccessMode::Write,
+            )]),
+            NetworkSandboxPolicy::Restricted,
+        ),
+        PermissionProfile::Disabled,
+        PermissionProfile::External {
+            network: NetworkSandboxPolicy::Restricted,
+        },
+    ];
+    for profile in profiles {
+        for approval in [AskForApproval::OnRequest, AskForApproval::Never] {
+            Arc::make_mut(&mut turn.config).permissions.approval_policy =
+                Constrained::allow_any(approval);
+            let action = verified_add_patch(&cwd).await;
+            let (_, permissions, file_system_policy) =
+                patch_permissions_without_path_matching(&action, &profile);
+            assert_eq!(file_system_policy, FileSystemSandboxPolicy::unrestricted());
+            assert_eq!(permissions.additional_permissions, None);
+            assert!(!permissions.permissions_preapproved);
+            let prepared =
+                apply_patch::prepare_apply_patch(&turn, &profile, &file_system_policy, action)
+                    .expect("declared writes must retain executor-first approval");
+            assert_eq!(
+                (prepared.auto_approved, prepared.exec_approval_requirement),
+                (
+                    true,
+                    ExecApprovalRequirement::Skip {
+                        bypass_sandbox: false,
+                        proposed_execpolicy_amendment: None,
+                    },
+                ),
+            );
+        }
+    }
+}
+
+#[tokio::test]
+async fn native_workspace_patch_permissions_still_use_path_matching() {
+    let (session, mut turn) = make_session_and_context().await;
+    Arc::make_mut(&mut turn.config).permissions.approval_policy =
+        Constrained::allow_any(AskForApproval::Never);
+    turn.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    let workspace = TempDir::new().expect("native workspace");
+    let cwd = PathUri::from_abs_path(&workspace.path().abs());
+    let profile = PermissionProfile::workspace_write();
+    let TurnEnvironmentState::Ready(environment) = turn
+        .environments
+        .environments
+        .first_mut()
+        .expect("primary environment")
+    else {
+        panic!("primary environment must be ready");
+    };
+    environment.selection.cwd = cwd.clone();
+    environment.selection.workspace_roots = vec![cwd.clone()];
+    environment.config_mut().permission_profile =
+        PermissionProfileSnapshot::legacy(profile.clone());
+    let action = verified_add_patch(&cwd).await;
+    let (paths, permissions, file_system_policy) =
+        effective_patch_permissions(&session, environment, &action, &cwd)
+            .await
+            .expect("native workspace must retain the normal path-matching route");
+    assert_eq!(paths, vec![cwd.join("hello.txt").expect("patch target")]);
+    assert_eq!(permissions.additional_permissions, None);
+    assert!(!permissions.permissions_preapproved);
+    assert!(!file_system_policy.has_full_disk_write_access());
+    let prepared = apply_patch::prepare_apply_patch(&turn, &profile, &file_system_policy, action)
+        .expect("native in-workspace patch must remain auto-approved");
+    assert_eq!(
+        (prepared.auto_approved, prepared.exec_approval_requirement),
+        (
+            true,
+            ExecApprovalRequirement::Skip {
+                bypass_sandbox: false,
+                proposed_execpolicy_amendment: None,
+            },
+        ),
+    );
 }
