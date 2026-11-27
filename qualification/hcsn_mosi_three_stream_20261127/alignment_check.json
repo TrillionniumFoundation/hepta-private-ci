@@ -1,0 +1,74 @@
+{
+ "scope": "Raw feature tensors and token IDs/masks only, regression responses unused; exact framewise correspondence to raw media was not checked.",
+ "splits": {
+  "train": {
+   "utterances": 1284,
+   "min_lexical": 2,
+   "max_lexical": 48,
+   "feature_support": {
+    "audio": {
+     "utterances_with_nonzero_CLS": 0,
+     "utterances_with_nonzero_SEP": 0,
+     "nonzero_padded_rows": 0,
+     "nonzero_lexical_rows": 15455,
+     "all_lexical_rows": 16409,
+     "utterances_entirely_zero_on_lexical_rows": 0
+    },
+    "vision": {
+     "utterances_with_nonzero_CLS": 0,
+     "utterances_with_nonzero_SEP": 0,
+     "nonzero_padded_rows": 0,
+     "nonzero_lexical_rows": 15365,
+     "all_lexical_rows": 16409,
+     "utterances_entirely_zero_on_lexical_rows": 1
+    }
+   }
+  },
+  "valid": {
+   "utterances": 229,
+   "min_lexical": 2,
+   "max_lexical": 47,
+   "feature_support": {
+    "audio": {
+     "utterances_with_nonzero_CLS": 0,
+     "utterances_with_nonzero_SEP": 0,
+     "nonzero_padded_rows": 0,
+     "nonzero_lexical_rows": 2637,
+     "all_lexical_rows": 2752,
+     "utterances_entirely_zero_on_lexical_rows": 0
+    },
+    "vision": {
+     "utterances_with_nonzero_CLS": 0,
+     "utterances_with_nonzero_SEP": 0,
+     "nonzero_padded_rows": 0,
+     "nonzero_lexical_rows": 2623,
+     "all_lexical_rows": 2752,
+     "utterances_entirely_zero_on_lexical_rows": 0
+    }
+   }
+  },
+  "test": {
+   "utterances": 686,
+   "min_lexical": 1,
+   "max_lexical": 48,
+   "feature_support": {
+    "audio": {
+     "utterances_with_nonzero_CLS": 0,
+     "utterances_with_nonzero_SEP": 0,
+     "nonzero_padded_rows": 0,
+     "nonzero_lexical_rows": 9408,
+     "all_lexical_rows": 9944,
+     "utterances_entirely_zero_on_lexical_rows": 0
+    },
+    "vision": {
+     "utterances_with_nonzero_CLS": 0,
+     "utterances_with_nonzero_SEP": 0,
+     "nonzero_padded_rows": 0,
+     "nonzero_lexical_rows": 9336,
+     "all_lexical_rows": 9944,
+     "utterances_entirely_zero_on_lexical_rows": 1
+    }
+   }
+  }
+ }
+}
