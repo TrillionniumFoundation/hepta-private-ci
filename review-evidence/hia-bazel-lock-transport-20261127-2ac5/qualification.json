@@ -1,0 +1,513 @@
+{
+  "schema": "hepta.bazel.lock-transport-qualification.v1",
+  "passed": true,
+  "qualified_windows_source": "2f8ccffc50fe032f036d9b610bb47c89fb8018b4",
+  "evidence_parent": "d774cccbe02ec20e806602be1d7bb14a9ec179a5",
+  "original_recipe": [
+    "/opt/homebrew/bin/just",
+    "bazel-lock-update"
+  ],
+  "original_lock_check": [
+    "./scripts/check-module-bazel-lock.sh"
+  ],
+  "results": [
+    {
+      "label": "bazel-lock-update",
+      "returncode": 0,
+      "elapsed": 85.30148506164551
+    },
+    {
+      "label": "bazel-lock-check",
+      "returncode": 0,
+      "elapsed": 1.384225606918335
+    }
+  ],
+  "lock_before_sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+  "lock_after_sha256": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+  "lock_changed": false,
+  "actual_dependency_inputs": 453,
+  "pinned_bazel_sha256": "2c3cce548a4b6a97a2a5267712187b784b52714c4a2b0613e7386b15669d783c",
+  "v8": {
+    "url": "https://github.com/v8/v8/archive/refs/tags/15.0.245.2.tar.gz",
+    "bytes": 32838188,
+    "sha256": "164f3d3e0a8b4c02a386d3a88d1b1133d37e5c20be0239fecdcdde414a4340d5"
+  },
+  "transport": "same pinned Bazel executable, unchanged source URL/integrity/versions, original just recipe through attempt-local wrapper with read-only exact V8 distdir and loopback-only SOCKS JVM transport over existing rog SSH alias; no global config or credential changes",
+  "prior_attempts": [
+    {
+      "name": "original",
+      "returncode": 8,
+      "elapsed_seconds": 5892.017694083042,
+      "terminal": "explicit owned SIGINT after persistent official V8 network failure"
+    },
+    {
+      "name": "retry-after-verified-cache",
+      "returncode": 8,
+      "elapsed_seconds": 977.6071190834045,
+      "terminal": "explicit owned SIGINT; retained virtual thread proves blocked obsolete client progress observer; owned stale server then terminated and absent verified"
+    },
+    {
+      "name": "retry-fresh-server-distdir",
+      "returncode": 37,
+      "elapsed_seconds": 225.21057271957397,
+      "terminal": "natural failure on other official source downloads; V8 accepted"
+    },
+    {
+      "name": "retry-rog-transport",
+      "bazel_invoked": false,
+      "terminal": "probe HTTP/2 200 was rejected by harness literal HTTP/1-style check; SSH terminated; fixed parser in distinct v2 attempt"
+    }
+  ],
+  "raw_artifacts": [
+    {
+      "source": "original-bazel-lock-update.stderr",
+      "saved": "raw/original-bazel-lock-update.stderr.gz",
+      "bytes": 101338,
+      "sha256": "474a65a7fa79fc5ae72f72902e75982f66747cab789bf1df52e819165fcb3efa",
+      "gzip_bytes": 702,
+      "gzip_sha256": "d39c7802247b44218775de279bb6d70c1093b37ec6993770ebb2ea214ef1ae52"
+    },
+    {
+      "source": "original-bazel-lock-update.stdout",
+      "saved": "raw/original-bazel-lock-update.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "original-results.json",
+      "saved": "raw/original-results.json.gz",
+      "bytes": 1560,
+      "sha256": "3d3fd6560be61da40fc8fa3b5ec4257fc790182b144663c7b4ea700941e9d01a",
+      "gzip_bytes": 440,
+      "gzip_sha256": "faedc42377a784ffbb2c44468ace04c0b214078252ff2dfb8895eefa0dba8761"
+    },
+    {
+      "source": "original-running-checkpoint.json",
+      "saved": "raw/original-running-checkpoint.json.gz",
+      "bytes": 2515,
+      "sha256": "068cdc246b7e1bef33fc496164396212a84bab95e9cbfa8cedccdaf2a03906b9",
+      "gzip_bytes": 1084,
+      "gzip_sha256": "6b941724b710585529c80c641739da240ff0f86ffd55b548efdfd85318d4f939"
+    },
+    {
+      "source": "original-terminal-bazel-lock-update.stderr",
+      "saved": "raw/original-terminal-bazel-lock-update.stderr.gz",
+      "bytes": 103990,
+      "sha256": "d9021ca08e87b62566b5e3e10a3f28c98361a71bc95411c940a9a7a96c7c7ab3",
+      "gzip_bytes": 835,
+      "gzip_sha256": "f2ab988fd71521f8ad8ffead2ce725e1fdbb94ecf03a6058e0db9a35ea9cf8ac"
+    },
+    {
+      "source": "original-terminal-bazel-lock-update.stdout",
+      "saved": "raw/original-terminal-bazel-lock-update.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "original-terminal-results.json",
+      "saved": "raw/original-terminal-results.json.gz",
+      "bytes": 1813,
+      "sha256": "02676e402416ac81c94d80fc994448a1135437ac6bb8bba2ca677f48c35a1a7a",
+      "gzip_bytes": 477,
+      "gzip_sha256": "08bd78ecacc3f00866207d06d8fd93aa61a1388ef0331c79d7f8263c166c2b4c"
+    },
+    {
+      "source": "original-terminal.json",
+      "saved": "raw/original-terminal.json.gz",
+      "bytes": 776,
+      "sha256": "6bf13c57fcb583516f9f2228b030809519fc9c3c83c7eb1b7c1cc2ce132be90e",
+      "gzip_bytes": 428,
+      "gzip_sha256": "14eb48349bf04100aba765f5cec908237a49c5d7ccdb7a38ae49c7671658da62"
+    },
+    {
+      "source": "retry-after-verified-cache/bazel-lock-update.intent.json",
+      "saved": "raw/retry-after-verified-cache/bazel-lock-update.intent.json.gz",
+      "bytes": 271,
+      "sha256": "01700776efb78b501b5cd7ebeedc34ed78d5abff45fc6f1f5133e305d79bec95",
+      "gzip_bytes": 228,
+      "gzip_sha256": "a96bfdc7d4e6151c696485e995dc96cd9d7d4e1642ae646eb338cbc751201822"
+    },
+    {
+      "source": "retry-after-verified-cache/bazel-lock-update.stderr",
+      "saved": "raw/retry-after-verified-cache/bazel-lock-update.stderr.gz",
+      "bytes": 18148,
+      "sha256": "f2b3081dae0341e59b8186cf94890e2f64448a827a8d09e7c0dc2e37696b6448",
+      "gzip_bytes": 307,
+      "gzip_sha256": "a9933a8ab5fbef07be8ed77d9a0e87161a1900a98f689dfdc9883031ca5566f0"
+    },
+    {
+      "source": "retry-after-verified-cache/bazel-lock-update.stdout",
+      "saved": "raw/retry-after-verified-cache/bazel-lock-update.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-after-verified-cache/results.json",
+      "saved": "raw/retry-after-verified-cache/results.json.gz",
+      "bytes": 100,
+      "sha256": "c5e13fea611b754b5afc6aa3d099188f0f70aa79287771569beffab97a2740d8",
+      "gzip_bytes": 106,
+      "gzip_sha256": "ddb654a13f70817a5dcc9e89e94655481164c54a7d8688b5839768b20b3f2160"
+    },
+    {
+      "source": "retry-fresh-server-distdir/bazel-lock-update.intent.json",
+      "saved": "raw/retry-fresh-server-distdir/bazel-lock-update.intent.json.gz",
+      "bytes": 276,
+      "sha256": "a11d50b08bbfce03837e5d6129327173f1149afd902e0b7dd07805480181b725",
+      "gzip_bytes": 232,
+      "gzip_sha256": "a0c10cefb85b7419c8fcd8651d7c70983e6c2ce37487b096e7a65de233d21e15"
+    },
+    {
+      "source": "retry-fresh-server-distdir/bazel-lock-update.stderr",
+      "saved": "raw/retry-fresh-server-distdir/bazel-lock-update.stderr.gz",
+      "bytes": 25934,
+      "sha256": "06aff1185cd8205c9312329cc5f040f6a26d3b12ef5ce9aa2696fb5d1560e47e",
+      "gzip_bytes": 2133,
+      "gzip_sha256": "d6a2ccfd2a4778d7709b6af80c2c0cd722058597e3dc419a54d978acba89daec"
+    },
+    {
+      "source": "retry-fresh-server-distdir/bazel-lock-update.stdout",
+      "saved": "raw/retry-fresh-server-distdir/bazel-lock-update.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-fresh-server-distdir/prior-bazel-lock-update.stderr",
+      "saved": "raw/retry-fresh-server-distdir/prior-bazel-lock-update.stderr.gz",
+      "bytes": 18148,
+      "sha256": "f2b3081dae0341e59b8186cf94890e2f64448a827a8d09e7c0dc2e37696b6448",
+      "gzip_bytes": 307,
+      "gzip_sha256": "a9933a8ab5fbef07be8ed77d9a0e87161a1900a98f689dfdc9883031ca5566f0"
+    },
+    {
+      "source": "retry-fresh-server-distdir/prior-bazel-lock-update.stdout",
+      "saved": "raw/retry-fresh-server-distdir/prior-bazel-lock-update.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-fresh-server-distdir/prior-results.json",
+      "saved": "raw/retry-fresh-server-distdir/prior-results.json.gz",
+      "bytes": 100,
+      "sha256": "c5e13fea611b754b5afc6aa3d099188f0f70aa79287771569beffab97a2740d8",
+      "gzip_bytes": 106,
+      "gzip_sha256": "ddb654a13f70817a5dcc9e89e94655481164c54a7d8688b5839768b20b3f2160"
+    },
+    {
+      "source": "retry-fresh-server-distdir/prior-virtual-threads.json",
+      "saved": "raw/retry-fresh-server-distdir/prior-virtual-threads.json.gz",
+      "bytes": 48641,
+      "sha256": "220faeac22ed85cbab2b0d295deba87eca4de933fdd70f211311d3bbbeaa39c5",
+      "gzip_bytes": 4325,
+      "gzip_sha256": "3d7202a9875e756423d3a884a5062987d1b45f127fb4bd86787a761b428ef991"
+    },
+    {
+      "source": "retry-fresh-server-distdir/recovery-intent.json",
+      "saved": "raw/retry-fresh-server-distdir/recovery-intent.json.gz",
+      "bytes": 1482,
+      "sha256": "af96bbafe307c7618952ddd51408903762dea83d21131db6ecaa1326409167b8",
+      "gzip_bytes": 751,
+      "gzip_sha256": "18c2dfca8a5525be8c167b021d1b80b73b7c2b96834aa38b4fd7e9942df468d3"
+    },
+    {
+      "source": "retry-fresh-server-distdir/results.json",
+      "saved": "raw/retry-fresh-server-distdir/results.json.gz",
+      "bytes": 102,
+      "sha256": "a86d414480a975a4130c8ebd4c341d058b6989993bf859cb315525ae94f887c2",
+      "gzip_bytes": 108,
+      "gzip_sha256": "15ba7889feb4f1d1c886ca039a35769d41bd9e54c3ac84f51cdca472204b76b7"
+    },
+    {
+      "source": "retry-fresh-server-distdir/transport.bazelrc",
+      "saved": "raw/retry-fresh-server-distdir/transport.bazelrc.gz",
+      "bytes": 110,
+      "sha256": "4bd3a864c6c9ebc2e09e1b38c00122eb3ce78e624717bfaf36bb32a23b3030ac",
+      "gzip_bytes": 116,
+      "gzip_sha256": "62f76cd3b5ffcbefea5ad9a200df7416413be2fda79c92aaee25ed069dc1fe39"
+    },
+    {
+      "source": "retry-live-diagnostic/jcmd17.stderr",
+      "saved": "raw/retry-live-diagnostic/jcmd17.stderr.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-live-diagnostic/jcmd17.stdout",
+      "saved": "raw/retry-live-diagnostic/jcmd17.stdout.gz",
+      "bytes": 31462,
+      "sha256": "0624b780f312648e3148b4e084dd90ea00d8ed1a384badb9e5ad464326a3fc49",
+      "gzip_bytes": 4019,
+      "gzip_sha256": "5309bb48be5a0b9b26d3512353319c66dabc670092cd4566e214fb74354ecc93"
+    },
+    {
+      "source": "retry-live-diagnostic/virtual-command.stderr",
+      "saved": "raw/retry-live-diagnostic/virtual-command.stderr.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-live-diagnostic/virtual-command.stdout",
+      "saved": "raw/retry-live-diagnostic/virtual-command.stdout.gz",
+      "bytes": 116,
+      "sha256": "7a39abb7fc70b6664599f6adc2a3a782c54711c8b8b2e5a34302e124cdac3820",
+      "gzip_bytes": 125,
+      "gzip_sha256": "ca0919d0711e169d25801ca5421eb855d66d4fe214d3cc7d437e8d0e697fea69"
+    },
+    {
+      "source": "retry-live-diagnostic/virtual-threads.json",
+      "saved": "raw/retry-live-diagnostic/virtual-threads.json.gz",
+      "bytes": 48641,
+      "sha256": "220faeac22ed85cbab2b0d295deba87eca4de933fdd70f211311d3bbbeaa39c5",
+      "gzip_bytes": 4325,
+      "gzip_sha256": "3d7202a9875e756423d3a884a5062987d1b45f127fb4bd86787a761b428ef991"
+    },
+    {
+      "source": "retry-rog-transport/intent.json",
+      "saved": "raw/retry-rog-transport/intent.json.gz",
+      "bytes": 496,
+      "sha256": "83ed731f3cce6fb3ab0c21fb18aaeb109848000f21f77e87b749a08422e0cc81",
+      "gzip_bytes": 315,
+      "gzip_sha256": "e048cf30a71f7ea429772ac6a5955b225518605ba74ece905cb9a9761aef5b32"
+    },
+    {
+      "source": "retry-rog-transport/prior-bazel-lock-update.stderr",
+      "saved": "raw/retry-rog-transport/prior-bazel-lock-update.stderr.gz",
+      "bytes": 25934,
+      "sha256": "06aff1185cd8205c9312329cc5f040f6a26d3b12ef5ce9aa2696fb5d1560e47e",
+      "gzip_bytes": 2133,
+      "gzip_sha256": "d6a2ccfd2a4778d7709b6af80c2c0cd722058597e3dc419a54d978acba89daec"
+    },
+    {
+      "source": "retry-rog-transport/prior-bazel-lock-update.stdout",
+      "saved": "raw/retry-rog-transport/prior-bazel-lock-update.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-rog-transport/prior-results.json",
+      "saved": "raw/retry-rog-transport/prior-results.json.gz",
+      "bytes": 102,
+      "sha256": "a86d414480a975a4130c8ebd4c341d058b6989993bf859cb315525ae94f887c2",
+      "gzip_bytes": 108,
+      "gzip_sha256": "15ba7889feb4f1d1c886ca039a35769d41bd9e54c3ac84f51cdca472204b76b7"
+    },
+    {
+      "source": "retry-rog-transport/ssh-owner.json",
+      "saved": "raw/retry-rog-transport/ssh-owner.json.gz",
+      "bytes": 66,
+      "sha256": "de26aecb661953008d7473bca5e226fd859e3a3deea9545252c6a3dc545f2b87",
+      "gzip_bytes": 76,
+      "gzip_sha256": "f0f6bc62063a4576c4934f9e5d36c96b30f4df6dd90728dbcaf074ddff0375ca"
+    },
+    {
+      "source": "retry-rog-transport/ssh-terminal.json",
+      "saved": "raw/retry-rog-transport/ssh-terminal.json.gz",
+      "bytes": 67,
+      "sha256": "f77bb0a14217e13a4cef0b0009f815e961a94f14298dd0bc6559afd601fe4f8c",
+      "gzip_bytes": 78,
+      "gzip_sha256": "a7dcd854f849b77616e89bf53f58dd16fb74e4efc39221006eb3223335e23e9c"
+    },
+    {
+      "source": "retry-rog-transport/ssh.stderr",
+      "saved": "raw/retry-rog-transport/ssh.stderr.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-rog-transport/ssh.stdout",
+      "saved": "raw/retry-rog-transport/ssh.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-rog-transport-v2/bazel-lock-check.intent.json",
+      "saved": "raw/retry-rog-transport-v2/bazel-lock-check.intent.json.gz",
+      "bytes": 448,
+      "sha256": "a9d6226d3abf48f0ff2f98af6b8ff2aaba298d3a55152f9924d0b9661f5930df",
+      "gzip_bytes": 284,
+      "gzip_sha256": "a68a8ee3339ff8c6598a5d9590050b7f30b2b73cda4d0f455258b05ba2c8cbfb"
+    },
+    {
+      "source": "retry-rog-transport-v2/bazel-lock-check.stderr",
+      "saved": "raw/retry-rog-transport-v2/bazel-lock-check.stderr.gz",
+      "bytes": 594,
+      "sha256": "933db9a141b788894e46ab72cc4ba5af231488ac38d4111713a02ad7a1c6a3d4",
+      "gzip_bytes": 305,
+      "gzip_sha256": "a9c78e00261969ae8dc27431457b34c0fe36a6fc0c30e924712e1ffaf29a2c52"
+    },
+    {
+      "source": "retry-rog-transport-v2/bazel-lock-check.stdout",
+      "saved": "raw/retry-rog-transport-v2/bazel-lock-check.stdout.gz",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+      "gzip_bytes": 38,
+      "gzip_sha256": "181db275d794437cc55b31bb92904f47047669927515a695813de3888ff4fbbc"
+    },
+    {
+      "source": "retry-rog-transport-v2/bazel-lock-update.intent.json",
+      "saved": "raw/retry-rog-transport-v2/bazel-lock-update.intent.json.gz",
+      "bytes": 458,
+      "sha256": "4adba8198d39e8342f4ef12a91b42b48ea3ffff9151b8b9dedfba49824fa8a0c",
+      "gzip_bytes": 290,
+      "gzip_sha256": "166f1472f6c820a905dd07cafc0f753c9b9dab930b4f85093cb4f22a7fac3567"
+    },
+    {
+      "source": "retry-rog-transport-v2/bazel-lock-update.stderr",
+      "saved": "raw/retry-rog-transport-v2/bazel-lock-update.stderr.gz",
+      "bytes": 3134,
+      "sha256": "f2fc98bca7ad74b1f19d49240281f52ee8150e25a93bde8a776656ca0738561d",
+      "gzip_bytes": 790,
+      "gzip_sha256": "58eec69efba7f944d4c0bb69e581771ef907efea08a140a38edf30e5eaf251b2"
+    },
+    {
+      "source": "retry-rog-transport-v2/bazel-lock-update.stdout",
+      "saved": "raw/retry-rog-transport-v2/bazel-lock-update.stdout.gz",
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+      "gzip_bytes": 38,
+      "gzip_sha256": "181db275d794437cc55b31bb92904f47047669927515a695813de3888ff4fbbc"
+    },
+    {
+      "source": "retry-rog-transport-v2/intent.json",
+      "saved": "raw/retry-rog-transport-v2/intent.json.gz",
+      "bytes": 496,
+      "sha256": "4fc97631701dedf0ad936ee096e94f0b5089864ecf3ec05520ebf6f906dda39f",
+      "gzip_bytes": 315,
+      "gzip_sha256": "3de0f61678873c4b7cf6db56f4951412dcaff01d94f1d70a02205c7214387141"
+    },
+    {
+      "source": "retry-rog-transport-v2/module-lock.patch",
+      "saved": "raw/retry-rog-transport-v2/module-lock.patch.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-rog-transport-v2/prior-bazel-lock-update.stderr",
+      "saved": "raw/retry-rog-transport-v2/prior-bazel-lock-update.stderr.gz",
+      "bytes": 25934,
+      "sha256": "06aff1185cd8205c9312329cc5f040f6a26d3b12ef5ce9aa2696fb5d1560e47e",
+      "gzip_bytes": 2133,
+      "gzip_sha256": "d6a2ccfd2a4778d7709b6af80c2c0cd722058597e3dc419a54d978acba89daec"
+    },
+    {
+      "source": "retry-rog-transport-v2/prior-bazel-lock-update.stdout",
+      "saved": "raw/retry-rog-transport-v2/prior-bazel-lock-update.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-rog-transport-v2/prior-results.json",
+      "saved": "raw/retry-rog-transport-v2/prior-results.json.gz",
+      "bytes": 102,
+      "sha256": "a86d414480a975a4130c8ebd4c341d058b6989993bf859cb315525ae94f887c2",
+      "gzip_bytes": 108,
+      "gzip_sha256": "15ba7889feb4f1d1c886ca039a35769d41bd9e54c3ac84f51cdca472204b76b7"
+    },
+    {
+      "source": "retry-rog-transport-v2/results.json",
+      "saved": "raw/retry-rog-transport-v2/results.json.gz",
+      "bytes": 196,
+      "sha256": "27aa5e2fd330d495d78484a85e44cbf0006578161b6bd013add4ed77fa80dba9",
+      "gzip_bytes": 135,
+      "gzip_sha256": "72e0a90d2128190a698a69fe098d9bae54ade1af6942d65ee7f667acecb32cd7"
+    },
+    {
+      "source": "retry-rog-transport-v2/ssh-owner.json",
+      "saved": "raw/retry-rog-transport-v2/ssh-owner.json.gz",
+      "bytes": 67,
+      "sha256": "8fa5f9c91dfe7c035baaccf9ae875db4698fce2fce89fe9aa3c6cb4708536d48",
+      "gzip_bytes": 77,
+      "gzip_sha256": "19f5d1fea0355b4cac28a42552dcdf97414120ff7eb4a8da812cdfa4ec1a091b"
+    },
+    {
+      "source": "retry-rog-transport-v2/ssh-terminal.json",
+      "saved": "raw/retry-rog-transport-v2/ssh-terminal.json.gz",
+      "bytes": 67,
+      "sha256": "ac8a05e992c716a80e546277438774e59b936ade4725b030d94dc25e915f6901",
+      "gzip_bytes": 78,
+      "gzip_sha256": "88309a3da5c612a2f3d14aff8caec44778d9502853dd0eec3021b076a28f7de7"
+    },
+    {
+      "source": "retry-rog-transport-v2/ssh.stderr",
+      "saved": "raw/retry-rog-transport-v2/ssh.stderr.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-rog-transport-v2/ssh.stdout",
+      "saved": "raw/retry-rog-transport-v2/ssh.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "retry-rog-transport-v2/transport.bazelrc",
+      "saved": "raw/retry-rog-transport-v2/transport.bazelrc.gz",
+      "bytes": 254,
+      "sha256": "bcb692aead9812b14f40c70be459b0784fe4bc6bf1e88e408a44b05296a5fe66",
+      "gzip_bytes": 171,
+      "gzip_sha256": "4ffc5baf88f7d1d4cfebb88182a88ea9625d2919ae944669b973c74d89fe900f"
+    },
+    {
+      "source": "scp.stderr",
+      "saved": "raw/scp.stderr.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "scp.stdout",
+      "saved": "raw/scp.stdout.gz",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_bytes": 20,
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "source": "transfer-intent.json",
+      "saved": "raw/transfer-intent.json.gz",
+      "bytes": 271,
+      "sha256": "21b192b05ff0bfd37c1b3af7fba6c20471f47821ccfe4c42b13108a875f25065",
+      "gzip_bytes": 218,
+      "gzip_sha256": "cb4cd3b496ff91cff1954fadc02d4541a64b35205d6ab2183bb0ff50a9e1f497"
+    },
+    {
+      "source": "transfer-result.json",
+      "saved": "raw/transfer-result.json.gz",
+      "bytes": 766,
+      "sha256": "85f0d991d1be558609e4cad132f49dde0741a37c3c2cc29998aded9c4152768f",
+      "gzip_bytes": 374,
+      "gzip_sha256": "65c34f4a04c45206f867303de2b2482842d7d3fd513ac2668de7c0e7e583a610"
+    }
+  ],
+  "all_original_bazel_failures_retained": true,
+  "full_combined_matrix_pass_claimed": false
+}
