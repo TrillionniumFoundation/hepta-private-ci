@@ -275,6 +275,9 @@ pub async fn run_windows_sandbox_setup(request: WindowsSandboxSetupRequest) -> a
 async fn run_windows_sandbox_setup_and_persist(
     request: WindowsSandboxSetupRequest,
 ) -> anyhow::Result<()> {
+    #[cfg(target_os = "windows")]
+    codex_windows_sandbox::ensure_windows_managed_filesystem_isolation()?;
+
     let mode = request.mode;
     let permission_profile = request.permission_profile;
     let workspace_roots = request.workspace_roots;
