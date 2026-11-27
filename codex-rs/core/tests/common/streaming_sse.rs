@@ -17,6 +17,10 @@ pub struct StreamingSseChunk {
     pub body: String,
 }
 
+/// Records a complete request body before this server admits a response.
+/// A failure returns HTTP 500 without a successful request or completion record.
+pub type StreamingSseRequestObserver = Arc<dyn Fn(&[u8]) -> anyhow::Result<()> + Send + Sync>;
+
 /// Minimal streaming SSE server for tests that need gated per-chunk delivery.
 pub struct StreamingSseServer {
     uri: String,
@@ -59,7 +63,10 @@ impl StreamingSseServer {
 pub async fn start_streaming_sse_server(
     responses: Vec<Vec<StreamingSseChunk>>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
-    start_streaming_sse_server_inner(responses, /*first_headers_gate*/ None).await
+    start_streaming_sse_server_inner(
+        responses, /*first_headers_gate*/ None, /*request_observer*/ None,
+    )
+    .await
 }
 
 /// Holds the first response before its HTTP headers, after recording its request.
@@ -70,12 +77,32 @@ pub async fn start_streaming_sse_server_with_first_headers_gate(
     responses: Vec<Vec<StreamingSseChunk>>,
     first_headers_gate: oneshot::Receiver<()>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
-    start_streaming_sse_server_inner(responses, Some(first_headers_gate)).await
+    start_streaming_sse_server_inner(
+        responses,
+        Some(first_headers_gate),
+        /*request_observer*/ None,
+    )
+    .await
+}
+
+/// Opts this server into request capture and owned connection-task cleanup.
+/// Existing constructors retain their original detached-connection behavior.
+pub async fn start_streaming_sse_server_with_request_observer(
+    responses: Vec<Vec<StreamingSseChunk>>,
+    request_observer: StreamingSseRequestObserver,
+) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    start_streaming_sse_server_inner(
+        responses,
+        /*first_headers_gate*/ None,
+        Some(request_observer),
+    )
+    .await
 }
 
 async fn start_streaming_sse_server_inner(
     responses: Vec<Vec<StreamingSseChunk>>,
     first_headers_gate: Option<oneshot::Receiver<()>>,
+    request_observer: Option<StreamingSseRequestObserver>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
@@ -102,16 +129,20 @@ async fn start_streaming_sse_server_inner(
     let request_notify_for_task = Arc::clone(&request_notify);
     let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
 
+    let observe_requests = request_observer.is_some();
     let task = tokio::spawn(async move {
+        let mut connection_tasks = tokio::task::JoinSet::new();
         loop {
             tokio::select! {
                 _ = &mut shutdown_rx => break,
+                Some(_) = connection_tasks.join_next(), if observe_requests && !connection_tasks.is_empty() => {}
                 accept_res = listener.accept() => {
                     let (mut stream, _) = accept_res.expect("accept streaming SSE connection");
                     let state = Arc::clone(&state);
                     let requests = Arc::clone(&requests_for_task);
                     let request_notify = Arc::clone(&request_notify_for_task);
-                    tokio::spawn(async move {
+                    let request_observer = request_observer.clone();
+                    let connection = async move {
                         let (request, body_prefix) = read_http_request(&mut stream).await;
                         let Some((method, path)) = parse_request_line(&request) else {
                             let _ = write_http_response(&mut stream, /*status*/ 400, "bad request", "text/plain").await;
@@ -145,6 +176,12 @@ async fn start_streaming_sse_server_inner(
                                     return;
                                 }
                             };
+                            if let Some(observer) = &request_observer
+                                && observer(&body).is_err()
+                            {
+                                let _ = write_http_response(&mut stream, /*status*/ 500, "request capture failed", "text/plain").await;
+                                return;
+                            }
                             requests.lock().await.push(body);
                             request_notify.notify_one();
                             let Some((chunks, completion, headers_gate)) = take_next_stream(&state).await else {
@@ -177,9 +214,17 @@ async fn start_streaming_sse_server_inner(
                         }
 
                         let _ = write_http_response(&mut stream, /*status*/ 404, "not found", "text/plain").await;
-                    });
+                    };
+                    if observe_requests {
+                        connection_tasks.spawn(connection);
+                    } else {
+                        tokio::spawn(connection);
+                    }
                 }
             }
+        }
+        if observe_requests {
+            connection_tasks.shutdown().await;
         }
     });
 
@@ -795,5 +840,85 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
         let (server, _) = start_streaming_sse_server(Vec::new()).await;
         let shutdown = timeout(Duration::from_millis(200), server.shutdown()).await;
         assert!(shutdown.is_ok());
+    }
+
+    #[tokio::test]
+    async fn rejected_observer_does_not_admit_request_or_completion() {
+        let (server, mut completions) = start_streaming_sse_server_with_request_observer(
+            vec![vec![StreamingSseChunk {
+                gate: None,
+                body: "event: forbidden\n\n".to_string(),
+            }]],
+            Arc::new(|_| Err(anyhow::anyhow!("injected capture failure"))),
+        )
+        .await;
+        let mut completion = completions.remove(/*index*/ 0);
+        let mut stream = connect(server.uri()).await;
+        send_request(
+            &mut stream,
+            "POST /v1/responses HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 4\r\n\r\nping",
+        )
+        .await;
+        let response = timeout(Duration::from_secs(/*secs*/ 5), read_to_end(&mut stream))
+            .await
+            .expect("capture rejection response");
+        let (headers, body) = split_response(&response);
+        assert_eq!(status_code(headers), 500);
+        assert_eq!(body, "request capture failed");
+        assert!(server.requests().await.is_empty());
+        assert!(matches!(
+            completion.try_recv(),
+            Err(oneshot::error::TryRecvError::Empty)
+        ));
+        server.shutdown().await;
+        assert!(matches!(
+            completion.try_recv(),
+            Err(oneshot::error::TryRecvError::Closed)
+        ));
+    }
+
+    #[tokio::test]
+    async fn observed_server_shutdown_joins_a_held_chunk() {
+        let (release, gate) = oneshot::channel();
+        let observed = Arc::new(std::sync::atomic::AtomicUsize::new(/*v*/ 0));
+        let observer_count = Arc::clone(&observed);
+        let (server, mut completions) = start_streaming_sse_server_with_request_observer(
+            vec![vec![StreamingSseChunk {
+                gate: Some(gate),
+                body: "event: held\n\n".to_string(),
+            }]],
+            Arc::new(move |body| {
+                assert_eq!(body, b"ping");
+                observer_count.fetch_add(/*val*/ 1, std::sync::atomic::Ordering::AcqRel);
+                Ok(())
+            }),
+        )
+        .await;
+        let mut completion = completions.remove(/*index*/ 0);
+        let mut stream = connect(server.uri()).await;
+        send_request(
+            &mut stream,
+            "POST /v1/responses HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 4\r\n\r\nping",
+        )
+        .await;
+        let (headers, remainder) = timeout(
+            Duration::from_secs(/*secs*/ 5),
+            read_until(&mut stream, "\r\n\r\n"),
+        )
+        .await
+        .expect("held stream headers");
+        let (headers, _) = split_response(&headers);
+        assert_eq!(status_code(headers), 200);
+        assert!(remainder.is_empty());
+        assert_eq!(observed.load(std::sync::atomic::Ordering::Acquire), 1);
+        assert_eq!(server.requests().await, vec![b"ping".to_vec()]);
+        timeout(Duration::from_millis(/*millis*/ 200), server.shutdown())
+            .await
+            .expect("owned connection shutdown");
+        assert!(release.send(()).is_err());
+        assert!(matches!(
+            completion.try_recv(),
+            Err(oneshot::error::TryRecvError::Closed)
+        ));
     }
 }
