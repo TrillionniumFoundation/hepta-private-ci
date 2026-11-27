@@ -1,13 +1,15 @@
 """Restore exact historical evidence from individually compressed containers."""
 
 import argparse
+import ast
 import hashlib
 import json
 import os
 from pathlib import Path
 import re
-import runpy
 import stat
+import subprocess
+import sys
 import tempfile
 import zlib
 
@@ -113,6 +115,9 @@ JOINT_GENERATION_SOURCE_SEALS_INDEX = (
     "qa/repository-consolidation/20261126/joint-generation-source-seals/raw-evidence-storage.json"
 )
 INDEX_SHA256 = {
+    "qa/repository-consolidation/20261126/n256-uniformization-source-proofs/raw-evidence-storage.json": (
+        "f9b15cdd054052525b62126d53973158e215aadaf2cb95090e70922b5fffcc46"
+    ),
     "qa/repository-consolidation/20261126/n256-paired-source-seals/raw-evidence-storage.json": (
         "5ac0602fc4c063a2bb20e5dfb16948ec1cb2467743803434ceb83577c50d5f43"
     ),
@@ -225,6 +230,42 @@ INDEX_SHA256 = {
 
 # Human-readable archive notices are distinct from the historical bytes.
 ARCHIVE_NOTICE_SHA256 = {
+    "qualification/hcsn_currentstate_n256_uniformization_provider_intent/README.md": (
+        "9eee4c883a88b75fc588bb2e8969b7858caf337f80b1300613751d9c9b197ecd"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_provider_intent/__init__.py": (
+        "c1c30f36586fe3006ab5c4412bc59ce06547d7d10cad12a774929a4ae1bc9b36"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_provider_intent/test_provider.py": (
+        "fb08cf3a36cfcf6c9f4695379bf6373af8769c6369342517909da7796c553e68"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_provider_intent/verify_source.py": (
+        "7923ba83deaa0ab1dafe7c19df65b79f9df3ec6900f6d888b7975e51e587fd23"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_precision_policy/README.md": (
+        "59d7a1efd9115069f9c7040ce4c4fb0998bb6673f2be508637614aa13274de7d"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_precision_policy/__init__.py": (
+        "309b819a922d151cddf80f6bd5b95d7d2eda53c507aae7fbeba0a8b02c9b0c0a"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_precision_policy/test_precision_policy.py": (
+        "7b46ed672c3941cbf4bda608fd77011ba012a7c884cb1eb5b1529f019f5d5724"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_precision_policy/verify_source.py": (
+        "6657b32aad8db3074515d1c3e2cde382e27e29b5ae71bb6ee95263a9e2bbe0e5"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_independence_review/README.md": (
+        "5d86e1f634d1f1b3ca42d4cdfa2aa64ced95deb4293f36679ec317036bfa9f58"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_independence_review/__init__.py": (
+        "3fd8cd2c8cef49c6bd19c21ac20ea571740705fb23be0742cb354859697984d3"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_independence_review/test_review.py": (
+        "71c2110a717183feb84faa5a09c6baa8ddeb49890cc7365cf31535fe2bf6cca0"
+    ),
+    "qualification/hcsn_currentstate_n256_uniformization_independence_review/verify_source.py": (
+        "4cb53a4e8c320091d39a193d141762eeb34414ea2faedf87fe2947923127ee04"
+    ),
     "AUDIT/2026-10-20-agent-continuation/p5_inventory/REPORT.md": (
         "7fc952a0b9ab00b96a783618b6a351069697265c2883194815e6308401a2c5a5"
     ),
@@ -449,14 +490,46 @@ def read_verified(repo, relative, expected_bytes, expected_sha256):
     return data
 
 
-def replay_source_freeze(repo, freeze_path, freeze_sha256):
+def read_frozen_source(repo, path, expected, index):
+    raw = read_regular(repo, path, 256 * 1024)
+    active_digest = hashlib.sha256(raw).hexdigest()
+    if active_digest == expected:
+        return raw
+    if ARCHIVE_NOTICE_SHA256.get(path) != active_digest or path not in index:
+        raise ValueError(f"active source differs from its frozen view: {path}")
+    return read_verified(repo, path, index[path]["original_bytes"], expected)
+
+
+def replay_source_freeze(repo, freeze_path, freeze_sha256, verifier_sha256=None):
     """Run an unchanged source-only verifier using its exact frozen tree."""
     freeze_path = relative_path(freeze_path)
     freeze_bytes = read_regular(repo, freeze_path.as_posix(), 65536)
     if hashlib.sha256(freeze_bytes).hexdigest() != freeze_sha256:
         raise ValueError(f"historical source freeze changed: {freeze_path}")
     frozen = json.loads(freeze_bytes)["files"]
+    verifier = freeze_path.with_name("verify_source.py")
     index = entries(repo)
+    if verifier_sha256 is not None:
+        # Earlier verifiers pinned extra parents in immutable source rather
+        # than in their manifests. Read those literals from the pinned copy.
+        original = read_frozen_source(repo, verifier.as_posix(), verifier_sha256, index)
+        parent_bindings = {}
+        for statement in ast.parse(original).body:
+            if not isinstance(statement, ast.Assign) or len(statement.targets) != 1:
+                continue
+            symbol = statement.targets[0]
+            if not isinstance(symbol, ast.Name):
+                continue
+            if symbol.id == "EXPECTED" and ast.literal_eval(statement.value) != frozen:
+                raise ValueError("pinned verifier differs from its source freeze")
+            if symbol.id in {"PARENTS", "BOUND"}:
+                parent_bindings.update(ast.literal_eval(statement.value))
+        if parent_bindings.keys() & frozen.keys() or verifier.as_posix() in frozen:
+            raise ValueError("pinned verifier duplicates a frozen source binding")
+        frozen = {**frozen, **parent_bindings, verifier.as_posix(): verifier_sha256}
+    if verifier.as_posix() not in frozen:
+        raise ValueError("source freeze does not pin its original verifier")
+
     with tempfile.TemporaryDirectory(prefix="hepta-frozen-source-") as scratch:
         original = Path(scratch)
         original_freeze = original / freeze_path
@@ -464,19 +537,19 @@ def replay_source_freeze(repo, freeze_path, freeze_sha256):
         original_freeze.write_bytes(freeze_bytes)
         for path, expected in frozen.items():
             relative = relative_path(path)
-            raw = read_regular(repo, path, 65536)
-            active_digest = hashlib.sha256(raw).hexdigest()
-            if active_digest != expected:
-                if ARCHIVE_NOTICE_SHA256.get(path) != active_digest or path not in index:
-                    raise ValueError(f"active source differs from its frozen view: {path}")
-                raw = read_verified(repo, path, index[path]["original_bytes"], expected)
+            raw = read_frozen_source(repo, path, expected, index)
             destination = original / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_bytes(raw)
-        verifier = freeze_path.with_name("verify_source.py")
-        if verifier.as_posix() not in frozen:
-            raise ValueError("source freeze does not pin its original verifier")
-        runpy.run_path(str(original / verifier), run_name="__main__")
+
+        # Import only the restored module and its standard dependencies, not
+        # the current checkout, the inherited PYTHONPATH, or user site code.
+        optimization = ["-" + "O" * sys.flags.optimize] if sys.flags.optimize else []
+        module = ".".join(verifier.with_suffix("").parts)
+        subprocess.run(
+            [sys.executable, "-B", "-E", "-s", *optimization, "-m", module],
+            cwd=original, stdin=subprocess.DEVNULL, check=True,
+        )
 
 
 def restore(repo, destination):
