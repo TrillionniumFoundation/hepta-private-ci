@@ -1,4 +1,7 @@
 use std::fs;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -229,11 +232,9 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .expect("store");
     let current_fence = CompactFence::new(7, 8, 1, "e21-owner-fence").expect("fence");
     let checkpoint = checkpoint(current_fence.clone());
-    let expires_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_secs()
-        + 1;
+    let starts_at = 1_000;
+    let clock = Arc::new(AtomicU64::new(starts_at));
+    let expires_at = starts_at + 1;
     let lease = match store
         .acquire_local_lease_bound(
             "lease:e21-owner",
@@ -247,7 +248,8 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .expect("bound lease")
     {
         LocalLeaseAcquire::Acquired(lease) | LocalLeaseAcquire::Replay(lease) => lease,
-    };
+    }
+    .with_test_clock(Arc::clone(&clock));
     let executor = store
         .open_local_compact_executor_bound("journal:e21-owner", current_fence, &lease)
         .await
@@ -277,25 +279,35 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         Err(HeptaLocalDevelopmentLifecycleOwnerError::StoreBindingMismatch)
     ));
 
+    assert!(matches!(
+        owner.expire_local_lease(&store, &lease).await,
+        Err(HeptaLocalDevelopmentLifecycleOwnerError::Lease(
+            LocalLeaseOutboxError::StaleFence(message)
+        )) if message.starts_with("local lease has not expired")
+    ));
+
+    let mut elapsed = Duration::ZERO;
     for _ in 0..120 {
-        if SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_secs()
-            >= expires_at
-        {
+        if clock.load(Ordering::SeqCst) >= expires_at {
             break;
         }
         tokio::time::sleep(Duration::from_millis(25)).await;
+        elapsed += Duration::from_millis(/*millis*/ 25);
+        clock.store(starts_at + elapsed.as_secs(), Ordering::SeqCst);
     }
     assert!(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_secs()
-            >= expires_at,
+        clock.load(Ordering::SeqCst) >= expires_at,
         "test lease did not expire"
     );
+
+    assert!(matches!(
+        executor
+            .append_intent("operation:e21-expired-active", &checkpoint, &current)
+            .await,
+        Err(codex_hepta_memory::LocalCompactExecutorError::Lease(
+            LocalLeaseOutboxError::StaleFence(message)
+        )) if message == "local lease has expired"
+    ));
 
     let terminal = owner
         .expire_local_lease(&store, &lease)
@@ -323,11 +335,7 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         Err(codex_hepta_memory::LocalLeaseOutboxError::StaleFence(_))
     ));
 
-    let next_expires_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_secs()
-        + 3_600;
+    let next_expires_at = clock.load(Ordering::SeqCst) + 3_600;
     let next = match store
         .acquire_local_lease_after_head_bound(
             "lease:e21-owner",
@@ -342,9 +350,11 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
         .expect("next generation")
     {
         LocalLeaseAcquire::Acquired(lease) | LocalLeaseAcquire::Replay(lease) => lease,
-    };
+    }
+    .with_test_clock(clock);
     assert_eq!(next.generation(), 2);
     assert!(next.is_explicitly_bound());
+    next.verify_current().await.expect("next generation active");
 }
 
 #[tokio::test]

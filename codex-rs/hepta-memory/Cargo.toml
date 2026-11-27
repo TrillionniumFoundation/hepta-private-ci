@@ -9,6 +9,9 @@ name = "codex_hepta_memory"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+test-lease-clock = []
+
 [lints]
 workspace = true
 

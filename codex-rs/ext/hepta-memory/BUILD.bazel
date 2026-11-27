@@ -3,4 +3,7 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-memory",
     crate_name = "codex_hepta_memory_extension",
+    unit_test_dependency_replacements = {
+        "//codex-rs/hepta-memory": "//codex-rs/hepta-memory:hepta-memory-test-lib",
+    },
 )
