@@ -148,7 +148,7 @@ impl RetainedDatabase {
             .file_name()
             .and_then(|name| name.to_str())
             .ok_or(SqliteRecoveryError::Indeterminate)?;
-        if target.parent() != Some(self.parent_path.as_path()) || name == self.database.name {
+        if !super::has_parent(target, &self.parent_path) || name == self.database.name {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         self.revalidate()?;

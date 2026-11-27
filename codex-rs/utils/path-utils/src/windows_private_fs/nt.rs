@@ -35,7 +35,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
-use windows_sys::Win32::Storage::FileSystem::FileRenameInfo;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
@@ -47,6 +46,7 @@ const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x0000_0020;
 const FILE_NON_DIRECTORY_FILE: u32 = 0x0000_0040;
 const SYNCHRONIZE_ACCESS: u32 = 0x0010_0000;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
+const FILE_RENAME_INFORMATION: u32 = 10;
 
 pub(super) enum Kind {
     Directory,
@@ -89,6 +89,14 @@ unsafe extern "system" {
         create_options: u32,
         ea_buffer: *const c_void,
         ea_length: u32,
+    ) -> NTSTATUS;
+
+    fn NtSetInformationFile(
+        file_handle: HANDLE,
+        io_status_block: *mut IO_STATUS_BLOCK,
+        file_information: *const c_void,
+        length: u32,
+        file_information_class: u32,
     ) -> NTSTATUS;
 }
 
@@ -206,6 +214,7 @@ pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io:
         (offset_of!(FILE_RENAME_INFO, FileName) + name_bytes).max(size_of::<FILE_RENAME_INFO>());
     let mut storage = vec![0_usize; size.div_ceil(size_of::<usize>())];
     let info = storage.as_mut_ptr().cast::<FILE_RENAME_INFO>();
+    let mut io_status = IO_STATUS_BLOCK::default();
     // SAFETY: the allocation is aligned for this pointer-containing struct,
     // includes the complete variable name, and outlives the synchronous call.
     unsafe {
@@ -220,14 +229,20 @@ pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io:
             (&raw mut (*info).FileName).cast(),
             name.len(),
         );
-        if SetFileInformationByHandle(
+        // The native counted-name API resolves RootDirectory directly. The
+        // Win32 rename wrapper may resolve a relative name in the process
+        // namespace instead of accepting the retained directory handle.
+        let status = NtSetInformationFile(
             source.as_raw_handle(),
-            FileRenameInfo,
+            &mut io_status,
             storage.as_ptr().cast(),
             u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?,
-        ) == 0
-        {
-            return Err(io::Error::last_os_error());
+            FILE_RENAME_INFORMATION,
+        );
+        if status < 0 {
+            return Err(io::Error::from_raw_os_error(
+                RtlNtStatusToDosError(status) as i32
+            ));
         }
     }
     Ok(())
