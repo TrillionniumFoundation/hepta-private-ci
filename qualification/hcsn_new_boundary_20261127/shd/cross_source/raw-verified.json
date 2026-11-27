@@ -1,0 +1,57 @@
+{
+  "splits": {
+    "train": {
+      "fsdd": {
+        "recordings": 300,
+        "max_mfcc_difference": 0.0
+      },
+      "gsc": {
+        "recordings": 480,
+        "max_mfcc_difference": 0.0
+      },
+      "arabic": {
+        "recordings": 440,
+        "max_mfcc_difference": 0.0
+      }
+    },
+    "dev": {
+      "fsdd": {
+        "recordings": 100,
+        "max_mfcc_difference": 0.0
+      },
+      "gsc": {
+        "recordings": 240,
+        "max_mfcc_difference": 0.0
+      },
+      "arabic": {
+        "recordings": 220,
+        "max_mfcc_difference": 0.0
+      }
+    },
+    "test": {
+      "fsdd": {
+        "recordings": 1000,
+        "max_mfcc_difference": 0.0
+      },
+      "gsc": {
+        "recordings": 1200,
+        "max_mfcc_difference": 0.0
+      },
+      "arabic": {
+        "recordings": 2200,
+        "max_mfcc_difference": 0.0
+      }
+    }
+  },
+  "distinct_pcm": 3320,
+  "cross_split_pcm_overlap": 0,
+  "source_sha256": {
+    "fsdd": "beaca4fb849cad13103b2cffba913b3d7fdb5f15222da4ddd07187b3c38a757a",
+    "arabic": "3c8c83404289c49631605421830872be337d92d887e61798385aacbe9423010d",
+    "selected_gsc_pcm_archive": "9439a01936f22bd7fd6baa9b4e5a330ea6eac8e915b14506fbc939465e84500f",
+    "full_gsc_archive_historical_receipt": "af14739ee7dc311471de98f5f9d2c9191b18aedfe957f4a6ff791c709868ff58"
+  },
+  "wall_s": 4.723335632996168,
+  "cpu_s": 4.1711237059999995,
+  "peak_rss_kib": 247248
+}
