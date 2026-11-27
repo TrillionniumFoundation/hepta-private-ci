@@ -126,6 +126,7 @@ fn run_cli_command(command: &mut Command) -> io::Result<Output> {
 
 enum CliTimeoutObservation {
     Disabled,
+    InitialSession,
     ResumeSession,
 }
 
@@ -148,9 +149,9 @@ fn run_cli_command_with_timeout_observation(
     // Retain the same process object before the waiter takes ownership. Declaring
     // this before _cleanup keeps the duplicate alive through the original cleanup.
     #[cfg(windows)]
-    let timeout_observer = match observation {
+    let timeout_observer = match &observation {
         CliTimeoutObservation::Disabled => None,
-        CliTimeoutObservation::ResumeSession => {
+        CliTimeoutObservation::InitialSession | CliTimeoutObservation::ResumeSession => {
             Some(codex_utils_pty::ProcessExitObserver::try_from_child(&child))
         }
     };
@@ -165,7 +166,7 @@ fn run_cli_command_with_timeout_observation(
         Err(mpsc::RecvTimeoutError::Timeout) => {
             #[cfg(windows)]
             if let Some(observer) = &timeout_observer {
-                timeout_observation::report(observer);
+                timeout_observation::report(&observation, observer);
             }
             Err(io::Error::new(io::ErrorKind::TimedOut, "process timed out"))
         }
@@ -525,7 +526,9 @@ async fn integration_creates_and_checks_session_file() -> anyhow::Result<()> {
     cmd.env("CODEX_HOME", home.path())
         .env(CODEX_API_KEY_ENV_VAR, "dummy");
 
-    let output = run_cli_command(&mut cmd).unwrap();
+    let output =
+        run_cli_command_with_timeout_observation(&mut cmd, CliTimeoutObservation::InitialSession)
+            .unwrap();
     assert!(
         output.status.success(),
         "codex-cli exec failed: {}",
