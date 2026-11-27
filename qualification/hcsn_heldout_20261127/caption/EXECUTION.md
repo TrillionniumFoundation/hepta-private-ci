@@ -1,0 +1,3 @@
+# CPU panel recovery
+
+The CPU panel completed all fifteen 20-second cells in the original process. The process later exited 137 before the next cell completed. The actual cause of the signal is unconfirmed. All fifteen original checkpoints remain in place. The resumed controller creates a fresh child per outstanding cell, using the identical registered run_cell, optimizer state, source hashes, seeds, data, nominal budgets, selection schedule and model code. Controller attempts, including failed wall time, are recorded separately in controller.jsonl. There are no additional development or test queries in recovery. Do not count interrupted work as an independent model.

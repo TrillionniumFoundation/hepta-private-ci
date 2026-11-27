@@ -70,8 +70,8 @@ def fit(a,loc):
         # Only the THREE trained horizon labels are admissible, even for this empirical floor.
         p=tr[2][:,TRAIN_IDX].mean(0).clamp(1e-6,1-1e-6);h=-torch.log1p(-p);o,s,l=h.unbind()
         rate=torch.stack((o,o+.4*(s-o),s,s+(l-s)/3,l));state={'risk':-torch.expm1(-rate)}
-        pred=state['risk'][None,TRAIN_IDX].expand(len(dv[0]),-1)
-        history=[{'step':0,'trained_horizon_brier':float((pred-dv[2][:,TRAIN_IDX]).square().mean())}];sel=0;nparams=3
+        empirical_prediction=state['risk'][None,TRAIN_IDX].expand(len(dv[0]),-1)
+        history=[{'step':0,'trained_horizon_brier':float((empirical_prediction-dv[2][:,TRAIN_IDX]).square().mean())}];sel=0;nparams=3
     else:
         net=Predictor(a.arm);opt=torch.optim.Adam(net.parameters(),lr=.003);rng=torch.Generator().manual_seed(11*a.seed)
         best=float('inf');nparams=sum(p.numel() for p in net.parameters() if p.requires_grad)
