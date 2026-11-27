@@ -1,0 +1,702 @@
+{
+  "base": "a845976041d14b4bc6a900aa4169c35abe30d903",
+  "repair": "2c0847c8042a0e90d79a6bd5c6896ffcb564c6b0",
+  "compare": {
+    "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "base": "a845976041d14b4bc6a900aa4169c35abe30d903",
+    "head": "2c0847c8042a0e90d79a6bd5c6896ffcb564c6b0",
+    "status": "ahead",
+    "ahead_by": 3,
+    "behind_by": 0,
+    "total_commits": 3,
+    "too_large": null,
+    "base_commit": {
+      "sha": "a845976041d14b4bc6a900aa4169c35abe30d903",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/a845976041d14b4bc6a900aa4169c35abe30d903",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a845976041d14b4bc6a900aa4169c35abe30d903"
+    },
+    "merge_base_commit": {
+      "sha": "a845976041d14b4bc6a900aa4169c35abe30d903",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/a845976041d14b4bc6a900aa4169c35abe30d903",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a845976041d14b4bc6a900aa4169c35abe30d903"
+    },
+    "files": [
+      {
+        "filename": "qualification/hcsn_currentstate_n256_uniformization_output_interval/README.md",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": "qualification/hcsn_currentstate_n256_uniformization_output_interval/__init__.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      },
+      {
+        "filename": "qualification/hcsn_currentstate_n256_uniformization_output_interval/test_output_interval.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "previous_filename": null
+      }
+    ]
+  },
+  "job": {
+    "at_unix_ms": 1795747951728,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a21aeb0713-ffbe-4e2b",
+    "launch_nonce": "4796ba9bdbdc5645efacada9b07937f2",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3026,
+        "stored": 3026
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "stdout": "BEFORE 1  source freeze mismatch: qualification/hcsn_currentstate_n256_uniformization_output_interval/README.md\n\n{\"path\": \".github/workflows/hcsn-currentstate-n256-uniformization-output-interval.yml\", \"size\": 1250, \"sha256\": \"53d80265abbb0570921cc0b1d5e158da826f2f1ffdc6447528d370bb12b2bc55\", \"expected\": \"53d80265abbb0570921cc0b1d5e158da826f2f1ffdc6447528d370bb12b2bc55\", \"lf_repair\": false}\n{\"path\": \"qualification/hcsn_currentstate_n256_fp64_input_conversion/fp64_exact.py\", \"size\": 3550, \"sha256\": \"cae195ae453100625da9d9fb75146a0257d417701435a832ce0aa8d563e5ece9\", \"expected\": \"cae195ae453100625da9d9fb75146a0257d417701435a832ce0aa8d563e5ece9\", \"lf_repair\": false}\n{\"path\": \"qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py\", \"size\": 4622, \"sha256\": \"4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917\", \"expected\": \"4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917\", \"lf_repair\": false}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_output_interval/README.md\", \"size\": 1423, \"sha256\": \"dbd292c88ce16f74d3b694ee2d55c6e372f17dbdc905a53ea2539c84639a9d04\", \"expected\": \"a490cd6d9aa893c333b3d053547467d2acedca9f3aff1822494614de5a5bccca\", \"lf_repair\": true}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_output_interval/REQUEST.json\", \"size\": 877, \"sha256\": \"4d499ebbdaf5c4736648957bff26381ae34039c50a1d27630ddd7708a65a5f35\", \"expected\": \"4d499ebbdaf5c4736648957bff26381ae34039c50a1d27630ddd7708a65a5f35\", \"lf_repair\": false}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_output_interval/__init__.py\", \"size\": 79, \"sha256\": \"8ae7fae3035f0917bf42baff1d87008d43bb70cdf03c7c7914a3abed3cd31fdb\", \"expected\": \"458d568f2ea03a45fb5f833698b2bf573d8a0896bb73cd8af3899fd3913ff358\", \"lf_repair\": true}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_output_interval/output_interval.py\", \"size\": 11338, \"sha256\": \"5b714a52a276237654ea880f9c9ebc101db8c353daee4ab6e5dbc5eb08b1f1d5\", \"expected\": \"5b714a52a276237654ea880f9c9ebc101db8c353daee4ab6e5dbc5eb08b1f1d5\", \"lf_repair\": false}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_output_interval/test_output_interval.py\", \"size\": 4666, \"sha256\": \"ea51445b1c4a649328078d5dcfb346956558039dcba1a1fa9db3e8e70b7babf3\", \"expected\": \"40399144c01a9d2078252b4d5475d45ba6c192cbef1c464b9077f6b848911ca0\", \"lf_repair\": true}\n{\"path\": \"qualification/hcsn_currentstate_n256_uniformization_output_interval/verify_source.py\", \"size\": 2764, \"sha256\": \"fb4f0295b2a1450d7cbdc2967e030dbb3fbf69bc5b9f33b0beda366121512341\", \"expected\": \"fb4f0295b2a1450d7cbdc2967e030dbb3fbf69bc5b9f33b0beda366121512341\", \"lf_repair\": false}\nAFTER 0 PASS_N256_UNIFORMIZATION_POSITIVE_OUTPUT_INTERVAL_SOURCE_ONLY\n \nCHANGES [\"qualification/hcsn_currentstate_n256_uniformization_output_interval/README.md\", \"qualification/hcsn_currentstate_n256_uniformization_output_interval/__init__.py\", \"qualification/hcsn_currentstate_n256_uniformization_output_interval/test_output_interval.py\"] COUNT 9 ZERO_MODEL_CALLS\n",
+  "stderr": "",
+  "previous_pr_workflows": {
+    "sample": 100,
+    "counts": {
+      "skipped": 16,
+      "success": 61,
+      "failure": 22,
+      "cancelled": 1
+    },
+    "run_ids": [
+      {
+        "id": 45918427981,
+        "name": "memory federation v3 bootstrap",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918428485,
+        "name": "MemoryCell observed events and matched reader",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918427797,
+        "name": "MemoryCell masked spans and actual answer transfer",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918428035,
+        "name": "Windows Git descendant regression on exact maintenance source",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918428085,
+        "name": "App-server schema refresh",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918428199,
+        "name": "hepta-hdcf-shadow-gates",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428146,
+        "name": "Hepta native A-B-C and Cell evidence Python gates",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427827,
+        "name": "Hepta Memory A-I matrix shadow contract",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428279,
+        "name": "hcsn-currentstate-n256-provider-fullstate-bridge",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428098,
+        "name": "hcsn-currentstate-n256-firststep-contract",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428247,
+        "name": "HCSN split mesh exploratory checks",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428206,
+        "name": "HCSN joint delay-reset candidate checks",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428024,
+        "name": "HCSN v2 retained finite arithmetic review",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428571,
+        "name": "Hepta E26 frozen six passage statistical qualification (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428412,
+        "name": "Hepta E25 frozen question-risk unseen passage pretrained Reader (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428297,
+        "name": "hcsn-currentstate-n256-uniformization-output-interval",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428258,
+        "name": "HCSN graded continuation arithmetic checks",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428268,
+        "name": "Hepta PRED-1 CPU checks",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428393,
+        "name": "Hepta Neuron reference-output identity v2",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428311,
+        "name": "Hepta E12 learned continuation field synthetic research (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428218,
+        "name": "Hepta Stem V6 original multimodal margins (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428346,
+        "name": "Hepta P0 Granite mmBERT physical PR caller (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428379,
+        "name": "HCSN retained-value array checks",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427793,
+        "name": "hcsn-currentstate-n256-fp64-rounding",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428517,
+        "name": "HCSN retained second-cycle arithmetic",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427892,
+        "name": "Hepta E11 exact stochastic global and independent controls (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428430,
+        "name": "hcsn-currentstate-n256-reference-provider-hold",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428126,
+        "name": "Hepta Neural Cell Fabric P0 (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428364,
+        "name": "hcsn-currentstate-n256-oracle-binding-publisher-intent",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428011,
+        "name": "Native NDU direct interval global cost certificate",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428107,
+        "name": "Hepta group reasoning (research only)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428233,
+        "name": "HCSN boundary audit checks",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918428387,
+        "name": "Hepta P2.3 original MultiRC 48-case real Ettin/Laya Head (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428363,
+        "name": "Hepta NDU Merton finite research (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428114,
+        "name": "hepta-cell-fast-path-actionir-p3",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427890,
+        "name": "Native NDU matrix-free Stem research",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918428444,
+        "name": "Windows original CI regressions (declared scope only)",
+        "conclusion": "cancelled",
+        "status": "completed"
+      },
+      {
+        "id": 45918428289,
+        "name": "blocking-ci",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918426731,
+        "name": "MemoryCell pinned native ingress review",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918426769,
+        "name": "MemoryCell token ranking and answer learning",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918427642,
+        "name": "Hepta Neuron near-matched physical Adapter shadow",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427480,
+        "name": "Native NDU refinement allocation research",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427676,
+        "name": "Native NDU quadrature allocation research",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426720,
+        "name": "NDU MGP shadow numerical invariants",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426329,
+        "name": "HCSN native Torch delay-cascade checks",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426909,
+        "name": "hcsn-currentstate-n256-hosted-runtime-snapshot",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918427088,
+        "name": "hcsn-currentstate-n256-independent-oracle-v2-intent",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426816,
+        "name": "Hepta Stem V5 ScienceQA independently rejudge original physical labels (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426868,
+        "name": "Hepta published RBE image observation",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918426734,
+        "name": "hcsn-currentstate-n256-nonsubstochastic-signed-interval",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427298,
+        "name": "Hepta NDU Tree FBSDE research gates (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427750,
+        "name": "Hepta VERIFY-1 engineering validation",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427567,
+        "name": "Hepta NDU Merton original-source science gate (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427689,
+        "name": "hcsn-currentstate-n256-joint-admission",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427833,
+        "name": "Hepta architecture convergence",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426892,
+        "name": "Hepta Neuron Gated V3 shadow",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427767,
+        "name": "Hepta E24 independent whole-question training loss vs Brier (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918426804,
+        "name": "HCSN stdlib controller ledger faults",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426796,
+        "name": "Hepta E12 oracle-free local Cell FBSDE research (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918427466,
+        "name": "Native NDU nonconvex positive-risk certificate",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426993,
+        "name": "Hepta Cell local update contracts",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427588,
+        "name": "Hepta E17 original frozen Reader answer-information audit (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426545,
+        "name": "hcsn-currentstate-n256-uniformization-provider-intent",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918426850,
+        "name": "Hepta E12 nonlinear exact discrete FBSDE and controls (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918427475,
+        "name": "Hepta original real mmBERT finite BSDE vs closed form replay (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918426586,
+        "name": "Hepta predictive-model guard (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426826,
+        "name": "Hepta original Granite Group P1/P4 independent negative audit (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426986,
+        "name": "Hepta Neural Cell Fabric P0.9 budgeted shadow negative (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426718,
+        "name": "Hepta E21 original-human complete-question Reader audit (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918426491,
+        "name": "Hepta Neuron physical research canary",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918427643,
+        "name": "Hepta V9 source-blind multihop (research DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425982,
+        "name": "Hepta Windows OpenSSH path diagnostic",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426035,
+        "name": "Hepta Windows Memory lifecycle diagnostic",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918424867,
+        "name": "Hepta multimodal Stem V1 source-only shadow",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426042,
+        "name": "MemoryCell source-preserving event reader experiment",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918425994,
+        "name": "Hepta HCSN training bridge",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918425242,
+        "name": "MemoryCell query-conditioned relevance development",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918425773,
+        "name": "MemoryCell reference-anchored evidence preference",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918425876,
+        "name": "MemoryCell external spans and matched generator",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918426154,
+        "name": "MemoryCell persistent stem mechanics",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918426036,
+        "name": "MemoryCell reviewed evidence and frozen read sessions",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918425989,
+        "name": "MemoryCell audited source reader diagnosis",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918425927,
+        "name": "Original diagnostic log evidence",
+        "conclusion": "skipped",
+        "status": "completed"
+      },
+      {
+        "id": 45918425234,
+        "name": "hcsn-currentstate-n256-uniformization-roster-resolved-hold",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425975,
+        "name": "Hepta Bazel lockfile evidence (read-only)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425493,
+        "name": "CTRL fixed-source dependency proposal",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918425935,
+        "name": "hcsn-currentstate-scheduled-reset-interval",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425291,
+        "name": "Hepta Group 2x2 Isolated OS Processes (Research)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425306,
+        "name": "HCSN N256 authentic t0 capsule",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425377,
+        "name": "hcsn-currentstate-n256-reference-stream-intent",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425320,
+        "name": "Hepta V18 original Reader causal prompt diagnostic (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425373,
+        "name": "HCSN four-amplitude Adam restoration",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425311,
+        "name": "Hepta E19 BF16 question-centered original Reader precision (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918425302,
+        "name": "Hepta V16 HotpotQA grounded group STOP (DENY_ALL)",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425698,
+        "name": "Hepta Exec P2e three-way native protocol conformance",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918425299,
+        "name": "Hepta MEM full trajectory native campaign",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425594,
+        "name": "hcsn-currentstate-n256-execution-freeze-protocol",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918425881,
+        "name": "hcsn-currentstate-n256-fp64-add-sub",
+        "conclusion": "success",
+        "status": "completed"
+      },
+      {
+        "id": 45918426065,
+        "name": "Hepta P0 independent physical four-Stem replay (DENY_ALL)",
+        "conclusion": "failure",
+        "status": "completed"
+      },
+      {
+        "id": 45918425969,
+        "name": "HCSN continuous-adjoint Torch gate",
+        "conclusion": "failure",
+        "status": "completed"
+      }
+    ]
+  },
+  "source_failure_job": 140243108716,
+  "scope": "isolated source-only freeze repair; zero new model/provider/optimizer calls; no full CI or integration qualification"
+}
