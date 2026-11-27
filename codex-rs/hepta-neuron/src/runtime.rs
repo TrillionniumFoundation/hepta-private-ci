@@ -156,19 +156,8 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         if witness.current()?.is_some() {
             return Err(NeuronRuntimeError::BootstrapWitnessPresent);
         }
-        // The externally supplied anchor is checked before any tail repair.
         let journal =
-            SparseJournal::open_anchored(file, native, scope, max_records, expected_first)?;
-        let current = journal
-            .current()?
-            .map(|checkpoint| JournalAnchor {
-                sequence: checkpoint.sequence(),
-                checkpoint_digest: checkpoint.digest(),
-            })
-            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        if current != expected_first {
-            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
-        }
+            SparseJournal::open_exact_anchored(file, native, scope, max_records, expected_first)?;
         witness.compare_and_swap(None, expected_first)?;
         Ok(Self {
             config,

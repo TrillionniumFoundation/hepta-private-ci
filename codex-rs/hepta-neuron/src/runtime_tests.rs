@@ -3,6 +3,9 @@ use super::*;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -337,6 +340,94 @@ fn witness_failure_after_commit_reconciles_without_reinvoking_model() {
         recovered.tick.checkpoint_after,
         current_anchor.checkpoint_digest
     );
+}
+
+#[test]
+fn interrupted_first_publication_requires_the_independent_exact_anchor() {
+    let fixture = Fixture::new();
+    let independent = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let independent_witness = MemoryWitness::default();
+    let mut reference = checked(NeuronRuntime::bootstrap(
+        independent.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 16,
+        config.clone(),
+        independent_witness.clone(),
+    ));
+    let mut model = FakeModel::new();
+    checked(reference.tick(&mut model, input(1, Digest32::ZERO)));
+    let expected = checked(independent_witness.current()).expect("reference checkpoint");
+
+    let interrupted_witness = MemoryWitness::default();
+    let mut interrupted = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 16,
+        config.clone(),
+        interrupted_witness.clone(),
+    ));
+    interrupted_witness.fail_next_compare_and_swap();
+    assert!(matches!(
+        interrupted.tick(&mut model, input(1, Digest32::ZERO)),
+        Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+    ));
+    drop(interrupted);
+    assert_eq!(checked(interrupted_witness.current()), None);
+
+    let wrong = JournalAnchor {
+        checkpoint_digest: Digest32::of_bytes(b"unrelated checkpoint"),
+        ..expected
+    };
+    assert!(matches!(
+        NeuronRuntime::recover_bootstrap_anchored(
+            fixture.file(),
+            native.clone(),
+            scope(),
+            /*max_records*/ 16,
+            config.clone(),
+            wrong,
+            interrupted_witness.clone(),
+        ),
+        Err(NeuronRuntimeError::Journal(JournalError::AnchorMismatch))
+    ));
+    assert_eq!(checked(interrupted_witness.current()), None);
+
+    let recovered = checked(NeuronRuntime::recover_bootstrap_anchored(
+        fixture.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 16,
+        config.clone(),
+        expected,
+        interrupted_witness.clone(),
+    ));
+    assert_eq!(checked(recovered.current_anchor()), Some(expected));
+    assert_eq!(checked(interrupted_witness.current()), Some(expected));
+
+    checked(reference.tick(&mut model, input(2, expected.checkpoint_digest)));
+    drop(reference);
+    let mut later_journal = independent.file();
+    checked(later_journal.seek(SeekFrom::End(0)));
+    checked(later_journal.write_all(b"torn tail"));
+    checked(later_journal.sync_all());
+    let before = checked(fs::read(independent.0.join("journal")));
+    let absent_witness = MemoryWitness::default();
+    let recovery = NeuronRuntime::recover_bootstrap_anchored(
+        later_journal,
+        native,
+        scope(),
+        /*max_records*/ 16,
+        config,
+        expected,
+        absent_witness.clone(),
+    );
+    assert!(recovery.is_err());
+    assert_eq!(checked(absent_witness.current()), None);
+    assert_eq!(checked(fs::read(independent.0.join("journal"))), before);
 }
 
 #[test]
