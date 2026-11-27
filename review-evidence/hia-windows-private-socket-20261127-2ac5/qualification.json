@@ -1,0 +1,134 @@
+{
+  "artifact_verification": {
+    "15205093765": "metadata retained; ZIP not downloaded by this observer",
+    "15206407649": "complete ZIP downloaded and byte count/SHA256 checked against original GitHub artifact metadata; every member independently hashed"
+  },
+  "files": [
+    {
+      "bytes": 34523,
+      "path": "source-1543-job-140552512071.log.gz",
+      "sha256": "bfc595e81422e5914eaa032221fb06142c887b8845e45d855ba47967500671e4"
+    },
+    {
+      "bytes": 36590,
+      "path": "source-2f8-job-140559964783.log.gz",
+      "sha256": "b40b31eb495117a3a92223d0686365f5804042f48ecbf4eaf21297c7aa234510"
+    },
+    {
+      "bytes": 3644386,
+      "path": "source-2f8-artifact-15206407649.zip",
+      "sha256": "78008f1610771cf71c2afdc355ef25a9998174285d9c6b8e73fb503bcf8b51d1"
+    }
+  ],
+  "github_artifacts": [
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/15205093765/zip",
+      "created_at": "2026-11-27T14:23:46Z",
+      "digest": "sha256:762de2de03c1949dcc353ecebcb5831374377ac9d2535f313ba53f8111d908a1",
+      "expired": false,
+      "expires_at": "2027-02-25T14:06:09Z",
+      "id": 15205093765,
+      "name": "hia-windows-private-state-1543c7d26b0a51b6d5604c29cdf7cc9b21d407db",
+      "size_in_bytes": 3647266,
+      "updated_at": "2026-11-27T14:23:46Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/15205093765",
+      "workflow_run": {
+        "head_branch": "codex/hia-windows-private-state-fleet-20261127-2ac5",
+        "head_repository_id": 1320694176,
+        "head_sha": "1543c7d26b0a51b6d5604c29cdf7cc9b21d407db",
+        "id": 46012867901,
+        "repository_id": 1320694176
+      }
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/15206407649/zip",
+      "created_at": "2026-11-27T14:32:27Z",
+      "digest": "sha256:78008f1610771cf71c2afdc355ef25a9998174285d9c6b8e73fb503bcf8b51d1",
+      "expired": false,
+      "expires_at": "2027-02-25T14:20:37Z",
+      "id": 15206407649,
+      "name": "hia-windows-private-state-2f8ccffc50fe032f036d9b610bb47c89fb8018b4",
+      "size_in_bytes": 3644386,
+      "updated_at": "2026-11-27T14:32:27Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/15206407649",
+      "workflow_run": {
+        "head_branch": "codex/hia-windows-private-state-fleet-20261127-2ac5",
+        "head_repository_id": 1320694176,
+        "head_sha": "2f8ccffc50fe032f036d9b610bb47c89fb8018b4",
+        "id": 46015063634,
+        "repository_id": 1320694176
+      }
+    }
+  ],
+  "previous_qualified_source": "1543c7d26b0a51b6d5604c29cdf7cc9b21d407db",
+  "qualified_source": "2f8ccffc50fe032f036d9b610bb47c89fb8018b4",
+  "runs": [
+    {
+      "all_seven_reported": true,
+      "gzip": {
+        "bytes": 34523,
+        "sha256": "bfc595e81422e5914eaa032221fb06142c887b8845e45d855ba47967500671e4"
+      },
+      "job_id": 140552512071,
+      "raw_log": {
+        "bytes": 282402,
+        "sha256": "debedf78e3b7f24e91e7f391809283bfa61780eee523e00ce6d789096ea2c333"
+      },
+      "returncode": 0,
+      "run_id": 46012867901,
+      "source": "1543c7d26b0a51b6d5604c29cdf7cc9b21d407db",
+      "started_unix": 1795789583.9190059,
+      "summary": [
+        "2026-11-27T14:23:37.8998560Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                          PASSED in 8.8s",
+        "2026-11-27T14:23:37.9001362Z //codex-rs/hepta-fleet:hepta-fleet-unit-tests                            PASSED in 97.4s",
+        "2026-11-27T14:23:37.9002211Z //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests              PASSED in 97.4s",
+        "2026-11-27T14:23:37.9003048Z //codex-rs/hepta-memory:hepta-memory-unit-tests                          PASSED in 36.3s",
+        "2026-11-27T14:23:37.9003920Z //codex-rs/hepta-prompt-registry:hepta-prompt-registry-unit-tests        PASSED in 100.7s",
+        "2026-11-27T14:23:37.9005550Z //codex-rs/utils/path-utils:path-utils-unit-tests                        PASSED in 94.9s",
+        "2026-11-27T14:23:37.9008127Z //codex-rs/state:state-unit-tests                                        PASSED in 100.5s",
+        "2026-11-27T14:23:37.9010527Z Executed 7 out of 7 tests: 7 tests pass."
+      ]
+    },
+    {
+      "artifact": {
+        "bytes": 3644386,
+        "sha256": "78008f1610771cf71c2afdc355ef25a9998174285d9c6b8e73fb503bcf8b51d1"
+      },
+      "artifact_id": 15206407649,
+      "job_id": 140559964783,
+      "members": [
+        {
+          "bytes": 3644517,
+          "name": "execution-log-test-private-state-555.zst",
+          "sha256": "e94aaa290b20e8bf34239530696e49a0bf5f499ee4aebd0594ad461071d251aa"
+        }
+      ],
+      "raw_log": {
+        "bytes": 303130,
+        "sha256": "5580ff19746e195cf18e068ce481f2387536b683dbc4c589288db8fdeed8dece"
+      },
+      "returncode": 0,
+      "run_id": 46015063634,
+      "source": "2f8ccffc50fe032f036d9b610bb47c89fb8018b4",
+      "started_unix": 1795790085.62374,
+      "summary": [
+        "2026-11-27T14:32:21.5053007Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                          PASSED in 10.7s",
+        "2026-11-27T14:32:21.5056728Z //codex-rs/hepta-fleet:hepta-fleet-unit-tests                            PASSED in 67.9s",
+        "2026-11-27T14:32:21.5057483Z //codex-rs/hepta-intelligence:hepta-intelligence-unit-tests              PASSED in 4.7s",
+        "2026-11-27T14:32:21.5060788Z //codex-rs/hepta-memory:hepta-memory-unit-tests                          PASSED in 75.1s",
+        "2026-11-27T14:32:21.5061576Z //codex-rs/hepta-prompt-registry:hepta-prompt-registry-unit-tests        PASSED in 85.7s",
+        "2026-11-27T14:32:21.5062369Z //codex-rs/utils/path-utils:path-utils-unit-tests                        PASSED in 110.3s",
+        "2026-11-27T14:32:21.5063113Z //codex-rs/state:state-unit-tests                                        PASSED in 79.7s",
+        "2026-11-27T14:32:21.5120780Z Executed 7 out of 7 tests: 7 tests pass."
+      ]
+    }
+  ],
+  "schema": "hepta.windows-private-socket.original-execution.v1",
+  "scope": {
+    "all_repository_native_rewrite_complete": false,
+    "bazel_lock_update_original_still_running": true,
+    "original_seven_package_bazel_target_run": true,
+    "per_test_success_stdout_retained_by_workflow": false
+  },
+  "status": "PASS"
+}
