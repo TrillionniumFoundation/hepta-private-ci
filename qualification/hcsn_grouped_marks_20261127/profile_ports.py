@@ -25,7 +25,12 @@ def main():
             visual=m.router(project(m));text=m.embed(caps)+m.text_pos[:,:caps.size(1)]
             return torch.cat([visual,text],1)
         return m(pixels,caps)
-    initial=device_snapshot();tick=time.time()
+    def occupied_device():
+        snapshot=device_snapshot()
+        if 'compute_processes' in snapshot:
+            snapshot['compute_processes']=[{'used_MiB':p.get('used_MiB')} for p in snapshot['compute_processes']]
+        return snapshot
+    initial=occupied_device();tick=time.time()
     with torch.inference_mode():
         for arm in ARMS:
             d=run_path('confirm',arm,seed,tuning['rates'][arm]);selected=seal['assignments'][d.name]['assignment']['best'];p=d/selected['name']
@@ -40,7 +45,7 @@ def main():
                 if round_id>=5:measurements[arm][stage].append(float(before.elapsed_time(after)))
                 del value
     summary={a:{s:{'median_ms':float(np.median(ms)),'p10_p90_ms':np.quantile(ms,[.1,.9]).tolist()} for s,ms in table.items()} for a,table in measurements.items()}
-    write_json(ROOT/'port_profile.json',{'scope':'inference only, original first 32 training photos and first caption, tensors preloaded on GPU, independent measurement after full cold evaluation','seed':seed,'repeats':30,'warmups':5,'clock':'CUDA event elapsed time per operation, GPU synchronized between operations','selected_states':bound,'frozen_result':sha(ROOT/'final.json'),'source':sha(Path(__file__)),'gpu':torch.cuda.get_device_name(0),'torch':str(torch.__version__),'device_snapshots':[initial,device_snapshot()],'start_epoch':tick,'end_epoch':time.time(),'milliseconds':measurements,'summary':summary})
+    write_json(ROOT/'port_profile.json',{'scope':'inference only, original first 32 training photos and first caption, tensors preloaded on GPU, independent measurement after full cold evaluation','seed':seed,'repeats':30,'warmups':5,'clock':'CUDA event elapsed time per operation, GPU synchronized between operations','selected_states':bound,'frozen_result':sha(ROOT/'final.json'),'source':sha(Path(__file__)),'gpu':torch.cuda.get_device_name(0),'torch':str(torch.__version__),'device_snapshots':[initial,occupied_device()],'start_epoch':tick,'end_epoch':time.time(),'milliseconds':measurements,'summary':summary})
     print('port profile',summary,flush=True)
 
 

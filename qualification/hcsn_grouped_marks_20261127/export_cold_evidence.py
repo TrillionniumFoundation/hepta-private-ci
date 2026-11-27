@@ -51,8 +51,18 @@ def export(root,dest):
     receipt=dest/'training_receipts.tar.gz'
     with tarfile.open(receipt,'w:gz',compresslevel=7) as tar:
         for p in sorted(json_paths):
-            data=p.read_bytes();info=tarfile.TarInfo(str(p.relative_to(root)));info.size=len(data);info.mtime=0;tar.addfile(info,io.BytesIO(data))
-    index={'scope':'exact loss sums and token counts per photograph for every distinct jointly frozen checkpoint, with every fit assignment','states':len(states),'fits':fits,'final_sha256':sha(root/'final.json'),'evaluation_seal':raw['seal'],'tuning_seal':sha(root/'tuning_seal.json'),'primary_control':tune['control'],'targets':tune['targets'],'packed_losses_sha256':sha(npz),'training_receipts_sha256':sha(receipt),'counts':{sp:int(same[sp+'_counts'].sum()) for sp in ['test','development']}}
+            data=p.read_bytes()
+            if p.name=='attempts.jsonl':
+                # The archived timing/exit receipt keeps occupancy and memory but excludes third-party executable names.
+                redacted=[]
+                for line in data.splitlines():
+                    record=json.loads(line);device=record.get('device',{})
+                    if 'compute_processes' in device:
+                        device['compute_processes']=[{'used_MiB':entry.get('used_MiB')} for entry in device['compute_processes']]
+                    redacted.append(json.dumps(record,sort_keys=True,separators=(',',':')))
+                data=('\n'.join(redacted)+'\n').encode()
+            info=tarfile.TarInfo(str(p.relative_to(root)));info.size=len(data);info.mtime=0;tar.addfile(info,io.BytesIO(data))
+    index={'scope':'exact loss sums and token counts per photograph for every distinct jointly frozen checkpoint, with every fit assignment','states':len(states),'fits':fits,'final_sha256':sha(root/'final.json'),'evaluation_seal':raw['seal'],'original_attempts_sha256':sha(root/'attempts.jsonl'),'tuning_seal':sha(root/'tuning_seal.json'),'primary_control':tune['control'],'targets':tune['targets'],'packed_losses_sha256':sha(npz),'training_receipts_sha256':sha(receipt),'counts':{sp:int(same[sp+'_counts'].sum()) for sp in ['test','development']}}
     (dest/'heldout_index.json').write_text(json.dumps(index,sort_keys=True,separators=(',',':'))+'\n');print('exported',len(states),len(fits),npz.stat().st_size,receipt.stat().st_size,flush=True)
 
 
