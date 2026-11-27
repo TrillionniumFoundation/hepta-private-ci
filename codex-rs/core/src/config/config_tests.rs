@@ -7831,6 +7831,7 @@ async fn replace_mcp_servers_streamable_http_serializes_oauth_resource() -> anyh
             oauth: Some(McpServerOAuthConfig {
                 client_id: Some("eci-prd-pub-codex-123".to_string()),
                 callback_port: None,
+                authorization_origins: Default::default(),
             }),
             oauth_resource: Some("https://resource.example.com".to_string()),
             tools: HashMap::new(),

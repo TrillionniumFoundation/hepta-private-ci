@@ -1,5 +1,7 @@
 //! Dispatch, in-flight body and local socket controls for owner-grant revocation.
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 #[tokio::test]
