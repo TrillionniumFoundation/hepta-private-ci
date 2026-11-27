@@ -215,14 +215,32 @@ fn windows_recovery_rejects_root_replacement_and_new_sidecars() -> anyhow::Resul
         .config
         .bind_existing_recovery_database(&fixture.home.join("source.sqlite3"))?;
     let old = fixture._temp.path().join("retained");
+    let root_before = snapshot_private_file(fixture.directory.as_file())?;
+    // Windows refuses a directory rename while its retained child files are
+    // open (MS-FSA 2.1.5.15.12). The attempted replacement must be blocked by
+    // the kernel, leaving this live recovery authority unchanged.
+    let error = std::fs::rename(&fixture.home, &old).unwrap_err();
+    assert_eq!(error.raw_os_error(), Some(5));
+    assert!(!old.exists());
+    guard.verify_inspection_unchanged()?;
+    assert_eq!(
+        snapshot_private_file(fixture.directory.as_file())?,
+        root_before
+    );
+    assert_eq!(
+        std::fs::read(fixture.home.join("source.sqlite3"))?,
+        b"retained"
+    );
+    // Once the recovery child handles are gone, replacement is possible. The
+    // retained directory still denotes the old object, never the new path.
+    drop(guard);
     std::fs::rename(&fixture.home, &old)?;
     let replacement = PrivateDirectory::open_or_create(&fixture.home)?;
     replacement.create_new("source.sqlite3")?.sync_all()?;
-    assert_eq!(
-        guard.verify_inspection_unchanged(),
-        Err(SqliteRecoveryError::Indeterminate)
-    );
+    assert!(root_before.same_file(&snapshot_private_file(fixture.directory.as_file())?));
+    assert!(!root_before.same_file(&snapshot_private_file(replacement.as_file())?));
     assert_eq!(std::fs::read(old.join("source.sqlite3"))?, b"retained");
+    assert_eq!(std::fs::read(fixture.home.join("source.sqlite3"))?, b"");
     Ok(())
 }
 
