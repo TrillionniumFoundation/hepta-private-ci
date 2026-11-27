@@ -315,9 +315,10 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
     Ok(())
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 #[test]
 fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistryError> {
+    #[cfg(unix)]
     use std::os::unix::fs::PermissionsExt;
     let fleet = TestFleet::new()?;
     let record = fleet
@@ -334,12 +335,34 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
         record.layout.matrix_secrets_root(),
         record.layout.automation_root(),
     ] {
+        #[cfg(unix)]
         assert_eq!(
             fs::symlink_metadata(root)?.permissions().mode() & 0o777,
             0o700,
             "{}",
             root.display()
         );
+        #[cfg(windows)]
+        {
+            use std::os::windows::io::AsHandle;
+
+            use codex_utils_path::windows_private_fs::PrivateDirectory;
+            use codex_utils_path::windows_private_fs::snapshot_private_file;
+            use codex_utils_path::windows_security::current_user_sid;
+            use codex_utils_path::windows_security::owner_sid;
+
+            let directory = PrivateDirectory::open_existing(root)?;
+            let before = snapshot_private_file(directory.as_file())?;
+            assert_eq!(
+                owner_sid(directory.as_file().as_handle())?,
+                current_user_sid()?
+            );
+            assert_eq!(
+                super::create_private_directory(root).unwrap_err().kind(),
+                std::io::ErrorKind::AlreadyExists
+            );
+            assert_eq!(snapshot_private_file(directory.as_file())?, before);
+        }
     }
     Ok(())
 }

@@ -77,6 +77,12 @@ fn unsafe_directory_acl_is_rejected_without_repairing_it() -> io::Result<()> {
         PrivateDirectory::open_or_create(&root).unwrap_err().kind(),
         io::ErrorKind::PermissionDenied
     );
+    assert_eq!(
+        PrivateDirectory::create_new_directory(&root)
+            .unwrap_err()
+            .kind(),
+        io::ErrorKind::AlreadyExists
+    );
     assert_eq!(dacl_bytes(directory.as_file())?, before);
     Ok(())
 }

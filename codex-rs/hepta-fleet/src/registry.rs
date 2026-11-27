@@ -156,7 +156,8 @@ impl FleetRegistry {
     /// One-time, fail-closed upgrade for Agent roots created before the Matrix
     /// companion geometry existed. New private directories are staged,
     /// fsynced, and renamed; existing paths must be physical directories and
-    /// are only tightened to owner-only permissions.
+    /// are only tightened to owner-only permissions on Unix. Windows rejects
+    /// unsafe existing owners or DACLs without changing their permissions.
     fn migrate_legacy_matrix_roots(&self) -> Result<(), FleetRegistryError> {
         for entry in std::fs::read_dir(self.layout.agents_root())? {
             let entry = entry?;
@@ -172,6 +173,8 @@ impl FleetRegistry {
                 .map_err(|error| FleetRegistryError::Corrupt(error.to_string()))?;
             let layout = self.layout.agent(&agent_id);
             validate_physical_directory(layout.agent_root())?;
+            #[cfg(windows)]
+            validate_private_directory(layout.agent_root())?;
             migrate_private_directory(layout.agent_root(), "matrix")?;
             migrate_private_directory(layout.matrix_root(), "secrets")?;
             validate_private_directory(layout.matrix_root())?;
@@ -267,6 +270,8 @@ impl FleetRegistry {
             layout.automation_root(),
         ] {
             validate_physical_directory(directory)?;
+            #[cfg(windows)]
+            validate_private_directory(directory)?;
         }
         validate_private_directory(layout.matrix_root())?;
         validate_private_directory(layout.matrix_secrets_root())?;
@@ -529,7 +534,13 @@ fn create_private_directory(path: &Path) -> std::io::Result<()> {
     builder.mode(0o700).create(path)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn create_private_directory(path: &Path) -> std::io::Result<()> {
+    codex_utils_path::windows_private_fs::PrivateDirectory::create_new_directory(path)?;
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn create_private_directory(path: &Path) -> std::io::Result<()> {
     std::fs::create_dir(path)
 }
@@ -542,7 +553,14 @@ fn set_private_directory_permissions(path: &Path) -> Result<(), FleetRegistryErr
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn set_private_directory_permissions(path: &Path) -> Result<(), FleetRegistryError> {
+    // Existing state is evidence. Never repair a foreign or overbroad DACL in
+    // order to admit it as private state.
+    validate_private_directory(path)
+}
+
+#[cfg(not(any(unix, windows)))]
 fn set_private_directory_permissions(_path: &Path) -> Result<(), FleetRegistryError> {
     Ok(())
 }
@@ -561,7 +579,13 @@ fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
+    codex_utils_path::windows_private_fs::PrivateDirectory::open_existing_read_only(path)?;
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn validate_private_directory(path: &Path) -> Result<(), FleetRegistryError> {
     validate_physical_directory(path)
 }
