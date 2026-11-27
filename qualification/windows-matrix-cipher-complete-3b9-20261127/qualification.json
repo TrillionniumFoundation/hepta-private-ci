@@ -1,0 +1,67 @@
+{
+  "native_macos": {
+    "methods_passed": 33,
+    "original_command": [
+      "/opt/homebrew/bin/just",
+      "test",
+      "-p",
+      "codex-hepta-matrix-sdk"
+    ],
+    "raw": {
+      "bytes": 52547,
+      "sha256": "fa0e710690c26fe3dfaed48bf804e7a19ba6905d4aa68c9c8c3847411bbb05f1"
+    },
+    "skipped": 0,
+    "source_unchanged": true,
+    "status": "PASS",
+    "test_seconds": 2.187,
+    "total_seconds": 236.83993504196405
+  },
+  "original_pbkdf2_rounds": 200000,
+  "original_storage_deadline_seconds": 5,
+  "source_commit": "3b9f69f612c18d04f00e63ea77d9a04f5aa08371",
+  "unchanged_locks": {
+    "MODULE.bazel.lock": "1cd3722ee29b64c73191cd635b9a3816f498ef3fa180092a4a442a0c248e23e6",
+    "codex-rs/Cargo.lock": "3f314e2537b62aee2e303ff51f4ac29bb88afd3b73d05c6f175a35916559ef85"
+  },
+  "whole_bazel_matrix_qualified": false,
+  "windows": {
+    "artifact": {
+      "CRC": "PASS",
+      "archive": {
+        "bytes": 2597202,
+        "sha256": "91c1f39a9ddb4e55fec4999e20fdac93766201d8439592e59aa9b1e8d29d37e2"
+      },
+      "artifact_id": 15222811607,
+      "members": {
+        "bazel-execution-logs/execution-log-test-original-matrix-cipher-1989.zst": {
+          "bytes": 2590952,
+          "sha256": "ca6ecb104431044cbf6fae69c9afe363453dbcdd43f21d94b527a4999baade5e"
+        },
+        "windows-matrix-cipher.log": {
+          "bytes": 84011,
+          "sha256": "a8c366c247a193917e10addf95eac7814574187fcc81223610e02f931e2d9b03"
+        }
+      },
+      "seconds": 4.608438374940306
+    },
+    "flaky": 0,
+    "job_id": 140663027973,
+    "raw": {
+      "bytes": 276144,
+      "sha256": "9651c3a0142a8c0871f5b83bec1673a3a47ad69ffa5f78a175d7cf23b12997d8"
+    },
+    "retries": 0,
+    "run_id": 46045325693,
+    "status": "PASS",
+    "targets": {
+      "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-storage_upgrade-test": [
+        "3.4"
+      ],
+      "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests": [
+        "48.0"
+      ]
+    },
+    "test_result_cache_disabled": true
+  }
+}
