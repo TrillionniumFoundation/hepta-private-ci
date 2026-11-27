@@ -149,6 +149,8 @@ def evaluate(study: Mapping):
     ambiguity_tol = _number(protocol.get("max_ambiguity_increase"), "ambiguity tolerance", upper=0.05)
     inconsistency_tol = _number(protocol.get("max_inconsistency_increase"), "inconsistency tolerance", upper=0.05)
     max_cost_ratio = _number(protocol.get("max_total_cost_ratio"), "cost ratio", lower=1, upper=1.1)
+    max_tail_cost_ratio = _number(protocol.get("max_tail_cost_ratio"),
+                                  "tail cost ratio", lower=1, upper=1.1)
     # A relative ratio alone cannot enforce a shared physical compute budget.
     # Freeze the absolute measured per-world hard ceiling before heldout.
     hard_cost_limit = _number(protocol.get("hard_world_cost_limit"),
@@ -319,6 +321,10 @@ def evaluate(study: Mapping):
         res[:, 1:] = v[..., 1:].mean(axis=(1, 2))
         return res
     point = summarize(values)
+    # A tight mean-cost bound can still hide a physical resource spike.
+    # Compare the worst-decile measured costs within each registered seed.
+    tail_costs = [float(np.mean([cvar90(seed_costs) for seed_costs in arm_costs]))
+                  for arm_costs in values[..., -1]]
     rng = np.random.default_rng(protocol["bootstrap_seed"])
     # Simultaneously bootstrap complete original-source clusters, then
     # training seeds, paired identically across every NDU/strong-control arm.
@@ -349,6 +355,7 @@ def evaluate(study: Mapping):
         upper = np.quantile(cloud, 1 - tail_level, axis=0)
         lower = np.quantile(cloud, tail_level, axis=0)
         ratio = point[0, -1] / point[index + 1, -1]
+        tail_cost_ratio = tail_costs[0] / tail_costs[index + 1]
         cost_margin_upper = float(np.quantile(cost_margin[:, index], 1 - tail_level))
         # A good pooled CVaR or mean must NEVER override a protected world's
         # worse external loss, correct quality, ambiguity, inconsistency, or
@@ -375,6 +382,7 @@ def evaluate(study: Mapping):
             "ambiguity_noninferiority": bool(upper[2] <= ambiguity_tol),
             "consistency_noninferiority": bool(upper[3] <= inconsistency_tol),
             "physical_total_cost": bool(ratio <= max_cost_ratio and cost_margin_upper <= 0),
+            "physical_tail_cost": tail_cost_ratio <= max_tail_cost_ratio,
             "protected_task_no_regression": protected_ok,
             "protected_task_absolute_service": bool(protected_service),
         }
@@ -382,6 +390,7 @@ def evaluate(study: Mapping):
         out[name] = {"mean_pair_difference": dict(zip(("cvar90", "quality", "ambiguity", "inconsistency", "total_cost"), x.tolist())),
                      "simultaneous_lower": lower.tolist(), "simultaneous_upper": upper.tolist(),
                      "observed_cost_ratio": ratio,
+                     "observed_tail_cost_ratio": tail_cost_ratio,
                      "cost_noninferiority_margin_upper": cost_margin_upper, "gates": gates}
     receipt = {"schema": "hepta-mgp-paired-review-v1", "status": "HOLD_NO_GO", "authority": "DENY_ALL",
                "source": "LOCAL_RESEARCH_UNAUTHENTICATED", "scientific_superiority_proven": False,

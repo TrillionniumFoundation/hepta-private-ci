@@ -31,6 +31,7 @@ def study_fixture(*, strong_ndu=True, bootstrap_replicates=120):
         'minimum_cvar_improvement': 0.02,
         'max_quality_drop': 0.02, 'max_ambiguity_increase': 0.,
         'max_inconsistency_increase': 0., 'max_total_cost_ratio': 1.05,
+        'max_tail_cost_ratio': 1.05,
         'bootstrap_replicates': bootstrap_replicates,
         'bootstrap_seed': 3001, 'familywise_alpha': 0.05,
         'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',
@@ -92,6 +93,41 @@ def lock_protected_task_labels(study):
 
 
 class PairedEvidenceTests(unittest.TestCase):
+    def test_missing_tail_cost_registration_denied(self):
+        study = study_fixture()
+        del study['protocol']['max_tail_cost_ratio']
+        with self.assertRaisesRegex(EvidenceGap, 'tail cost ratio'):
+            evaluate(study)
+
+    def test_rare_unprotected_spikes_pass_mean_gate_but_fail_physical_tail_gate(self):
+        study = study_fixture(bootstrap_replicates=2000)
+        for world in study['worlds']:
+            index = int(world['world_id'].rsplit('-', 1)[-1])
+            # Retain the paired absolute and protected-world limits. The
+            # three sparse high-cost worlds are intentionally unprotected.
+            adjustment = .31 if index in (1, 5, 9) else -.07
+            cost = world['outcomes']['ndu']['measured_cost']
+            cost['encoder'] += adjustment
+            cost['total'] += adjustment
+        report = evaluate(study)
+        for comparison in report['comparison'].values():
+            self.assertTrue(comparison['gates']['physical_total_cost'])
+            self.assertTrue(comparison['gates']['absolute_world_cost_budget'])
+            self.assertTrue(comparison['gates']['protected_task_no_regression'])
+            self.assertGreater(comparison['observed_tail_cost_ratio'], 1.25)
+            self.assertFalse(comparison['gates']['physical_tail_cost'])
+        self.assertFalse(report['all_provisional_gates_pass'])
+        self.assertEqual(report['status'], 'HOLD_NO_GO')
+        self.assertEqual(report['authority'], 'DENY_ALL')
+
+    def test_uniform_tail_matches_the_measured_mean_ratio(self):
+        report = evaluate(study_fixture())
+        for comparison in report['comparison'].values():
+            self.assertAlmostEqual(comparison['observed_tail_cost_ratio'],
+                                   comparison['observed_cost_ratio'], places=12)
+            self.assertTrue(comparison['gates']['physical_tail_cost'])
+        self.assertFalse(report['scientific_superiority_proven'])
+
     def test_frozen_protected_manifest_required(self):
         d = study_fixture()
         del d['protocol']['heldout_protected_flags']
