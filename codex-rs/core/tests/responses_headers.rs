@@ -460,7 +460,15 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
         responses::ev_completed("resp-1"),
     ]);
 
-    let test = test_codex().build(&server).await.expect("build test codex");
+    let test = test_codex()
+        .with_model_info_override("gpt-5.5", |model| {
+            model
+                .experimental_supported_tools
+                .push("test_sync_tool".to_string());
+        })
+        .build(&server)
+        .await
+        .expect("build test codex");
     let cwd = test.cwd_path();
 
     let first_request = responses::mount_sse_once(&server, response_body.clone()).await;
@@ -567,6 +575,12 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
         responses::ev_response_created("resp-2"),
         responses::ev_reasoning_item("rsn-1", &["thinking"], &[]),
         responses::ev_exec_command_call("call-1", "echo turn-metadata"),
+        // The follow-up request must observe completed enrichment, not shell timing.
+        responses::ev_function_call(
+            "wait-for-git",
+            "test_sync_tool",
+            r#"{"wait_for_git_enrichment":true}"#,
+        ),
         responses::ev_completed("resp-2"),
     ]);
     let follow_up_response = responses::sse(vec![
@@ -589,6 +603,13 @@ async fn responses_stream_includes_turn_metadata_header_for_git_workspace_e2e() 
 
     let requests = request_log.requests();
     assert_eq!(requests.len(), 2, "expected two requests in one turn");
+    assert_eq!(
+        requests[1]
+            .function_call_output_text("wait-for-git")
+            .as_deref(),
+        Some("ok"),
+        "the synchronization tool should complete before the follow-up request"
+    );
 
     let first_parsed: serde_json::Value = serde_json::from_str(
         &requests[0]
