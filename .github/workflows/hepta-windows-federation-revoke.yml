@@ -71,7 +71,7 @@ jobs:
             -- --nocapture --test-threads=1 2>&1 | tee "$log"
           cargo test --locked --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-memory --lib \
-            cognitive_schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected \
+            cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected \
             -- --exact --nocapture --test-threads=1 2>&1 | tee -a "$log"
           # Fail closed if either selector matched no test.
           test "$(grep -Ec 'test result: ok\. 1 passed; 0 failed;' "$log")" -eq 2
