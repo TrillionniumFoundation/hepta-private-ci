@@ -76,6 +76,10 @@
 //! running, `Tab` submits just like Enter so input is never dropped.
 //! `Tab` does not submit when entering a `!` shell command.
 //!
+//! Shell mode keeps the leading `!` in prompt state, outside the editable textarea. Imports subtract
+//! one byte from element ranges; exports add it back. Empty, reversed, or unrepresentable ranges are
+//! discarded.
+//!
 //! On submit/queue paths, the composer:
 //!
 //! - Expands pending paste placeholders so element ranges align with the final text.
