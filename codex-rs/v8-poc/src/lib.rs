@@ -26,33 +26,8 @@ pub fn linked_v8_has_sandbox() -> bool {
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
-    use std::sync::Once;
 
     use super::bazel_target;
-
-    fn initialize_v8() {
-        static INIT: Once = Once::new();
-
-        INIT.call_once(|| {
-            v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
-            v8::V8::initialize();
-        });
-    }
-
-    fn evaluate_expression(expression: &str) -> String {
-        initialize_v8();
-
-        let isolate = &mut v8::Isolate::new(Default::default());
-        v8::scope!(let scope, isolate);
-
-        let context = v8::Context::new(scope, Default::default());
-        let scope = &mut v8::ContextScope::new(scope, context);
-        let source = v8::String::new(scope, expression).expect("expression should be valid UTF-8");
-        let script = v8::Script::compile(scope, source, None).expect("expression should compile");
-        let result = script.run(scope).expect("expression should evaluate");
-
-        result.to_rust_string_lossy(scope)
-    }
 
     #[test]
     fn exposes_expected_bazel_target() {
@@ -70,13 +45,26 @@ mod tests {
     }
 
     #[test]
-    fn evaluates_integer_addition() {
-        assert_eq!(evaluate_expression("1 + 2"), "3");
-    }
+    fn evaluates_integer_addition_and_string_concatenation() {
+        // The sandbox allocator is process-wide. Exercise both scripts in one
+        // isolate so the test runner cannot race its lazy initialization.
+        v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
+        v8::V8::initialize();
 
-    #[test]
-    fn evaluates_string_concatenation() {
-        assert_eq!(evaluate_expression("'hello ' + 'world'"), "hello world");
+        let isolate = &mut v8::Isolate::new(Default::default());
+        v8::scope!(let scope, isolate);
+        let context = v8::Context::new(scope, Default::default());
+        let scope = &mut v8::ContextScope::new(scope, context);
+
+        for (expression, expected) in [("1 + 2", "3"), ("'hello ' + 'world'", "hello world")] {
+            let source =
+                v8::String::new(scope, expression).expect("expression should be valid UTF-8");
+            let script =
+                v8::Script::compile(scope, source, None).expect("expression should compile");
+            let result = script.run(scope).expect("expression should evaluate");
+
+            assert_eq!(result.to_rust_string_lossy(scope), expected);
+        }
     }
 
     #[test]
