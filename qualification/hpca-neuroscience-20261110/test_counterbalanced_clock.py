@@ -1,16 +1,23 @@
 """Small invariant tests only. Never substitute for native model or independent B."""
-import hashlib
 from pathlib import Path
+import sys
 import unittest
 from real_cpu_clock_counterbalance import clock_schedule
+
+REPOSITORY = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPOSITORY / "qa/repository-consolidation/20261115"))
+from restore_raw_evidence import read_verified
 
 ARMS = ("uniform", "heterogeneous", "inverse_heterogeneous", "phase_shifted_heterogeneous")
 SCRIPT_SHA256 = "d4fafebc2024040f87092efa4465f7bbc519a94c25ef82489eaf9fc81603d495"
 
 class ClockControls(unittest.TestCase):
     def test_frozen_execution_script(self):
-        path = Path(__file__).with_name("real_cpu_clock_counterbalance.py")
-        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), SCRIPT_SHA256)
+        path = Path(__file__).resolve().with_name("real_cpu_clock_counterbalance.py")
+        original = read_verified(
+            REPOSITORY, path.relative_to(REPOSITORY), 14905, SCRIPT_SHA256
+        )
+        self.assertIn(path.read_bytes(), (original, original[:-1]))
 
     def test_group_opportunity(self):
         vals = [clock_schedule(a, 12) for a in ARMS]

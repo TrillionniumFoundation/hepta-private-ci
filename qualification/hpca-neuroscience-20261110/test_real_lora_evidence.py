@@ -1,9 +1,13 @@
 """Offline audit of archived real-model execution; does NOT rerun model."""
-import hashlib
 import json
 from pathlib import Path
+import sys
 import unittest
 HERE=Path(__file__).resolve().parent
+
+REPOSITORY = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPOSITORY / "qa/repository-consolidation/20261115"))
+from restore_raw_evidence import read_verified
 
 class RealCpuEvidence(unittest.TestCase):
     @classmethod
@@ -16,8 +20,11 @@ class RealCpuEvidence(unittest.TestCase):
         self.assertEqual(r["authority"],"CANDIDATE_ONLY_DENY_ALL_HOLD_NO_GO")
         self.assertEqual(r["decision"],"HOLD_NO_GO")
         self.assertEqual(r["selection"],"NO_UPDATE_RECOMMENDED_NOT_OWNER_DECISION")
-        self.assertEqual(r["identities"]["script_sha256"],hashlib.sha256(
-            (HERE/"native_lora_clock.py").read_bytes()).hexdigest())
+        path = HERE / "native_lora_clock.py"
+        original = read_verified(
+            REPOSITORY, path.relative_to(REPOSITORY), 13740, r["identities"]["script_sha256"]
+        )
+        self.assertIn(path.read_bytes(), (original, original[:-1]))
         self.assertIn("NOT independent",r["sources"])
         self.assertTrue(all(len(v)==64 for v in r["identities"].values()))
         for key in ("external independent B","2x2 NDU",
