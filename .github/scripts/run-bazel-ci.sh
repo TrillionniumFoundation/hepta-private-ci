@@ -52,26 +52,19 @@ if [[ -n "${BAZEL_OUTPUT_USER_ROOT:-}" ]]; then
 fi
 
 run_bazel() (
-  # CI tests can select a different platform's configuration on this host.
-  # Use the native transport for an MSYS shell regardless of that selection.
-  if [[ "${RUNNER_OS:-}" == "Windows" || "${OSTYPE:-}" == msys* ]]; then
-    # Bash writes its full array without spawning a native process with that
-    # array. A large target roster can exceed Windows' native argv limit before
-    # Python or Bazel starts; only the transport path crosses this boundary.
-    local argument_file
-    argument_file="$(mktemp)"
-    trap 'rm -f "$argument_file"' EXIT
-    printf '%s\0' "$@" > "$argument_file"
-    local native_argument_file="$argument_file"
-    if command -v cygpath >/dev/null 2>&1; then
-      native_argument_file="$(cygpath -w "$argument_file")"
-    fi
-    MSYS2_ARG_CONV_EXCL='*' "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" \
-      --wrapper-args-file "$native_argument_file"
-    return
+  # Keep target patterns and long rosters out of native process argv. In
+  # particular, Git for Windows can rewrite a bare //... into /... at the
+  # Bash-to-Python boundary even when the selected CI config is not Windows.
+  local argument_file
+  argument_file="$(mktemp)"
+  trap 'rm -f "$argument_file"' EXIT
+  printf '%s\0' "$@" > "$argument_file"
+  local native_argument_file="$argument_file"
+  if command -v cygpath >/dev/null 2>&1; then
+    native_argument_file="$(cygpath -w "$argument_file")"
   fi
-
-  "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
+  MSYS2_ARG_CONV_EXCL='*' "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" \
+    --wrapper-args-file "$native_argument_file"
 )
 
 run_bazel_with_startup_args() {
