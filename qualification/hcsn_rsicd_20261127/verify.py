@@ -29,7 +29,9 @@ def verify(directory):
                     val=(a[:,:,0]<=k).mean()
                     maxdiff=max(maxdiff,abs(val-results["scores"][name]["strict_R"+str(k)]));checked+=1
                 if p!="warm":
-                    kind,seed,budget=name.split("/");h=json.loads(z.read(p+"/"+kind+"-"+seed+"/history.json"))
+                    kind,seed,budget=name.split("/")
+                    source_panel="short" if p=="long" and kind!="conventional" else p
+                    h=json.loads(z.read(source_panel+"/"+kind+"-"+seed+"/history.json"))
                     options=[r for r in h if r.get("state") and r["time"]<=int(budget)]
                     best=max(options,key=lambda x:(x["dev_r1"],x["dev_r5"],-x["time"]));assert best["hash"]==fp
     if maxdiff>1e-14:raise AssertionError(maxdiff)

@@ -13,6 +13,12 @@ def package(data,panel,to):
         if run.is_dir():
             for name in ("history.json","complete.json"):
                 if (run/name).exists():files[str((run/name).relative_to(data))]=run/name
+    if panel=="long":
+        for family in ("literal","smooth","linear"):
+            for seed in (109,271,463):
+                owner=data/"short"/f"{family}-{seed}"
+                for name in ("history.json","complete.json"):
+                    files[str((owner/name).relative_to(data))]=owner/name
     state_map={}
     for key, item in selection.items():
         if not item: continue
