@@ -213,7 +213,12 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     )?;
     wait_for_release(&client, &agents[3], &release_v1, None, &mut process_guard).await?;
 
-    let mut peer_status_baseline = peer_baseline(&client, &agents[1..]).await?;
+    let mut peer_status_baseline = peer_baseline(
+        &client,
+        &agents[1..],
+        PeerBaselineStage::BeforeAgentAIsolation,
+    )
+    .await?;
     let initial_a = client.snapshot(agents[0].agent_id.clone()).await?;
     let initial_a_pid = require_pid(&initial_a)?;
 
@@ -333,7 +338,12 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         );
     }
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
-    peer_status_baseline = peer_baseline(&restarted_client, &agents[1..]).await?;
+    peer_status_baseline = peer_baseline(
+        &restarted_client,
+        &agents[1..],
+        PeerBaselineStage::AfterDaemonRestartAdoption,
+    )
+    .await?;
 
     let before_rollback = restarted_client
         .snapshot(agents[0].agent_id.clone())
@@ -560,14 +570,32 @@ async fn wait_for_stopped(
     }
 }
 
+#[derive(Debug)]
+enum PeerBaselineStage {
+    BeforeAgentAIsolation,
+    AfterDaemonRestartAdoption,
+}
+
 async fn peer_baseline(
     client: &SupervisordClient,
     peers: &[AgentFixture],
+    stage: PeerBaselineStage,
 ) -> Result<Vec<SupervisordAgentStatus>> {
     let mut baseline = Vec::new();
     for peer in peers {
         let status = client.snapshot(peer.agent_id.clone()).await?;
-        ensure!(status.healthy, "peer {} is not healthy", peer.agent_id);
+        ensure!(
+            status.healthy,
+            "peer {} is not healthy; stage={stage:?} lifecycle={:?} active={} pid={:?} spawn={:?} runtime={:?} generation={} release_pending={}",
+            peer.agent_id,
+            status.lifecycle,
+            status.active,
+            status.process_id,
+            status.spawn_generation,
+            status.runtime_generation,
+            status.lifecycle_generation,
+            status.release_change_pending,
+        );
         baseline.push(status);
     }
     Ok(baseline)
