@@ -533,6 +533,23 @@ impl TestCodexBuilder {
         .await
     }
 
+    pub async fn build_with_remote_and_local_streaming_server(
+        &mut self,
+        server: &StreamingSseServer,
+    ) -> anyhow::Result<TestCodex> {
+        let home = match self.home.clone() {
+            Some(home) => home,
+            None => Arc::new(TempDir::new()?),
+        };
+        let base_url = format!("{}/v1", server.uri());
+        let test_env = test_env().await?;
+        Box::pin(self.build_with_home_and_base_url(
+            base_url, home, /*resume_from*/ None, test_env,
+            /*include_local_environment*/ true,
+        ))
+        .await
+    }
+
     pub async fn build_with_streaming_server(
         &mut self,
         server: &StreamingSseServer,

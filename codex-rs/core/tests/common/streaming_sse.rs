@@ -10,6 +10,11 @@ use tokio::sync::Mutex as TokioMutex;
 use tokio::sync::Notify;
 use tokio::sync::oneshot;
 
+#[path = "streaming_sse_routes.rs"]
+mod routes;
+pub use routes::StreamingSseRoute;
+pub use routes::start_routed_streaming_sse_server;
+
 /// Streaming SSE chunk payload gated by a per-chunk signal.
 #[derive(Debug)]
 pub struct StreamingSseChunk {
@@ -65,6 +70,7 @@ pub async fn start_streaming_sse_server(
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
     start_streaming_sse_server_inner(
         responses, /*first_headers_gate*/ None, /*request_observer*/ None,
+        /*request_routes*/ None,
     )
     .await
 }
@@ -81,6 +87,7 @@ pub async fn start_streaming_sse_server_with_first_headers_gate(
         responses,
         Some(first_headers_gate),
         /*request_observer*/ None,
+        /*request_routes*/ None,
     )
     .await
 }
@@ -95,6 +102,7 @@ pub async fn start_streaming_sse_server_with_request_observer(
         responses,
         /*first_headers_gate*/ None,
         Some(request_observer),
+        /*request_routes*/ None,
     )
     .await
 }
@@ -106,14 +114,20 @@ pub async fn start_streaming_sse_server_with_first_headers_gate_and_request_obse
     first_headers_gate: oneshot::Receiver<()>,
     request_observer: StreamingSseRequestObserver,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
-    start_streaming_sse_server_inner(responses, Some(first_headers_gate), Some(request_observer))
-        .await
+    start_streaming_sse_server_inner(
+        responses,
+        Some(first_headers_gate),
+        Some(request_observer),
+        /*request_routes*/ None,
+    )
+    .await
 }
 
 async fn start_streaming_sse_server_inner(
     responses: Vec<Vec<StreamingSseChunk>>,
     first_headers_gate: Option<oneshot::Receiver<()>>,
     request_observer: Option<StreamingSseRequestObserver>,
+    request_routes: Option<routes::ResponseRoutes>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
@@ -129,10 +143,12 @@ async fn start_streaming_sse_server_inner(
         completion_receivers.push(rx);
     }
 
+    let route_requests = request_routes.is_some();
     let state = Arc::new(TokioMutex::new(StreamingSseState {
         responses: VecDeque::from(responses),
         completions: VecDeque::from(completion_senders),
         first_headers_gate,
+        request_routes,
     }));
     let requests = Arc::new(TokioMutex::new(Vec::new()));
     let request_notify = Arc::new(Notify::new());
@@ -140,7 +156,7 @@ async fn start_streaming_sse_server_inner(
     let request_notify_for_task = Arc::clone(&request_notify);
     let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
 
-    let observe_requests = request_observer.is_some();
+    let observe_requests = request_observer.is_some() || route_requests;
     let task = tokio::spawn(async move {
         let mut connection_tasks = tokio::task::JoinSet::new();
         loop {
@@ -168,10 +184,16 @@ async fn start_streaming_sse_server_inner(
                                 let _ = write_http_response(&mut stream, /*status*/ 400, "bad request", "text/plain").await;
                                 return;
                             }
-                            let body = serde_json::json!({
-                                "data": [],
-                                "object": "list"
-                            })
+                            let body = if route_requests {
+                                serde_json::json!(codex_protocol::openai_models::ModelsResponse {
+                                    models: Vec::new(),
+                                })
+                            } else {
+                                serde_json::json!({
+                                    "data": [],
+                                    "object": "list"
+                                })
+                            }
                             .to_string();
                             let _ = write_http_response(&mut stream, /*status*/ 200, &body, "application/json").await;
                             return;
@@ -193,9 +215,10 @@ async fn start_streaming_sse_server_inner(
                                 let _ = write_http_response(&mut stream, /*status*/ 500, "request capture failed", "text/plain").await;
                                 return;
                             }
+                            let routed_body = route_requests.then(|| body.clone());
                             requests.lock().await.push(body);
                             request_notify.notify_one();
-                            let Some((chunks, completion, headers_gate)) = take_next_stream(&state).await else {
+                            let Some((chunks, completion, headers_gate)) = take_next_stream(&state, &request, routed_body).await else {
                                 let _ = write_http_response(&mut stream, /*status*/ 500, "no responses queued", "text/plain").await;
                                 return;
                             };
@@ -255,18 +278,28 @@ struct StreamingSseState {
     responses: VecDeque<Vec<StreamingSseChunk>>,
     completions: VecDeque<oneshot::Sender<i64>>,
     first_headers_gate: Option<oneshot::Receiver<()>>,
+    request_routes: Option<routes::ResponseRoutes>,
 }
 
 async fn take_next_stream(
     state: &TokioMutex<StreamingSseState>,
+    headers: &str,
+    body: Option<Vec<u8>>,
 ) -> Option<(
     Vec<StreamingSseChunk>,
     oneshot::Sender<i64>,
     Option<oneshot::Receiver<()>>,
 )> {
     let mut guard = state.lock().await;
-    let chunks = guard.responses.pop_front()?;
-    let completion = guard.completions.pop_front()?;
+    let (chunks, completion) = if let Some(routes) = &mut guard.request_routes {
+        let index = routes.select(headers, body?)?;
+        (
+            guard.responses.remove(index)?,
+            guard.completions.remove(index)?,
+        )
+    } else {
+        (guard.responses.pop_front()?, guard.completions.pop_front()?)
+    };
     let headers_gate = guard.first_headers_gate.take();
     Some((chunks, completion, headers_gate))
 }
