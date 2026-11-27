@@ -224,11 +224,14 @@ class CurrentHoldoutErrorLatchSourceClosureTests(unittest.TestCase):
                 self.assertEqual(boundary.receiver_type, "FencedFinalHoldoutOwnerV1")
                 self.assertEqual(boundary.definition_path, OWNER)
                 PROOF._verify_boundary(ROOT, boundary, sources, ())
-                if callers:
-                    with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
-                        PROOF._verify_boundary(
-                            ROOT, replace(boundary, product_callers=()), sources, ()
-                        )
+                # Both directions matter: removing a real caller and inventing
+                # a caller for a closed boundary must be rejected.
+                invalid_callers = () if callers else (RELEASE,)
+                mismatch = "unexpected" if callers else "missing"
+                with self.assertRaisesRegex(PROOF.VerificationFailure, mismatch):
+                    PROOF._verify_boundary(
+                        ROOT, replace(boundary, product_callers=invalid_callers), sources, ()
+                    )
                 injected = dict(sources)
                 injected[PREFIX + "unregistered_holdout_read.rs"] = (
                     "fn bypass<S: FinalHoldoutCasStoreV1>(owner: &mut FencedFinalHoldoutOwnerV1<S>, "
