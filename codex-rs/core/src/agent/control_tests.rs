@@ -841,10 +841,21 @@ async fn spawn_v2_reload_test_child(
         Some(task_name.to_string()),
     )
     .expect("child source");
-    control
-        .spawn_agent_with_metadata(
+    let communication = InterAgentCommunication::new(
+        parent
+            .session_source
+            .get_agent_path()
+            .unwrap_or_else(AgentPath::root),
+        source.get_agent_path().expect("child path"),
+        Vec::new(),
+        "hello child".to_string(),
+        /*trigger_turn*/ false,
+    );
+    let child = control
+        .spawn_agent_with_communication(
             config,
-            text_input("hello child"),
+            communication.clone(),
+            AgentCommunicationContext::new(AgentCommunicationKind::Spawn, parent.session.thread_id),
             Some(source),
             SpawnAgentOptions {
                 parent_thread_id: Some(parent.session.thread_id),
@@ -852,7 +863,37 @@ async fn spawn_v2_reload_test_child(
             },
         )
         .await
-        .expect("spawn_agent should succeed")
+        .expect("spawn_agent should succeed");
+    let thread = control
+        .upgrade()
+        .expect("fixture manager should exist")
+        .get_thread(child.thread_id)
+        .await
+        .expect("fixture child should exist");
+    // Submission only queues an operation. Observe and consume the actual
+    // non-triggering message before later residency checks can see the child.
+    let initial_input = timeout(Duration::from_secs(/*secs*/ 10), async {
+        loop {
+            let pending = thread.session.input_queue.drain_mailbox_input_items().await;
+            if !pending.0.is_empty() {
+                break pending;
+            }
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .expect("initial fixture communication should reach its child");
+    assert_eq!(
+        initial_input,
+        (
+            vec![crate::session::TurnInput::InterAgentCommunication(
+                communication
+            )],
+            None,
+            None,
+        ),
+    );
+    child
 }
 
 async fn check_v2_agent_reload(route: V2ReloadRoute) {
@@ -975,8 +1016,8 @@ async fn check_v2_agent_reload(route: V2ReloadRoute) {
                 .turn_environments
                 .update_selections(std::slice::from_ref(&selection), &thread_config);
             parent_turn = parent_thread.session.new_default_turn().await;
-            // The spawned parent owns a real task. Finish its interrupt/terminal
-            // owner before making it eligible for residency eviction.
+            // Reload fixtures start no model turn. Keep the terminalization
+            // checks before making the parent eligible for residency eviction.
             parent_thread
                 .session
                 .abort_all_tasks(TurnAbortReason::Interrupted)
@@ -4103,44 +4144,22 @@ async fn shutdown_agent_tree_closes_live_descendants() {
 #[tokio::test]
 async fn shutdown_agent_tree_closes_descendants_when_started_at_child() {
     let harness = AgentControlHarness::new().await;
-    let (parent_thread_id, _parent_thread) = harness.start_thread().await;
+    let (parent_thread_id, parent_thread) = harness.start_thread().await;
 
     let child_thread_id = harness
-        .control
-        .spawn_agent(
-            harness.config.clone(),
-            text_input("hello child"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: Some("explorer".to_string()),
-            })),
-        )
+        .spawn_tree_resume_child(&parent_thread, "explorer", "hello child")
         .await
         .expect("child spawn should succeed");
-    let grandchild_thread_id = harness
-        .control
-        .spawn_agent(
-            harness.config.clone(),
-            text_input("hello grandchild"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id: child_thread_id,
-                depth: 2,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: Some("worker".to_string()),
-            })),
-        )
-        .await
-        .expect("grandchild spawn should succeed");
-
     let child_thread = harness
         .manager
         .get_thread(child_thread_id)
         .await
         .expect("child thread should exist");
+    let grandchild_thread_id = harness
+        .spawn_tree_resume_child(&child_thread, "worker", "hello grandchild")
+        .await
+        .expect("grandchild spawn should succeed");
+
     let grandchild_thread = harness
         .manager
         .get_thread(grandchild_thread_id)
