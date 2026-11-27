@@ -844,6 +844,9 @@ struct ClientManagementRemoteControlBackend {
 impl ConnectedRemoteControlBackend {
     async fn start(codex_home: &std::path::Path) -> Result<Self> {
         let listener = configured_remote_control_listener(codex_home).await?;
+        // Model discovery is not part of this fixture. Its HTTP request must
+        // not race the enrollment's WebSocket upgrade on the shared listener.
+        app_test_support::write_models_cache(codex_home)?;
         let (initialized_tx, initialized_rx) = oneshot::channel();
         let server_task = tokio::spawn(async move {
             let mut initialized_tx = Some(initialized_tx);

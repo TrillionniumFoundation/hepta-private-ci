@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fs;
+use std::io::Write;
 use std::num::NonZeroUsize;
 use std::path::Path;
 use std::sync::Arc;
@@ -153,9 +154,61 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn queue_python_hook_command(script_path: &Path) -> String {
+    #[cfg(windows)]
+    {
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("python.exe"))
+            .find(|candidate| candidate.is_absolute() && candidate.is_file())
+            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+        // cmd.exe's runner supplies the outer /C quoting.
+        format!("\"{}\" \"{}\"", python.display(), script_path.display())
+    }
+
+    #[cfg(not(windows))]
+    format!("python3 \"{}\"", script_path.display())
+}
+
+#[cfg(windows)]
+fn powershell_path(path: &Path) -> String {
+    format!("'{}'", path.to_string_lossy().replace('\'', "''"))
+}
+
+fn write_queue_hook(home: &Path, command: String) {
+    let hooks = serde_json::json!({
+        "hooks": {
+            "UserPromptSubmit": [{
+                "hooks": [{"type": "command", "command": command}]
+            }]
+        }
+    });
+    std::fs::write(home.join("hooks.json"), hooks.to_string())
+        .unwrap_or_else(|error| panic!("write queue hook configuration: {error}"));
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let log = powershell_path(&log_path);
+        // Exercise the actual command hook even when the child PATH differs.
+        // Do not introduce a second interpreter beneath the Windows shell.
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText({log}, [string]$payload.prompt + [char]10)
+if ($payload.prompt -ceq 'blocked') {{
+    @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -171,24 +224,38 @@ if payload["prompt"] == "blocked":
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
-        }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
+    write_queue_hook(home, queue_python_hook_command(&script_path));
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
+    #[cfg(windows)]
+    if codex_core::shell::default_user_shell().name() == "powershell" {
+        let entered = powershell_path(&entered_path);
+        let release = powershell_path(&release_path);
+        return write_queue_hook(
+            home,
+            format!(
+                r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+if (@('delay exact persistence', 'delay exact rejection') -ccontains $payload.prompt) {{
+    [IO.File]::WriteAllText({entered}, 'entered')
+    $clock = [Diagnostics.Stopwatch]::StartNew()
+    while (![IO.File]::Exists({release})) {{
+        if ($clock.Elapsed.TotalSeconds -ge 20) {{
+            throw 'timed out waiting to release queue persistence hook'
+        }}
+        [Threading.Thread]::Sleep(10)
+    }}
+    if ($payload.prompt -ceq 'delay exact rejection') {{
+        @{{ decision = 'block'; reason = 'delayed queue rejection' }} | ConvertTo-Json -Compress
+    }}
+}}"#
+            ),
+        );
+    }
+    let script_path = home.join("queue_blocking_prompt_hook.py");
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -211,18 +278,68 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     );
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
-    let hooks = serde_json::json!({
-        "hooks": {
-            "UserPromptSubmit": [{
-                "hooks": [{
-                    "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
-                }]
-            }]
+    write_queue_hook(home, queue_python_hook_command(&script_path));
+}
+
+#[test]
+fn rejecting_queue_hook_runs_through_its_configured_shell() -> anyhow::Result<()> {
+    let root = tempfile::tempdir()?;
+    let home = root.path().join("queue hook's spaces");
+    std::fs::create_dir(&home)?;
+    write_rejecting_prompt_hook(&home);
+    let hooks: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(home.join("hooks.json"))?)?;
+    let hook = hooks
+        .pointer("/hooks/UserPromptSubmit/0/hooks/0/command")
+        .and_then(serde_json::Value::as_str)
+        .context("generated UserPromptSubmit command should exist")?;
+
+    let shell = codex_core::shell::default_user_shell();
+    let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
+    let program = argv.remove(0);
+    let _ = argv.pop();
+    let mut command = std::process::Command::new(program);
+    command.args(&argv).current_dir(&home);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        command.env("PATH", "");
+        if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
+            command.raw_arg(format!(r#""{hook}""#));
+        } else {
+            command.arg(hook);
         }
-    });
-    std::fs::write(home.join("hooks.json"), hooks.to_string())
-        .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
+    }
+    #[cfg(not(windows))]
+    command.arg(hook);
+    let mut child = command
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .context("configured shell must start the generated queue hook")?;
+    {
+        let mut stdin = child
+            .stdin
+            .take()
+            .context("queue hook stdin must be piped")?;
+        stdin.write_all(br#"{"prompt":"blocked"}"#)?;
+    }
+    let output = child.wait_with_output()?;
+    anyhow::ensure!(
+        output.status.success(),
+        "queue hook exited unsuccessfully: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let reply: serde_json::Value = serde_json::from_slice(&output.stdout)?;
+    assert_eq!(reply["decision"].as_str(), Some("block"));
+    let hook_log = std::fs::read_to_string(home.join("queue_prompt_hook.log"))?;
+    anyhow::ensure!(
+        hook_log.ends_with('\n'),
+        "queue hook log must end with a newline"
+    );
+    assert_eq!(hook_log.lines().collect::<Vec<_>>(), ["blocked"]);
+    Ok(())
 }
 
 async fn wait_for_path(path: &Path) -> anyhow::Result<()> {
@@ -1989,6 +2106,13 @@ async fn duplicate_queued_client_ids_dispatch_to_core_once() -> anyhow::Result<(
         matches!(event, EventMsg::TurnComplete(_)).then_some(())
     })
     .await;
+    // TurnComplete is published before terminal cleanup releases admission.
+    // This manual idle notification is for duplicate reconciliation after cleanup.
+    if let Some(completion) = test.codex.pending_admission_fence_completion() {
+        tokio::time::timeout(Duration::from_secs(10), completion)
+            .await
+            .context("terminal cleanup should finish before duplicate reconciliation")?;
+    }
     emit_idle(&service, thread_id).await;
 
     assert!(service.list(thread_id).await?.is_empty());

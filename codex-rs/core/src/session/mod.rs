@@ -50,8 +50,6 @@ use crate::turn_metadata::TurnMetadataState;
 use crate::turn_timing::now_unix_timestamp_ms;
 use async_channel::Receiver;
 use async_channel::Sender;
-use chrono::Local;
-use chrono::Utc;
 use codex_analytics::AnalyticsEventsClient;
 use codex_analytics::ImagePreparationFact;
 use codex_analytics::ImagePreparationMetadata;
@@ -4902,6 +4900,7 @@ impl Session {
         state.history.conversation_history_snapshot()
     }
 
+    #[cfg(test)]
     pub(crate) async fn current_window_id(&self) -> String {
         self.current_window().await.0
     }

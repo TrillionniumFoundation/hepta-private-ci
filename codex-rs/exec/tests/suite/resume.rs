@@ -249,12 +249,27 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     skip_if_no_network!(Ok(()));
 
     let test = test_codex_exec();
+    let unindexed_state = test_codex_exec();
     let server = MockServer::start().await;
-    let _response_mock = mount_exec_responses(&server, /*count*/ 2).await;
+    let response_mock = mount_exec_responses(&server, /*count*/ 2).await;
     let repo_root = exec_repo_root()?;
+    let config = ConfigBuilder::default()
+        .codex_home(test.home_path().to_path_buf())
+        .build()
+        .await?;
+    // Complete startup backfill before the rollout exists. The first process
+    // uses another private SQLite owner, leaving this index genuinely absent
+    // rather than permanently sealing the thread with delete_thread().
+    let state_db = init_state_db(&config)
+        .await
+        .expect("state DB should initialize");
+    state_db
+        .mark_backfill_complete(/*last_watermark*/ None)
+        .await?;
 
     let marker = format!("resume-last-repair-{}", Uuid::new_v4());
     test.cmd_with_server(&server)
+        .env("CODEX_SQLITE_HOME", unindexed_state.home_path())
         .arg("--skip-git-repo-check")
         .arg("-C")
         .arg(&repo_root)
@@ -266,17 +281,13 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let path = find_session_file_containing_marker(&sessions_dir, &marker)
         .expect("no session file found after first run");
     let thread_id = ThreadId::from_string(&extract_conversation_id(&path))?;
-    let config = ConfigBuilder::default()
-        .codex_home(test.home_path().to_path_buf())
-        .build()
-        .await?;
-    let state_db = init_state_db(&config)
-        .await
-        .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
-    state_db
-        .mark_backfill_complete(/*last_watermark*/ None)
-        .await?;
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
 
     let resumed_marker = format!("resume-last-repaired-{}", Uuid::new_v4());
     test.cmd_with_server(&server)
@@ -293,6 +304,11 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
         .expect("no resumed session file after SQLite repair");
     assert_eq!(resumed_path, path);
     assert!(state_db.get_thread(thread_id).await?.is_some());
+    let requests = response_mock.requests();
+    assert_eq!(requests.len(), 2);
+    let resumed_request = requests[1].body_json().to_string();
+    assert!(resumed_request.contains(&marker));
+    assert!(resumed_request.contains(&resumed_marker));
     Ok(())
 }
 
@@ -301,10 +317,21 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     skip_if_no_network!(Ok(()));
 
     let test = test_codex_exec();
+    let unindexed_state = test_codex_exec();
     let server = MockServer::start().await;
     let _response_mock = mount_exec_responses(&server, /*count*/ 3).await;
     let repo_root = exec_repo_root()?;
     let sessions_dir = test.home_path().join("sessions");
+    let config = ConfigBuilder::default()
+        .codex_home(test.home_path().to_path_buf())
+        .build()
+        .await?;
+    let state_db = init_state_db(&config)
+        .await
+        .expect("state DB should initialize");
+    state_db
+        .mark_backfill_complete(/*last_watermark*/ None)
+        .await?;
 
     let older_marker = format!("resume-last-indexed-{}", Uuid::new_v4());
     test.cmd_with_server(&server)
@@ -316,9 +343,14 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
         .success();
     let older_path = find_session_file_containing_marker(&sessions_dir, &older_marker)
         .expect("no indexed session file after first run");
+    let older_thread_id = ThreadId::from_string(&extract_conversation_id(&older_path))?;
+    assert!(state_db.get_thread(older_thread_id).await?.is_some());
 
+    // A newer retained rollout is not an indexed candidate, and is not a
+    // hard-deleted thread. Keep its SQLite records in another private owner.
     let newer_marker = format!("resume-last-unindexed-{}", Uuid::new_v4());
     test.cmd_with_server(&server)
+        .env("CODEX_SQLITE_HOME", unindexed_state.home_path())
         .arg("--skip-git-repo-check")
         .arg("-C")
         .arg(&repo_root)
@@ -328,18 +360,13 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let newer_path = find_session_file_containing_marker(&sessions_dir, &newer_marker)
         .expect("no unindexed session file after second run");
     let newer_thread_id = ThreadId::from_string(&extract_conversation_id(&newer_path))?;
-
-    let config = ConfigBuilder::default()
-        .codex_home(test.home_path().to_path_buf())
-        .build()
-        .await?;
-    let state_db = init_state_db(&config)
-        .await
-        .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
-    state_db
-        .mark_backfill_complete(/*last_watermark*/ None)
-        .await?;
+    assert!(state_db.get_thread(newer_thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(newer_thread_id)
+            .await?
+    );
 
     let resumed_marker = format!("resume-last-authoritative-{}", Uuid::new_v4());
     test.cmd_with_server(&server)
@@ -363,6 +390,69 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
                 .map(|metadata| metadata.id),
         ),
         (older_path, None),
+    );
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn exec_resume_rejects_hard_deleted_thread_with_retained_rollout() -> anyhow::Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let test = test_codex_exec();
+    let server = MockServer::start().await;
+    let response_mock = mount_exec_responses(&server, /*count*/ 1).await;
+    let repo_root = exec_repo_root()?;
+    let marker = format!("resume-deleted-{}", Uuid::new_v4());
+    test.cmd_with_server(&server)
+        .arg("--skip-git-repo-check")
+        .arg("-C")
+        .arg(&repo_root)
+        .arg(format!("echo {marker}"))
+        .assert()
+        .success();
+
+    let sessions_dir = test.home_path().join("sessions");
+    let path = find_session_file_containing_marker(&sessions_dir, &marker)
+        .expect("retained rollout after first run");
+    let original_rollout = std::fs::read(&path)?;
+    let thread_id = ThreadId::from_string(&extract_conversation_id(&path))?;
+    let config = ConfigBuilder::default()
+        .codex_home(test.home_path().to_path_buf())
+        .build()
+        .await?;
+    let state_db = init_state_db(&config)
+        .await
+        .expect("state DB should initialize");
+    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
+
+    let output = test
+        .cmd_with_server(&server)
+        .arg("--skip-git-repo-check")
+        .arg("-C")
+        .arg(&repo_root)
+        .arg("resume")
+        .arg(thread_id.to_string())
+        .arg("do not resurrect a hard-deleted thread")
+        .assert()
+        .failure()
+        .get_output()
+        .clone();
+    assert!(String::from_utf8_lossy(&output.stderr).contains("sealed for hard deletion"));
+    assert_eq!(response_mock.requests().len(), 1);
+    assert_eq!(std::fs::read(&path)?, original_rollout);
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
     );
     Ok(())
 }

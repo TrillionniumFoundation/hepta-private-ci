@@ -1,6 +1,8 @@
 use anyhow::Result;
 use codex_core::TurnInputRequest;
+use codex_history::RolloutItem;
 use codex_protocol::items::TurnItem;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::AdditionalContextEntry;
 use codex_protocol::protocol::AdditionalContextKind;
 use codex_protocol::protocol::EventMsg;
@@ -81,9 +83,35 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     .await;
 
     let request = request.single_request();
-    assert!(request.has_content_kinds(&["additional_content.automation_info"]));
-    assert!(request.has_content_kinds(&["additional_content.browser_info"]));
-    assert!(request.has_content_kinds(&["user.text"]));
+    // The local test endpoint receives the text but not first-party metadata.
+    assert!(request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
+    test.codex.flush_rollout().await?;
+    let history = test.codex.load_history(/*include_archived*/ false).await?;
+    for expected in [
+        "additional_content.automation_info",
+        "additional_content.browser_info",
+        "user.text",
+    ] {
+        assert!(
+            history.items.iter().any(|item| {
+                let RolloutItem::ResponseItem(envelope) = item else {
+                    return false;
+                };
+                let ResponseItem::Message {
+                    internal_chat_message_metadata_passthrough: Some(metadata),
+                    ..
+                } = &envelope.item
+                else {
+                    return false;
+                };
+                matches!(metadata.content_item_kinds.as_deref(), Some([kind]) if kind.0 == expected)
+            }),
+            "durable transcript must retain {expected}"
+        );
+    }
     insta::assert_snapshot!(
         "additional_context_simple_input",
         context_snapshot::format_labeled_requests_snapshot(

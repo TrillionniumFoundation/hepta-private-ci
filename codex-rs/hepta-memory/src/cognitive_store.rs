@@ -313,17 +313,26 @@ impl CognitiveStore {
     /// This entry point has no independent current-cut witness and cannot detect
     /// rollback to an internally valid old backup. Hosts requiring that guarantee
     /// must use `open_with_recovery` and never fall back here on recovery failure.
+    /// Existing Unix main files must be owner-held, single-link and mode 0600.
+    /// New files are created privately before SQLite creates any sidecars.
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        let sqlite_config = SqliteConfig::from_sqlite_home(sqlite_home);
+        // Newly opened SQLite sidecars inherit the main database permissions.
+        #[cfg(unix)]
+        sqlite_config
+            .prepare_private_bootstrap_database(&path)
+            .map_err(unavailable)?;
+        let pool = sqlite_config
             .open_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
+        #[cfg(not(unix))]
         protect_database_file(&path)?;
         sqlx::query(
             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
@@ -341,6 +350,15 @@ impl CognitiveStore {
             path,
             _open_guard: Some(open_guard),
         })
+    }
+
+    /// Close the shared connection pool before releasing this handle's store fence.
+    ///
+    /// Dropping a pool does not await its SQLite connection workers. A host
+    /// handing the database to exact-cut recovery must await this method and
+    /// drop its other handles before opening the recovered generation.
+    pub async fn close(self) {
+        self.pool.close().await;
     }
 
     pub fn path(&self) -> &Path {
@@ -1566,6 +1584,31 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
     Ok(path)
 }
 
+/// Sync the *actual* containing directory before treating an active-model
+/// database generation pointer rename as durable. This is a production write
+/// barrier, not an advisory existence check. Never ignore sync failures.
+fn sync_cognitive_directory(root: &Path) -> Result<(), CognitiveStoreError> {
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(root)
+            .map_err(unavailable)?
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(root).map_err(unavailable)?;
+    if !directory.metadata().map_err(unavailable)?.is_dir() {
+        return Err(CognitiveStoreError::Invalid(
+            "cognitive generation durability requires a real directory handle".to_string(),
+        ));
+    }
+    directory.sync_all().map_err(unavailable)
+}
+
 pub(crate) fn publish_active_database(
     root: &Path,
     database: &Path,
@@ -1618,9 +1661,7 @@ pub(crate) fn publish_active_database(
         file.write_all(b"\n").map_err(unavailable)?;
         file.sync_all().map_err(unavailable)?;
         fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        sync_cognitive_directory(root)?;
         Ok(())
     })();
     if result.is_err() {
@@ -1629,7 +1670,59 @@ pub(crate) fn publish_active_database(
     result
 }
 
+#[cfg(windows)]
+fn existing_cognitive_directory_ancestor(path: &Path) -> Result<&Path, CognitiveStoreError> {
+    // This classifies an existing redirect before creating missing descendants.
+    // It grants no authority: the original private-directory acquisition and
+    // post-acquisition canonical check below remain the binding checks.
+    for ancestor in path.ancestors() {
+        match fs::symlink_metadata(ancestor) {
+            Ok(_) => {
+                return canonical_path_without_redirection(ancestor)
+                    .map_err(unavailable)?
+                    .ok_or_else(|| {
+                        CognitiveStoreError::Invalid(
+                            "per-agent cognitive root must be canonical and must not traverse a symlink"
+                                .to_string(),
+                        )
+                    })
+                    .map(|_| ancestor);
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(unavailable(error)),
+        }
+    }
+    Err(CognitiveStoreError::Invalid(
+        "cognitive root has no existing filesystem ancestor".to_string(),
+    ))
+}
+
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    #[cfg(windows)]
+    let _windows_owner_handles = {
+        let existing = existing_cognitive_directory_ancestor(path)?;
+        let missing = path
+            .ancestors()
+            .take_while(|ancestor| *ancestor != existing)
+            .collect::<Vec<_>>();
+
+        // Open every missing directory with the original no-reparse guarantee.
+        // Holding these handles pins the newly created ancestry through the
+        // canonical check below. Existing owner state is validated, not repaired.
+        let mut handles = missing
+            .iter()
+            .rev()
+            .map(|directory| {
+                codex_utils_path::open_private_state_directory(directory).map_err(unavailable)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        if handles.is_empty() {
+            handles
+                .push(codex_utils_path::open_private_state_directory(path).map_err(unavailable)?);
+        }
+        handles
+    };
+    #[cfg(not(windows))]
     fs::create_dir_all(path).map_err(unavailable)?;
     let canonical = canonical_path_without_redirection(path)
         .map_err(unavailable)?

@@ -629,11 +629,13 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
-    let expires_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_secs()
-        + 1;
+    let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
+    // Round the nominal one-second deadline up to the lease field's precision.
+    // This changes the live window from (0s, 1s] to [1s, 2s). For fractional
+    // mints the old expiry moves by one second; the excess over the nominal
+    // one-second duration is strictly less than one second.
+    let lease_deadline = minted_at + Duration::from_secs(1);
+    let expires_at = lease_deadline.as_secs() + u64::from(lease_deadline.subsec_nanos() != 0);
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",
@@ -774,16 +776,13 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
 
 #[cfg(not(feature = "production-cognitive-write"))]
 #[test]
-fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
+fn read_only_profile_fails_closed_when_critical_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ))
-    .expect("read-only profile remains availability tolerant");
+    ));
     assert!(matches!(
         result,
-        CognitiveRuntime::Unavailable(
-            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable
-        )
+        Err(crate::AgentdError::Protocol(reason)) if reason == "critical cognitive owner unavailable"
     ));
 }
 

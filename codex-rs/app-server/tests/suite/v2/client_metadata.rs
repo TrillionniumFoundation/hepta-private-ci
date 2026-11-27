@@ -568,17 +568,27 @@ async fn turn_start_forwards_client_metadata_to_responses_websocket_request_body
     )
     .await??;
 
-    let warmup = websocket_server
-        .wait_for_request(/*connection_index*/ 0, /*request_index*/ 0)
-        .await
-        .body_json();
-    let request = websocket_server
-        .wait_for_request(/*connection_index*/ 0, /*request_index*/ 1)
-        .await
-        .body_json();
+    let warmup = timeout(
+        DEFAULT_READ_TIMEOUT,
+        websocket_server.wait_for_request(/*connection_index*/ 0, /*request_index*/ 0),
+    )
+    .await?
+    .body_json();
+    let request = timeout(
+        DEFAULT_READ_TIMEOUT,
+        websocket_server.wait_for_request(/*connection_index*/ 0, /*request_index*/ 1),
+    )
+    .await?
+    .body_json();
 
+    assert_eq!(websocket_server.handshakes().len(), 1);
     assert_eq!(warmup["type"].as_str(), Some("response.create"));
     assert_eq!(warmup["generate"].as_bool(), Some(false));
+    let warmup_metadata = warmup["client_metadata"]["x-codex-turn-metadata"]
+        .as_str()
+        .map(parse_json_header)
+        .unwrap_or_default();
+    assert!(warmup_metadata.get("fiber_run_id").is_none());
     assert_eq!(request["type"].as_str(), Some("response.create"));
     assert_eq!(request["previous_response_id"].as_str(), Some("warm-1"));
 
