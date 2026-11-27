@@ -4,7 +4,6 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::fs::File;
 use std::io;
-use std::mem::offset_of;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
 use std::os::windows::io::AsRawHandle;
@@ -209,9 +208,15 @@ fn open(
 
 pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io::Result<()> {
     let name = child_name(destination)?;
-    let name_bytes = name.len() * size_of::<u16>();
-    let size =
-        (offset_of!(FILE_RENAME_INFO, FileName) + name_bytes).max(size_of::<FILE_RENAME_INFO>());
+    let name_bytes = name
+        .len()
+        .checked_mul(size_of::<u16>())
+        .ok_or_else(|| invalid_name("destination name is too long"))?;
+    // NtSetInformationFile requires the fixed structure size plus the complete
+    // counted name, including the structure's trailing alignment padding.
+    let size = size_of::<FILE_RENAME_INFO>()
+        .checked_add(name_bytes)
+        .ok_or_else(|| invalid_name("rename buffer is too large"))?;
     let mut storage = vec![0_usize; size.div_ceil(size_of::<usize>())];
     let info = storage.as_mut_ptr().cast::<FILE_RENAME_INFO>();
     let mut io_status = IO_STATUS_BLOCK::default();
