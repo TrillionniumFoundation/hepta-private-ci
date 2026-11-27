@@ -590,8 +590,11 @@ jobs:
         run: |
           set -euo pipefail
           test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_native_prompt_decode_profiles.py -v \
+            2>&1 | tee "$RUNNER_TEMP/hia-prompt-profile-controls.log"
           python3 -B codex/hia/tests/test_native_prompt_decode_caller.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
+            --build-profile full-native38 \
             --rustc "$RUSTC" \
             --report "$RUNNER_TEMP/hia-prompt-decode-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-prompt-decode-caller.log"
@@ -1770,6 +1773,8 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-dependency-admission.log"
           python3 -B codex/hia/tests/test_file_update_darwin_admission.py -v \
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-darwin-admission.log"
+          python3 -B codex/hia/tests/test_file_update_bazel_admission.py -v \
+            2>&1 | tee "$RUNNER_TEMP/hia-file-update-bazel-admission.log"
 
       - name: Check out complete original file-update owner
         if: ${{ always() && steps.build.outcome == 'success' }}

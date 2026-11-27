@@ -69,7 +69,7 @@ def source(actual, original):
             "linux_candidates": ["final_path"], "linux_denial_predicate": "D || !A"}
 
 
-def tree(relative, expected, actual, listing):
+def _darwin_tree(relative, expected, actual, listing):
     require((relative, expected, actual) == (DEPENDENCY, ORIGINAL_TREE, ACTUAL_TREE),
             "unreviewed exec-server Darwin dependency projection")
     inverse = listing
@@ -97,3 +97,45 @@ def tree(relative, expected, actual, listing):
             "leaf_count": 144, "intermediate_tree": INTERMEDIATE_TREE,
             "projected_original_tree": wine["projected_original_tree"],
             "projection": projected, "original_wine_projection": wine}
+
+# The Windows test runfiles successor changes only this Bazel declaration.
+# Neither Rust source, Cargo declarations nor the independently built original
+# Cargo graph is replaced. The prior full Darwin and Wine inverses remain exact.
+BAZEL_TREE = "6a1d154613ad129ed7720947930efc33bcee5f22"
+BAZEL_OLD_BLOB = "edd3380811608c669440f20c0083b01fe60874a7"
+BAZEL_NEW_BLOB = "29e18f0eff6d45536d58c8a17c94f161d1215b2e"
+
+
+def tree(relative, expected, actual, listing):
+    if actual != BAZEL_TREE:
+        return _darwin_tree(relative, expected, actual, listing)
+    require((relative, expected, actual) == (DEPENDENCY, ORIGINAL_TREE, BAZEL_TREE),
+            "unreviewed exec-server Bazel test dependency projection")
+    require(type(listing) is bytes and listing.endswith(b"\0"),
+            "complete Bazel dependency listing is required")
+    before = f"100644 blob {BAZEL_OLD_BLOB}\tBUILD.bazel\0".encode()
+    after = f"100644 blob {BAZEL_NEW_BLOB}\tBUILD.bazel\0".encode()
+    require(listing.count(after) == 1 and before not in listing,
+            "reviewed Bazel test declaration changed")
+    inverse = listing.replace(after, before, 1)
+    prior = _darwin_tree(relative, expected, ACTUAL_TREE, inverse)
+    require(inverse.replace(before, after, 1) == listing,
+            "Bazel test declaration forward replay differs")
+    entries = {}
+    for row in listing[:-1].split(b"\0"):
+        header, name = row.split(b"\t", 1)
+        mode, kind, digest = header.decode().split(" ")
+        require(kind == "blob" and name.decode() not in entries,
+                "invalid or duplicate Bazel dependency leaf")
+        entries[name.decode()] = (mode, digest)
+    require(len(entries) == prior["leaf_count"]
+            and identity._dependency_tree_digest(entries) == BAZEL_TREE,
+            "complete Bazel test dependency tree changed")
+    return {"schema": "codex.hia.path-dependency-bazel-test-projection.v1",
+            "dependency": relative, "actual_tree": actual, "original_tree": expected,
+            "leaf_count": len(entries), "intermediate_tree": ACTUAL_TREE,
+            "projected_original_tree": prior["projected_original_tree"],
+            "projection": {"path": "BUILD.bazel", "mode": "100644",
+                           "actual_blob": BAZEL_NEW_BLOB, "original_blob": BAZEL_OLD_BLOB},
+            "runtime_source_and_cargo_unchanged": True,
+            "original_darwin_projection": prior}

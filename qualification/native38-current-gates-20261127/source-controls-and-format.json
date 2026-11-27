@@ -1,0 +1,66 @@
+{
+  "full_native_gate_passed": false,
+  "original_prompt_body_and_budgets_unchanged": true,
+  "results": [
+    {
+      "argv": [
+        "/opt/homebrew/bin/python3.14",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_file_update_dependency_admission",
+        "test_file_update_darwin_admission",
+        "test_file_update_bazel_admission",
+        "test_native_prompt_decode_profiles"
+      ],
+      "elapsed_seconds": 0.08452704106457531,
+      "label": "original-and-successor-admission",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 4708,
+        "sha256": "3101646d298420261ec902a9edbca7e0068c0660e3d691714fe12f8b8f230734"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "elapsed_seconds": 0.18182445806451142,
+      "label": "just-fmt",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 73,
+        "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check"
+      ],
+      "elapsed_seconds": 0.01768358307890594,
+      "label": "diff-check",
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "source_only": true
+}
