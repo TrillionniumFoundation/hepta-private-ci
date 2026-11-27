@@ -52,6 +52,13 @@ path = "src/bin/hepta-final-use-revocation-signer.rs"
 test = false
 required-features = ["production-authority"]
 
+# Test fixture launched only after full catalog release admission.
+[[bin]]
+name = "hepta-paired-process-fixture"
+path = "src/bin/hepta-paired-process-fixture.rs"
+test = false
+bench = false
+
 [lints]
 workspace = true
 
